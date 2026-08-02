@@ -1,0 +1,51 @@
+#!/bin/bash
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -euo pipefail
+
+DEV_TOOLS_DIR="$(dirname "$(dirname "$(realpath "$0")")")"
+
+# This array should contain the patch filenames in order,
+# as applied in build/packages/cros-mesa-git/PKGBUILD
+declare -a PATCHES
+PATCHES=()
+
+function print_usage() {
+  echo "usage:  $0 [<src-prefix>]"
+  echo ""
+  echo "Apply patches in ${DEV_TOOLS_DIR} to a mesa source at <src-prefix>."
+}
+
+ARGS=()
+while (( "$#" > 0 )); do
+  case $1 in
+    --help|-h|--usage|-u)
+      print_usage
+      exit 1
+      shift
+      ;;
+    *)
+      ARGS+=("$1")
+      shift;
+      ;;
+  esac
+done
+set -- "${ARGS[@]}" # store remaining args back to $@, preserving spaces
+
+NPOS_ARGS=1
+if (( "$#" > "${NPOS_ARGS}" )); then
+  echo "Error: expected max ${NPOS_ARGS} positional arguments but received $#"
+  echo ""
+  print_usage
+  exit 1
+fi
+
+src_prefix="${1:-/tmp/mesa}"
+for p in "${PATCHES[@]}"; do
+  patchfile="${DEV_TOOLS_DIR}/patches/mesa/${p}"
+  if [ -f "${patchfile}" ]; then
+    patch --directory="${src_prefix}" --forward --strip=1 --input="${patchfile}"
+  fi
+done

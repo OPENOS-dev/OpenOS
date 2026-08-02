@@ -1,0 +1,91 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_header",
+    ":libredaction_tool",
+  ]
+  if (use.test) {
+    deps += [ ":redaction_tool_unittests" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libchrome",
+    "re2",
+  ]
+}
+
+static_library("libredaction_tool") {
+  configs -= [ "//common-mk:use_thin_archive" ]
+  configs += [ "//common-mk:nouse_thin_archive" ]
+  defines = [
+    "IS_REDACTION_TOOL_IMPL",
+    "USE_SYSTEM_RE2",
+  ]
+  sources = [
+    "ip_address.cc",
+    "ip_address.h",
+    "libmetrics_metrics_recorder.cc",
+    "libmetrics_metrics_recorder.h",
+    "pii_types.h",
+    "redaction_tool.cc",
+    "redaction_tool.h",
+    "redaction_tool_metrics_recorder.h",
+    "url_canon.h",
+    "url_canon_internal.cc",
+    "url_canon_internal.h",
+    "url_canon_ip.cc",
+    "url_canon_ip.h",
+    "url_canon_stdstring.cc",
+    "url_canon_stdstring.h",
+    "url_parse.h",
+    "validation.cc",
+    "validation.h",
+  ]
+  install_path = "lib"
+  all_dependent_configs = [ ":target_defaults" ]
+}
+
+install_config("install_header") {
+  sources = [
+    "libmetrics_metrics_recorder.h",
+    "pii_types.h",
+    "redaction_tool.h",
+    "redaction_tool_metrics_recorder.h",
+  ]
+  install_path = "/usr/include/redaction_tool"
+}
+
+if (use.test) {
+  pkg_config("libchrome_test_config") {
+    pkg_deps = [
+      "libchrome-test",
+      "re2",
+    ]
+  }
+  executable("redaction_tool_unittests") {
+    configs += [
+      "//common-mk:test",
+      ":libchrome_test_config",
+      ":target_defaults",
+    ]
+    sources = [
+      "libmetrics_metrics_tester.cc",
+      "libmetrics_metrics_tester.h",
+      "metrics_tester.h",
+      "redaction_tool_unittest.cc"
+    ]
+    run_test = true
+    deps = [
+      ":libredaction_tool",
+      "//common-mk/testrunner",
+      "//metrics:metrics_test_support",
+    ]
+  }
+}

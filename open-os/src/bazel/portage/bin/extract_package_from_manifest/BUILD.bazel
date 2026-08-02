@@ -1,0 +1,78 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@@//bazel/portage/bin/extract_package_from_manifest:nano.bzl", "NANO_MANIFEST_CONTENT")
+load("@@//bazel/portage/common/testdata:sysroot.bzl", "SYSROOT_MANIFEST_CONTENT")
+load("//bazel/portage/build_defs:extract_package_from_manifest.bzl", "extract_package", "filter_executable", "filter_header_files", "filter_package", "filter_paths", "filter_shared_libraries")
+
+# A demo of how you can extract a whole tarball.
+extract_package(
+    name = "sysroot",
+    header_file_dir_regexes = ["/usr/include"],
+    ld_library_path_regexes = [
+        "/lib64",
+        "/lib32",
+    ],
+    manifest_content = SYSROOT_MANIFEST_CONTENT,
+    manifest_file = "//bazel/portage/common/testdata:sysroot.bzl",
+    pkg = "//bazel/portage/common/testdata:sysroot",
+)
+
+# All of the following filters support having the interface as an
+# extract_package rule, or any of the other filter_* rules.
+
+filter_package(
+    name = "shared_libs",
+    package_name = "demo/shared_libs",
+    interface = ":sysroot",
+)
+
+filter_header_files(
+    name = "headers",
+    include_symlinks = True,
+    interface = ":sysroot",
+)
+
+filter_shared_libraries(
+    name = "shared_lib_libs",
+    include_symlinks = True,
+    interface = ":shared_libs",
+)
+
+# This will be empty, since it contains no headers.
+filter_header_files(
+    name = "shared_lib_headers",
+    include_symlinks = True,
+    interface = ":shared_libs",
+)
+
+# This will filter down to the specified paths, plus the target of the symlink.
+filter_paths(
+    name = "symlink",
+    interface = ":sysroot",
+    paths = [
+        "/symlinks/absolute_symlink.txt",
+        "/symlinks/relative_symlink.txt",
+    ],
+)
+
+extract_package(
+    name = "nano",
+    header_file_dir_regexes = ["/usr/include"],
+    ld_library_path_regexes = [
+        "/lib64",
+        "/lib32",
+        "/usr/lib64",
+    ],
+    manifest_content = NANO_MANIFEST_CONTENT,
+    manifest_file = ":nano.bzl",
+    pkg = "@files//:testdata_nano_alias",
+)
+
+# This filters it down to the binary, and any shared libraries it depends on.
+filter_executable(
+    name = "nano_binary",
+    executable = "/bin/nano",
+    interface = ":nano",
+)

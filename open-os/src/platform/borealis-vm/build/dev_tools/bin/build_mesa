@@ -1,0 +1,163 @@
+#!/bin/bash
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -euo pipefail
+
+export PATH # Needs to be done in Borealis to make build tools available
+DEV_TOOLS_DIR="$(dirname "$(dirname "$(realpath "$0")")")"
+will_build_32bit=1
+will_build_64bit=1
+will_build_vulkan=1
+will_apply_patches=1
+: "${MESA_REPO:="https://chromium.googlesource.com/chromiumos/third_party/mesa.git"}"
+: "${MESA_BRANCH:="upstream/main"}"
+
+function print_usage() {
+  echo "usage:  $0 [args] [<source-prefix> [build-type]]"
+  echo ""
+  echo "Checkout and build mesa from source at the specified prefix location."
+  echo "  build-type must be a valid input to meson's '--buildtype' option."
+  echo ""
+  echo "Optional Args:"
+  echo "  --only-64bit:   Only build for the amd64 architecture"
+  echo "  --only-32bit:   Only build for the i386 architecture"
+  echo "  --no-vulkan:    Skip building the virtio-gpu vulkan (venus) driver"
+  echo "  --no-patches:   Skip applying patches in ${DEV_TOOLS_DIR}"
+  echo ""
+  echo "Optional Env:"
+  echo "  MESA_REPO=      Set the git repo for Mesa source code checkout"
+  echo "  MESA_BRANCH=    Set the git branch for Mesa source code checkout"
+}
+
+ARGS=()
+while (( "$#" > 0 )); do
+  case $1 in
+    --only-64bit)
+      will_build_32bit=0
+      will_build_64bit=1
+      shift
+      ;;
+    --only-32bit)
+      will_build_32bit=1
+      will_build_64bit=0
+      shift
+      ;;
+    --no-vulkan)
+      will_build_vulkan=0
+      shift
+      ;;
+    --no-patches)
+      will_apply_patches=0
+      shift
+      ;;
+    --help|-h|--usage|-u)
+      print_usage
+      exit 1
+      shift
+      ;;
+    *)
+      ARGS+=("$1")
+      shift;
+      ;;
+  esac
+done
+set -- "${ARGS[@]}" # store remaining args back to $@, preserving spaces
+
+NPOS_ARGS=2
+if (( "$#" > "${NPOS_ARGS}" )); then
+  echo "Error: expected max ${NPOS_ARGS} positional arguments but received $#"
+  echo ""
+  print_usage
+  exit 1
+fi
+
+echo "Mesa repo:   \"${MESA_REPO}\""
+echo "Mesa branch: \"${MESA_BRANCH}\""
+
+src_prefix="${1:-/tmp/mesa}"
+# meson requires absolute paths
+mkdir -p "${src_prefix}"
+src_prefix="$(realpath "${src_prefix}")"
+echo "Source prefix: ${src_prefix}"
+
+build_type="${2:-debug}"
+build_prefix="${src_prefix}/build-output"
+install_prefix="${src_prefix}/install"
+echo "Install prefix: ${install_prefix}"
+echo "Build type: ${build_type}"
+
+if ! [[ -d "${src_prefix}/.git" ]]; then
+  echo -e "\nChecking out Mesa source \"${MESA_BRANCH}\" branch at" \
+    "\"${src_prefix}\""
+  mkdir -p "${src_prefix}"
+  git clone "${MESA_REPO}" \
+    "${src_prefix}" -b "${MESA_BRANCH}"
+  if [[ "${will_apply_patches}" == 1 ]]; then
+    "${DEV_TOOLS_DIR}"/bin/patch_mesa "${src_prefix}"
+  fi
+fi
+
+arches=''
+if [[ "${will_build_64bit}" == 1 ]]; then
+  arches="${arches} x86_64"
+fi
+if [[ "${will_build_32bit}" == 1 ]]; then
+  arches="${arches} i386"
+fi
+if [[ -z "${arches}" ]]; then
+  echo "No arches selected; aborting the build"
+fi
+echo "Building for arches: ${arches}"
+
+vulkan_drivers=""
+if [[ "${will_build_vulkan}" == 1 ]]; then
+  vulkan_drivers="virtio"
+fi
+
+for arch in ${arches}; do
+  build_dir="${build_prefix}-${arch}"
+  cross_args=""
+  llvm="auto"
+  if [[ "${arch}" == i386 ]]; then
+    cross_args="--cross-file ${DEV_TOOLS_DIR}/mesa-cross-file"
+    llvm="disabled"
+  fi
+
+  reconfig_args=""
+  if [ -d "${build_dir}" ]; then
+    reconfig_args="--reconfigure"
+  fi
+
+  echo -e "\nConfiguring Mesa '${build_type}' (${arch}) build at" \
+    "\"${build_dir}\""
+  # shellcheck disable=SC2086
+  # shellcheck disable=SC2248
+  meson setup "${build_dir}" "${src_prefix}" \
+    -Dgallium-drivers="virgl,softpipe,llvmpipe,zink" \
+    -Dvulkan-drivers="${vulkan_drivers}" \
+    -Dplatforms="x11,wayland" \
+    -Dllvm="${llvm}" \
+    -Dgbm="enabled" \
+    -Dgles1="enabled" \
+    -Dgles2="enabled" \
+    -Degl="enabled" \
+    -Dglx="dri" \
+    -Dperfetto="true" \
+    ${cross_args} \
+    ${reconfig_args} \
+    --prefix "${install_prefix}" \
+    --buildtype "${build_type}"
+
+  echo -e "\nInstalling Mesa '${build_type}' (${arch}) build to" \
+    "'${install_prefix}'"
+  ninja -C "${build_dir}" install
+done
+
+echo -e "\nInstalling debug configuration (.vscode/) into \"${src_prefix}\""
+cp --no-clobber -r "${DEV_TOOLS_DIR}/.vscode/" "${src_prefix}"
+
+echo -e "\nInstalling system drirc (/etc/drirc) into \"${src_prefix}\""
+mkdir -p "${install_prefix}/etc/"
+cp --no-clobber /etc/drirc "${install_prefix}/etc/"

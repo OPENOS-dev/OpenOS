@@ -1,0 +1,21 @@
+[package]
+name = "extract_package_from_manifest_package"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+common_extract_tarball = { path = "../../../common/extract_tarball" }
+binarypackage = { path = "../../../common/portage/binarypackage" }
+version = { path = "../../../common/portage/version" }
+
+anyhow.workspace = true
+clap.workspace = true
+regex.workspace = true
+runfiles.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+fileutil = { path = "../../../common/fileutil" }

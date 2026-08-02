@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+PROJECT_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")"/..)
+source "${PROJECT_ROOT}/environment"
+
+set -e
+
+if [ ! -e /etc/make.conf ] ; then
+    echo "HPS helper scripts must be run inside the ChromeOS chroot." >&2
+    exit 1
+fi
+
+# These packages are available in Chrome OS, but not built into the SDK.
+# We use them for HPS development so install them if they are missing.
+
+missing=()
+
+if ! command -v openocd >/dev/null ; then
+    missing+=(openocd)
+elif ! openocd --version 2>&1 | grep -q '0.11.0' ; then
+    # It's not missing but it's too old, reinstall it
+    missing+=(openocd)
+fi
+
+if ! python3 -c 'import pyftdi' 2>/dev/null ; then
+    missing+=(pyftdi)
+fi
+
+if [ ${#missing[@]} -gt 0 ]; then
+    echo "Missing packages: ${missing[*]}" >&2
+    echo -n "Install [y]/n? " >&2
+    read -r answer
+    if [ "${answer}" == "y" ] || [ -z "${answer}" ]; then
+        sudo emerge "${missing[@]}"
+    fi
+fi
+
+# Make sure $USER is in the plugdev group inside the chroot, for accessing the
+# MCP2221 and FT4232H USB devices.
+
+if ! id -Gn | grep -qw plugdev ; then
+    echo "${USER} is not in plugdev group" >&2
+    echo -n "Add [y]/n? " >&2
+    read -r answer
+    if [ "${answer}" == "y" ] || [ -z "${answer}" ]; then
+        sudo usermod -aG plugdev "${USER}"
+        echo "Re-enter chroot for group changes to take effect." >&2
+    fi
+fi
+
+echo "Reminder: also run scripts/setup-proto2-on-host outside the chroot if necessary." >&2

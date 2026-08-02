@@ -1,0 +1,270 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_headers",
+    ":libnet-base",
+    ":libnet-base-test",
+    ":libnet-base-test_pc",
+    ":libnet-base_pc",
+  ]
+  if (use.fuzzer) {
+    deps += [
+      ":http_url_fuzzer",
+      ":netlink_attribute_list_fuzzer",
+      ":rtnl_handler_fuzzer",
+    ]
+  }
+  if (use.test) {
+    deps += [ ":libnet-base-testrunner" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  cflags = [
+    "-Wconversion",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",  # needed for libchrome
+  ]
+  pkg_deps = [
+    "libbrillo",
+    "libcares",
+    "libchrome",
+    "libminijail",
+  ]
+}
+
+shared_library("libnet-base") {
+  sources = [
+    "ares_interface.cc",
+    "attribute_list.cc",
+    "byte_utils.cc",
+    "control_netlink_attribute.cc",
+    "dns_client.cc",
+    "generic_netlink_message.cc",
+    "http_url.cc",
+    "ip_address.cc",
+    "ip_address_utils.cc",
+    "ipv4_address.cc",
+    "ipv6_address.cc",
+    "log_watcher.cc",
+    "mac_address.cc",
+    "netlink_attribute.cc",
+    "netlink_manager.cc",
+    "netlink_message.cc",
+    "netlink_packet.cc",
+    "netlink_sock_diag.cc",
+    "netlink_socket.cc",
+    "network_config.cc",
+    "network_priority.cc",
+    "proc_fs_stub.cc",
+    "process_manager.cc",
+    "rtnl_handler.cc",
+    "rtnl_listener.cc",
+    "rtnl_message.cc",
+    "socket.cc",
+    "socket_forwarder.cc",
+    "technology.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  install_path = "lib"
+}
+
+generate_pkg_config("libnet-base_pc") {
+  name = "libnet-base"
+  description = "Network primitive library"
+  version = getenv("PV")
+  requires = [ "libchrome" ]
+  libs = [ "-lnet-base" ]
+  install = true
+}
+
+# Install headers to /usr/include/chromeos/.
+# Args:
+#   sources: A list of headers to be installed.
+#   subdir: The subfolder name under platform2/. Headers will be installed to
+#     /usr/include/chromeos/${subdir}/.
+template("install_chromeos_headers") {
+  assert(defined(invoker.sources),
+         "Need sources in $target_name listing the header files to install.")
+  assert(
+      defined(invoker.subdir),
+      "Need subdir in $target_name specifying the folder name under platform2/.")
+
+  preprocessing_target_name = "pre_" + target_name
+
+  action_foreach(preprocessing_target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "subdir",
+                           ])
+    outputs =
+        [ "${target_gen_dir}/include/chromeos/${subdir}/{{source_file_part}}" ]
+
+    script = "/bin/sh"
+    args = [
+      "-c",
+      "sed '/.pb.h/! s:${subdir}/:chromeos/${subdir}/:g' " +
+          rebase_path("{{source}}") +
+          "> ${target_gen_dir}/include/chromeos/${subdir}/{{source_file_part}}",
+    ]
+  }
+
+  install_config(target_name) {
+    forward_variables_from(invoker, [ "subdir" ])
+    sources = get_target_outputs(":${preprocessing_target_name}")
+    install_path = "/usr/include/chromeos/${subdir}"
+    deps = [ ":${preprocessing_target_name}" ]
+  }
+}
+
+install_chromeos_headers("install_headers") {
+  sources = [
+    "ares_interface.h",
+    "attribute_list.h",
+    "byte_utils.h",
+    "control_netlink_attribute.h",
+    "dns_client.h",
+    "generic_netlink_message.h",
+    "http_url.h",
+    "ip_address.h",
+    "ip_address_utils.h",
+    "ipv4_address.h",
+    "ipv6_address.h",
+    "log_watcher.h",
+    "mac_address.h",
+    "netlink_attribute.h",
+    "netlink_manager.h",
+    "netlink_message.h",
+    "netlink_packet.h",
+    "netlink_sock_diag.h",
+    "netlink_socket.h",
+    "network_config.h",
+    "network_priority.h",
+    "proc_fs_stub.h",
+    "process_manager.h",
+    "rtnl_handler.h",
+    "rtnl_listener.h",
+    "rtnl_message.h",
+    "socket.h",
+    "socket_forwarder.h",
+    "technology.h",
+  ]
+
+  subdir = "net-base"
+}
+
+install_chromeos_headers("install_test_headers") {
+  sources = [
+    "mock_netlink_manager.h",
+    "mock_netlink_socket.h",
+    "mock_proc_fs_stub.h",
+    "mock_process_manager.h",
+    "mock_rtnl_handler.h",
+    "mock_socket.h",
+  ]
+  subdir = "net-base"
+}
+
+generate_pkg_config("libnet-base-test_pc") {
+  name = "libnet-base-test"
+  description = "net-base test library"
+  version = getenv("PV")
+  requires = [ "libchrome" ]
+  libs = [ "-lnet-base-test" ]
+  install = true
+}
+
+shared_library("libnet-base-test") {
+  sources = [
+    "mock_netlink_manager.cc",
+    "mock_netlink_socket.cc",
+    "mock_proc_fs_stub.cc",
+    "mock_process_manager.cc",
+    "mock_rtnl_handler.cc",
+    "mock_socket.cc",
+  ]
+  configs += [
+    "//common-mk:test",
+    ":target_defaults",
+  ]
+  install_path = "/build/lib"
+  deps = [
+    ":install_test_headers",
+    ":libnet-base",
+  ]
+}
+
+if (use.fuzzer) {
+  executable("http_url_fuzzer") {
+    sources = [ "http_url_fuzzer.cc" ]
+    configs += [
+      "//common-mk/common_fuzzer",
+      ":target_defaults",
+    ]
+    deps = [ ":libnet-base" ]
+  }
+  executable("netlink_attribute_list_fuzzer") {
+    sources = [ "attribute_list_fuzzer.cc" ]
+    configs += [
+      "//common-mk/common_fuzzer",
+      ":target_defaults",
+    ]
+    deps = [ ":libnet-base" ]
+  }
+  executable("rtnl_handler_fuzzer") {
+    sources = [ "rtnl_handler_fuzzer.cc" ]
+    configs += [
+      "//common-mk/common_fuzzer",
+      ":target_defaults",
+    ]
+    deps = [ ":libnet-base" ]
+  }
+}
+
+if (use.test) {
+  executable("libnet-base-testrunner") {
+    run_test = true
+    sources = [
+      "attribute_list_test.cc",
+      "byte_utils_test.cc",
+      "dns_client_test.cc",
+      "http_url_test.cc",
+      "ip_address_test.cc",
+      "ipv4_address_test.cc",
+      "ipv6_address_test.cc",
+      "log_watcher_test.cc",
+      "mac_address_test.cc",
+      "netlink_attribute_test.cc",
+      "netlink_packet_test.cc",
+      "netlink_socket_test.cc",
+      "network_config_test.cc",
+      "process_manager_test.cc",
+      "rtnl_handler_test.cc",
+      "rtnl_listener_test.cc",
+      "rtnl_message_test.cc",
+      "socket_forwarder_test.cc",
+      "socket_test.cc",
+      "technology_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    deps = [
+      ":libnet-base",
+      ":libnet-base-test",
+      "//common-mk/testrunner",
+    ]
+    pkg_deps = [
+      "libchrome-test",
+      "re2",
+    ]
+  }
+}

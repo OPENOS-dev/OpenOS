@@ -1,0 +1,78 @@
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# Updated comment to force cache bust.
+#
+# syntax=docker/dockerfile:1
+# Base image
+FROM debian:trixie
+
+# Avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+# fw-updater needs libudev-dev and pkg-config for building
+# git and curl for fetching source and rustup
+# Python tools need python3, pip, serial, usb
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    git \
+    libudev-dev \
+    pkg-config \
+    ca-certificates \
+    python3 \
+    python3-pip \
+    python3-serial \
+    python3-requests \
+    python3-usb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust using rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Clone dolos repository
+WORKDIR /usr/src
+RUN git clone https://chromium.googlesource.com/chromiumos/platform/dolos
+
+# Build fw-updater
+WORKDIR /usr/src/dolos/fw-updater
+ENV USER=root
+RUN cargo build --release
+
+# Install binary to system path
+RUN cp target/release/fw-updater /usr/local/bin/fw-updater
+
+# Clean up source code to save some space
+WORKDIR /
+RUN rm -rf /usr/src/dolos
+
+# Copy Maui Tools
+COPY tools /opt/maui/tools
+# Copy .git temporarily to allow version.sh to generate a proper version string
+COPY .git /opt/maui/.git
+
+# Configure Python Path for maui_libs
+ENV PYTHONPATH="/opt/maui/tools"
+
+# Generate version info and cleanup .git
+WORKDIR /opt/maui/tools
+RUN ./version.sh && rm -rf /opt/maui/.git
+
+# Create wrappers for CLI tools using heredoc
+WORKDIR /opt/maui/tools
+RUN cat << 'EOF' > /usr/local/bin/maui-ctl && \
+    chmod +x /usr/local/bin/maui-ctl
+#!/bin/bash
+python3 /opt/maui/tools/src/maui_ctl.py "$@"
+EOF
+
+RUN cat << 'EOF' > /usr/local/bin/maui-flash && \
+    chmod +x /usr/local/bin/maui-flash
+#!/bin/bash
+python3 /opt/maui/tools/src/maui_flash.py "$@"
+EOF
+
+# Set the default entrypoint
+CMD ["/bin/bash"]

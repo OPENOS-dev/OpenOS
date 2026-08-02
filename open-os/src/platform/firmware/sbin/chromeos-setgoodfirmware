@@ -1,0 +1,43 @@
+#!/bin/sh
+# Copyright 2017 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script is expected to run by update_engine on each reboot (usually after
+# 60s) via chromeos-setgoodkernel. Same as chromeos-setgoodkernel, this script
+# will mark active firmware as the "good one".
+# For vboot2 systems, just set fw_result to success and zero fw_try_count.
+
+COMPLETE_EVENT="chromeos-setgoodfirmware"
+BOARD_SCRIPT="/usr/sbin/board-setgoodfirmware"
+
+# Prints arguments as error messages and aborts.
+# Usage: die <messages>
+die() {
+  echo "ERROR: $0: $*" >&2
+  exit 1
+}
+
+info() {
+  echo "INFO: $0: $*"
+}
+
+# Notifies Upstart jobs that we have finished setting a good firmware.
+# Usage: emit_complete_event
+emit_complete_event() {
+  initctl emit -n "${COMPLETE_EVENT}" || true
+}
+
+# Main entry.
+main() {
+  crossystem fw_result=success fw_try_count=0 ||
+    die "Fail to set good kernel with vboot2 firmware."
+  emit_complete_event
+  info "Active firmware set as good firmware."
+
+  if [ -x "${BOARD_SCRIPT}" ]; then
+    info "Running board script ${BOARD_SCRIPT}..."
+    exec "${BOARD_SCRIPT}"
+  fi
+}
+main "$@"

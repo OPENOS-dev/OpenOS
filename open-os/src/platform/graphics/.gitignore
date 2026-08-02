@@ -1,0 +1,18 @@
+# Ignore bin and pkg folders.
+**/bin/*
+# We whitelisted pkg folder as some of our project output pkg that can be shared with other projects.
+# **/pkg/*
+
+# Visual Studio Code
+/.vscode/
+/src/.vscode/
+
+# Emacs.
+*~
+
+# Vim
+*.sw[a-p]
+
+# Python
+__pycache__
+*.pyc

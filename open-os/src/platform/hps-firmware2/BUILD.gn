@@ -1,0 +1,32 @@
+group("default") {
+  deps = [
+    "//third_party/tflm(//toolchain:riscv-gcc)",
+  ]
+}
+
+# Flags that are used for compiling and linking regardless of target
+# architecture.
+common_compile_and_link_flags = [
+  "-Wsign-compare",
+  "-Wdouble-promotion",
+  "-Wshadow",
+  "-Wunused-variable",
+  "-Wmissing-field-initializers",
+  "-Wunused-function",
+  "-Wswitch",
+  "-Wvla",
+]
+
+config("compiler_defaults") {
+  cflags = common_compile_and_link_flags + [
+             "-Wall",
+             "-Wextra",
+           ]
+
+  include_dirs = [ "//" ]
+
+  cflags_c = [
+    "-Werror=implicit-function-declaration",
+  ]
+  ldflags = common_compile_and_link_flags + []
+}

@@ -1,0 +1,9 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file lists out the seccomp policy for allowed syscalls for
+# HeatmapModel on ARM.
+
+# We don't have ARM devices supporting heatmap palm rejection yet so keeping it
+# empty for now.

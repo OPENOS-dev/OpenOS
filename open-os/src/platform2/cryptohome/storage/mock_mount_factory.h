@@ -1,0 +1,41 @@
+// Copyright 2013 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CRYPTOHOME_STORAGE_MOCK_MOUNT_FACTORY_H_
+#define CRYPTOHOME_STORAGE_MOCK_MOUNT_FACTORY_H_
+
+#include <gmock/gmock.h>
+#include <libstorage/platform/platform.h>
+
+#include "cryptohome/storage/homedirs.h"
+#include "cryptohome/storage/mount.h"
+#include "cryptohome/storage/mount_factory.h"
+
+namespace cryptohome {
+
+class MockMountFactory : public MountFactory {
+ public:
+  MockMountFactory() {
+    ON_CALL(*this, New(testing::_, testing::_, testing::_, testing::_))
+        .WillByDefault(testing::Invoke(this, &MockMountFactory::NewConcrete));
+  }
+
+  virtual ~MockMountFactory() {}
+  MOCK_METHOD(Mount*,
+              New,
+              (libstorage::Platform*, HomeDirs*, bool, bool),
+              (override));
+
+  // Backdoor to access real method, for delegating calls to parent class
+  Mount* NewConcrete(libstorage::Platform* platform,
+                     HomeDirs* homedirs,
+                     bool legacy_mount,
+                     bool bind_mount_downloads) {
+    return MountFactory::New(platform, homedirs, legacy_mount,
+                             bind_mount_downloads);
+  }
+};
+}  // namespace cryptohome
+
+#endif  // CRYPTOHOME_STORAGE_MOCK_MOUNT_FACTORY_H_

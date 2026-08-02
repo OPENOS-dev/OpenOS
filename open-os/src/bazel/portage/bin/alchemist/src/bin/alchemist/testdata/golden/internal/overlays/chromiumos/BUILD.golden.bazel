@@ -1,0 +1,146 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files", "pkg_mkdirs", "strip_prefix")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@//bazel/portage/build_defs:overlay.bzl", "overlay")
+load("@//bazel/portage/build_defs:patterns.bzl", "OVERLAY_ANALYSIS_FILE_PATTERN", "OVERLAY_EXCLUDE")
+
+# We strip the BINHOST variables from the make.conf because they change
+# every time the SDK builder runs. We don't use this variable when building
+# portage packages, so we can remove it and avoid cache busting all the builds.
+genrule(
+    name = "amd64-host-make-conf",
+    srcs = ["chromeos/config/make.conf.amd64-host"],
+    outs = ["make.conf.amd64-host"],
+    cmd = "sed -e '/^FULL_BINHOST=/d' -e '/^PORTAGE_BINHOST=/d' '$<' > '$@'",
+)
+
+pkg_files(
+    name = "amd64-host-files",
+    srcs = [
+        ":amd64-host-make-conf",
+    ],
+    prefix = "mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config",
+    strip_prefix = strip_prefix.from_pkg(),
+    visibility = ["//visibility:private"],
+)
+
+# Since we filter out the use.mask files below, this directory never gets
+# created. We need the directory to exist because it's the root profile.
+pkg_mkdirs(
+    name = "arch_dir",
+    dirs = [
+        "mnt/host/source/src/third_party/chromiumos-overlay/profiles/arch/base",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+write_file(
+    name = "chromeos_version_stub",
+    content = [
+        "#!/bin/bash",
+        "container-bailout \"chromeos/config/chromeos_version.sh was called " +
+        "without explicit dependency declaration! Read " +
+        "https://chromium.googlesource.com/chromiumos/bazel/+/HEAD/docs/" +
+        "debugging.md#Implicit-build_time-dependencies-are-missing " +
+        "for how to add them.\"",
+    ],
+    is_executable = True,
+    out = "chromeos_version_stub.sh",
+)
+
+pkg_files(
+    name = "files",
+    srcs = [
+        ":chromeos_version_stub",
+        "metadata/layout.conf",
+    ] + glob([
+        "chromeos/**",
+        "licenses/**",
+        "profiles/**",
+
+        # HACK: Include CrOS-specific bashrc files that override profile vars
+        # and several other files referenced by them.
+        #
+        # See cros_stack_bashrc in this file for details:
+        # https://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/profiles/base/profile.bashrc
+        #
+        # TODO(b/304634681): Consider isolating those bashrc files from the overlay and
+        # associating them to corresponding packages. Note that we also need
+        # to take care of chromiumos-overlay/chromeos/config/env.
+        "*/*/*.bashrc",
+        "app-shells/bash/files/*.patch",
+        "app-shells/dash/files/*.patch",
+        "dev-libs/dbus-glib/files/*.patch",
+        # openssl uses some files other than *.patch
+        "dev-libs/openssl/files/*",
+        "dev-python/python-daemon/files/*.patch",
+        "sys-apps/kmod/files/*.patch",
+        "sys-apps/man-pages/files/*.py",
+        "sys-apps/mawk/files/*.patch",
+        "sys-devel/bc/files/*.patch",
+        "*/*/files/*_waf_config_answers",
+    ], exclude = OVERLAY_EXCLUDE +
+        OVERLAY_ANALYSIS_FILE_PATTERN + [
+        "chromeos/binhost/**",
+        "chromeos/config/chromeos_version.sh",
+        "chromeos/config/make.conf.amd64-host",
+        "profiles/**/*.bashrc",
+    ]),
+    prefix = "mnt/host/source/src/third_party/chromiumos-overlay",
+    renames = {
+        ":chromeos_version_stub": "chromeos/config/chromeos_version.sh",
+    },
+    # chromeos/scripts/config_wrapper must be executable
+    attributes = pkg_attributes(
+        mode = "0755",
+    ),
+    strip_prefix = strip_prefix.from_pkg(),
+    visibility = ["//visibility:private"],
+)
+
+pkg_tar(
+    name = "layer",
+    extension = "tar.zst",
+    compressor = "@//bazel/portage/repo_defs/zstd:pzstd",
+    srcs = [":arch_dir", ":files", ":amd64-host-files"],
+    visibility = ["//visibility:private"],
+)
+
+overlay(
+    name = "chromiumos",
+    path = "/mnt/host/source/src/third_party/chromiumos-overlay",
+    layer = ":layer",
+    visibility = ["//:__subpackages__"],
+)
+
+pkg_files(
+    name = "files-full",
+    srcs = [
+        # Required by build_image.
+        "sys-boot/grub/files/sbat.csv",
+    ] + glob(OVERLAY_ANALYSIS_FILE_PATTERN),
+    prefix = "mnt/host/source/src/third_party/chromiumos-overlay",
+    strip_prefix = strip_prefix.from_pkg(),
+    visibility = ["//visibility:private"],
+)
+
+pkg_tar(
+    name = "layer-full",
+    extension = "tar.zst",
+    compressor = "@//bazel/portage/repo_defs/zstd:pzstd",
+    srcs = [":files-full"],
+    visibility = ["//visibility:private"],
+)
+
+overlay(
+    name = "full",
+    path = "/mnt/host/source/src/third_party/chromiumos-overlay",
+    layer = ":layer-full",
+    visibility = ["//:__subpackages__"],
+)

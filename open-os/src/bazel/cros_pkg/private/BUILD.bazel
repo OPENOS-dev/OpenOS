@@ -1,0 +1,114 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@pip//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//bazel/bash:defs.bzl", "sh_runfiles_test")
+load("//bazel/cros_pkg:defs.bzl", "cros_pkg_filegroup")
+load(":direct_ebuild.bzl", "direct_ebuild")
+
+# Don't use directly. Use with direct_ebuild_virtual_package.
+cros_pkg_filegroup(
+    name = "empty_package",
+    srcs = [],
+    visibility = ["//visibility:public"],
+)
+
+rust_binary(
+    name = "deploy_local",
+    srcs = ["deploy_local.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":manifest",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:clap",
+        "@alchemy_crates//:env_logger",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+sh_runfiles_test(
+    name = "deploy_local_test",
+    size = "small",
+    src = "deploy_local_test.sh",
+    data = [
+        ":_direct_example_tbz2",
+        "//bazel/cros_pkg/examples/packaging:packaging_deploy_local",
+    ],
+)
+
+# Calls to direct_ebuild will only ever be made by @portage. We do it here
+# purely for the sake of testing.
+direct_ebuild(
+    name = "direct_example",
+    package_name = "packaging_demo",
+    category = "chromeos-base",
+    package = "//bazel/cros_pkg/examples/packaging",
+    slot = "0/0",
+    version = "1.0.0-r1",
+    runtime_deps = [],
+)
+
+rust_binary(
+    name = "gen_tbz2",
+    srcs = ["gen_tbz2.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//bazel/portage/common/portage/version",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:bytes",
+        "@alchemy_crates//:bzip2",
+        "@alchemy_crates//:clap",
+        "@alchemy_crates//:shell-escape",
+        "@alchemy_crates//:zstd",
+    ],
+)
+
+py_test(
+    name = "gen_tbz2_contents_test",
+    size = "small",
+    srcs = ["gen_tbz2_contents_test.py"],
+    data = [":_direct_example_tbz2"],
+    deps = [
+        "@rules_python//python/runfiles",
+        requirement("zstandard"),
+    ],
+)
+
+rust_test(
+    name = "gen_tbz2_test",
+    size = "small",
+    crate = ":gen_tbz2",
+    deps = [
+        "//bazel/portage/common/portage/binarypackage",
+        "@alchemy_crates//:tempfile",
+    ],
+)
+
+rust_library(
+    name = "manifest",
+    srcs = ["manifest.rs"],
+    deps = [
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:log",
+        "@alchemy_crates//:nix",
+        "@alchemy_crates//:serde",
+        "@alchemy_crates//:serde_json",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+rust_test(
+    name = "manifest_test",
+    size = "small",
+    crate = ":manifest",
+)
+
+py_binary(
+    name = "build_tar",
+    srcs = ["build_tar.py"],
+    visibility = ["//visibility:public"],
+    deps = ["@rules_pkg//pkg/private/tar:build_tar"],
+)

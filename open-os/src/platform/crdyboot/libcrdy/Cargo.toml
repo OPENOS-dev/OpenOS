@@ -1,0 +1,25 @@
+[package]
+name = "libcrdy"
+version = "1.0.0"
+
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+gpt_disk_io.workspace = true
+log.workspace = true
+mockall = { workspace = true, optional = true}
+object.workspace = true
+sbat = { workspace = true, features = ["alloc"] }
+thiserror.workspace = true
+uefi.workspace = true
+
+[features]
+test_util = ["dep:mockall"]
+
+[target.'cfg(target_os = "uefi")'.dependencies]
+uefi = { workspace = true, features = ["global_allocator", "panic_handler"] }
+
+[dev-dependencies]
+uefi-raw.workspace = true

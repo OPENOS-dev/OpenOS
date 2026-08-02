@@ -1,0 +1,455 @@
+#!/bin/bash
+# Copyright 2021 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if [[ "$1" = "--help" ]]; then
+  echo "syntax: $0"
+  echo "  [--ssh <device>]         IP of device or VM to trace (default" \
+       "is local trace)"
+  echo "                           Append -arcvm to <device> to trace ARCVM"
+  echo "  [-t <duration_ms>]       Duration to trace (default is until Ctrl+C)"
+  echo "  [-o <output_file>]"
+  echo "  [-b <buffer_size_kb>]    Size of trace buffer in KB"
+  echo "  [-p /path/to/perfetto]   Path to perfetto tool if it's not in \$PATH"
+  echo "  [-i <period_ms>]         Incremental update period in ms"
+  echo "  [--gpu]                  Include GPU data -- requires pps-provider:"
+  echo "                           modify mesa ebuild with -Dperfetto=true and"
+  echo "                           (maybe) append-cppflags -DDCHECK_ALWAYS_ON"
+  echo "                           See b/197340286."
+  echo "  [--no-ftrace]            Do not include ftrace sched data"
+  echo "  [--write-args <file>]    Write key args to <file> for use as title"
+  echo "  [-d <category>] ...             Disabled categories"
+  echo "  [<category>] [<category>] ...   Enabled categories"
+  echo "examples:"
+  echo "  $0 --ssh DUT                      trace on DUT until Ctrl C"
+  echo "  $0 --ssh DUT -t 1000              trace for 1 second"
+  echo "  $0 --ssh DUT virgls               include virgls category" \
+       "(disabled-by-default)"
+  echo "  $0 --ssh DUT -d \"*\" virgl gfx     only trace virgl and gfx"
+  echo "special categories:"
+  echo "  chrome.*: Chrome trace categories (\"chrome.\" prefix is removed)"
+  echo "  Chrome gfx: chrome.ui chrome.cc chrome.gpu"
+  echo "  Android gfx: gfx view wm"
+  exit 1
+fi
+
+dut=''
+is_arcvm=false
+include_gpu=false
+time_ms=''
+ftrace=true
+categories=()
+chrome_categories=''
+disabled_categories=()
+chrome_disabled_categories=''
+now=$(date +"%Y-%m-%d_%H-%M-%S")
+output_file=''
+config_filename="perfetto-${RANDOM}.config"
+config_filepath="/tmp/${config_filename}"
+output_args_file=''
+title_args=()
+perfetto=perfetto
+incremental_update_period_ms=1000
+buffer_size_kb=100000
+fill_policy=RING_BUFFER
+
+# Parse args
+
+args=("$@")
+num_args="${#args[@]}"
+for (( i = 0; i < num_args; i++ )); do
+  if [[ "${args[${i}]}" = "--ssh" ]]; then
+    i=$((i+1))
+    dut="${args[${i}]}"
+  elif [[ "${args[${i}]}" = "-t" ]]; then
+    i=$((i+1))
+    time_ms="${args[${i}]}"
+    fill_policy=DISCARD
+  elif [[ "${args[${i}]}" = "-o" ]]; then
+    i=$((i+1))
+    output_file="${args[${i}]}"
+  elif [[ "${args[${i}]}" = "-b" ]]; then
+    i=$((i+1))
+    buffer_size_kb="${args[${i}]}"
+  elif [[ "${args[${i}]}" = "-p" ]]; then
+    i=$((i+1))
+    perfetto="${args[${i}]}"
+  elif [[ "${args[${i}]}" = "-i" ]]; then
+    i=$((i+1))
+    incremental_update_period_ms="${args[${i}]}"
+  elif [[ "${args[${i}]}" = "-d" ]]; then
+    i=$((i+1))
+    cat="${args[${i}]}"
+    if [[ "${cat}" == chrome.* ]]; then
+      chrome_disabled_categories+="\\\"${cat#"chrome."}\\\","
+      # Chrome uses "track_event" after client library migration.
+      # Remove the chrome. prefix and add to |disabled_categories|.
+      disabled_categories+=("${cat#"chrome."}")
+    else
+      disabled_categories+=("${cat}")
+    fi
+  elif [[ "${args[${i}]}" = "--write-args" ]]; then
+    i=$((i+1))
+    output_args_file="${args[${i}]}"
+  elif [[ "${args[${i}]}" = "--gpu" ]]; then
+    include_gpu=true
+    title_args+=("gpu")
+  elif [[ "${args[${i}]}" = "--no-ftrace" ]]; then
+    ftrace=false
+    title_args+=("no-ftrace")
+  else
+    cat="${args[${i}]}"
+    if [[ "${cat}" == chrome.* ]]; then
+      chrome_categories+="\\\"${cat#"chrome."}\\\","
+      # Chrome uses "track_event" after client library migration.
+      # Remove the chrome. prefix and add to |categories|.
+      categories+=("${cat#"chrome."}")
+    else
+      categories+=("${cat}")
+    fi
+  fi
+done
+
+# Strip trailing comma:
+chrome_categories="${chrome_categories%","}"
+chrome_disabled_categories="${chrome_disabled_categories%","}"
+
+target_name="local"
+[[ -z "${dut}" ]] || target_name="${dut}"
+
+atrace_categories=()
+if [[ "${dut}" == *-arcvm ]]; then
+  is_arcvm=true
+  include_gpu=false
+  dut="${dut%"-arcvm"}"
+  # Filter categories for atrace catgories.
+  atrace_allowed=$(ssh -q "${dut}" "adb shell atrace --list" \
+      | sed -r 's/ *(.*) - .*/\1/g')
+  atrace_categories=($(comm -12 \
+      <(echo "${atrace_allowed}" | tr ' ' '\n' | sort ) \
+      <(echo "${categories[@]}" | tr ' ' '\n' | sort)))
+fi
+
+title_args+=("${categories[@]}")
+title_args=$(echo "${title_args[@]}" | tr ' ' '-')
+if [[ ! -z "${output_args_file}" ]]; then
+  echo "${title_args}" > "${output_args_file}"
+fi
+
+if [[ -z "${output_file}" ]]; then
+  if [[ -z "${dut}" ]]; then
+    output_file="./perfetto-trace-${title_args}-${now}"
+  else
+    output_file="./${dut}-perfetto-trace-${title_args}-${now}"
+  fi
+fi
+
+perfetto_cmd="perfetto"
+if [[ -n "${dut}" ]]; then
+  if [[ "${is_arcvm}" == true ]]; then
+    perfetto_cmd="ssh ${dut} adb shell perfetto"
+  else
+    perfetto_cmd="ssh ${dut} perfetto"
+  fi
+fi
+
+# Perfetto added --version arg recently, which prints (eg):
+#   "Perfetto v24.2-7cb228c16 (7cb228c16d69aee297a106ad3ccc7461fa0b8045)"
+# Previous versions dump an error (hence 2>/dev/null below).
+perfetto_version=$(${perfetto_cmd} --version 2>/dev/null)
+perfetto_version_major="${perfetto_version#*v}"
+perfetto_version_major="${perfetto_version_major%.*}"
+
+# Write perfetto config file
+
+cat >"${config_filepath}" <<EOL
+buffers {
+  size_kb: ${buffer_size_kb}
+  fill_policy: ${fill_policy}
+}
+buffers {
+  size_kb: 4000
+  fill_policy: DISCARD
+}
+incremental_state_config {
+  clear_period_ms: ${incremental_update_period_ms}
+}
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 1
+    process_stats_config {
+      scan_all_processes_on_start: true
+    }
+  }
+}
+EOL
+
+if [[ "${ftrace}" == true ]]; then
+  cat >>"${config_filepath}" <<EOL
+data_sources {
+  config {
+    name: "linux.ftrace"
+    ftrace_config {
+      # These parameters affect only the kernel trace buffer size and how
+      # frequently it gets moved into the userspace buffer defined above.
+      buffer_size_kb: 16384
+      drain_period_ms: 250
+      ftrace_events: "ftrace/print"
+      ftrace_events: "power/cpu_frequency"
+      ftrace_events: "power/cpu_idle"
+      ftrace_events: "power/suspend_resume"
+      ftrace_events: "sched/sched_process_exec"
+      ftrace_events: "sched/sched_process_exit"
+      ftrace_events: "sched/sched_process_fork"
+      ftrace_events: "sched/sched_process_free"
+      ftrace_events: "sched/sched_process_hang"
+      ftrace_events: "sched/sched_process_wait"
+      ftrace_events: "sched/sched_switch"
+      ftrace_events: "sched/sched_wakeup_new"
+      ftrace_events: "sched/sched_wakeup"
+      ftrace_events: "sched/sched_waking"
+      ftrace_events: "task/task_newtask"
+      ftrace_events: "task/task_rename"
+      ftrace_events: "tracing_mark_write"
+      ftrace_events: "thermal/thermal_temperature"
+      ftrace_events: "thermal/cdev_update"
+EOL
+
+for (( i = 0; i < ${#atrace_categories[@]}; i++ ));
+do
+  echo "      atrace_categories: \"${atrace_categories[${i}]}\"" >> \
+      "${config_filepath}"
+done
+
+cat >>"${config_filepath}" <<EOL
+    }
+  }
+}
+EOL
+fi
+
+cat >>"${config_filepath}" <<EOL
+data_sources {
+  config {
+    name: "linux.sys_stats"
+    sys_stats_config {
+EOL
+
+if [[ ( "${perfetto_version_major}" -ge 24 ) ]]; then
+cat >>"${config_filepath}" <<EOL
+      cpufreq_period_ms: 1000
+EOL
+fi
+
+cat >>"${config_filepath}" <<EOL
+      meminfo_period_ms: 1000
+      meminfo_counters: MEMINFO_MEM_TOTAL
+      meminfo_counters: MEMINFO_MEM_FREE
+      meminfo_counters: MEMINFO_MEM_AVAILABLE
+
+      vmstat_period_ms: 1000
+      vmstat_counters: VMSTAT_NR_FREE_PAGES
+      vmstat_counters: VMSTAT_NR_ALLOC_BATCH
+      vmstat_counters: VMSTAT_NR_INACTIVE_ANON
+      vmstat_counters: VMSTAT_NR_ACTIVE_ANON
+
+      stat_period_ms: 2500
+      stat_counters: STAT_CPU_TIMES
+      stat_counters: STAT_FORK_COUNT
+    }
+  }
+}
+data_sources {
+  config {
+    name: "track_event"
+    track_event_config {
+EOL
+
+for (( i = 0; i < ${#categories[@]}; i++ ));
+do
+  echo "      enabled_categories: \"${categories[${i}]}\"" >> \
+       "${config_filepath}"
+done
+
+# Enable Chrome metadata.
+echo "      enabled_categories: \"__metadata\"" >> "${config_filepath}"
+
+for (( i = 0; i < ${#disabled_categories[@]}; i++ ));
+do
+  echo "      disabled_categories: \"${disabled_categories[${i}]}\"" >> \
+       "${config_filepath}"
+done
+
+# If |disabled_categories| is empty, add disabled_categories: "*".
+if [[ ${#disabled_categories[@]} -eq 0 ]]; then
+  echo "      disabled_categories: \"*\"" >> "${config_filepath}"
+fi
+
+cat >>"${config_filepath}" <<EOL
+    }
+  }
+}
+EOL
+
+if [[ "${include_gpu}" == true ]]; then
+  cat >>"${config_filepath}" <<EOL
+data_sources {
+  config {
+    name: "gpu.counters.i915"
+    gpu_counter_config {
+      counter_period_ns: 100000
+    }
+  }
+}
+data_sources {
+  config {
+    name: "gpu.renderstages.intel"
+  }
+}
+data_sources {
+  config {
+    name: "gpu.counters.msm"
+    gpu_counter_config {
+      counter_period_ns: 100000
+    }
+  }
+}
+data_sources {
+  config {
+    name: "gpu.renderstages.msm"
+  }
+}
+data_sources {
+  config {
+    name: "gpu.counters.panfrost"
+    gpu_counter_config {
+      counter_period_ns: 100000
+    }
+  }
+}
+EOL
+fi
+
+if [[ "${is_arcvm}" == true ]]; then
+  cat >>"${config_filepath}" <<EOL
+data_sources {
+  config {
+    name: "android.log"
+    android_log_config {
+      min_prio: PRIO_VERBOSE
+      log_ids: LID_DEFAULT
+      log_ids: LID_SYSTEM
+      log_ids: LID_EVENTS
+      log_ids: LID_CRASH
+    }
+  }
+}
+data_sources {
+  config {
+    name: "android.surfaceflinger.frametimeline"
+  }
+}
+EOL
+fi
+
+# Record chrome events.
+cat >>"${config_filepath}" <<EOL
+data_sources {
+  config {
+    name: "org.chromium.trace_event"
+    chrome_config {
+      trace_config: "{\"record_mode\":\"record-continuously\",\
+\"included_categories\":[${chrome_categories}],\
+\"excluded_categories\":[${chrome_disabled_categories}],\
+\"memory_dump_config\":{}}"
+      privacy_filtering_enabled: false
+    }
+  }
+}
+data_sources {
+  config {
+    name: "org.chromium.trace_metadata"
+    chrome_config {
+      trace_config: "{\"record_mode\":\"record-continuously\",\
+\"included_categories\":[${chrome_categories}],\
+\"excluded_categories\":[${chrome_disabled_categories}],\
+\"memory_dump_config\":{}}"
+      privacy_filtering_enabled: false
+    }
+  }
+}
+EOL
+
+dut_trace="/tmp/perfetto-trace-${RANDOM}"
+arcvm_trace="/data/misc/perfetto-traces/trace"
+
+# Kick off background perfetto trace.
+
+if [[ -z "${dut}" ]]; then
+  "${perfetto}" -c "${config_filepath}" --txt --background \
+      -o "${output_file}" > /dev/null || exit 1
+else
+  if [[ "${is_arcvm}" == true ]]; then
+    cat "${config_filepath}" | ssh "${dut}" \
+        "adb shell perfetto -c - --txt --background --o ${arcvm_trace}" \
+        > /dev/null || exit 1
+  else
+    if [[ "${include_gpu}" == true ]] && \
+        [[ -z $(ssh -q "${dut}" pgrep -x pps-producer) ]]; then
+      ssh -q "${dut}" "nohup pps-producer 1>/dev/null 2>/dev/null &"
+      trap "ssh -q ${dut} pkill -x pps-producer" EXIT
+    fi
+    # Try to start traced if it's not already running.
+    ssh "${dut}" '[[ -n $(pgrep -x traced) ]] || start traced' 2> /dev/null
+    cat "${config_filepath}" | ssh "${dut}" "${perfetto}" -c - --txt \
+        --background -o "${dut_trace}" > /dev/null || exit 1
+  fi
+fi
+
+# Wait for timeout or interrupt.
+
+time_string=''
+[[ -n "${time_ms}" ]] && time_string=" for ${time_ms} ms"
+[[ -z "${time_ms}" ]] && time_ms=$((24*60*60*1000)) # 24 hours by default.
+cur_time_ns=$(date +%s%N)
+wait_ns="${time_ms}000000"
+end_time_ns=$((cur_time_ns + wait_ns))
+stop_waiting () { end_time_ns="${cur_time_ns}" ; }
+trap "echo ; stop_waiting" SIGINT
+trap "stop_waiting" SIGUSR1
+
+echo "Tracing ${target_name}${time_string}... press Ctrl-C to stop"
+# Note this sleep is intentionally short because parent script may
+# send us a SIGUSR1 that we only handle in between sleeps.
+while [[ ( $(date +%s%N) < "${end_time_ns}" ) ]]; do sleep 0.1; done
+
+trap - SIGINT SIGUSR1
+
+# Kill all perfetto processes and wait for them to finish.
+
+echo "Please wait: copying trace from ${target_name}..."
+
+wait_finish () {
+  while [[ -n $($1) ]]; do sleep 0.2; done
+}
+
+if [[ -z "${dut}" ]]; then
+  pkill -x perfetto
+  wait_finish "pgrep -x perfetto"
+else
+  if [[ "${is_arcvm}" == true ]]; then
+    ssh -q "${dut}" "adb shell pkill -x perfetto"
+    wait_finish "ssh -q ${dut} adb shell pgrep -x perfetto"
+    ssh -q "${dut}" "adb pull ${arcvm_trace} ${dut_trace}" > /dev/null \
+        || { echo "error: failed to adb pull" ; exit 1; }
+  else
+    ssh -q "${dut}" "pkill -x perfetto"
+    wait_finish "ssh -q ${dut} pgrep -x perfetto"
+  fi
+  scp -q "${dut}:${dut_trace}" "${output_file}" && \
+      ssh "${dut}" rm "${dut_trace}" || exit 1
+fi
+
+ls -hs "${output_file}"

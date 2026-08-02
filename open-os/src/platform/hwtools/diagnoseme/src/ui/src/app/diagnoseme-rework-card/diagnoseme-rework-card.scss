@@ -1,0 +1,21 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+.reworkcard {
+    margin-bottom: 24px;
+
+    &.disabled-card {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+}
+
+.f-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 550px 400px 60px;
+  grid-auto-rows: minmax(60px, auto);
+  grid-gap: 8px;
+  align-items: center;
+}

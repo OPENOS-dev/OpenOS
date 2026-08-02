@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if [ "${BASH_SOURCE-}" = "$0" ]; then
+    echo -e "This script should be sourced, not run:\nsource $0" >&2
+    exit 1
+fi
+
+# Exports environment variables needed by parts of this project.
+
+HPS_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+
+# We completely overwrite any existing PATH. This ensures that we're not getting
+# things from unexpected places.
+PATH="/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+PATH="/opt/hps-sdk/bin:${PATH}"
+PATH="${HPS_ROOT}/scripts:${PATH}"
+export PATH
+
+# This speeds up recompilation of verilator generated code quit a bit.
+export OBJCACHE=ccache
+export CC="ccache gcc"
+
+for i in "${HPS_ROOT}/third_party/python"/*; do
+    PYTHONPATH="${PYTHONPATH}:${i}"
+done
+export PYTHONPATH
+
+# List of directories with Rust source
+export HPS_RUST_DIRS=(
+    rust
+    rust/mcu
+    rust/riscv
+)

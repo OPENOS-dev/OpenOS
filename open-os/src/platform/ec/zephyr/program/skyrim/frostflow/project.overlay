@@ -1,0 +1,380 @@
+/* Copyright 2022 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* Skyrim program common DTS includes */
+#include "../adc.dtsi"
+#include "../fan.dtsi"
+#include "../gpio.dtsi"
+#include "../i2c.dtsi"
+#include "../interrupts.dtsi"
+#include "../keyboard.dtsi"
+#include "../usbc.dtsi"
+
+/* Frostflow project DTS includes*/
+#include "led_pins.dtsi"
+#include "led_policy.dtsi"
+#include "motionsense.dtsi"
+
+/* Frostflow overrides follow... */
+/ {
+	/* battery overrides */
+	batteries {
+		default_battery: cdt_c340152 {
+			compatible = "cdt,c340152", "battery-smart";
+		};
+	};
+
+	named-gpios {
+		/* Frostflow-specific GPIO customizations */
+	};
+
+	gpio-interrupts {
+		int_lid_accel: lid_accel {
+			irq-pin = <&gpio_lid_accel_int_l>;
+			flags = <GPIO_INT_EDGE_FALLING>;
+			handler = "bma4xx_interrupt";
+		};
+	};
+
+	named-temp-sensors {
+		compatible = "cros-ec,temp-sensors";
+		temp_soc: soc-pct2075 {
+			temp-host-high = <75>;
+			temp-host-halt = <80>;
+			temp-host-release-high = <65>;
+			temp-host-release-halt = <70>;
+			power-good-pin = <&gpio_pg_pwr_s5>;
+			sensor = <&soc_pct2075>;
+		};
+		temp_amb: amb-pct2075 {
+			temp-host-high = <65>;
+			temp-host-halt = <70>;
+			temp-host-release-high = <55>;
+			temp-host-release-halt = <60>;
+			temp-fan-off = <32>;
+			temp-fan-max = <45>;
+			power-good-pin = <&gpio_pg_pwr_s5>;
+			sensor = <&amb_pct2075>;
+		};
+	};
+
+	/* Rotation matrices for motion sensors. */
+	motionsense-rotation-ref {
+		compatible = "cros-ec,motionsense-rotation-ref";
+		lid_rot_ref: lid-rotation-ref {
+			mat33 = <1 0 0
+				 0 1 0
+				 0 0 1>;
+		};
+
+		base_rot_ref: base-rotation-ref {
+			mat33 = <0 1 0
+				 1 0 0
+				 0 0 (-1)>;
+		};
+	};
+
+	ppc_port0: aoz1380 {
+		compatible = "aoz,aoz1380";
+		status = "okay";
+		/* a duplicate of the <&gpio_usb_c0_ppc_int_odl> node in
+		 * "named-gpios". This is the Zephyr preferred style,
+		 * the "named-gpios" node will be dealt with at a later date.
+		 */
+		irq-gpios = <&gpio7 5 GPIO_ACTIVE_LOW>;
+	};
+
+	fan_steps_clamshell: fan-steps-clamshell {
+		compatible = "cros-ec,fan-steps";
+		level_0 {
+			temp-on = <(-1) 37 (-1) (-1) (-1)>;
+			temp-off = <(-1) 99 (-1) (-1) (-1)>;
+			rpm-target = <0>;
+		};
+		level_1 {
+			temp-on = <(-1) 38 (-1) (-1) (-1)>;
+			temp-off = <(-1) 33 (-1) (-1) (-1)>;
+			rpm-target = <2600>;
+		};
+		level_2 {
+			temp-on = <(-1) 42 (-1) (-1) (-1)>;
+			temp-off = <(-1) 37 (-1) (-1) (-1)>;
+			rpm-target = <2900>;
+		};
+		level_3 {
+			temp-on = <(-1) 48 (-1) (-1) (-1)>;
+			temp-off = <(-1) 41 (-1) (-1) (-1)>;
+			rpm-target = <3200>;
+		};
+		level_4 {
+			temp-on = <(-1) 49 (-1) (-1) (-1)>;
+			temp-off = <(-1) 45 (-1) (-1) (-1)>;
+			rpm-target = <3500>;
+		};
+		level_5 {
+			temp-on = <(-1) 50 (-1) (-1) (-1)>;
+			temp-off = <(-1) 46 (-1) (-1) (-1)>;
+			rpm-target = <3700>;
+		};
+		level_6 {
+			temp-on = <(-1) 51 (-1) (-1) (-1)>;
+			temp-off = <(-1) 47 (-1) (-1) (-1)>;
+			rpm-target = <4200>;
+		};
+		level_7 {
+			temp-on = <(-1) 62 (-1) (-1) (-1)>;
+			temp-off = <(-1) 55 (-1) (-1) (-1)>;
+			rpm-target = <4600>;
+		};
+	};
+
+	fan_steps_tablet: fan-steps-tablet {
+		compatible = "cros-ec,fan-steps";
+		level_0 {
+			temp-on = <(-1) 38 (-1) (-1) (-1)>;
+			temp-off = <(-1) 99 (-1) (-1) (-1)>;
+			rpm-target = <0>;
+		};
+		level_1 {
+			temp-on = <(-1) 39 (-1) (-1) (-1)>;
+			temp-off = <(-1) 37 (-1) (-1) (-1)>;
+			rpm-target = <2600>;
+		};
+		level_2 {
+			temp-on = <(-1) 45 (-1) (-1) (-1)>;
+			temp-off = <(-1) 38 (-1) (-1) (-1)>;
+			rpm-target = <2900>;
+		};
+		level_3 {
+			temp-on = <(-1) 54 (-1) (-1) (-1)>;
+			temp-off = <(-1) 44 (-1) (-1) (-1)>;
+			rpm-target = <3200>;
+		};
+		level_4 {
+			temp-on = <(-1) 55 (-1) (-1) (-1)>;
+			temp-off = <(-1) 51 (-1) (-1) (-1)>;
+			rpm-target = <3500>;
+		};
+		level_5 {
+			temp-on = <(-1) 56 (-1) (-1) (-1)>;
+			temp-off = <(-1) 52 (-1) (-1) (-1)>;
+			rpm-target = <3700>;
+		};
+		level_6 {
+			temp-on = <(-1) 57 (-1) (-1) (-1)>;
+			temp-off = <(-1) 53 (-1) (-1) (-1)>;
+			rpm-target = <4200>;
+		};
+		level_7 {
+			temp-on = <(-1) 61 (-1) (-1) (-1)>;
+			temp-off = <(-1) 56 (-1) (-1) (-1)>;
+			rpm-target = <4600>;
+		};
+	};
+
+	/*
+	 * Note this is expected to vary per-board, so we keep it in the board
+	 * dts files.
+	 */
+	Frostflow-fw-config {
+		compatible = "cros-ec,cbi-fw-config";
+
+		/*
+		* FW_CONFIG field to enable fingerprint or not.
+		*/
+		fingerprint {
+			enum-name = "FW_FINGERPRINT";
+			start = <0>;
+			size = <1>;
+
+			fingerprint-absent{
+				compatible = "cros-ec,cbi-fw-config-value";
+				enum-name = "FW_FINGERPRINT_ABSENT";
+				value = <0>;
+			};
+			fingerprint-present {
+				compatible = "cros-ec,cbi-fw-config-value";
+				enum-name = "FW_FINGERPRINT_PRESENT";
+				value = <1>;
+			};
+		};
+		/*
+		* FW_CONFIG field to enable stylus or not.
+		*/
+		stylus {
+			enum-name = "FW_STYLUS";
+			start = <1>;
+			size = <1>;
+
+			stylus-absent {
+				compatible = "cros-ec,cbi-fw-config-value";
+				enum-name = "FW_STYLUS_ABSENT";
+				value = <0>;
+			};
+			stylus-present {
+				compatible = "cros-ec,cbi-fw-config-value";
+				enum-name = "FW_STYLUS_PRESENT";
+				value = <1>;
+			};
+		};
+	};
+
+	cros-keyscan {
+		compatible = "cros-ec,keyscan";
+		actual-key-mask = <
+			0x1c /* C0 */
+			0xff /* C1 */
+			0xff /* C2 */
+			0xff /* C3 */
+			0xff /* C4 */
+			0xff /* C5 */
+			0xff /* C6 */
+			0x86 /* C7 */
+			0xff /* C8 */
+			0xff /* C9 */
+			0x55 /* C10 */
+			0xff /* C11 */
+			0xff /* C12 */
+			0xff /* C13 */
+			0xff /* C13 */
+		>;
+	};
+};
+
+/* i2c overrides */
+&i2c0_0 {
+	/delete-node/ nx20p348x@71;
+	/delete-node/ anx7483@3e;
+};
+
+&i2c1_0 {
+	/delete-node/ anx7483@3e;
+};
+
+&i2c4_1 {
+	/delete-node/ isl9538@9;
+};
+
+&amd_fp6_port0 {
+	board-set = "board_c0_amd_fp6_mux_set";
+};
+
+/* usbc overrides */
+&usbc_port0 {
+	/delete-property/ chg_alt;
+	usb-mux-chain-0 {
+		usb-muxes = <&amd_fp6_port0>;
+	};
+};
+
+&usbc_port1 {
+	/delete-node/ usb-mux-chain-1-anx;
+	/delete-node/ usb-mux-chain-1-ps;
+	usb-mux-chain-1-ps8818 {
+		compatible = "cros-ec,usb-mux-chain";
+		usb-muxes = <&amd_fp6_port1 &ps8818_port1>;
+	};
+};
+
+&cros_kb_raw {
+	pinctrl-0 = <
+		&ksi0_gp31
+		&ksi1_gp30
+		&ksi2_gp27
+		&ksi3_gp26
+		&ksi4_gp25
+		&ksi5_gp24
+		&ksi6_gp23
+		&ksi7_gp22
+		&kso00_gp21
+		&kso01_gp20
+		&kso03_gp16
+		&kso04_gp15
+		&kso05_gp14
+		&kso06_gp13
+		&kso07_gp12
+		&kso08_gp11
+		&kso09_gp10
+		&kso10_gp07
+		&kso11_gp06
+		&kso12_gp05
+		&kso13_gp04
+		&kso14_gp82
+	>;
+
+	scancode-set2 {
+		compatible = "cros-ec,scancode-set2";
+
+		default {
+			col0-codes  = <0x0000 0x0000 0x0014 0xe01f 0xe014 0x0000 0x0000 0x0000>;
+			col1-codes  = <0x001f 0x0076 0x0017 0x000e 0x001c 0x003a 0x000d 0x0016>;
+			col2-codes  = <0x006c 0xe024 0xe01d 0xe020 0xe038 0xe071 0x0026 0x002a>;
+			col3-codes  = <0x0032 0x0034 0x002c 0x002e 0x002b 0x0029 0x0025 0x002d>;
+			col4-codes  = <0x0078 0xe032 0xe035 0xe02c 0xe02d 0x0041 0x001e 0x001d>;
+			col5-codes  = <0x0051 0x0007 0x005b 0x000f 0x0042 0x0022 0x003e 0x0043>;
+			col6-codes  = <0x0031 0x0033 0x0035 0x0036 0x003b 0x001b 0x003d 0x003c>;
+			col7-codes  = <0x0000 0x0012 0x0061 0x0000 0x0000 0x0000 0x0000 0x0059>;
+			col8-codes  = <0x0055 0x0052 0x0054 0x004e 0x004c 0x0024 0x0044 0x004d>;
+			col9-codes  = <0x0045 0xe021 0xe023 0x002f 0x004b 0x0049 0x0046 0x001a>;
+			col10-codes = <0xe011 0x0000 0x006a 0x0000 0x005d 0x0000 0x0011 0x0000>;
+			col11-codes = <0xe07a 0x005d 0xe075 0x006b 0x005a 0xe072 0x004a 0x0066>;
+			col12-codes = <0xe06b 0xe074 0xe069 0x0067 0xe06c 0x0064 0x0015 0xe07d>;
+			col13-codes = <0x0073 0x007c 0x007b 0x0074 0x0071 0xe04a 0x0070 0x0021>;
+			col14-codes = <0x0023 0xe05a 0x0075 0x0079 0x007a 0x0072 0x007d 0x0069>;
+		};
+	};
+};
+
+/* temperature sensor overrides */
+&temp_sensor_charger {
+	temp-host-high = <75>;
+	temp-host-halt = <80>;
+	temp-host-release-high = <65>;
+	temp-host-release-halt = <70>;
+};
+
+&temp_sensor_memory {
+	temp-host-high = <75>;
+	temp-host-halt = <80>;
+	temp-host-release-high = <65>;
+	temp-host-release-halt = <70>;
+};
+
+&temp_sensor_cpu {
+	/delete-property/ temp-host-high;
+	/delete-property/ temp-host-halt;
+	/delete-property/ temp-host-release-high;
+	/delete-property/ temp-fan-off;
+	/delete-property/ temp-fan-max;
+};
+
+/* fan overrides */
+&fan0 {
+	pwms = <&pwm0 0 PWM_KHZ(25) PWM_POLARITY_NORMAL>;
+	rpm-min = <2400>;
+	rpm-start = <2600>;
+	rpm-max = <4600>;
+	rpm-deviation = <2>;
+};
+
+&vivaldi_kbd {
+	vivaldi-keys = <
+		KBD_RC(4, 2)   /* T1 */
+		KBD_RC(3, 2)   /* T2 */
+		KBD_RC(2, 2)   /* T3 */
+		KBD_RC(1, 2)   /* T4 */
+		KBD_RC(4, 4)   /* T5 */
+		KBD_RC(3, 4)   /* T6 */
+		KBD_RC(2, 4)   /* T7 */
+		KBD_RC(2, 9)   /* T8 */
+		KBD_RC(1, 9)   /* T9 */
+		KBD_RC(1, 4)   /* T10 */
+		KBD_RC(0, 4)   /* T11 */
+		KBD_RC(1, 5)   /* T12 */
+		KBD_RC(3, 5)   /* T13 */
+		KBD_RC(2, 1)   /* T14 */
+		KBD_RC(0, 1)   /* T15 */
+	>;
+};

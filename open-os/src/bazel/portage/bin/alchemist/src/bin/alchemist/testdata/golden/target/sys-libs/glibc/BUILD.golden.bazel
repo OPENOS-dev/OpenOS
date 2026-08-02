@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "2.35-r25",
+    actual = "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.35-r25_debug",
+    actual = "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.35-r25_package_set",
+    actual = "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.35-r25_install",
+    actual = "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.35-r25_installed",
+    actual = "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.35-r25_install_list",
+    actual = "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "glibc",
+    actual = ":2.35-r25",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":2.35-r25_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "glibc_debug",
+    actual = ":2.35-r25_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":2.35-r25_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "glibc_package_set",
+    actual = ":2.35-r25_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":2.35-r25_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "glibc_install",
+    actual = ":2.35-r25_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":2.35-r25_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "glibc_installed",
+    actual = ":2.35-r25_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":2.35-r25_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "glibc_install_list",
+    actual = ":2.35-r25_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "2.35-r25_test",
+    tests = [ "//internal/packages/stage2/target/board/chromiumos/sys-libs/glibc:2.35-r25_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":2.35-r25_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "glibc_test",
+    tests = [ ":2.35-r25_test" ],
+    visibility = ["@//bazel:internal"],
+)

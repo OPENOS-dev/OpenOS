@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>%TITLE%</title>
+  <style>
+    .frame p {
+      min-height: 5em;
+    }
+    .window rect {
+      fill: none;
+      stroke: #00000033;
+    }
+    .window text {
+      fill: var(--fill-color);
+      white-space: pre-wrap;
+    }
+    .window:hover rect {
+      stroke: red;
+      stroke-width: 5px;
+    }
+    .window:hover text {
+      fill: red;
+      font-weight: bold;
+    }
+    .caption {
+      dominant-baseline: hanging;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button onclick="set_frame(0)">⏮</button>
+    <button onclick="set_frame(current_frame - 1)">◄</button>
+    <span id="frame_counter"></span>
+    <button onclick="set_frame(current_frame + 1)">►</button>
+    <button onclick="set_frame(frames.length - 1)">⏭</button>
+  </div>
+  <div id="frames">
+    %FRAMES%
+  </div>
+  <script>
+    frames = document.getElementsByClassName("frame")
+    frame_counter = document.getElementById("frame_counter")
+
+    // Zero-based index of the currently displayed frame.
+    current_frame = 0
+
+    function set_frame(i) {
+      if (i < 0) {
+        i = 0
+      }
+      if (i >= frames.length) {
+        i = frames.length - 1
+      }
+      current_frame = i
+      frame_counter.innerHTML = `Frame ${i + 1} of ${frames.length}`
+
+      for (let j = 0; j < frames.length; j++) {
+        frames[j].style.display = (j == i) ? "block" : "none"
+      }
+    }
+
+    set_frame(0)
+  </script>
+</body>
+</html>

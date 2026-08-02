@@ -1,0 +1,6 @@
+# This OWNERS file serves as a redirect to the global OWNERS file for all
+# fingerprint-related code. Do not set "noparent" or "per-file". See
+# http://go/cros-shared-owners.  For bug components, see the DIR_METADATA file
+# in this directory.
+
+include chromiumos/owners:v1:/firmware/OWNERS.cros_fp

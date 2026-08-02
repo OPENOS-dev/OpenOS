@@ -1,0 +1,84 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":heartd",
+    ":install_dbus_activation",
+    ":install_dbus_config",
+    ":install_init_config",
+    ":install_mojo_service_manager_policy_config",
+    ":install_seccomp_policy",
+    ":install_tmpfiles_config",
+    ":install_udev_rule",
+  ]
+
+  if (use.test) {
+    deps += [ ":heartd_test" ]
+  }
+}
+
+executable("heartd") {
+  sources = [ "main.cc" ]
+  install_path = "bin"
+  pkg_deps = [
+    "libbrillo",
+    "mojo_service_manager",
+    "sqlite3",
+  ]
+  deps = [
+    "//heartd/daemon:libheartd",
+    "//heartd/minijail:libminijail",
+  ]
+}
+
+install_config("install_dbus_activation") {
+  sources = [ "dbus/org.chromium.Heartd.service" ]
+  install_path = "dbus_system_services"
+}
+
+install_config("install_dbus_config") {
+  sources = [ "dbus/org.chromium.Heartd.conf" ]
+  install_path = "dbus_system_d"
+}
+
+install_config("install_init_config") {
+  sources = [ "init/heartd.conf" ]
+  install_path = "upstart"
+}
+
+install_config("install_mojo_service_manager_policy_config") {
+  sources = [ "init/mojo/heartd.jsonc" ]
+  install_path = "/etc/mojo/service_manager/policy"
+}
+
+install_config("install_seccomp_policy") {
+  _arch = getenv("ARCH")
+
+  install_path = "seccomp_policy"
+  sources = [ "seccomp/heartd-seccomp-${_arch}.policy" ]
+  outputs = [ "heartd-seccomp.policy" ]
+}
+
+install_config("install_tmpfiles_config") {
+  sources = [ "tmpfiles.d/heartd.conf" ]
+  install_path = "tmpfilesd"
+}
+
+install_config("install_udev_rule") {
+  sources = [ "udev/99-intel-pmt-permissions.rules" ]
+  install_path = "/lib/udev/rules.d"
+}
+
+if (use.test) {
+  executable("heartd_test") {
+    run_test = true
+    deps = [
+      "//common-mk/testrunner",
+      "//heartd/daemon:libheartd_test",
+    ]
+  }
+}

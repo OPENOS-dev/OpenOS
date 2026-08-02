@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -o errexit
+
+PROJECT_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")"/..)
+
+# If we're outside the chroot, rerun inside.
+if [ ! -e /etc/cros_chroot_version ] ; then
+    exec "${PROJECT_ROOT}/scripts/run-tool" "$0" "$@"
+fi
+
+cd "${PROJECT_ROOT}"
+
+scripts/pyrun -m soc.hps_soc "$@"

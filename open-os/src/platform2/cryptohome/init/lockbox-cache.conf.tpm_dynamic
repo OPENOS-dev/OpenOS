@@ -1,0 +1,13 @@
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+description     "create validated caches of lockbox protected files"
+author          "chromium-os-dev@chromium.org"
+
+# Runs before device_managementd so it can consume install attributes.
+start on starting device_managementd
+
+oom score -100
+
+pre-start exec lockbox-cache-manager

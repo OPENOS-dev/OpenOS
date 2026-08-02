@@ -1,0 +1,38 @@
+{
+  "charger_profile_override": true,
+  "delay_reboot_to_ping": 120,
+  "ec_boot_to_console": 2,
+  "ec_boot_to_wp_en": 2,
+  "ec_capability": {
+    "arm": true,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": false,
+    "lid": true,
+    "x86": false
+  },
+  "firmware_screen": 15,
+  "firmware_screen_rec_mode": 30,
+  "has_keyboard": false,
+  "hibernate": false,
+  "hold_pwr_button_poweroff": 6,
+  "hold_pwr_button_poweron": 1.2,
+  "is_detachable": true,
+  "keypress_delay": 3,
+  "max_charging_power": 45.0,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "tablet_detachable_switcher",
+  "models": {
+    "kodama": {
+      "usb_a_port_count": 0
+    },
+    "krane": {
+      "usb_a_port_count": 0
+    }
+  },
+  "platform": "kukui",
+  "usb_a_port_count": -1,
+  "usbc_input_voltage_limit": 12
+}

@@ -1,0 +1,146 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/generate-dbus-adaptors.gni")
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+group("all") {
+  deps = [
+    ":hardware_verifier",
+    ":install_dbus_config",
+    ":install_dbus_service",
+    ":install_init_config",
+    ":install_minijail_config",
+    ":install_tmpfiles_config",
+  ]
+  if (use.test) {
+    deps += [ ":unittest_runner" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  # Manually add the include path so that the generated .pb.h files can
+  # include runtime_probe.pb.h properly.
+  cflags = [ "-I${sysroot}/usr/include/runtime_probe/proto_bindings" ]
+
+  # NOSORT
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libcros_config",
+    "libmetrics",
+    "libruntime_probe-client",
+    "libruntimehwid_utils",
+    "re2",
+
+    # system_api depends on protobuf (or protobuf-lite). It must appear
+    # before protobuf here or the linker flags won't be in the right
+    # order.
+    "system_api",
+    "protobuf",
+    "vboot_host",
+  ]
+}
+
+static_library("libhardware_verifier") {
+  sources = [
+    "cli.cc",
+    "daemon.cc",
+    "dbus_adaptor.cc",
+    "encoding_spec_loader.cc",
+    "factory_hwid_processor_impl.cc",
+    "hw_verification_report_getter_impl.cc",
+    "hw_verification_spec_getter_impl.cc",
+    "observer.cc",
+    "probe_result_getter_impl.cc",
+    "runtime_hwid_generator_impl.cc",
+    "verifier_impl.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  deps = [
+    "//hardware_verifier/proto:hardware_verifier-protos",
+    "//hardware_verifier/system:system",
+  ]
+  pkg_deps = [ "libstructuredmetrics" ]
+}
+
+executable("hardware_verifier") {
+  sources = [ "main.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "bin"
+  deps = [
+    ":dbus-adaptors",
+    ":libhardware_verifier",
+  ]
+}
+
+install_config("install_dbus_config") {
+  sources = [ "dbus/org.chromium.HardwareVerifier.conf" ]
+  install_path = "dbus_system_d"
+}
+
+install_config("install_dbus_service") {
+  sources = [ "dbus/org.chromium.HardwareVerifier.service" ]
+  install_path = "dbus_system_services"
+}
+
+install_config("install_init_config") {
+  sources = [
+    "init/hardware_verifier-dbus.conf",
+    "init/hardware_verifier.conf",
+  ]
+  install_path = "upstart"
+}
+
+install_config("install_minijail_config") {
+  _arch = getenv("ARCH")
+  sources = [ "minijail/${_arch}/hardware_verifier.conf" ]
+  install_path = "minijail_conf"
+}
+
+install_config("install_tmpfiles_config") {
+  sources = [ "tmpfiles.d/hardware_verifier.conf" ]
+  install_path = "tmpfilesd"
+}
+
+if (use.test) {
+  static_library("libhardware_verifier_test") {
+    sources = [ "test_utils.cc" ]
+    configs += [ ":target_defaults" ]
+    deps = [ "//hardware_verifier/proto:hardware_verifier-protos" ]
+  }
+
+  executable("unittest_runner") {
+    sources = [
+      "cli_test.cc",
+      "dbus_adaptor_test.cc",
+      "encoding_spec_loader_test.cc",
+      "factory_hwid_processor_impl_test.cc",
+      "hw_verification_report_getter_impl_test.cc",
+      "hw_verification_spec_getter_impl_test.cc",
+      "probe_result_getter_impl_test.cc",
+      "runtime_hwid_generator_impl_test.cc",
+      "verifier_impl_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    data = [ "testdata/" ]
+    run_test = true
+    deps = [
+      ":libhardware_verifier",
+      ":libhardware_verifier_test",
+      "//common-mk/testrunner",
+      "//hardware_verifier/system:test_utils",
+    ]
+  }
+}
+
+generate_dbus_adaptors("dbus-adaptors") {
+  sources = [ "dbus_bindings/org.chromium.HardwareVerifier.xml" ]
+  dbus_adaptors_out_dir = "include/hardware_verifier/dbus_adaptors"
+  dbus_service_config = "dbus_bindings/dbus-service-config.json"
+}

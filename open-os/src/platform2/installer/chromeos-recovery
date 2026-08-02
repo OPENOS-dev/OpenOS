@@ -1,0 +1,20 @@
+#!/bin/sh -u
+# Copyright 2011 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Install Chrome/Chromium OS from the recovery installer.
+
+# Prevent kernel key version roll forward until the system can read policy.
+# After policy is available the update_engine will decide the correct value for
+# kernel_max_rollforward.
+crossystem kernel_max_rollforward=0
+
+# Make sure we can write VPD variables.
+mkdir /run/vpd
+
+# Setup cros-config inside the chroot.
+/usr/sbin/cros_config_setup
+
+export IS_RECOVERY_INSTALL=1
+exec chromeos-install --storage_diags --yes "$@"

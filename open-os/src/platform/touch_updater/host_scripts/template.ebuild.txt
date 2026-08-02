@@ -1,0 +1,32 @@
+# Copyright YEAR The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=5
+
+inherit cros-binary
+
+DESCRIPTION="Chromeos touchpad firmware payload."
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="CPU_FAMILY"
+
+RDEPEND="
+	chromeos-base/touch_updater
+	${DEPEND}
+"
+
+CROS_BINARY_URI="${CATEGORY}/${PN}/${P}.tbz2"
+
+cros-binary_add_gs_uri bcs-PROJECT-private overlay-PROJECT-private \
+	"${CROS_BINARY_URI}"
+
+S=${WORKDIR}
+
+src_install() {
+	insinto /
+	doins -r */*
+
+	# Create symlinks at /lib/firmware to the firmware binaries
+
+}

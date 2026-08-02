@@ -1,0 +1,7 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Allow nobody user to invoke pacman to install packages as part of makepkg.
+# This should never exist in a running image, just used by -build Docker stages.
+nobody ALL=(ALL) NOPASSWD: /usr/sbin/pacman

@@ -1,0 +1,41 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+access: 1
+brk: 1
+clock_gettime: 1
+close: 1
+creat: 1
+exit_group: 1
+fcntl: 1
+flock: 1
+getdents64: 1
+geteuid: 1
+getpid: 1
+getresgid: 1
+getresuid: 1
+getsockname: 1
+gettid: 1
+gettimeofday: 1
+lseek: 1
+newfstatat: 1
+openat: 1
+poll: 1
+read: 1
+readlink: 1
+recvmsg: 1
+sendmsg: 1
+setgroups: 1
+setresgid: 1
+setresuid: 1
+statfs: 1
+write: 1
+
+# For deleting the install_type file.
+unlinkat: 1
+
+# Allow syslog.
+socket: arg0 == AF_UNIX
+connect: 1
+sendto: 1

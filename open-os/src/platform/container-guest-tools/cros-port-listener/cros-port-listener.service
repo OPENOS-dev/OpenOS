@@ -1,0 +1,12 @@
+[Unit]
+Description=Chromium OS port listener service
+Wants=dev-vsock.device
+After=dev-vsock.device
+
+[Service]
+Type=simple
+ExecStart=/opt/google/cros-containers/bin/port_listener
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,510 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+use crate::disk::{Disk, DiskIo};
+use crate::{return_code_to_str, vboot_sys, ReturnCode};
+use alloc::string::{String, ToString};
+use core::ffi::c_void;
+use core::ops::Range;
+use core::{mem, ptr, str};
+use log::info;
+use uguid::Guid;
+
+/// Errors produced by `load_kernel`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+pub enum LoadKernelError {
+    /// Failed to convert numeric type.
+    #[error("failed to convert numeric type: {0}")]
+    BadNumericConversion(&'static str),
+
+    /// An arithmetic operation overflowed.
+    #[error("overflow: {0}")]
+    Overflow(&'static str),
+
+    /// Packed pubkey buffer is too small.
+    #[error("packed pubkey buffer is too small: {0}")]
+    PubkeyTooSmall(usize),
+
+    /// Call to `vb2api_init` failed.
+    #[error("call to vb2api_init failed: 0x{:x} ({})", .0.0, return_code_to_str(*.0))]
+    ApiInitFailed(ReturnCode),
+
+    /// Call to `vb2api_inject_kernel_subkey` failed.
+    #[error("failed to inject kernel subkey: 0x{:x} ({})", .0.0, return_code_to_str(*.0))]
+    InjectKernelSubkeyFailed(ReturnCode),
+
+    /// Call to `LoadKernel` failed.
+    #[error("call to LoadKernel failed: 0x{:x} ({})", .0.0, return_code_to_str(*.0))]
+    LoadKernelFailed(ReturnCode),
+
+    /// Bootloader range is not valid.
+    #[error("invalid bootloader offset and/or size: offset={offset:#x}, size={size:#x}")]
+    BadBootloaderRange {
+        /// Bootloader offset relative to the start of the kernel data.
+        offset: u64,
+
+        /// Bootloader size padded to 4K alignment.
+        size: u32,
+    },
+
+    /// The kernel's x86 real-mode header doesn't have the expected magic.
+    #[error("invalid real-mode header magic: {0:04x?}")]
+    BadHeaderMagic(Option<[u8; 4]>),
+
+    /// The kernel's x86 real-mode header's `setup_sects` field is invalid.
+    #[error("invalid `setup_sects` field in the read-mode header: {0:#x}")]
+    BadHeaderSetupSectors(u8),
+
+    /// The expected UEFI stub signature was not found.
+    #[error("the UEFI stub is missing or not in the expected location")]
+    MissingUefiStub,
+}
+
+fn u32_to_usize(v: u32) -> usize {
+    v.try_into().expect("size of usize is smaller than u32")
+}
+
+/// Fully verified kernel loaded into memory.
+pub struct LoadedKernel<'a> {
+    data: &'a [u8],
+    cros_config: Range<usize>,
+    unique_partition_guid: Guid,
+}
+
+impl LoadedKernel<'_> {
+    /// Get the kernel command-line with partition placeholders.
+    #[must_use]
+    pub fn command_line_with_placeholders(&self) -> Option<&str> {
+        let cros_config = self.data.get(self.cros_config.clone())?;
+
+        // Find the null terminator and narrow the slice to end just before
+        // that.
+        let command_line_end = cros_config.iter().position(|b| *b == 0)?;
+        let command_line = cros_config.get(..command_line_end)?;
+
+        str::from_utf8(command_line).ok()
+    }
+
+    /// Get the kernel command-line with partition placeholders replaced
+    /// with the kernel partition's unique GUID.
+    #[must_use]
+    pub fn command_line(&self) -> Option<String> {
+        let with_placeholders = self.command_line_with_placeholders()?;
+        let unique_partition_guid = self.unique_partition_guid.to_string();
+        Some(with_placeholders.replace("%U", &unique_partition_guid))
+    }
+
+    /// Raw kernel data.
+    #[must_use]
+    pub fn data(&self) -> &[u8] {
+        self.data
+    }
+}
+
+unsafe fn init_vb2_context(
+    packed_pubkey: &[u8],
+    workbuf: &mut [u8],
+) -> Result<*mut vboot_sys::vb2_context, LoadKernelError> {
+    let mut ctx_ptr = ptr::null_mut();
+
+    // A slice created from an empty array will not have a valid address
+    // in memory, so return early to avoid passing an invalid pointer to
+    // the C API.
+    if packed_pubkey.is_empty() {
+        return Err(LoadKernelError::PubkeyTooSmall(0));
+    }
+
+    let packed_pubkey_len = u32::try_from(packed_pubkey.len())
+        .map_err(|_| LoadKernelError::BadNumericConversion("pubkey length"))?;
+
+    info!("vb2api_init");
+    let mut status = ReturnCode(vboot_sys::vb2api_init(
+        workbuf.as_mut_ptr().cast::<c_void>(),
+        workbuf
+            .len()
+            .try_into()
+            .map_err(|_| LoadKernelError::BadNumericConversion("workbuf length"))?,
+        &raw mut ctx_ptr,
+    ));
+    if status != ReturnCode::VB2_SUCCESS {
+        return Err(LoadKernelError::ApiInitFailed(status));
+    }
+
+    info!("vb2api_inject_kernel_subkey");
+    status = ReturnCode(vboot_sys::vb2api_inject_kernel_subkey(
+        ctx_ptr,
+        packed_pubkey.as_ptr(),
+        packed_pubkey_len,
+    ));
+    if status != ReturnCode::VB2_SUCCESS {
+        return Err(LoadKernelError::InjectKernelSubkeyFailed(status));
+    }
+
+    Ok(ctx_ptr)
+}
+
+/// Inputs for [`load_kernel`].
+pub struct LoadKernelInputs<'kernel, 'other> {
+    /// Big buffer used by vboot for most of its data. Should be at
+    /// least [`Self::RECOMMENDED_WORKBUF_SIZE`] bytes in size.
+    pub workbuf: &'other mut [u8],
+
+    /// Big buffer used to store the kernel loaded by vboot from the
+    /// kernel partition.
+    pub kernel_buffer: &'kernel mut [u8],
+
+    /// Kernel verification key in the vbpubk format.
+    pub packed_pubkey: &'other [u8],
+}
+
+impl LoadKernelInputs<'_, '_> {
+    /// Recommended size in bytes of [`LoadKernelInputs::workbuf`].
+    pub const RECOMMENDED_WORKBUF_SIZE: usize =
+        vboot_sys::VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE as usize;
+}
+
+/// The bootloader size reported by vboot is rounded up to 4K
+/// alignment. Get the actual bootloader size via the kernel's
+/// real-mode header.
+///
+/// See <https://www.kernel.org/doc/Documentation/x86/boot.txt>
+/// for details of the header.
+fn get_actual_bootloader_size(full_bootloader_data: &[u8]) -> Result<usize, LoadKernelError> {
+    // These constants are derived from the above doc link.
+    const SETUP_SECTS_OFFSET: usize = 0x01f1;
+    const MAGIC_SIGNATURE_START: usize = 0x202;
+    const MAGIC_SIGNATURE_END: usize = MAGIC_SIGNATURE_START + mem::size_of::<u32>();
+    const BYTES_PER_SECTOR: usize = 512;
+
+    // Check that the header's four-byte magic signature is in the
+    // expected place. This serves to make it immediately obvious if any
+    // offset calculations so far are incorrect.
+    let magic_signature = full_bootloader_data
+        .get(MAGIC_SIGNATURE_START..MAGIC_SIGNATURE_END)
+        .ok_or(LoadKernelError::BadHeaderMagic(None))?;
+    if magic_signature != b"HdrS" {
+        return Err(LoadKernelError::BadHeaderMagic(
+            magic_signature.try_into().ok(),
+        ));
+    }
+
+    // Get the one-byte `setup_sects` field. To get the actual
+    // bootloader size, add one more sector to account for the boot
+    // sector, then convert from sectors to bytes.
+    let setup_sectors = full_bootloader_data[SETUP_SECTS_OFFSET];
+    // Add one to `setup_sects` to account for the boot sector, then
+    // convert from sectors to bytes.
+    let setup_sectors_err = LoadKernelError::BadHeaderSetupSectors(setup_sectors);
+    let bootloader_size = (usize::from(setup_sectors)
+        .checked_add(1)
+        .ok_or(setup_sectors_err)?)
+    .checked_mul(BYTES_PER_SECTOR)
+    .ok_or(setup_sectors_err)?;
+
+    Ok(bootloader_size)
+}
+
+/// Find the best kernel. The details are up to the firmware library in
+/// `vboot_reference`. If successful, the kernel and the command-line data
+/// have been verified against `packed_pubkey`.
+#[expect(clippy::needless_pass_by_value)]
+pub fn load_kernel<'kernel>(
+    inputs: LoadKernelInputs<'kernel, '_>,
+    disk_io: &mut dyn DiskIo,
+) -> Result<LoadedKernel<'kernel>, LoadKernelError> {
+    // Reserve space at the beginning of the kernel_buffer so that we
+    // can later copy in the bootloader (UEFI stub).
+    //
+    // The bootloader size as of 2023-06-29 is around 16KiB, reserve
+    // double that to give some headroom.
+    const MAX_BOOTLOADER_SIZE: u32 = 1024 * 32;
+
+    let ctx_ptr = unsafe { init_vb2_context(inputs.packed_pubkey, inputs.workbuf) }?;
+
+    let full_kernel_buffer = inputs.kernel_buffer.as_mut_ptr();
+    let full_kernel_buffer_size: u32 = inputs
+        .kernel_buffer
+        .len()
+        .try_into()
+        .map_err(|_| LoadKernelError::BadNumericConversion("kernel buffer size"))?;
+
+    let kernel_buffer = unsafe { full_kernel_buffer.add(u32_to_usize(MAX_BOOTLOADER_SIZE)) };
+    let kernel_buffer_size = full_kernel_buffer_size
+        .checked_sub(MAX_BOOTLOADER_SIZE)
+        .ok_or(LoadKernelError::Overflow("kernel_buffer_size"))?;
+
+    let mut params = vboot_sys::vb2_kernel_params {
+        // Initialize inputs.
+        kernel_buffer: kernel_buffer.cast(),
+        kernel_buffer_size,
+
+        // Initialize everything else to zeroes.
+        ..Default::default()
+    };
+
+    let mut disk = Disk::new(disk_io);
+    let mut disk_info = disk.info();
+
+    info!("LoadKernel");
+    let status = ReturnCode(unsafe {
+        vboot_sys::vb2api_load_kernel(ctx_ptr, &raw mut params, disk_info.as_mut_ptr())
+    });
+    if status != ReturnCode::VB2_SUCCESS {
+        return Err(LoadKernelError::LoadKernelFailed(status));
+    }
+
+    info!("LoadKernel success");
+
+    // The layout of the full kernel buffer now looks like this:
+    // +---------------------+--------+--------+--------+-----------------+
+    // | Reserved            | Kernel | Config | Params | Bootloader with |
+    // | max_bootloader_size | data   |        |        | padding         |
+    // |                     |        |        |        | size 4K aligned |
+    // +---------------------+--------+--------+--------+-----------------+
+    //
+    // In order to fill in `LoadedKernel`, we need to modify the kernel
+    // buffer to move the actual bootloader data (without the padding to
+    // 4K) into the reserved space so that it comes just before the
+    // kernel data. Any additional unused reserved space at the start of
+    // the buffer is dropped with a subslice.
+    //
+    // Output buffer layout:
+    // +------------+-------------+--------+--------+
+    // | Bootloader | Kernel data | Config | Params |
+    // +------------+-------------+--------+--------+
+
+    // Construct an error to be used in case any of the following
+    // bootloader steps fail.
+    let bootloader_err = LoadKernelError::BadBootloaderRange {
+        offset: params.bootloader_offset,
+        size: params.bootloader_size,
+    };
+
+    // Ensure that the bootloader fits within the reserved space.
+    if params.bootloader_size > MAX_BOOTLOADER_SIZE {
+        return Err(bootloader_err);
+    }
+
+    // Bootloader offset from the start of the kernel data (this
+    // excludes the reserved space).
+    let bootloader_offset_from_kernel_data =
+        usize::try_from(params.bootloader_offset).map_err(|_| bootloader_err)?;
+    // Bootloader offset from the start of the reserved space.
+    let full_bootloader_start = u32_to_usize(MAX_BOOTLOADER_SIZE)
+        .checked_add(bootloader_offset_from_kernel_data)
+        .ok_or(bootloader_err)?;
+    let full_bootloader_end = full_bootloader_start
+        .checked_add(u32_to_usize(params.bootloader_size))
+        .ok_or(bootloader_err)?;
+    // Get the bootloader data (this includes the padding to 4K).
+    let full_bootloader_data = inputs
+        .kernel_buffer
+        .get(full_bootloader_start..full_bootloader_end)
+        .ok_or(bootloader_err)?;
+
+    // Get the actual bootloader size, without the 4K rounding.
+    let bootloader_size = get_actual_bootloader_size(full_bootloader_data)?;
+    info!("Actual bootloader size: {bootloader_size:#x} bytes");
+
+    // Calculate how much of the reserved space is unused.
+    let unused_space = u32_to_usize(MAX_BOOTLOADER_SIZE)
+        .checked_sub(bootloader_size)
+        .ok_or(LoadKernelError::Overflow("unused_space"))?;
+    info!("Unused size: {unused_space} bytes");
+
+    // Get the slice that will be returned at the end, dropping unused
+    // space from the reserved space at the beginning of the full
+    // buffer.
+    let mut kernel_buffer = &mut inputs.kernel_buffer[unused_space..];
+
+    // Get the bootloader offset within the new `kernel_buffer` size.
+    let bootloader_offset = bootloader_size
+        .checked_add(bootloader_offset_from_kernel_data)
+        .ok_or(bootloader_err)?;
+
+    // Copy the bootloader data to the start of the slice,
+    // essentially undoing the splitting up of kernel data that
+    // futility did when creating the kernel partition.
+    let (bootloader, rest) = kernel_buffer.split_at_mut(bootloader_offset);
+    if &rest[0..2] != b"MZ" {
+        return Err(LoadKernelError::MissingUefiStub);
+    }
+    bootloader[..bootloader_size].copy_from_slice(&rest[..bootloader_size]);
+
+    // Find the config section of the kernel data (aka the kernel
+    // command line). As shown in the diagram above, config and params
+    // data are packed just before the bootloader data.
+    let cros_config_size = u32_to_usize(vboot_sys::CROS_CONFIG_SIZE);
+    let cros_params_size = u32_to_usize(vboot_sys::CROS_PARAMS_SIZE);
+    let cros_config_start = bootloader_offset
+        .checked_sub(cros_config_size)
+        .ok_or(bootloader_err)?
+        .checked_sub(cros_params_size)
+        .ok_or(bootloader_err)?;
+    let cros_config_end = cros_config_start
+        .checked_add(cros_config_size)
+        .ok_or(bootloader_err)?;
+
+    // Chop off the end of the kernel buffer so that it just contains
+    // the kernel bootloader, kernel data, config, and params. The reven
+    // kernel partitions are 64MiB, but only around a quarter of that is
+    // used, so this shrinks the buffer by a large amount. This is
+    // important because the buffer is later hashed when measuring to
+    // the TPM, which is a fairly slow operation that scales linearly
+    // with the size of the data.
+    info!(
+        "shrinking output kernel buffer from {} bytes to {} bytes",
+        kernel_buffer.len(),
+        bootloader_offset
+    );
+    kernel_buffer = &mut kernel_buffer[..bootloader_offset];
+
+    Ok(LoadedKernel {
+        data: kernel_buffer,
+        cros_config: cros_config_start..cros_config_end,
+        unique_partition_guid: Guid::from_bytes(unsafe { params.partition_guid.u.raw }),
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use core::num::NonZeroU64;
+    use uguid::guid;
+
+    struct MemDisk {
+        data: Vec<u8>,
+    }
+
+    impl DiskIo for MemDisk {
+        fn bytes_per_lba(&self) -> NonZeroU64 {
+            NonZeroU64::new(512).unwrap()
+        }
+
+        fn lba_count(&self) -> u64 {
+            self.data.len() as u64 / self.bytes_per_lba()
+        }
+
+        fn read(&self, lba_start: u64, buffer: &mut [u8]) -> ReturnCode {
+            let start = (lba_start * self.bytes_per_lba().get()) as usize;
+            let end = start + buffer.len();
+            buffer.copy_from_slice(&self.data[start..end]);
+            ReturnCode::VB2_SUCCESS
+        }
+
+        fn write(&mut self, _lba_start: u64, _buffer: &[u8]) -> ReturnCode {
+            panic!("write called");
+        }
+    }
+
+    #[test]
+    fn test_error_display() {
+        let expected = "call to LoadKernel failed: 0x100b2000 (VB2_ERROR_LK_NO_KERNEL_FOUND)";
+        assert_eq!(
+            format!(
+                "{}",
+                LoadKernelError::LoadKernelFailed(ReturnCode::VB2_ERROR_LK_NO_KERNEL_FOUND)
+            ),
+            expected
+        );
+    }
+
+    /// Test that `init_vb2_context` fails with an invalid key.
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_init_vb2_context_invalid_key() {
+        let invalid_key = &[1, 2, 3];
+        let mut workbuf = vec![0; LoadKernelInputs::RECOMMENDED_WORKBUF_SIZE];
+        assert_eq!(
+            unsafe { init_vb2_context(invalid_key, &mut workbuf) },
+            Err(LoadKernelError::InjectKernelSubkeyFailed(
+                ReturnCode::VB2_ERROR_INSIDE_MEMBER_OUTSIDE
+            ))
+        );
+    }
+
+    /// Test that `init_vb2_context` fails with an empty key.
+    ///
+    /// Rust does not allocate memory for an empty array. Calling
+    /// `.as_ptr()` on the empty slice returns `0x1`. This is not safe
+    /// to pass to the C API, since it will try to dereference the
+    /// invalid address.
+    #[test]
+    fn test_init_vb2_context_empty_key() {
+        let invalid_key = &[];
+        let mut workbuf = vec![0; LoadKernelInputs::RECOMMENDED_WORKBUF_SIZE];
+        assert_eq!(
+            unsafe { init_vb2_context(invalid_key, &mut workbuf) },
+            Err(LoadKernelError::PubkeyTooSmall(0))
+        );
+    }
+
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_load_kernel() {
+        let test_key_vbpubk =
+            include_bytes!("../../third_party/vboot_reference/tests/devkeys/kernel_subkey.vbpubk");
+        let expected_command_line_with_placeholders =
+            include_str!("../test_data/expected_cmdline_with_placeholders.txt");
+        let expected_command_line = include_str!("../test_data/expected_cmdline.txt");
+
+        // Read the disk file generated by this command: `cargo xtask
+        // gen-test-data-tarball`.
+        let mut disk = MemDisk {
+            data: include_bytes!("../../workspace/crdyboot_test_data/vboot_test_disk.bin").to_vec(),
+        };
+
+        let mut workbuf = vec![0; LoadKernelInputs::RECOMMENDED_WORKBUF_SIZE];
+        let mut kernel_buffer = vec![0; 24 * 1024 * 1024];
+        let inputs = LoadKernelInputs {
+            workbuf: &mut workbuf,
+            kernel_buffer: &mut kernel_buffer,
+            packed_pubkey: test_key_vbpubk,
+        };
+        match load_kernel(inputs, &mut disk) {
+            Ok(loaded_kernel) => {
+                assert_eq!(
+                    loaded_kernel.unique_partition_guid,
+                    guid!("c6fbb888-1b6d-4988-a66e-ace443df68f4")
+                );
+
+                assert_eq!(
+                    loaded_kernel
+                        .command_line_with_placeholders()
+                        .unwrap()
+                        .trim_end(),
+                    expected_command_line_with_placeholders.trim_end()
+                );
+
+                assert_eq!(
+                    loaded_kernel.command_line().unwrap().trim_end(),
+                    expected_command_line.trim_end()
+                );
+            }
+            Err(err) => {
+                panic!("load_kernel failed: {err}");
+            }
+        }
+    }
+
+    /// Test that `get_actual_bootloader_size` fails if the `magic`
+    /// field is missing.
+    #[test]
+    fn test_get_actual_bootloader_size_no_magic() {
+        assert_eq!(
+            get_actual_bootloader_size(&[0; 512]),
+            Err(LoadKernelError::BadHeaderMagic(None))
+        );
+    }
+
+    /// Test that `get_actual_bootloader_size` fails if the `magic`
+    /// field contains the wrong value.
+    #[test]
+    fn test_get_actual_bootloader_size_bad_magic() {
+        assert_eq!(
+            get_actual_bootloader_size(&[0; 1024]),
+            Err(LoadKernelError::BadHeaderMagic(Some([0; 4])))
+        );
+    }
+}

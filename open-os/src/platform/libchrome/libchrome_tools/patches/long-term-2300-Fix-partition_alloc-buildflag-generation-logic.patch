@@ -1,0 +1,56 @@
+From 89f800b70a1c32bbce206005217625588549582b Mon Sep 17 00:00:00 2001
+From: Cici Ruan <cuicuiruan@google.com>
+Date: Wed, 5 Jun 2024 15:47:08 -0700
+Subject: [PATCH] Fix partition_alloc buildflag generation logic for libchrome
+
+- Fix buildflag_header.gni to locate the script correctly, and to remove
+  the dependency on the build_config source set which doesn't exist in
+  libchrome.
+- Fix write_buildflag_header.py to fix the include paths in the
+  generated header files.
+
+Introduced in r1294816 (crrev.com/c/5504598).
+Updated in r1321254 (crrev.com/c/5669584).
+
+Change-Id: Id342a17dd2e912d4d681fc64bb7ea642d72d5de4
+---
+ .../src/partition_alloc/buildflag_header.gni                   | 3 +--
+ .../src/partition_alloc/write_buildflag_header.py              | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/base/allocator/partition_allocator/src/partition_alloc/buildflag_header.gni b/base/allocator/partition_allocator/src/partition_alloc/buildflag_header.gni
+index 979042758e..8b0b76f921 100644
+--- a/base/allocator/partition_allocator/src/partition_alloc/buildflag_header.gni
++++ b/base/allocator/partition_allocator/src/partition_alloc/buildflag_header.gni
+@@ -79,7 +79,7 @@ _current_dir = get_path_info(".", "abspath")
+ #   }
+ template("pa_buildflag_header") {
+   action(target_name) {
+-    script = "./write_buildflag_header.py"
++    script = "${_current_dir}/write_buildflag_header.py"
+ 
+     if (defined(invoker.header_dir)) {
+       header_file = "${invoker.header_dir}/${invoker.header}"
+@@ -116,6 +116,5 @@ template("pa_buildflag_header") {
+                              "visibility",
+                            ])
+ 
+-    public_deps = [ "${_current_dir}:buildflag_macro" ]
+   }
+ }
+diff --git a/base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py b/base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py
+index e2eaf33165..156ef7656a 100755
+--- a/base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py
++++ b/base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py
+@@ -86,7 +86,7 @@ def WriteHeader(options):
+ 
+     output_file.write('\n#ifndef %s\n' % options.header_guard)
+     output_file.write('#define %s\n\n' % options.header_guard)
+-    output_file.write('#include "partition_alloc/buildflag.h" // IWYU pragma: export\n\n')
++    output_file.write('#include "base/allocator/partition_allocator/src/partition_alloc/buildflag.h" // IWYU pragma: export\n\n')
+ 
+     for pair in options.flags:
+       output_file.write('#define PA_BUILDFLAG_INTERNAL_%s() (%s)\n' % pair)
+-- 
+2.45.2.803.g4e1b14247a-goog
+

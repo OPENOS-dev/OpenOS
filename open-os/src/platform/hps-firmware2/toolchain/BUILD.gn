@@ -1,0 +1,184 @@
+
+# A dummy toolchain which is set as the default. This is never used;
+# the top-level BUILD.gn enumerates the toolchains for each build.
+toolchain("dummy") {
+  # If the user tries to build a target with the default toolchain, run a script
+  # printing out the error.
+  _bad_toolchain_command = "python " + rebase_path("bad_toolchain.py")
+
+  tool("cc") {
+    command = _bad_toolchain_command
+    outputs = [ "{{source_out_dir}}/{{target_output_name}}.{{source_file_part}}.o" ]
+  }
+
+  tool("asm") {
+    command = _bad_toolchain_command
+    outputs = [ "{{source_out_dir}}/{{target_output_name}}.{{source_file_part}}.o" ]
+  }
+
+  tool("link") {
+    command = _bad_toolchain_command
+    outputs = [ "{{output_dir}}/{{target_output_name}}{{output_extension}}" ]
+  }
+
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "stamp {{output}}"
+  }
+}
+
+toolchain("riscv-gcc") {
+  tool_prefix="riscv64-unknown-elf-"
+
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "${tool_prefix}gcc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CC {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("cxx") {
+    depfile = "{{output}}.d"
+    command = "${tool_prefix}g++ -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CXX {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("asm") {
+    command = "${tool_prefix}gcc -x assembler-with-cpp -c {{source}} {{cflags}} -o {{output}} -MMD"
+    description = "ASM {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("alink") {
+    libname = "{{target_output_name}}{{output_extension}}"
+    outfile = "{{output_dir}}/lib${libname}.a"
+    command = "${tool_prefix}ar rcs $outfile {{inputs}}"
+    description = "ALINK $outfile"
+    default_output_dir = "{{root_out_dir}}"
+    outputs = [ outfile ]
+  }
+
+  tool("link") {
+    exename = "{{target_output_name}}{{output_extension}}"
+    outfile = "{{output_dir}}/$exename"
+    rspfile = "$outfile.rsp"
+    command = "${tool_prefix}gcc {{ldflags}} -o $outfile.elf -Wl,--start-group {{inputs}} -Wl,--end-group {{libs}} && ${tool_prefix}objcopy -O binary $outfile.elf $outfile"
+    description = "LINK $outfile"
+    default_output_dir = "{{root_out_dir}}"
+    rspfile_content = "N/A"
+    outputs = [ outfile ]
+  }
+
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+}
+
+toolchain("arm-none-eabi-gcc") {
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "arm-none-eabi-gcc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CC {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("asm") {
+    command = "arm-none-eabi-gcc -x assembler-with-cpp -c {{source}} {{cflags}} -o {{output}} -MMD"
+    description = "ASM {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("link") {
+    linker_script = rebase_path("../rust/stm32.ld", "", ".")
+    exename = "{{target_output_name}}{{output_extension}}"
+    outfile = "{{output_dir}}/$exename"
+    rspfile = "$outfile.rsp"
+    command = "arm-none-eabi-gcc {{ldflags}} -Wl,--script=${linker_script} -o $outfile.elf -Wl,--start-group {{inputs}} -Wl,--end-group {{libs}} && arm-none-eabi-objcopy -O binary $outfile.elf $outfile"
+    description = "LINK $outfile"
+    default_output_dir = "{{root_out_dir}}"
+    rspfile_content = "N/A"
+    outputs = [ outfile ]
+  }
+
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+}
+
+toolchain("host-gcc") {
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "gcc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CC {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("cxx") {
+    depfile = "{{output}}.d"
+    command = "g++ -MMD -MF $depfile {{defines}} {{include_dirs}} -std=c++17 {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CXX {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("asm") {
+    command = "gcc -x assembler-with-cpp -c {{source}} {{cflags}} -o {{output}} -MMD"
+    description = "ASM {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
+  tool("alink") {
+      rspfile = "{{output}}.rsp"
+      command = "rm -f {{output}} && ar rcs {{output}} @$rspfile"
+      description = "AR {{target_output_name}}{{output_extension}}"
+      rspfile_content = "{{inputs}}"
+      outputs = [
+        "{{target_out_dir}}/{{target_output_name}}{{output_extension}}",
+      ]
+      default_output_extension = ".a"
+      output_prefix = "lib"
+    }
+
+  tool("solink") {
+    soname = "{{target_output_name}}{{output_extension}}"
+    rpath = "-Wl,-soname,$soname"
+    rspfile = "{{output}}.rsp"
+    rspfile_content = "{{inputs}}"
+    _start_group = "-Wl,--start-group"
+    _end_group = "-Wl,--end-group"
+    command = "gcc -shared {{ldflags}} $_start_group @$rspfile {{solibs}} $_end_group {{libs}} $rpath -o {{output}}"
+    description = "link {{output}}"
+    outputs = [ "{{root_out_dir}}/$soname" ]
+    output_prefix = "lib"
+    default_output_extension = ".so"
+  }
+
+  tool("link") {
+    output = "{{target_output_name}}{{output_extension}}"
+    command = "g++ {{ldflags}} -o $output {{inputs}} {{solibs}} {{libs}} -pthread"
+    description = "Linking $output"
+    outputs = [
+      output,
+    ]
+  }
+
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+}

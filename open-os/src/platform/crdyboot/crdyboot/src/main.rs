@@ -1,0 +1,249 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#![deny(clippy::arithmetic_side_effects)]
+#![deny(clippy::indexing_slicing)]
+#![deny(clippy::pedantic)]
+#![cfg_attr(target_os = "uefi", no_main)]
+#![cfg_attr(target_os = "uefi", no_std)]
+
+extern crate alloc;
+
+#[cfg(feature = "android")]
+mod avb;
+#[cfg(feature = "android")]
+mod boot_image;
+#[cfg(feature = "android")]
+mod boot_message;
+mod disk;
+mod firmware;
+#[cfg(feature = "android")]
+mod initramfs;
+mod linux;
+mod revocation;
+mod sbat;
+mod vboot_disk;
+mod vbpubk;
+
+use firmware::update_firmware;
+use libcrdy::logging::initialize_logging;
+use libcrdy::sbat_revocation::{self, RevocationError};
+use libcrdy::uefi::UefiImpl;
+use libcrdy::{embed_section, fail_with_fatal_error};
+use linux::{load_and_execute_kernel, CrdybootError};
+use log::info;
+use revocation::self_revocation_check;
+use uefi::prelude::*;
+
+/// Represents the high-level flow of the crdyboot application. Crdyboot
+/// has a very linear flow, so control just goes through these methods
+/// in order.
+///
+/// This is implemented as a trait to allow for mocking.
+#[cfg_attr(test, mockall::automock)]
+trait Crdyboot {
+    fn self_revocation_check(&self) -> Result<(), CrdybootError>;
+
+    fn update_sbat_revocations(&self) -> Result<(), RevocationError>;
+
+    fn maybe_copy_sbat_revocations(&self);
+
+    fn announce_fwupd_support(&self);
+
+    fn update_firmware(&self);
+
+    fn load_and_execute_kernel(&self) -> Result<(), CrdybootError>;
+}
+
+/// The real implementation of the `Crdyboot` trait used at runtime.
+struct CrdybootImpl;
+
+impl Crdyboot for CrdybootImpl {
+    fn self_revocation_check(&self) -> Result<(), CrdybootError> {
+        self_revocation_check().map_err(CrdybootError::Revocation)
+    }
+
+    fn update_sbat_revocations(&self) -> Result<(), RevocationError> {
+        sbat_revocation::update_and_get_revocations().map(|_| ())
+    }
+
+    fn maybe_copy_sbat_revocations(&self) {
+        sbat::maybe_copy_sbat_revocations();
+    }
+
+    fn announce_fwupd_support(&self) {
+        firmware::announce_fwupd_support(&UefiImpl);
+    }
+
+    fn update_firmware(&self) {
+        update_firmware();
+    }
+
+    fn load_and_execute_kernel(&self) -> Result<(), CrdybootError> {
+        load_and_execute_kernel()
+    }
+}
+
+fn run(crdyboot: &dyn Crdyboot) -> Result<(), CrdybootError> {
+    // The self-revocation must happen as early as possible.
+    crdyboot.self_revocation_check()?;
+
+    // Update SBAT revocations if necessary.
+    if let Err(err) = crdyboot.update_sbat_revocations() {
+        // Log the error but otherwise ignore it.
+        info!("failed to update SBAT revocations: {err:?}");
+    }
+
+    info!("crdyboot version: {}", env!("CARGO_PKG_VERSION"));
+
+    // For debugging purposes, conditionally copy SBAT revocations to a
+    // runtime-accessible UEFI variable.
+    crdyboot.maybe_copy_sbat_revocations();
+
+    // Set a UEFI variable to inform fwupd that crdyboot supports
+    // firmware capsule updates.
+    crdyboot.announce_fwupd_support();
+
+    // Install firmware update capsules if needed. This may reset the
+    // system.
+    crdyboot.update_firmware();
+
+    crdyboot.load_and_execute_kernel()
+}
+
+#[entry]
+fn efi_main() -> Status {
+    initialize_logging();
+
+    match run(&CrdybootImpl) {
+        Ok(()) => unreachable!("kernel did not take control"),
+        Err(err) => {
+            fail_with_fatal_error!(err);
+        }
+    }
+}
+
+// Add `.sbat` section to the binary.
+//
+// See https://github.com/rhboot/shim/blob/main/SBAT.md for details of what
+// this section is used for.
+embed_section!(SBAT, ".sbat", "../sbat.csv");
+
+// Add `.vbpubk` section to the binary.
+//
+// The data in this section is loaded by libcrdy to get the public key
+// used for kernel partition verification.
+//
+// By default this contains a test key with padding so that the section
+// can also hold larger keys. The real key is filled in during image
+// signing using `objcopy --update-section`.
+embed_section!(
+    KERNEL_VERIFICATION_KEY,
+    ".vbpubk",
+    concat!(env!("OUT_DIR"), "/padded_vbpubk")
+);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn expect_self_revocation_check(
+        crdyboot: &mut MockCrdyboot,
+        result: Result<(), revocation::RevocationError>,
+    ) {
+        crdyboot
+            .expect_self_revocation_check()
+            .times(1)
+            .return_once(|| result.map_err(CrdybootError::Revocation));
+    }
+
+    fn expect_update_sbat_revocations(
+        crdyboot: &mut MockCrdyboot,
+        result: Result<(), RevocationError>,
+    ) {
+        crdyboot
+            .expect_update_sbat_revocations()
+            .times(1)
+            .return_once(|| result);
+    }
+
+    fn expect_maybe_copy_sbat_revocations(crdyboot: &mut MockCrdyboot) {
+        crdyboot
+            .expect_maybe_copy_sbat_revocations()
+            .times(1)
+            .return_once(|| ());
+    }
+
+    fn expect_announce_fwupd_support(crdyboot: &mut MockCrdyboot) {
+        crdyboot
+            .expect_announce_fwupd_support()
+            .times(1)
+            .return_once(|| ());
+    }
+
+    fn expect_update_firmware(crdyboot: &mut MockCrdyboot) {
+        crdyboot
+            .expect_update_firmware()
+            .times(1)
+            .return_once(|| ());
+    }
+
+    fn expect_load_and_execute_kernel(crdyboot: &mut MockCrdyboot) {
+        crdyboot
+            .expect_load_and_execute_kernel()
+            .times(1)
+            .return_once(|| Ok(()));
+    }
+
+    /// Test that `run` succeeds if no errors occur.
+    #[test]
+    fn test_successful_boot() {
+        let mut crdyboot = MockCrdyboot::new();
+
+        expect_self_revocation_check(&mut crdyboot, Ok(()));
+        expect_update_sbat_revocations(&mut crdyboot, Ok(()));
+        expect_maybe_copy_sbat_revocations(&mut crdyboot);
+        expect_announce_fwupd_support(&mut crdyboot);
+        expect_update_firmware(&mut crdyboot);
+        expect_load_and_execute_kernel(&mut crdyboot);
+
+        run(&crdyboot).unwrap();
+    }
+
+    /// Test that `run` stops immediately if the self-revocation check
+    /// fails.
+    #[test]
+    fn test_self_revocation_error() {
+        let mut crdyboot = MockCrdyboot::new();
+
+        expect_self_revocation_check(
+            &mut crdyboot,
+            Err(revocation::RevocationError {
+                executable_level: 1,
+                stored_minimum_level: 2,
+            }),
+        );
+
+        assert!(matches!(run(&crdyboot), Err(CrdybootError::Revocation(_))));
+    }
+
+    /// Test that failing to update SBAT revocations is not fatal.
+    #[test]
+    fn test_update_sbat_error() {
+        log::set_max_level(log::LevelFilter::Info);
+        let mut crdyboot = MockCrdyboot::new();
+
+        expect_self_revocation_check(&mut crdyboot, Ok(()));
+        expect_update_sbat_revocations(
+            &mut crdyboot,
+            Err(RevocationError::UndatedEmbeddedRevocations),
+        );
+        expect_maybe_copy_sbat_revocations(&mut crdyboot);
+        expect_announce_fwupd_support(&mut crdyboot);
+        expect_update_firmware(&mut crdyboot);
+        expect_load_and_execute_kernel(&mut crdyboot);
+
+        run(&crdyboot).unwrap();
+    }
+}

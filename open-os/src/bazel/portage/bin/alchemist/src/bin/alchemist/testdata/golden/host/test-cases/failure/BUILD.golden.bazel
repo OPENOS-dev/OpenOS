@@ -1,0 +1,163 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@//bazel/build_defs:always_fail.bzl", "always_fail")
+alias(
+    name = "1.0",
+    actual = "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1.0_debug",
+    actual = "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1.0_package_set",
+    actual = "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1.0_install",
+    actual = "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1.0_installed",
+    actual = "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1.0_install_list",
+    actual = "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "failure",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "failure_debug",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "failure_package_set",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "failure_install",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "failure_installed",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "failure_install_list",
+    actual = ":best_version_selection_failure",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+always_fail(
+    name = "best_version_selection_failure",
+    message = "\n--\nCan't determine the best version for test-cases/failure due to analysis errors: test-cases/failure-1.0: ebuild failed to evaluate /mnt/host/source/src/third_party/chromiumos-overlay/test-cases/failure/failure-1.0.ebuild: exit status: 1\nstdout: \nstderr: \n--\n",
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "1.0_test",
+    tests = [ "//internal/packages/stage2/host/chromiumos/test-cases/failure:1.0_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":best_version_selection_failure" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "failure_test",
+    tests = [ ":best_version_selection_failure" ],
+    visibility = ["@//bazel:internal"],
+)

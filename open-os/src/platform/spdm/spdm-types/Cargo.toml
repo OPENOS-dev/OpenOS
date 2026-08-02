@@ -1,0 +1,13 @@
+[package]
+name = "spdm_types"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[lib]
+name = "spdm_types"
+
+[dependencies]
+spdm_proc_macros = { path = "../spdm-proc-macros" }
+uninit = { version = "0.6", default-features = false }
+zerocopy = "0.6.1"

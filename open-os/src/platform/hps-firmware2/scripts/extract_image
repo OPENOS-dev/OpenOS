@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+#
+# Extract an image from base64 data.
+#
+# Typically, such data would have been dumped from the camera via a UART and
+# saved in a log file. This script would then be used to read that log file.
+#
+# Inspired by Sparkfun's image raw2bmp.py
+# https://github.com/sparkfun/SparkFun_HM01B0_Camera_ArduinoLibrary/blob/master/utils/raw2bmp.py
+
+import argparse
+import base64
+from os.path import splitext
+import numpy as np
+from PIL import Image
+
+# From image sensor size of HM01B0
+HEIGHT = 244
+WIDTH = 324
+
+
+def get_base64_data(lines):
+    result = list()
+    while lines and lines[0] != '--- base64 ---\n':
+        result.extend(base64.standard_b64decode(lines[0]))
+        lines = lines[1:]
+    return result
+
+
+def read_file(infile):
+    """Extract raw bytes of image data from last image in infile"""
+    reading_data = False
+    result = []
+    lines = list(l for l in infile)
+    while lines:
+        if lines[0] == '+++ base64 +++\n':
+            print('Found image')
+            data = get_base64_data(lines[1:])
+            data = data + ([0] * (HEIGHT * WIDTH - len(data)))
+            image = np.array(data[:(HEIGHT * WIDTH)], dtype=np.uint8)
+            image.resize((HEIGHT, WIDTH))
+            result.append(image)
+        lines = lines[1:]
+    infile.close()
+    return result
+
+
+def make_filename(filename, i):
+    fn, ext = splitext(filename)
+    return f'{fn}{i:02d}{ext}'
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Read raw HM01B0 images from a file')
+    parser.add_argument('input', type=argparse.FileType('r'),
+                        help='Console output to read.')
+    parser.add_argument('output', type=str,
+                        help='Bitmap file to write')
+    parser.add_argument('--rgb', action='store_true',
+                        help='Make an RGB image')
+    parser.add_argument('--raw', action='store_true',
+                        help='Dump raw data')
+
+    args = parser.parse_args()
+
+    images_data = read_file(args.input)
+    for i, image_data in enumerate(images_data):
+        if args.raw:
+            image_data.tofile(make_filename(args.output, i))
+        elif args.rgb:
+            a = np.zeros((HEIGHT // 2, WIDTH // 2, 3), dtype=np.uint8)
+            for y in range(HEIGHT // 2):
+                for x in range(WIDTH // 2):
+                    r = image_data[y * 2, x * 2]
+                    g = (image_data[y * 2, x * 2 + 1] * 1.0 +
+                         image_data[y * 2 + 1, x * 2]) / 2
+                    b = image_data[y * 2 + 1, x * 2 + 1]
+                    a[y, x] = (r, g, b)
+            image = Image.fromarray(a, 'RGB')
+            image.save(make_filename(args.output, i))
+
+        else:
+            image = Image.fromarray(image_data, 'L')
+            image.save(make_filename(args.output, i))
+
+    print("done!")
+
+
+if __name__ == "__main__":
+    main()

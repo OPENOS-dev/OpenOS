@@ -1,0 +1,1525 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright 2020 Google LLC
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Functions to display UI in the firmware screen.
+ *
+ * Currently libpayload only allows drawing within the canvas, which is the
+ * maximal square drawing area located in the center of the screen. For example,
+ * in landscape mode, the canvas stretches vertically to the edges of the
+ * screen, leaving non-drawing areas on the left and right. In this case, the
+ * canvas height will be the same as the screen height, but the canvas width
+ * will be less than the screen width.
+ *
+ * As a result, all the offsets (x and y coordinates) appearing in the drawing
+ * functions are relative to the canvas, not the screen.
+ */
+
+#ifndef __VBOOT_UI_H__
+#define __VBOOT_UI_H__
+
+#include <libpayload.h>
+#include <lp_vboot.h>
+#include <vb2_api.h>
+#include <vboot_api.h>
+
+#include "fastboot/fastboot.h"
+
+#define _UI_PRINT(fmt, args...) printf("%s: " fmt, __func__, ##args)
+#define UI_INFO(...) _UI_PRINT(__VA_ARGS__)
+#define UI_WARN(...) _UI_PRINT(__VA_ARGS__)
+#define UI_ERROR(...) _UI_PRINT(__VA_ARGS__)
+
+/* Helpers for bitmask operations */
+#define UI_SET_BIT(mask, index) ((mask) |= BIT(index))
+#define UI_CLR_BIT(mask, index) ((mask) &= ~BIT(index))
+#define UI_GET_BIT(mask, index) ((mask) & BIT(index))
+
+/* Maximum lengths */
+#define UI_LOCALE_CODE_MAX_LEN 8
+#define UI_CBFS_FILENAME_MAX_LEN 256
+#define UI_BITMAP_FILENAME_MAX_LEN 32
+
+/*
+ * This is the base used to specify the size and the coordinate of the image.
+ * For example, height = 40 means 4.0% of the canvas height.
+ */
+#define UI_SCALE				1000
+
+/* Margins for all screens. Nothing should be drawn within the margin. */
+#define UI_MARGIN_TOP				30
+#define UI_MARGIN_BOTTOM			50
+#define UI_MARGIN_H				50
+
+/* For language dropdown header */
+#define UI_LANG_BOX_HEIGHT			40
+#define UI_LANG_ICON_MARGIN_H			15
+#define UI_LANG_ICON_GLOBE_SIZE			20
+#define UI_LANG_TEXT_WIDTH			240
+#define UI_LANG_TEXT_HEIGHT			24
+#define UI_LANG_ICON_ARROW_SIZE			24
+#define UI_LANG_BORDER_THICKNESS		3
+#define UI_LANG_BORDER_RADIUS			8
+#define UI_LANG_MARGIN_BOTTOM			110
+
+/* For language dropdown menu content */
+#define UI_LANG_MENU_MARGIN_TOP			15
+#define UI_LANG_MENU_BOX_HEIGHT			48
+#define UI_LANG_MENU_TEXT_HEIGHT		26
+#define UI_LANG_MENU_BORDER_THICKNESS		2
+#define UI_LANG_MENU_SCROLLBAR_MARGIN_RIGHT	2
+
+/* For scrollbar */
+#define UI_SCROLLBAR_WIDTH			10
+#define UI_SCROLLBAR_MIN_HEIGHT			20
+#define UI_SCROLLBAR_CORNER_RADIUS		2
+
+/* For screen icon */
+#define UI_ICON_HEIGHT				45
+#define UI_ICON_MARGIN_BOTTOM			58
+
+/* For step icons */
+#define UI_STEP_ICON_HEIGHT			28
+#define UI_STEP_ICON_MARGIN_H			7
+#define UI_STEP_ICON_SEPARATOR_WIDTH		60
+
+/* For title and descriptions */
+#define UI_TITLE_TEXT_HEIGHT			42
+#define UI_TITLE_MARGIN_BOTTOM			30
+#define UI_DESC_TEXT_HEIGHT			24
+#define UI_DESC_TEXT_LINE_SPACING		12
+#define UI_DESC_MARGIN_BOTTOM			44
+
+/* For primary buttons */
+#define UI_BUTTON_HEIGHT			40
+#define UI_BUTTON_TEXT_HEIGHT			20
+#define UI_BUTTON_TEXT_PADDING_H		40
+#define UI_BUTTON_BORDER_THICKNESS		2
+#define UI_BUTTON_FOCUS_RING_THICKNESS		3
+#define UI_BUTTON_BORDER_RADIUS			8
+#define UI_BUTTON_MARGIN_V			10
+#define UI_BUTTON_HELP_TEXT_MARGIN_L		30
+
+/* For secondary (link) buttons */
+#define UI_LINK_TEXT_PADDING_LEFT		16
+#define UI_LINK_ICON_SIZE			24
+#define UI_LINK_ICON_MARGIN_R			20
+#define UI_LINK_ARROW_SIZE			20
+#define UI_LINK_ARROW_MARGIN_H			15
+#define UI_LINK_BORDER_THICKNESS		3
+
+/* For footer */
+#define UI_FOOTER_MARGIN_TOP			30
+#define UI_FOOTER_HEIGHT			128
+#define UI_FOOTER_TEXT_HEIGHT			20
+#define UI_FOOTER_COL1_MARGIN_RIGHT		20
+#define UI_FOOTER_COL2_LINE_SPACING		4
+#define UI_FOOTER_COL2_MARGIN_RIGHT		40
+#define UI_FOOTER_COL3_MARGIN_LEFT		40
+#define UI_FOOTER_COL3_SPACING_MIN		5
+#define UI_FOOTER_COL3_PARA_SPACING		48
+#define UI_FOOTER_COL3_ICON_HEIGHT		30
+#define UI_FOOTER_COL3_ICON_SPACING		5
+
+/* For error box */
+#define UI_ERROR_BOX_RADIUS			12
+#define UI_ERROR_BOX_HEIGHT			280
+#define UI_ERROR_BOX_WIDTH			500
+#define UI_ERROR_BOX_PADDING			30
+#define UI_ERROR_BOX_SECTION_SPACING		20
+#define UI_ERROR_BOX_ICON_HEIGHT		40
+#define UI_ERROR_BOX_TEXT_HEIGHT		24
+#define UI_ERROR_BOX_TEXT_LINE_SPACING		12
+
+/* For full view layout */
+#define UI_FULLVIEW_TITLE_TEXT_HEIGHT		30
+#define UI_FULLVIEW_TITLE_MARGIN		12
+#define UI_NAVIGATION_BAR_ICON_SPACING		5
+#define UI_NAVIGATION_BAR_HEIGHT		30
+#define UI_NAVIGATION_BAR_MARGIN		8
+
+/*
+ * UI_BOX_* constants define a large textbox taking up the width of the screen.
+ * They are used for
+ * (1) a fallback message in the case of a broken screen, and
+ * (2) a main UI element for viewing a large body of text.
+ */
+#define UI_BOX_TEXT_HEIGHT			20
+#define UI_BOX_TEXT_LINE_SPACING		2
+#define UI_BOX_MARGIN_V				275
+#define UI_BOX_PADDING_H			17
+#define UI_BOX_PADDING_V			11
+#define UI_BOX_BORDER_THICKNESS			2
+#define UI_BOX_BORDER_RADIUS			6
+
+/* For fallback colored stripes */
+#define UI_FALLBACK_STRIPE_HEIGHT		10
+
+/* Indicate width or height is automatically set based on the other value */
+#define UI_SIZE_AUTO				0
+/*
+ * Minimum size that is guaranteed to show up as at least 1 pixel on the screen,
+ * provided that the canvas resolution is at least 500 (UI_SCALE / 2). Pixels
+ * may be dropped on devices with screen resolution 640x480.
+ */
+#define UI_SIZE_MIN				2
+
+/* Time-related constants */
+#define UI_KEY_DELAY_MS 20  /* Delay between key scans in UI loops */
+#define DEV_DELAY_SHORT_MS (2 * MSECS_PER_SEC)		/* 2 seconds */
+#define DEV_DELAY_NORMAL_MS (30 * MSECS_PER_SEC)	/* 30 seconds */
+#define DEV_DELAY_BEEP1_MS (20 * MSECS_PER_SEC)		/* 20 seconds */
+#define DEV_DELAY_BEEP2_MS (20 * MSECS_PER_SEC + 500)	/* 20.5 seconds */
+
+/* Key code for CTRL + letter */
+#define UI_KEY_CTRL(letter) (letter & 0x1f)
+/* Key code for fn keys */
+#define UI_KEY_F(num) (num + 0x108)
+
+/* Pre-defined key for UI action functions */
+#define UI_KEY_INTERNET_RECOVERY	UI_KEY_CTRL('R')
+#define UI_KEY_REC_TO_DEV		UI_KEY_CTRL('D')
+/* S for secure mode (normal mode) */
+#define UI_KEY_DEV_TO_NORM		UI_KEY_CTRL('S')
+/* D for internal Disk */
+#define UI_KEY_DEV_BOOT_INTERNAL	UI_KEY_CTRL('D')
+/* U for USB disk */
+#define UI_KEY_DEV_BOOT_EXTERNAL	UI_KEY_CTRL('U')
+/* L for aLtfw (formerly Legacy) */
+#define UI_KEY_DEV_BOOT_ALTFW		UI_KEY_CTRL('L')
+/* C for firmware shell Console */
+#define UI_KEY_DEV_ENTER_FWSHELL	UI_KEY_CTRL('C')
+/* Jump to the previous anchor in the log screen */
+#define UI_KEY_PREV_ANCHOR		UI_KEY_CTRL('Z')
+/* Jump to the next anchor in the log screen */
+#define UI_KEY_NEXT_ANCHOR		UI_KEY_CTRL('X')
+/* Enter fastboot */
+#define UI_KEY_DEV_FASTBOOT		UI_KEY_CTRL('F')
+
+/*
+ * Screens
+ *
+ * Tast uses the IDs to identify the displayed screens. Do NOT modify the IDs.
+ */
+enum ui_screen {
+	/* Wait screen for EC sync and AUXFW sync */
+	UI_SCREEN_FIRMWARE_SYNC				= 0x100,
+	/* Broken screen */
+	UI_SCREEN_RECOVERY_BROKEN			= 0x110,
+	/* Advanced options */
+	UI_SCREEN_ADVANCED_OPTIONS			= 0x120,
+	/* Language selection screen */
+	UI_SCREEN_LANGUAGE_SELECT			= 0x130,
+	/* Debug info */
+	UI_SCREEN_DEBUG_INFO				= 0x140,
+	/* Firmware log */
+	UI_SCREEN_FIRMWARE_LOG				= 0x150,
+	/* Fastboot */
+	UI_SCREEN_FASTBOOT				= 0x160,
+	/* First recovery screen to select the recovery method */
+	UI_SCREEN_RECOVERY_SELECT			= 0x200,
+	/* Invalid recovery media inserted */
+	UI_SCREEN_RECOVERY_INVALID			= 0x201,
+	/* Confirm transition to developer mode */
+	UI_SCREEN_RECOVERY_TO_DEV			= 0x202,
+	/* Too old recovery image used */
+	UI_SCREEN_RECOVERY_ROLLBACK_ERROR		= 0x203,
+	/* Recovery using phone; deprecated in b/297805271 */
+	UI_SCREEN_DEPRECATED_RECOVERY_PHONE_STEP1	= 0x210,
+	UI_SCREEN_DEPRECATED_RECOVERY_PHONE_STEP2	= 0x211,
+	/* Recovery using disk */
+	UI_SCREEN_RECOVERY_DISK_STEP1			= 0x220,
+	UI_SCREEN_RECOVERY_DISK_STEP2			= 0x221,
+	UI_SCREEN_RECOVERY_DISK_STEP3			= 0x222,
+	/* Developer mode screen */
+	UI_SCREEN_DEVELOPER_MODE			= 0x300,
+	/* Confirm transition to normal mode */
+	UI_SCREEN_DEVELOPER_TO_NORM			= 0x310,
+	/* Developer boot from external disk */
+	UI_SCREEN_DEVELOPER_BOOT_EXTERNAL		= 0x320,
+	/* Invalid external disk inserted */
+	UI_SCREEN_DEVELOPER_INVALID_DISK		= 0x330,
+	/* Select alternate bootloader ("altfw") */
+	UI_SCREEN_DEVELOPER_SELECT_ALTFW		= 0x340,
+	/* Diagnostic tools */
+	UI_SCREEN_DIAGNOSTICS				= 0x400,
+	/* Storage diagnostic screen */
+	UI_SCREEN_DIAGNOSTICS_STORAGE_HEALTH		= 0x410,
+	UI_SCREEN_DIAGNOSTICS_STORAGE_TEST_SHORT	= 0x411,
+	UI_SCREEN_DIAGNOSTICS_STORAGE_TEST_EXTENDED	= 0x412,
+	/* Memory diagnostic screens */
+	UI_SCREEN_DIAGNOSTICS_MEMORY_QUICK		= 0x420,
+	UI_SCREEN_DIAGNOSTICS_MEMORY_FULL		= 0x421,
+};
+
+enum ui_error {
+	/* No error */
+	UI_ERROR_NONE = 0,
+	/* NBR boot failed */
+	UI_ERROR_NBR_BOOT_FAILED,
+	/* Dev mode already enabled */
+	UI_ERROR_DEV_MODE_ALREADY_ENABLED,
+	/* Untrusted confirmation */
+	UI_ERROR_UNTRUSTED_CONFIRMATION,
+	/* To-norm not allowed */
+	UI_ERROR_TO_NORM_NOT_ALLOWED,
+	/* Dev boot not allowed */
+	UI_ERROR_DEV_BOOT_NOT_ALLOWED,
+	/* Internal boot failed */
+	UI_ERROR_INTERNAL_BOOT_FAILED,
+	/* External boot is disabled */
+	UI_ERROR_EXTERNAL_BOOT_DISABLED,
+	/* Alternate bootloader is disabled */
+	UI_ERROR_ALTFW_DISABLED,
+	/* No alternate bootloader was found */
+	UI_ERROR_ALTFW_EMPTY,
+	/* Alternate bootloader failed */
+	UI_ERROR_ALTFW_FAILED,
+	/* Debug info screen initialization failed */
+	UI_ERROR_DEBUG_LOG,
+	/* Firmware log screen initialization failed */
+	UI_ERROR_FIRMWARE_LOG,
+	/* Diagnostics internal failure */
+	UI_ERROR_DIAGNOSTICS,
+	/* Dev boot not allowed because of OEM Lock */
+	UI_ERROR_DEV_MODE_OEM_LOCK,
+};
+
+static const struct rgb_color ui_color_bg		= { 0x20, 0x21, 0x24 };
+static const struct rgb_color ui_color_fg		= { 0xe8, 0xea, 0xed };
+static const struct rgb_color ui_color_footer_fg	= { 0x9a, 0xa0, 0xa6 };
+static const struct rgb_color ui_color_lang_header_bg	= { 0x16, 0x17, 0x19 };
+static const struct rgb_color ui_color_lang_header_border
+	= { 0x52, 0x68, 0x8a };
+static const struct rgb_color ui_color_lang_menu_bg	= { 0x2d, 0x2e, 0x30 };
+static const struct rgb_color ui_color_lang_menu_border	= { 0x49, 0x57, 0x70 };
+static const struct rgb_color ui_color_lang_scrollbar	= { 0x6c, 0x6d, 0x6e };
+static const struct rgb_color ui_color_button		= { 0x8a, 0xb4, 0xf8 };
+static const struct rgb_color ui_color_button_disabled_bg
+	= { 0x3c, 0x40, 0x43 };
+static const struct rgb_color ui_color_button_disabled_fg
+	= { 0x9a, 0xa0, 0xa6 };
+static const struct rgb_color ui_color_button_border	= { 0x4c, 0x4d, 0x4f };
+static const struct rgb_color ui_color_button_focus_ring
+	= { 0x4a, 0x5b, 0x78 };
+static const struct rgb_color ui_color_button_help_fg	= { 0xf2, 0x8b, 0x82 };
+static const struct rgb_color ui_color_link_bg		= { 0x2a, 0x2f, 0x39 };
+static const struct rgb_color ui_color_link_border	= { 0x4a, 0x5b, 0x78 };
+static const struct rgb_color ui_color_border		= { 0x3f, 0x40, 0x42 };
+static const struct rgb_color ui_color_error_box	= { 0x20, 0x21, 0x24 };
+static const struct rgb_color ui_color_black		= { 0x00, 0x00, 0x00 };
+
+/*
+ * Flags for additional information.
+ * TODO(semenzato): consider adding flags for modifiers instead of
+ * making up some of the key codes below.
+ */
+enum ui_key_flag {
+	UI_KEY_FLAG_TRUSTED_KEYBOARD = 1 << 0,
+};
+
+/* Key codes for required non-printable-ASCII characters. */
+enum ui_key_code {
+	UI_KEY_ENTER = '\r',
+	UI_KEY_ESC = 0x1b,
+	UI_KEY_UP = 0x100,
+	UI_KEY_DOWN = 0x101,
+	UI_KEY_LEFT = 0x102,
+	UI_KEY_RIGHT = 0x103,
+};
+
+/*
+ * WARNING!!! Before updating the codes in enum ui_button_code, ensure that the
+ * code does not overlap the values in ui_key_code unless the button action is
+ * the same as key action.
+ */
+enum ui_button_code {
+	/* Codes matching the values in 8042 driver. */
+	UI_BUTTON_VOL_UP_SHORT_PRESS = 0x62,
+	UI_BUTTON_VOL_DOWN_SHORT_PRESS = 0x63,
+	UI_BUTTON_POWER_SHORT_PRESS = 0x90,
+	/* Random values used below. */
+	UI_BUTTON_VOL_UP_LONG_PRESS = 0x91,
+	UI_BUTTON_VOL_DOWN_LONG_PRESS = 0x92,
+	UI_BUTTON_VOL_UP_DOWN_COMBO_PRESS = 0x93,
+};
+
+struct ui_bitmap {
+	char name[UI_BITMAP_FILENAME_MAX_LEN + 1];
+	const void *data;
+	size_t size;
+};
+
+struct ui_locale {
+	uint32_t id;		/* Locale id */
+	const char *code;	/* Language code */
+	int rtl;		/* Whether locale is right-to-left */
+};
+
+/* Forward declarations. */
+struct ui_screen_info;
+struct ui_context;
+
+enum ui_log_type {
+	UI_LOG_TYPE_UNKNOWN = 0,
+	UI_LOG_TYPE_STATIC,
+	UI_LOG_TYPE_FASTBOOT,
+};
+
+/* This struct records the keywords (so-called anchor) occurrences in the log
+   pages. */
+struct ui_anchor_info {
+	/* Total number of anchor occurrences in the log string. */
+	uint32_t total_count;
+	/* An array that records anchor counts of each page. */
+	uint32_t *per_page_count;
+};
+
+/* Log string and its pages information. */
+struct ui_static_log_info {
+	/* Full log content. */
+	const char *str;
+	/* Total number of pages. */
+	uint32_t page_count;
+	/*
+	 * Array of (page_count + 1) pointers. For i < page_count, page_start[i]
+	 * is the start position of the i-th page. page_start[page_count] is the
+	 * position of the '\0' character at the end of the log string.
+	 */
+	const char **page_start;
+	/* Fields for counting anchor occurrences. */
+	struct ui_anchor_info anchor_info;
+};
+
+/* Fastboot log information */
+struct ui_fastboot_log_info {
+	/* First byte currently displayed */
+	uint64_t top_of_screen_byte_anchor;
+	/* Number of bytes currently displayed */
+	size_t bytes_on_screen;
+	/* Total number of bytes in the log */
+	uint64_t total_bytes;
+};
+
+struct ui_log_info {
+	/* Common log info */
+	enum ui_log_type type;
+	/* Maximum number of lines per page. */
+	uint32_t lines_per_page;
+	/* Maximum number of characters per line.*/
+	uint32_t chars_per_line;
+
+	/* Union with implementation specific data */
+	union {
+		struct ui_static_log_info static_log;
+		struct ui_fastboot_log_info fastboot_log;
+	} impl;
+};
+
+enum ui_test_state {
+	UI_TEST_STATE_NONE = 0,
+	UI_TEST_STATE_RUNNING,
+	UI_TEST_STATE_FINISHED,
+};
+
+struct ui_state {
+	/***********************************************************************
+	 * Fields that should be preserved across states.
+	 */
+	const struct ui_locale *locale;
+
+	/*
+	 * Whether timer is disabled or not. Some screen descriptions will
+	 * depend on this value.
+	 */
+	int timer_disabled;
+
+	/* Error code if an error occurred. */
+	enum ui_error error_code;
+
+	/***********************************************************************
+	 * Basic screen information.
+	 */
+	const struct ui_screen_info *screen;
+
+	/* Index of the menu item under focus. */
+	uint32_t focused_item;
+
+	/*
+	 * Mask for disabled menu items. Bit (1 << idx) indicates whether item
+	 * 'idx' is disabled. A disabled (greyed out) menu item is visible and
+	 * can be set focus on, but cannot be selected.
+	 */
+	uint32_t disabled_item_mask;
+
+	/*
+	 * Mask for hidden menu items. Bit (1 << idx) indicates whether item
+	 * 'idx' is hidden. A hidden menu item is invisible on the screen.
+	 */
+	uint32_t hidden_item_mask;
+
+	/***********************************************************************
+	 * Fields for log screens. These will be ignored for non-log screens.
+	 */
+	struct ui_log_info log;
+
+	/* Current page number. */
+	uint32_t current_page;
+
+	/***********************************************************************
+	 * Fields for test screens in diagnostic UI.
+	 */
+
+	/* Do not update screen if UI_TEST_STATE_FINISHED. */
+	enum ui_test_state test_state;
+
+	/***********************************************************************
+	 * Fields for fastboot screen.
+	 */
+
+	/* Pointer to the active fastboot session. */
+	struct FastbootOps *fb_session;
+
+	/***********************************************************************
+	 * Pointer to the previous state in the history stack.
+	 */
+	struct ui_state *prev;
+};
+
+/* Icon type. */
+enum ui_icon_type {
+	/* No reserved space for any icon. */
+	UI_ICON_TYPE_NONE = 0,
+	UI_ICON_TYPE_INFO,
+	UI_ICON_TYPE_ERROR,
+	UI_ICON_TYPE_DEV_MODE,
+	UI_ICON_TYPE_RESTART,
+	UI_ICON_TYPE_STEP,
+};
+
+/* List of description files. */
+struct ui_desc {
+	size_t count;
+	const char *const *files;
+};
+
+/* Menu item type. */
+enum ui_menu_item_type {
+	/* Primary button. */
+	UI_MENU_ITEM_TYPE_PRIMARY = 0,
+	/* Secondary button. */
+	UI_MENU_ITEM_TYPE_SECONDARY,
+	/* Language selection. */
+	UI_MENU_ITEM_TYPE_LANGUAGE,
+};
+
+enum ui_menu_item_flag {
+	/* No arrow; valid for UI_MENU_ITEM_TYPE_SECONDARY only. */
+	UI_MENU_ITEM_FLAG_NO_ARROW		= 1 << 0,
+};
+
+enum ui_dcache_state {
+	UI_DCACHE_STATE_UNKNOWN = 0,
+	UI_DCACHE_STATE_CLEANED = 0,
+	UI_DCACHE_STATE_NEED_CLEAN_AFTER_UI_DISPLAY,
+	UI_DCACHE_STATE_SCHEDULE_CLEAN,
+};
+
+/* Menu item. */
+struct ui_menu_item {
+	/*
+	 * Item name for printing to console, required for all menu items.
+	 * When both 'file' and 'get_file' are not specified, the string will be
+	 * used to draw the button text with monospace font.
+	 */
+	const char *name;
+	/* Pre-generated bitmap containing button text. */
+	const char *file;
+	/*
+	 * Custom function for getting bitmap file. If non-null, field 'file'
+	 * will be ignored.
+	 */
+	const char *(*get_file)(const struct ui_state *state);
+	/*
+	 * Custom function for getting the item text width. When 'get_file' is
+	 * set, this should also be set to return the maximum text width among
+	 * all possible files returned by 'get_file'. If not set, the text width
+	 * of the active bitmap (either from 'get_file' or 'file') will be used.
+	 */
+	vb2_error_t (*get_width)(const struct ui_state *state, int32_t *width);
+	/*
+	 * If UI_MENU_ITEM_TYPE_LANGUAGE, the 'file', 'get_file' and 'get_width'
+	 * fields will not be used.
+	 */
+	enum ui_menu_item_type type;
+	/* Icon file for UI_MENU_ITEM_TYPE_SECONDARY only. */
+	const char *icon_file;
+	/*
+	 * Bitmap file of the help text displayed next to the button.
+	 * This field is only for disabled buttons of type
+	 * UI_MENU_ITEM_TYPE_PRIMARY.
+	 */
+	const char *disabled_help_text_file;
+	/* Flags are defined in enum ui_menu_item_flag. */
+	uint8_t flags;
+	/* Target screen */
+	enum ui_screen target;
+	/* Action function takes precedence over target screen if non-NULL. */
+	vb2_error_t (*action)(struct ui_context *ui);
+};
+
+/* List of menu items. */
+struct ui_menu {
+	size_t num_items;
+	/* Only the first item allowed to be UI_MENU_ITEM_TYPE_LANGUAGE. */
+	const struct ui_menu_item *items;
+};
+
+/* States of power button. */
+enum ui_power_button {
+	UI_POWER_BUTTON_HELD_SINCE_BOOT = 0,
+	UI_POWER_BUTTON_RELEASED,
+	UI_POWER_BUTTON_PRESSED,  /* Must have been previously released */
+};
+
+struct ui_context {
+	struct vb2_context *ctx;
+	struct ui_state *state;
+	uint32_t key;
+	int key_trusted;
+
+	/* For check_shutdown_request. */
+	enum ui_power_button power_button;
+
+	/* For developer mode. */
+	uint32_t start_time_ms;
+	int beep_count;
+
+	/* For manual recovery. */
+	vb2_error_t recovery_rv;
+
+	/* For to_dev transition flow. */
+	int physical_presence_button_pressed;
+
+	/* For language selection screen. */
+	struct ui_menu language_menu;
+
+	/* For bootloader selection screen. */
+	struct ui_menu bootloader_menu;
+
+	/* For log screens. */
+	char *debug_info_str;
+	char *firmware_log_str;
+
+	/* For diagnostic screens. */
+	char *storage_health_str;
+	char *storage_test_log_str;
+
+	/* For error beep sound. */
+	int error_beep;
+
+	/* Force calling ui_display for refreshing the screen. This flag
+	   will be reset after done. */
+	int force_display;
+
+	/* For loading the kernel. */
+	struct vb2_kernel_params *kparams;
+
+	/* For indicating dcache clean is required after test exit. */
+	enum ui_dcache_state dcache_state;
+};
+
+struct ui_screen_info {
+	/* Screen id */
+	enum ui_screen id;
+	/* Screen name for printing to console only */
+	const char *name;
+	/* Icon type */
+	enum ui_icon_type icon;
+	/*
+	 * Current step number; valid only if icon is UI_ICON_TYPE_STEP. A
+	 * negative value indicates an error in the abs(step)-th step.
+	 */
+	int step;
+	/* Total number of steps; valid only if icon is UI_ICON_TYPE_STEP */
+	int num_steps;
+	/* File for screen title; required with ui_draw_default(). */
+	const char *title;
+	/* Files for screen descriptions. */
+	struct ui_desc desc;
+	/* Menu items. */
+	struct ui_menu menu;
+	/* Absence of footer */
+	int no_footer;
+	/*
+	 * Display the screen content in full view. If is_fullview is set,
+	 * - no_footer must be set.
+	 * - no menu items.
+	 */
+	int is_fullview;
+	/*
+	 * Init function runs once when changing to the screen which is not in
+	 * the history stack.
+	 */
+	vb2_error_t (*init)(struct ui_context *ui);
+	/*
+	 * Re-init function runs once when changing to the screen which is
+	 * already in the history stack, for example, when going back to the
+	 * screen. Exactly one of init() and reinit() will be called.
+	 */
+	vb2_error_t (*reinit)(struct ui_context *ui);
+	/*
+	 * Exit function runs once when the screen is popped out from the
+	 * history stack.
+	 */
+	vb2_error_t (*exit)(struct ui_context *ui);
+	/*
+	 * Action function runs repeatedly while on the screen.
+	 * - If it triggers screen change due to a key press, the action
+	 *   function must clear ui->key.
+	 * - If it handles a key press but doesn't change the screen, it can
+	 *   either clear ui->key or not, depending on whether we want
+	 *   subsequent actions to handle the same key press.
+	 */
+	vb2_error_t (*action)(struct ui_context *ui);
+	/*
+	 * Custom drawing function. When it is NULL, the default drawing
+	 * function ui_draw_default() will be called instead.
+	 */
+	vb2_error_t (*draw)(struct ui_context *ui,
+			    const struct ui_state *prev_state);
+	/* Custom description drawing function. */
+	vb2_error_t (*draw_desc)(struct ui_context *ui,
+				 const struct ui_state *prev_state,
+				 int32_t *y);
+	/* Custom menu items drawing function. */
+	vb2_error_t (*draw_menu_items)(struct ui_context *ui,
+				       const struct ui_state *prev_state);
+	/* Fallback message. */
+	const char *mesg;
+	/*
+	 * Custom function for getting menu items. If non-null, field 'menu'
+	 * will be ignored.
+	 */
+	const struct ui_menu *(*get_menu)(struct ui_context *ui);
+	/*
+	 * Indices of menu items;
+	 * used by log_page_* functions in ui/screens.c.
+	 */
+	uint32_t page_up_item;
+	uint32_t page_down_item;
+	uint32_t back_item;
+};
+
+/******************************************************************************/
+/* archive.c */
+
+/*
+ * Get locale information.
+ *
+ * This function will load the locale data from CBFS only on the first call.
+ * Subsequent calls with the same locale_id are guaranteed to set an identical
+ * pointer.
+ *
+ * @param locale_id	Locale id.
+ * @param locale	Pointer to a ui_locale struct pointer to be set.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_locale_info(uint32_t locale_id,
+			       struct ui_locale const **locale);
+
+/*
+ * Get the number of supported locales.
+ *
+ * Returns the number of locales available in CBFS.
+ *
+ * @returns Number of locales.  0 if none or on error.
+ */
+uint32_t ui_get_locale_count(void);
+
+enum ui_archive_type {
+	UI_ARCHIVE_GENERIC,
+	UI_ARCHIVE_LOCALIZED,
+	UI_ARCHIVE_FONT,
+};
+
+/*
+ * Load bitmap from archive.
+ *
+ * @param type		Archive type. See enum ui_archive_type.
+ * @param file		Bitmap file name.
+ * @param locale_code	Language code of locale, only for UI_ARCHIVE_LOCALIZED.
+ * @param bitmap	Bitmap struct to be filled.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+
+vb2_error_t ui_load_bitmap(enum ui_archive_type type, const char *file,
+			   const char *locale_code, struct ui_bitmap *bitmap);
+
+/******************************************************************************/
+/* bitmap.c */
+
+/*
+ * Get bitmap.
+ *
+ * @param image_name	Image file name.
+ * @param locale_code	Language code of current locale, or NULL for
+ *			locale-independent image.
+ * @param focused	1 for focused and 0 for non-focused.
+ * @param bitmap	Bitmap struct to be filled.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_bitmap(const char *image_name, const char *locale_code,
+			  int focused, struct ui_bitmap *bitmap);
+
+/*
+ * Get bitmap of language name.
+ *
+ * @param locale_code	Language code of locale.
+ * @param bitmap	Bitmap struct to be filled.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_language_name_bitmap(const char *locale_code,
+					struct ui_bitmap *bitmap);
+
+/*
+ * Get character bitmap.
+ *
+ * @param c		Character.
+ * @param bitmap	Bitmap struct to be filled.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_char_bitmap(const char c, struct ui_bitmap *bitmap);
+
+/*
+ * Get bitmap of step icon.
+ *
+ * @param step		Step number.
+ * @param focused	1 for focused and 0 for non-focused.
+ * @param bitmap	Bitmap struct to be filled.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_step_icon_bitmap(int step, int focused,
+				    struct ui_bitmap *bitmap);
+
+/******************************************************************************/
+/* draw.c */
+
+/*
+ * Draw bitmap.
+ *
+ * @param bitmap	Bitmap to draw.
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param width		Width of the image.
+ * @param height	Height of the image.
+ * @param flags		Flags passed to draw_bitmap() in libpayload.
+ * @param reverse	Whether to reverse the x-coordinate relative to the
+ *			canvas.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_bitmap(const struct ui_bitmap *bitmap,
+			   int32_t x, int32_t y, int32_t width, int32_t height,
+			   uint32_t flags, int reverse);
+
+/*
+ * Draw bitmap with color mappings.
+ *
+ * @param bitmap	Bitmap to draw.
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param width		Width of the image.
+ * @param height	Height of the image.
+ * @param bg_color	Background color, which is passed to set_color_map() in
+ *			libpayload.
+ * @param fg_color	Foreground color passed to set_color_map().
+ * @param flags		Flags passed to draw_bitmap() in libpayload.
+ * @param reverse	Whether to reverse the x-coordinate relative to the
+ *			canvas.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_mapped_bitmap(const struct ui_bitmap *bitmap,
+				  int32_t x, int32_t y,
+				  int32_t width, int32_t height,
+				  const struct rgb_color *bg_color,
+				  const struct rgb_color *fg_color,
+				  uint32_t flags, int reverse);
+
+/*
+ * Get bitmap width.
+ *
+ * @param bitmap	Pointer to the bitmap struct.
+ * @param height	Height of the image.
+ * @param width		Width of the image, calculated from the height to keep
+ *			the aspect ratio. When height is zero, the original
+ *			bitmap width will be returned.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_bitmap_width(const struct ui_bitmap *bitmap,
+				int32_t height, int32_t *width);
+
+/*
+ * Get the number of lines in a bitmap containing text.
+ *
+ * @param bitmap	Pointer to the bitmap struct.
+ *
+ * @return A strictly positive number of lines.  If bitmap does not contain
+ *         text or is invalid, a value of 1 is returned.
+ */
+uint32_t ui_get_bitmap_num_lines(const struct ui_bitmap *bitmap);
+
+/*
+ * Get width of first n characters from text.
+ *
+ * @param text		Text.
+ * @param n		Text length.
+ * @param height	Text height.
+ * @param width		Text width to be calculated.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_ntext_width(const char *text, size_t n, int32_t height, int32_t *width);
+
+/*
+ * Get text width.
+ *
+ * @param text		Text.
+ * @param height	Text height.
+ * @param width		Text width to be calculated.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+static inline vb2_error_t ui_get_text_width(const char *text, int32_t height, int32_t *width)
+{
+	return ui_get_ntext_width(text, SIZE_MAX, height, width);
+}
+
+
+/*
+ * Draw a line of first n characters from text.
+ *
+ * @param text		Text to be drawn, which should contain only printable
+ *			characters, including spaces, but excluding tabs.
+ * @param n		Text length.
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param height	Height of the text.
+ * @param bg_color	Background color, which is passed to set_color_map() in
+ *			libpayload.
+ * @param fg_color	Foreground color passed to set_color_map().
+ * @param flags		Flags passed to draw_bitmap() in libpayload.
+ * @param reverse	Whether to reverse the x-coordinate relative to the
+ *			canvas.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_ntext(const char *text, size_t n,
+			  int32_t x, int32_t y, int32_t height,
+			  const struct rgb_color *bg_color,
+			  const struct rgb_color *fg_color,
+			  uint32_t flags, int reverse);
+/*
+ * Draw a line of text.
+ *
+ * @param text		Text to be drawn, which should contain only printable
+ *			characters, including spaces, but excluding tabs.
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param height	Height of the text.
+ * @param bg_color	Background color, which is passed to set_color_map() in
+ *			libpayload.
+ * @param fg_color	Foreground color passed to set_color_map().
+ * @param flags		Flags passed to draw_bitmap() in libpayload.
+ * @param reverse	Whether to reverse the x-coordinate relative to the
+ *			canvas.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+static inline vb2_error_t ui_draw_text(const char *text,
+				       int32_t x, int32_t y, int32_t height,
+				       const struct rgb_color *bg_color,
+				       const struct rgb_color *fg_color,
+				       uint32_t flags, int reverse)
+{
+	return ui_draw_ntext(text, SIZE_MAX, x, y, height, bg_color, fg_color, flags, reverse);
+}
+
+
+/*
+ * Draw a box with rounded corners.
+ *
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param width		Width of the box.
+ * @param height	Height of the box.
+ * @param rgb		Color of the box.
+ * @param thickness	Thickness of the border of the box.
+ * @param radius	Radius of the rounded corners.
+ * @param reverse	Whether to reverse the x-coordinate relative to the
+ *			canvas.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_rounded_box(int32_t x, int32_t y,
+				int32_t width, int32_t height,
+				const struct rgb_color *rgb,
+				uint32_t thickness, uint32_t radius,
+				int reverse);
+
+/*
+ * Draw a solid box.
+ *
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param width		Width of the box.
+ * @param height	Height of the box.
+ * @param rgb		Color of the box.
+ * @param reverse	Whether to reverse the x-coordinate relative to the
+ *			canvas.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_box(int32_t x, int32_t y,
+			int32_t width, int32_t height,
+			const struct rgb_color *rgb,
+			int reverse);
+
+/*
+ * Draw a horizontal line segment.
+ *
+ * @param x		x-coordinate of the left endpoint.
+ * @param y		y-coordinate of the line.
+ * @param length	Length of the line.
+ * @param thickness	Thickness of the line.
+ * @param rgb		Color of the line.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_h_line(int32_t x, int32_t y,
+			   int32_t length, int32_t thickness,
+			   const struct rgb_color *rgb);
+
+/******************************************************************************/
+/* layout.c */
+
+/*
+ * Draw language dropdown header.
+ *
+ * @param locale	Locale of which name to be drawn.
+ * @param state		UI state.
+ * @param focused	1 for focused and 0 for non-focused.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_language_header(const struct ui_locale *locale,
+				    const struct ui_state *state, int focused);
+
+/*
+ * Get button width, based on the longest text of all the visible buttons.
+ *
+ * Menu items specified in hidden_item_mask are ignored.
+ *
+ * @param menu			Menu items.
+ * @param state			UI state.
+ * @param button_width		Button width to be calculated.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_get_button_width(const struct ui_menu *menu,
+				const struct ui_state *state,
+				int32_t *button_width);
+
+/*
+ * Draw a button with image.
+ *
+ * Menu item should specify either .file or .text for button text.
+ *
+ * @param item		Menu item.
+ * @param state		UI state.
+ * @param x		x-coordinate of the top-left corner.
+ * @param y		y-coordinate of the top-left corner.
+ * @param width		Width of the button.
+ * @param height	Height of the button.
+ * @param focused	1 for focused and 0 for non-focused.
+ * @param disabled	1 for disabled style and 0 for normal style.
+ * @param clear_help	1 to request for clearing the disabled help text area.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_button(const struct ui_menu_item *item,
+			   const struct ui_state *state,
+			   int32_t x, int32_t y,
+			   int32_t width, int32_t height,
+			   int focused, int disabled,
+			   int clear_help);
+
+/*
+ * Draw screen descriptions.
+ *
+ * @param desc		List of description files.
+ * @param state		UI state.
+ * @param y		Starting y-coordinate of the descriptions. On return,
+ *			the value will be the ending coordinate, excluding the
+ *			margin below the descriptions.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_desc(const struct ui_desc *desc,
+			 const struct ui_state *state,
+			 int32_t *y);
+
+/*
+ * Draw a rounded textbox with multi-line text.
+ *
+ * The printed text is guaranteed to fit on the screen by adjusting the height
+ * of the box, and by resizing individual lines horizontally to fit. The box
+ * will take up the full width of the canvas.
+ *
+ * @param str		Texts to be printed, which may contain line breaks.
+ * @param y		Starting y-coordinate of the box. On return, the value
+ *			will be the ending coordinate, excluding the margin
+ *			below the box.
+ * @param min_lines	Minimum number of lines the textbox should contain. Pad
+ *			with empty lines if str does not reach this limit.
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_textbox(const char *str, int32_t *y, int32_t min_lines);
+
+/*
+ * Get the maximum number of characters per line of the textbox.
+ *
+ * The textbox can fit chars_per_line characters in a single line.
+ *
+ * @param chars_per_line	On return, the value will be maximum number of
+ *				characters per line.
+ *
+ * @return VB2_SUCCESS on success, no-zero on error.
+ */
+vb2_error_t ui_get_textbox_chars_per_line(uint32_t *chars_per_line);
+
+/*
+ * Get the maximum number of lines per page of the textbox.
+ *
+ * @param screen		Screen to display the textbox.
+ * @param y			Offset of the textbox from the top of the screen.
+ * @param lines_per_page	On return, the value will be maximum number of
+ *				lines per page.
+ *
+ * @return VB2_SUCCESS on success, no-zero on error.
+ */
+vb2_error_t ui_get_textbox_lines_per_page(enum ui_screen screen, int32_t y,
+					  uint32_t *lines_per_page);
+
+/*
+ * Get the dimensions of the log textbox.
+ *
+ * The log textbox can fit lines_per_page * chars_per_line characters.
+ *
+ * @param screen		Screen to display the log.
+ * @param locale_code		Language code of locale.
+ * @param lines_per_page	On return, the value will be maximum number of
+ *				lines per page.
+ * @param chars_per_line	On return, the value will be maximum number of
+ *				characters per line.
+ *
+ * @return VB2_SUCCESS on success, no-zero on error.
+ */
+vb2_error_t ui_get_log_textbox_dimensions(enum ui_screen screen,
+					  const char *locale_code,
+					  uint32_t *lines_per_page,
+					  uint32_t *chars_per_line);
+
+/*
+ * Draw a textbox for displaying the log screen.
+ *
+ * @param str		The full log string, which may contain line breaks.
+ * @param state		UI state.
+ * @param y		Starting y-coordinate of the box. On return, the value
+ *			will be the ending coordinate, excluding the margin
+ *			below the box.
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_log_textbox(const char *str, const struct ui_state *state,
+				int32_t *y);
+
+/*
+ * Draw a textbox for displaying the log screen with custom scrollbar parameters.
+ *
+ * @param str			The full log string, which may contain line breaks.
+ * @param state			UI state.
+ * @param y			Starting y-coordinate of the box. On return, the value
+ *				will be the ending coordinate, excluding the margin
+ *				below the box.
+ * @param first_item		Index of the first item on the screen.
+ * @param total_items		Total items in the log.
+ * @param items_per_page	Number of items on a single page.
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_textbox_with_scrollbar(const char *str, size_t n,
+					   const struct ui_state *state, int32_t *y,
+					   int32_t first_item, size_t total_items,
+					   size_t items_per_page, bool wrap_lines);
+
+/*
+ * Draw a scrollbar based on given current_page and page_count. The height of
+ * the scrollbar will be auto calculated.
+ *
+ * @param begin_x		The left-most x-coordinate of the scrollbar.
+ * @param begin_y		The top-most y-coordinate of the scrollbar.
+ * @param total_h		The total vertical space the scrollbar can move.
+ * @param first_item_index	The index of the first item in the page,
+ *				starting from 0.
+ * @param items_count		Number of the items.
+ * @param items_per_page	Number of items in the same page, used when
+ *				calculating the height of the scrollbar.
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_scrollbar(int32_t begin_x, int32_t begin_y, int32_t total_h,
+			      int32_t first_item_index, size_t items_count,
+			      size_t items_per_page);
+
+/*
+ * Draw primary and secondary buttons; ignore the language dropdown header.
+ *
+ * @param menu			Menu items.
+ * @param state			UI state.
+ * @param prev_state		Previous UI state.
+ * @param y			Starting y-coordinate of the descriptions.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_menu_items(const struct ui_menu *menu,
+			       const struct ui_state *state,
+			       const struct ui_state *prev_state,
+			       int32_t y);
+
+/*
+ * Default drawing function.
+ *
+ * @param ui		UI context.
+ * @param prev_state	Previous UI state.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_draw_default(struct ui_context *ui,
+			    const struct ui_state *prev_state);
+
+/******************************************************************************/
+/* screens.c */
+
+/*
+ * Get UI descriptor of a screen.
+ *
+ * @param screen_id	Screen id.
+ *
+ * @return UI descriptor on success, NULL on error.
+ */
+const struct ui_screen_info *ui_get_screen_info(enum ui_screen screen_id);
+
+/* Expose these boot action functions for recovery_action. */
+vb2_error_t ui_recovery_mode_boot_nbr_action(struct ui_context *ui);
+
+/* Expose these boot action functions for developer_action. */
+vb2_error_t ui_developer_mode_boot_internal_action(struct ui_context *ui);
+vb2_error_t ui_developer_mode_boot_external_action(struct ui_context *ui);
+vb2_error_t ui_developer_mode_boot_altfw_action(struct ui_context *ui);
+vb2_error_t ui_developer_mode_enter_fwshell_action(struct ui_context *ui);
+
+/******************************************************************************/
+/* log.c */
+
+/*
+ * Initialize common log info struct part.
+ *
+ * @param screen	Screen to display the log.
+ * @param locale_code	Language code of locale.
+ * @param log		Log info struct to be initialized.
+ * @param type		Type of the log.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_log_common_init(enum ui_screen screen, const char *locale_code,
+			       struct ui_log_info *log, enum ui_log_type type);
+
+/*
+ * Initialize log info struct with a string.
+ *
+ * @param screen	Screen to display the log.
+ * @param locale_code	Language code of locale.
+ * @param str		The full log string.
+ * @param log		Log info struct to be initialized.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_log_init(enum ui_screen screen, const char *locale_code,
+			const char *str, struct ui_log_info *log);
+
+/*
+ * Initialize anchor info struct with anchors.
+ *
+ * @param log		Log info struct to be initialized.
+ * @param anchors	List of anchor names to be matched.
+ * @param num		Total number of the anchors.
+ */
+vb2_error_t ui_log_set_anchors(struct ui_log_info *log,
+			       const char *const anchors[], size_t num);
+
+/*
+ * Retrieve the content of specified page.
+ *
+ * The log must be have been initialized by ui_log_init(). The caller owns the
+ * string and should call free() when finished with it.
+ *
+ * @param log		Log info.
+ * @param page		Page number.
+ *
+ * @return The pointer to the page content, NULL on error.
+ */
+char *ui_log_get_page_content(const struct ui_log_info *log, uint32_t page);
+
+/******************************************************************************/
+/* fastboot_log.c */
+
+/*
+ * Initialize fastboot log info struct.
+ *
+ * @param screen	Screen to display the log.
+ * @param locale_code	Language code of locale.
+ * @param log		Log info struct to be initialized.
+ *
+ * @return VB2_SUCCESS on success, non-zero on error.
+ */
+vb2_error_t ui_fb_log_init(enum ui_screen screen, const char *locale_code,
+			   struct ui_log_info *log);
+
+/*
+ * Set UI log info structure to point at the first available page in fastboot log.
+ *
+ * @param ui_log	Log info.
+ * @param log		Fastboot log instance.
+ */
+void ui_fb_log_set_first_page(struct ui_log_info *ui_log, struct fastboot_log *log);
+
+/*
+ * Set UI log info structure to point at the last available page in fastboot log.
+ *
+ * @param ui_log	Log info.
+ * @param log		Fastboot log instance.
+ */
+void ui_fb_log_set_last_page(struct ui_log_info *ui_log, struct fastboot_log *log);
+
+/*
+ * Set UI log info structure to point at the next page in fastboot log.
+ *
+ * @param ui_log	Log info.
+ * @param log		Fastboot log instance.
+ */
+void ui_fb_log_set_next_page(struct ui_log_info *ui_log, struct fastboot_log *log);
+
+/*
+ * Set UI log info structure to point at the previous page in fastboot log.
+ *
+ * @param ui_log	Log info.
+ * @param log		Fastboot log instance.
+ */
+void ui_fb_log_set_prev_page(struct ui_log_info *ui_log, struct fastboot_log *log);
+
+/******************************************************************************/
+/* display.c */
+
+/*
+ * Display UI screen.
+ *
+ * @param ui		UI context. This must be first initialized by
+ *			ui_init_context().
+ * @param prev_state	Previous UI state, or NULL if previous drawing failed or
+ *			there's no previous state.
+ *
+ * @return VB2_SUCCESS, or error code on error.
+ */
+
+vb2_error_t ui_display(struct ui_context *ui,
+		       const struct ui_state *prev_state);
+
+/*
+ * Clear UI display.
+ *
+ * ui_display() should no longer be called after this is called.
+ *
+ * @return 0 on success, or non-zero on error.
+ * */
+int ui_display_clear(void);
+
+/******************************************************************************/
+/* input.c */
+
+/*
+ * Read the next keypress from the keyboard buffer.
+ *
+ * Returns the keypress, or zero if no keypress is pending or error.
+ *
+ * The following keys must be returned as ASCII character codes:
+ *    0x08          Backspace
+ *    0x09          Tab
+ *    0x0D          Enter (carriage return)
+ *    0x01 - 0x1A   Ctrl+A - Ctrl+Z (yes, those alias with backspace/tab/enter)
+ *    0x1B          Esc (UI_KEY_ESC)
+ *    0x20          Space
+ *    0x30 - 0x39   '0' - '9'
+ *    0x60 - 0x7A   'a' - 'z'
+ *
+ * Some extended keys must also be supported; see the UI_KEY_* defines above.
+ *
+ * Keys ('/') or key-chords (Fn+Q) not defined above may be handled in any of
+ * the following ways:
+ *    1. Filter (don't report anything if one of these keys is pressed).
+ *    2. Report as ASCII (if a well-defined ASCII value exists for the key).
+ *    3. Report as any other value in the range 0x200 - 0x2FF.
+ * It is not permitted to report a key as a multi-byte code (for example,
+ * sending an arrow key as the sequence of keys '\x1b', '[', '1', 'A').
+ */
+uint32_t ui_keyboard_read(uint32_t *flags_ptr);
+
+/* Check whether the lid is open. 1 will be returned on error. */
+int ui_is_lid_open(void);
+
+/* Check whether the power button is pressed. 0 will be returned on error. */
+int ui_is_power_pressed(void);
+
+/*
+ * Check whether the physical presence button is pressed.
+ * 0 will be returned on error.
+ */
+int ui_is_physical_presence_pressed(void);
+
+/******************************************************************************/
+/* beep.c */
+
+/*
+ * Play a beep sound of the specified frequency for the duration msec.
+ *
+ * This is effectively a sleep call that makes noise. The implementation may
+ * beep at a fixed frequency if frequency support is not available. Regardless
+ * of whether any errors occur, this function is expected to delay for the
+ * specified duration before returning.
+ *
+ * @param msec		Duration of beep in milliseconds.
+ * @param frequency	Sound frequency in Hz.
+ */
+void ui_beep(uint32_t msec, uint32_t frequency);
+
+/******************************************************************************/
+/* loop.c */
+
+/*
+ * Initialize UI context.
+ *
+ * @param ui		UI context to be initialized.
+ * @param ctx		Vboot2 context.
+ * @param screen_id	Screen id to be set in UI context.
+ *
+ * @return VB2_SUCCESS, or error code on error.
+ */
+vb2_error_t ui_init_context(struct ui_context *ui, struct vb2_context *ctx,
+			    enum ui_screen screen_id);
+
+/*
+ * The entry of main UI loop.
+ *
+ * @param ctx			Vboot2 context.
+ * @param root_screen_id	Root screen id.
+ * @param global_action		The entry of action function.
+ * @param kparams		Params specific to loading the kernel.
+ *
+ * @return VB2_SUCCESS, or error code on error.
+ */
+vb2_error_t ui_loop(struct vb2_context *ctx, enum ui_screen root_screen_id,
+		    vb2_error_t (*global_action)(struct ui_context *ui),
+		    struct vb2_kernel_params *kparams);
+
+/******************************************************************************/
+/* menu.c */
+
+const struct ui_menu *ui_get_menu(struct ui_context *ui);
+
+vb2_error_t ui_menu_prev(struct ui_context *ui);
+
+vb2_error_t ui_menu_next(struct ui_context *ui);
+
+vb2_error_t ui_menu_select(struct ui_context *ui);
+
+/******************************************************************************/
+/* navigation.c */
+
+/*
+ * Initialize the current screen. The screen's init() will be run when exists;
+ * otherwise, the default initialization will be run.
+ *
+ * @param ui	UI context. This must be first initialized by ui_init_context().
+ *
+ * @return VB2_SUCCESS, or error code on error.
+ */
+vb2_error_t ui_screen_init(struct ui_context *ui);
+
+/*
+ * NOTE: This function never returns VB2_SUCCUSS by design. Instead,
+ * VB2_REQUEST_UI_CONTINUE is returned on success for the following
+ * reason.
+ *
+ * The screen would have been changed when this function returns.
+ * Therefore, any call to this function should return immediately afterwards.
+ * Otherwise, code underneath it might operate under the assumption that
+ * the screen has not been changed (see b/181087237). The same rule also
+ * applies to any indirect call to this function, but that would include
+ * many UI functions (action, init, reinit functions).
+ *
+ * Instead of checking whether the screen has been changed after each
+ * call, we rely on VB2_REQUEST_UI_CONTINUE to ensure that all direct
+ * and indirect calls to this function will immediately return all the
+ * way back to ui_loop(), where VB2_REQUEST_UI_CONTINUE is ignored to
+ * stay in the loop (see CL:2714502). This solution also allows us to
+ * utilize the VB2_TRY macro as much as possible.
+ */
+vb2_error_t ui_screen_change(struct ui_context *ui, enum ui_screen id);
+
+/*
+ * NOTE: This function never returns VB2_SUCCUSS by design. See the
+ * comments before ui_screen_change().
+ */
+vb2_error_t ui_screen_back(struct ui_context *ui);
+
+/*
+ * Pop all the screens from the history stack except for the root screen. The
+ * exit() hook for each screen from top to bottom (including the root screen)
+ * will be called, while the reinit() hook will not.
+ * No other screen related should be called after this cleanup.
+ *
+ * @param ui	UI context. This must be first initialized by ui_init_context().
+ *
+ * @return VB2_SUCCESS, or error code on error.
+ */
+vb2_error_t ui_screen_cleanup(struct ui_context *ui);
+
+#endif /* __VBOOT_UI_H__ */

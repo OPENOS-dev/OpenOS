@@ -1,0 +1,29 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "fpga_hal",
+    "fpga_rom",
+    "litex_pac",
+    "tflm_inference",
+]
+
+# Optimize all dependencies
+[profile.dev.package."*"]
+opt-level = "z"
+codegen-units = 1
+
+[profile.release.package."*"]
+opt-level = "z"
+codegen-units = 1
+
+[profile.dev]
+lto = true
+opt-level = 3
+panic = "abort"
+
+[profile.release]
+debug = true
+lto = true
+opt-level = 3
+panic = "abort"

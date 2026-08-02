@@ -1,0 +1,282 @@
+#!/bin/bash
+# Copyright 2017 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Loads script libraries.
+CONTRIB_DIR=$(dirname "$(readlink -f "$0")")
+. "${CONTRIB_DIR}/common.sh" || exit 1
+
+FLAGS_HELP="
+Command to rebuild firmware after a config change.
+
+After you make a change to the firmware version in the master configuration,
+run this script to test it. It will rebuild the master configuration, update
+the Manifest and build the new firmware. You can then submit your CL to update
+the master configuration, safe in the knowledge that you have tested it.
+
+Usage:
+   cros_update_firmware <board> [project]
+
+where <board> is the board whose firmware needs updating (e.g. 'coral').
+      [project] is the project the board belongs to.
+"
+
+# Flags
+DEFINE_string board "${DEFAULT_BOARD}" "Which board the firmware is for" b
+DEFINE_string project "${DEFAULT_PROJECT}" "Which project this board is for" p
+DEFINE_boolean quiet "${FLAGS_FALSE}" "Reduce emerge build output" q
+DEFINE_boolean append_srcuris "${FLAGS_TRUE}" "Only applicable when the project
+flag is set. Append firmware uris to srcuris instead of overwriting. This is
+usually needed if you have limited access to project config repos, so
+overwriting would delete some uris."
+DEFINE_boolean project_srcuris "${FLAGS_FALSE}" "Only applicable when the
+project flag is set. Use a project specific file to store the URIs
+instead of srcuris. The project config directory must be available
+to read the project specific URIs. Mutually exclusive with --append_srcuris."
+
+# Parse command line.
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+set -e
+
+# Script must be run inside the chroot.
+assert_inside_chroot
+
+start_workon() {
+  local board="$1"
+  local pkg item apkg
+  if [[ -z "$2" ]]; then
+    echo "Empty package.  Skipping..."
+    return 1
+  fi
+  apkg="$2"
+  pkg=$(cros workon --board="${board}" info "$2" | cut -d ' ' -f 1)
+  shift 2
+  for item in "$@"; do
+    if [[ "${pkg}" == "${item}" ]]; then
+      echo "Already workon ${pkg}.  Skipping..."
+      return 1
+    fi
+  done
+  if [[ -z "${pkg}" ]]; then
+    # Workaround for b/263059169
+    echo "cros workon info broken, using ${apkg}"
+    pkg="${apkg}"
+  fi
+  cros workon --board="${board}" start "${pkg}"
+  return $?
+}
+
+stop_workon() {
+  cros workon --board="$1" stop "$2"
+}
+
+update_firmware() {
+  local board="$1"
+  local project="$2"
+  local base ebuild srcuris proj
+  local current_workon_pkg_list start_pkg result i
+  local emerge_flags=()
+  [[ "$3" == "${FLAGS_TRUE}" ]] && emerge_flags+=("--quiet-build")
+  local append_srcuris="$4"
+  local project_srcuris="$5"
+
+  set -e
+
+  # query the current working package
+  mapfile -t current_workon_pkg_list < <(cros workon --board="${board}" list)
+
+  local config_packages=(chromeos-base/chromeos-config)
+  local proj_config="${GCLIENT_ROOT}/src/project/${board}/${project}/sw_build_config/platform/chromeos-config/generated/project-config.json"
+
+  # If --project_srcuris set, ensure that the project config is available
+  if [[ "${project_srcuris}" == "${FLAGS_TRUE}" && ! -f "${proj_config}" ]]; then
+    die "--project_srcuris set but ${proj_config} unreadable"
+  fi
+  # checking various use flags to include appropriate packages
+  local all_use_flags=$(portageq-"${board}" envvar USE)
+  local use_flag pkg
+  for use_flag in ${all_use_flags}; do
+    case "${use_flag}" in
+      has_chromeos_config_bsp* )
+        without_has="${use_flag//has_/}"
+        pkg="chromeos-base/${without_has//_/-}"
+        if equery-"${board}" which "${pkg}" >/dev/null 2>&1; then
+          config_packages+=("${pkg}")
+        fi
+        ;;
+    esac
+  done
+
+  start_pkg=("${config_packages[@]}")
+  start_pkg+=("chromeos-firmware-${board}")
+
+  for i in "${!start_pkg[@]}"; do
+    result[i]=0
+    start_workon "${board}" "${start_pkg[i]}" "${current_workon_pkg_list[@]}" \
+       || result[i]=$?
+  done
+
+  overlay="${GCLIENT_ROOT}/src/private-overlays/overlay-${board}-private"
+  base="${overlay}/chromeos-base"
+  ebuild="${base}/chromeos-firmware-${board}/chromeos-firmware-${board}-9999.ebuild"
+  srcuris="${base}/chromeos-firmware-${board}/files/srcuris"
+  proj_srcuris="${base}/chromeos-firmware-${board}/files/${project}.srcuris"
+  yaml_config="/build/${board}/usr/share/chromeos-config/yaml/config.yaml"
+
+  # Check project config repo exists -- if so generate the config first.
+  if [[ -d "${GCLIENT_ROOT}/src/project/${board}" ]]; then
+    pushd "${GCLIENT_ROOT}/src/project/${board}" > /dev/null
+    if [[ -z "${project}" ]]; then
+      # No project specified, do them all.
+      for proj in *; do
+        if [[ -d "${proj}" && -x "${proj}/config/bin/gen_config" && -f "${proj}/config.star" ]]; then
+          pushd "${proj}" > /dev/null
+          ./config/bin/gen_config config.star
+          popd > /dev/null
+        fi
+      done
+      popd > /dev/null
+    else
+      # Specific project, just regenerate the config for that project.
+      if [[ -d "${project}" && -x "${project}/config/bin/gen_config" && -f "${project}/config.star" ]]; then
+        pushd "${project}" > /dev/null
+        ./config/bin/gen_config config.star
+        popd > /dev/null
+      fi
+    fi
+  fi
+
+  "emerge-${board}" -j "${emerge_flags[@]}" "${config_packages[@]}"
+
+  # If the append_srcuris and project flags are set, append uris that aren't
+  # already in srcuris.
+  if [[ -n "${project}" && "${append_srcuris}" == "${FLAGS_TRUE}" ]]; then
+    for uri in $(cros_config_host -c "${yaml_config}" get-firmware-uris); do
+      if ! grep -q "${uri}" "${srcuris}"; then
+        # Append uri to the last line of srcuris (srcuris should be a file with
+        # one line per-uri).
+        echo "${uri}" >> "${srcuris}"
+      fi
+    done
+    # After appending, sort the URIs file so that it is consistent
+    sort -o "${srcuris}" "${srcuris}"
+  # If project_srcuris is set, write URIs to project specific file
+  elif  [[ -n "${project}" && "${project_srcuris}" == "${FLAGS_TRUE}" ]]; then
+    cros_config_host -c "${proj_config}" get-firmware-uris | tr ' ' '\n' | sort > "${proj_srcuris}"
+  # Otherwise overwrite srcuris.
+  else
+    # Put each uri on its own line for easier merging in git.
+    cros_config_host -c "${yaml_config}" get-firmware-uris | tr ' ' '\n' | sort > "${srcuris}"
+  fi
+
+  touch "${ebuild}"
+
+
+  # Combine the srcuris files
+  mapfile -t all_srcuris < <(find "${base}"/chromeos-firmware-"${board}"/files -name '*srcuris')
+
+  file_srcuris=()
+  if [[ ${#all_srcuris[@]} != 0 && -f ${all_srcuris[0]} ]]; then
+    mapfile -t file_srcuris < <(cat "${all_srcuris[@]}" )
+  fi
+
+  sorted_srcuris=()
+  mapfile -t sorted_srcuris < <(printf '%s\n' "${file_srcuris[@]}"\
+    | sort --uniq )
+
+  # Now update the ebuild file
+
+  cat > /tmp/comment_template.txt <<EOF
+# Generated Code Follows
+#
+# The remainder of this file is generated from the script cros_update_firmware
+# Follow these instructions to re-generate.
+#
+# Unified Builds firmware URL's are read from:
+#   chromeos-base/chromeos-config-bsp-@@BOARD@@-private/files/*srcuris
+# in this repository. Those config files output the SRC_URI's used by Portage.
+#
+# To modify the configured versions, make a change to either
+#
+# chromeos-base/chromeos-config-bsp-@@BOARD@@-private/files/model.yaml
+#   or
+# src/project/@@BOARD@@/MODEL/config.star
+#
+# And then, enter the chroot and run this command from the src/platform/dev/contrib directory:
+#
+# ~/chromiumos/src/platform/dev/contrib/cros_update_firmware --board @@BOARD@@
+#
+# Verify the changes by running:
+#
+# /build/@@BOARD@@/usr/sbin/chromeos-firmwareupdate --manifest
+#
+# If this works then you can create a CL with your changes, which should include
+# the files:
+#
+# chromeos-base/chromeos-config-bsp-@@BOARD@@-private/files/model.yaml
+#   or
+# src/project/@@BOARD@@/MODEL/config.star
+#
+# chromeos-base/chromeos-firmware-@@BOARD@@/Manifest
+# chromeos-base/chromeos-firmware-@@BOARD@@/files/*srcuris
+# chromeos-base/chromeos-firmware-@@BOARD@@/chromeos-firmware-@@BOARD@@-9999.ebuild
+
+EOF
+
+  # Remove the old generated portion
+  sed -i -E '/((^# Unified Builds firmware URL.*$)|(^# Generated Code Follows.*$))/,$ d' "${ebuild}"
+
+  # Put the message back in with the board name substitution
+  sed -E "s/@@BOARD@@/${board}/g" < /tmp/comment_template.txt  >> "${ebuild}"
+
+  # Write the empty SRC_URI
+  echo 'SRC_URI=""' >> "${ebuild}"
+
+  # Write a SRC_URI += line for each one
+  for each in "${sorted_srcuris[@]}"
+  do
+    echo "${each}" | sed -E 's/^(.*)$/SRC_URI+=\"\1 \"/' >> "${ebuild}"
+  done
+
+  # End with the firmware_setup_source
+  echo >> "${ebuild}"
+  echo cros-firmware_setup_source >> "${ebuild}"
+
+  "ebuild-${board}" "${ebuild}" manifest
+  USE="-bootimage -cros_ec -zephyr_ec" \
+	  "emerge-${board}" -j "${emerge_flags[@]}" "chromeos-firmware-${board}"
+
+  for i in "${!result[@]}"; do
+    if [[ "${result[i]}" -eq "0" ]]; then
+      stop_workon "${board}" "${start_pkg[i]}"
+    fi
+  done
+}
+
+verify_environment() {
+  local board="$1"
+
+  if [ ! -d "/build/${board}" ]; then
+    echo "setup_board has NOT been run for ${board}."
+    echo "Attempting to run setup_board --board=${board} --force."
+    setup_board --board="${board}" --force
+  fi
+}
+
+main() {
+  if [[ -z "${FLAGS_board}" ]]; then
+    die "-b or --board required."
+  fi
+  if [[ "${FLAGS_append_srcuris}" == "${FLAGS_TRUE}" && "${FLAGS_project_srcuris}" == "${FLAGS_TRUE}" ]]; then
+    die "--append_srcuris and --project_srcuris cannot both be set"
+  fi
+  if [[ -z "${FLAGS_project}" && "${FLAGS_project_srcuris}" == "${FLAGS_TRUE}" ]]; then
+    die "--project must be set when --project_srcuris is set"
+  fi
+  verify_environment "${FLAGS_board}"
+  update_firmware "${FLAGS_board}" "${FLAGS_project}" "${FLAGS_quiet}" "${FLAGS_append_srcuris}" "${FLAGS_project_srcuris}"
+}
+
+main "$@"

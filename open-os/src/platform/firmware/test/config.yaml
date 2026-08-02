@@ -1,0 +1,138 @@
+firmware_common: &firmware_common
+  $build-target: "reef"
+  $brand-code: "REEF"
+  $fw-name: "Reef"
+  $ro-rev: "9042.50"
+  $ec-rev: "{{$ro-rev}}"
+  bcs-overlay: "overlay-{{$build-target}}-private"
+  build-targets:
+    coreboot: "{{$build-target}}"
+    ec: "{{$build-target}}"
+    depthcharge: "{{$build-target}}"
+    libpayload: "{{$build-target}}"
+  ec-ro-image: "bcs://{{$fw-name}}_EC.{{$ec-rev}}.0.tbz2"
+  main-ro-image: "bcs://{{$fw-name}}.{{$ro-rev}}.0.tbz2"
+
+firmwares:
+  reef_9042_50: &reef_9042_50
+    <<: *firmware_common
+    $ro-rev: "9042.50"
+    name: "reef"
+  reef_9042_50_sand: &reef_9042_50_sand
+    <<: *firmware_common
+    $ro-rev: "9042.50"
+    name: "sand"
+  pyro_9042_41: &pyro_9042_41
+    <<: *firmware_common
+    $fw-name: "Pyro"
+    $build-target: "pyro"
+    $ro-rev: "9042.41"
+  snappy_9042_43: &snappy_9042_43
+    <<: *firmware_common
+    $fw-name: "Snappy"
+    $build-target: "snappy"
+    $ro-rev: "9042.43"
+
+
+base_config: &base_config
+  brand-code: "{{$brand-code}}"
+  name: "{{$device-name}}"
+
+device_config: &device_config
+  <<: *base_config
+  identity:
+    platform-name: "SomePlatform"
+    frid: "Google_{{$device-name}}"
+  firmware-signing:
+    key-id: "{{$key-id}}"
+    signature-id: "{{$device-name}}"
+
+cl_device_config: &cl_device_config
+  <<: *base_config
+  $signature-id: "{{$device-name}}-{{$customlabel-tag}}"
+  identity:
+    platform-name: "SomePlatform"
+    frid: "Google_{{$device-name}}"
+    custom-label-tag: "{{$customlabel-tag}}"
+  firmware-signing:
+    key-id: "{{$key-id}}"
+    signature-id: "{{$signature-id}}"
+    sig-id-in-customization-id: true
+
+chromeos:
+  devices:
+    - $device-name: "reef"
+      products:
+        - $key-id: "REEF"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_9042_50
+    - $device-name: "electro"
+      products:
+        - $key-id: "ELECTRO"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_9042_50
+    - $device-name: "basking"
+      products:
+        - $key-id: "BASKING"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_9042_50_sand
+    - $device-name: "sand"
+      products:
+        - $key-id: "SAND"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_9042_50_sand
+    - $device-name: "pyro"
+      products:
+        - $key-id: "PYRO"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *pyro_9042_41
+    - $device-name: "snappy"
+      products:
+        - $key-id: "SNAPPY"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *snappy_9042_43
+    - $device-name: "customlabel_test"
+      products:
+        - $key-id: "CUSTOMLABEL"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_9042_50_sand
+    - $device-name: "zero-touch-customlabel"
+      products:
+        - $customlabel-tag: "" # default
+          $signature-id: "{{$device-name}}-default"
+          $key-id: ""
+        - $customlabel-tag: "zt1"
+          $key-id: "ZT1"
+        - $customlabel-tag: "zt2"
+          $key-id: "ZT2"
+      skus:
+        - config:
+            <<: *cl_device_config
+            firmware: *reef_9042_50
+    - $device-name: "clref"
+      products:
+        - $customlabel-tag: "" # default
+          $signature-id: "{{$device-name}}-default"
+          $key-id: "REEF"
+        - $customlabel-tag: "cltag1"
+          $key-id: "CLREF-CLTAG1"
+        - $customlabel-tag: "cltag2"
+          $key-id: "CLREF-CLTAG2"
+      skus:
+        - config:
+            <<: *cl_device_config
+            firmware: *reef_9042_50

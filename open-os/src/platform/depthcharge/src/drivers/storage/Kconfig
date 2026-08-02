@@ -1,0 +1,149 @@
+##
+## Copyright 2013 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config DRIVER_AHCI
+	bool "AHCI driver"
+	default n
+
+config DRIVER_STORAGE_COMMON
+	bool "Enable common storage functions"
+	default n
+
+config DRIVER_STORAGE_MMC
+	bool "Board-specific SD/MMC storage Driver"
+	default n
+	help
+	  For platforms with SD/MMC card readers not on USB bus.
+
+config DRIVER_STORAGE_MSHC_S5P
+	depends on  DRIVER_STORAGE_MMC
+	bool "S5P MSHC/MMC driver"
+	default n
+
+config DRIVER_STORAGE_MMC_DW
+	depends on DRIVER_STORAGE_MMC
+	bool "DesignWare MMC driver"
+	default n
+
+config DRIVER_STORAGE_MMC_DW_EXYNOS
+	depends on DRIVER_STORAGE_MMC_DW
+	bool "DesignWare MMC driver for Exynos"
+	default n
+
+config DRIVER_STORAGE_IPQ_806X
+	depends on DRIVER_STORAGE_MMC
+	bool "Qualcomm MMC driver"
+	default n
+
+config DRIVER_STORAGE_IPQ_40XX
+	depends on DRIVER_STORAGE_MMC
+	bool "QCA MMC driver for IPQ40xx"
+	default n
+
+config DRIVER_STORAGE_MMC_MTK
+	depends on DRIVER_STORAGE_MMC
+	bool "MTK MMC driver"
+	default n
+
+config DRIVER_STORAGE_MMC_MVMAP2315
+	depends on DRIVER_STORAGE_MMC
+	bool "MVMAP2315 MMC driver"
+	default n
+
+config DRIVER_STORAGE_MMC_TEGRA
+	depends on DRIVER_STORAGE_MMC
+	bool "NVIDIA Tegra MMC driver"
+	default n
+
+config DRIVER_STORAGE_MMC_RTK
+	depends on DRIVER_STORAGE_MMC
+	bool "Realtek SD/eMMC driver"
+	default n
+
+config DRIVER_SDHCI
+	depends on DRIVER_STORAGE_MMC
+	bool "SDHCI specification compliant eMMC/SD driver"
+	default n
+
+config DRIVER_STORAGE_SDHCI_PCI
+	depends on ARCH_X86
+	depends on DRIVER_SDHCI
+	bool "PCI SDHCI based eMMC/SD driver"
+	default n
+
+config DRIVER_STORAGE_SDHCI_RK3399
+	select DRIVER_SDHCI
+	bool "RK3399 sdhci eMMC driver"
+	default n
+
+config DRIVER_STORAGE_DWMMC_RK3288
+	select DRIVER_STORAGE_MMC_DW
+	bool "R3288 DWMMC driver"
+	default n
+
+config DRIVER_STORAGE_DWMMC_RK3399
+	select DRIVER_STORAGE_MMC_DW
+	bool "R3399 DWMMC driver"
+	default n
+
+config DRIVER_STORAGE_BAYHUB
+	depends on DRIVER_STORAGE_SDHCI_PCI
+	bool "Bayhub SD/eMMC driver"
+	default n
+
+config DRIVER_STORAGE_GENESYSLOGIC
+	depends on DRIVER_STORAGE_SDHCI_PCI
+	bool "Genesys Logic SD/eMMC driver"
+	default n
+
+config DRIVER_STORAGE_NVME
+	bool "NVMe driver"
+	default n
+
+config DRIVER_STORAGE_SDHCI_MSM
+	depends on DRIVER_STORAGE_MMC
+	depends on DRIVER_SDHCI
+	bool "MMC driver for Qcom MSM platforms"
+	default n
+
+config DRIVER_STORAGE_SDHCI_MSM_SET_DLL_USER_CTL
+	depends on DRIVER_STORAGE_SDHCI_MSM
+	bool "MMC DLL user control and dll config3 registers"
+	default n
+	help
+	   Set MMC DLL user control and dll config3 registers
+	   on all the Qcom MSM platforms from sc7280 onwards.
+
+config DRIVER_STORAGE_UFS
+	bool "UFS driver"
+	default n
+
+config DRIVER_STORAGE_UFS_INTEL
+	select DRIVER_STORAGE_UFS
+	bool "Intel UFS driver"
+	default n
+
+config DRIVER_STORAGE_UFS_MTK
+	select DRIVER_STORAGE_UFS
+	bool "MediaTek UFS driver"
+	default n
+
+config DRIVER_STORAGE_UFS_QCOM
+	select DRIVER_STORAGE_UFS
+	bool "Qualcomm UFS driver"
+	default n
+
+config DRIVER_STOTRAGE_UFS_BROKEN_HS_MODE
+	bool "UFS controller/FW has broken HS power mode"
+	default n
+	help
+	  Set this is flag to skip switching to HS power mode

@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "2.39",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.39_debug",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.39_package_set",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.39_install",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.39_installed",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "2.39_install_list",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "binutils",
+    actual = ":2.39",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":2.39_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "binutils_debug",
+    actual = ":2.39_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":2.39_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "binutils_package_set",
+    actual = ":2.39_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":2.39_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "binutils_install",
+    actual = ":2.39_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":2.39_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "binutils_installed",
+    actual = ":2.39_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":2.39_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "binutils_install_list",
+    actual = ":2.39_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "2.39_test",
+    tests = [ "//internal/packages/stage2/host/chromiumos/sys-devel/binutils:2.39_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":2.39_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "binutils_test",
+    tests = [ ":2.39_test" ],
+    visibility = ["@//bazel:internal"],
+)

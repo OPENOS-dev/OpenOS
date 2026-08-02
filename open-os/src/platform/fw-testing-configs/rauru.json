@@ -1,0 +1,25 @@
+{
+  "custom_usb_enable_pins": [
+    {
+      "ioex": false,
+      "name": "en_pp5000_usba_vbus"
+    }
+  ],
+  "ec_capability": {
+    "arm": true,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": false
+  },
+  "firmware_screen": 20,
+  "firmware_screen_rec_mode": 20,
+  "minidiag_capability": {
+    "event_log_test_report": true
+  },
+  "platform": "rauru",
+  "s0ix_override_to_unsupported": true,
+  "usbc_voltage_on_shutdown_and_full_batt": 9
+}

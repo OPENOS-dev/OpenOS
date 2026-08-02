@@ -1,0 +1,202 @@
+##
+## Copyright 2013-2026 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config DRIVER_SOUND_AMD_ACP
+	bool
+	default n
+
+config DRIVER_SOUND_AMD_ACP_V1
+	bool "AMD ACP version 1 support"
+	select DRIVER_SOUND_AMD_ACP
+	default n
+
+config DRIVER_SOUND_AMD_ACP_V2
+	bool "AMD ACP version 2 support"
+	select DRIVER_SOUND_AMD_ACP
+	default n
+
+config DRIVER_SOUND_AW88081
+	bool "AW88081 codec driver"
+	default n
+
+config DRIVER_SOUND_CS35L53
+	bool "CS35L53 codec driver"
+	default n
+
+config DRIVER_SOUND_CS35L53_1_5MHZ_REFCLK
+	bool "1.5MHz Refclk setup for CS35L53 beep driver. Default is 3MHz."
+	depends on DRIVER_SOUND_CS35L53
+	default n
+
+config DRIVER_SOUND_CS35L53_INTERNAL_BOOST
+	bool "Internal Boost setup for CS35L53 beep driver. Default is External Boost."
+	depends on DRIVER_SOUND_CS35L53
+	default n
+
+config DRIVER_SOUND_CS35L53_LLRR
+	bool "Left,Left,Right,Right Channel setup for CS35L53 beep driver. Default is RRLL."
+	depends on DRIVER_SOUND_CS35L53
+	default n
+
+config DRIVER_SOUND_CS35L56_SNDW
+	bool "CS35L56 codec driver"
+	default n
+
+config DRIVER_SOUND_GPIO_AMP
+	bool "An amplifier controlled by GPIO value"
+	default n
+
+config DRIVER_SOUND_I2S_USE_GPIO
+	bool "A I2S codec controlled by GPIO value"
+	default y
+
+config DRIVER_SOUND_GPIO_I2S
+	bool "I2S driver based on bit-bang GPIO"
+	default n
+
+config DRIVER_SOUND_GPIO_PDM
+	bool "PDM driver based on bit-bang GPIO"
+	default n
+
+config DRIVER_SOUND_GPIO_BUZZER
+	bool "A buzzer controlled by gpio value"
+	default n
+
+config DRIVER_SOUND_GPIO_EDGE_BUZZER
+	bool "A buzzer that is gpio edge triggered"
+	default n
+
+config DRIVER_SOUND_HDA
+	bool "HDA codec driver"
+	default n
+
+config DRIVER_SOUND_I2S
+	bool "Generic I2S sound support"
+	default n
+
+config DRIVER_SOUND_IPQ806X
+	bool "IPQ806x sound driver"
+	default n
+
+config DRIVER_SOUND_MAX98090
+	bool "MAX98090 codec driver"
+	default n
+
+config DRIVER_SOUND_MAX98095
+	bool "MAX98095 codec driver"
+	default n
+
+config DRIVER_SOUND_MAX98373
+	bool "MAX98373 codec driver"
+	default n
+
+config DRIVER_SOUND_MAX98390
+	bool "MAX98390 codec driver"
+	default n
+
+config DRIVER_SOUND_MAX98927
+	bool "MAX98927 codec driver"
+	default n
+
+config DRIVER_SOUND_NAU8318_BEEP
+	bool "NAU8318 speaker beep driver"
+	default n
+
+config DRIVER_SOUND_PCAT_BEEP
+	bool "Legacy PC AT beep driver"
+	default n
+
+config DRIVER_SOUND_RT1011
+	bool "RT1011 codec driver"
+	default n
+
+config DRIVER_SOUND_RT1015
+	bool "RT1015 speaker amp driver"
+	default n
+
+config DRIVER_SOUND_RT1015P
+	bool "RT1015Q auto mode speaker amp driver (known as RT1015P)"
+	default n
+
+config DRIVER_SOUND_RT1019
+	bool "RT1019 speaker amp driver"
+	default n
+
+config DRIVER_SOUND_RT1019_BEEP
+	bool "RT1019 auto mode speaker beep driver"
+	default n
+
+config DRIVER_SOUND_RT1320_SNDW
+	bool "RT1320 speaker amp driver"
+	default n
+
+config DRIVER_SOUND_RT5645
+	bool "RT5645 codec driver"
+	default n
+
+config DRIVER_SOUND_RT5677
+	bool "RT5677 codec driver"
+	default n
+
+config DRIVER_SOUND_RT5682
+	bool "RT5682-VD codec driver"
+	default n
+
+config DRIVER_SOUND_RT5682S
+	bool "RT5682-VS codec driver"
+	default n
+
+config DRIVER_SOUND_RT712_SNDW
+	bool "RT712-VB SNDW codec driver"
+	default n
+
+config DRIVER_SOUND_RT721_SNDW
+	bool "RT721 Soundwire codec driver"
+	default n
+
+config DRIVER_SOUND_RT722_SNDW
+	bool "RT722 Soundwire codec driver"
+	default n
+
+config DRIVER_SOUND_ROUTE
+	bool "Sound route container"
+	default n
+
+config DRIVER_SOUND_SSM4567
+	bool "Analog Devices SSM4567 codec driver"
+	default n
+
+config DRIVER_SOUND_TAS2563
+	bool "TAS2563 codec driver"
+	default n
+
+config DRIVER_SOUND_TEGRA_AUDIO_HUB
+	bool "Tegra Audio Hub driver"
+	default n
+
+config DRIVER_SOUND_MAX98373_SNDW
+	bool "MAX98373 SNDW codec driver"
+	default n
+
+config DRIVER_SOUND_MAX98363_SNDW
+	bool "MAX98363 SNDW codec driver"
+	default n
+
+config DRIVER_SOUND_MAX98396
+	bool "MAX98396 codec driver"
+
+config DRIVER_INTEL_GENERIC_AUDIO
+	bool "Audio setup for Intel platform"
+
+config DRIVER_SOUND_WSA8845_SNDW
+	bool "WSA8845 SNDW codec driver"
+	default n

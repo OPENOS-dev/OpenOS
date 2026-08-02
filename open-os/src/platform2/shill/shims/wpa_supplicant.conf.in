@@ -1,0 +1,45 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+disable_scan_offload=1
+# Configure optional Protected Management Frames by default.
+# This allows the supplicant to disable PMF for STAs that do not
+# have the required CMAC support.
+pmf=1
+sae_check_mfp=1
+
+# SAE mechanism for PWE derivation
+# 0 = hunting-and-pecking loop only (default without password identifier)
+# 1 = hash-to-element only (default with password identifier)
+# 2 = both hunting-and-pecking loop and hash-to-element enabled
+# Note: The default value is likely to change from 0 to 2 once the new
+# hash-to-element mechanism has received more interoperability testing.
+# When using SAE password identifier, the hash-to-element mechanism is used
+# regardless of the sae_pwe parameter value.
+sae_pwe=2
+
+# Configure P2P Interface MAC address policy by default.
+# use random MAC address on creating the interface.
+p2p_interface_random_mac_addr=1
+
+# p2p_go_ht40 - Default mode for HT40 enable when operating as GO.
+# This will take effect for p2p_group_add, p2p_connect, and p2p_invite.
+# Note that regulatory constraints and driver capabilities are
+# consulted anyway, so setting it to 1 can't do real harm.
+# By default: 0 (disabled)
+p2p_go_ht40=1
+
+# p2p_go_vht - Default mode for VHT enable when operating as GO
+# This will take effect for p2p_group_add, p2p_connect, and p2p_invite.
+# Note that regulatory constraints and driver capabilities are
+# consulted anyway, so setting it to 1 can't do real harm.
+# By default: 0 (disabled)
+p2p_go_vht=1
+
+# p2p_go_he - Default mode for 11ax HE enable when operating as GO
+# This will take effect for p2p_group_add, p2p_connect, and p2p_invite.
+# Note that regulatory constraints and driver capabilities are
+# consulted anyway, so setting it to 1 can't do real harm.
+# By default: 0 (disabled)
+p2p_go_he=1

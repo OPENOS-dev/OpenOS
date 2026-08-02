@@ -1,0 +1,61 @@
+#!/bin/bash
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Wrapper to run maui-ctl inside the maui-utils Docker container.
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MANAGER="${SCRIPT_DIR}/maui_image_manager.py"
+
+# Separate arguments for manager vs tool
+MANAGER_ARGS=()
+TOOL_ARGS=()
+VERSION_MODE=0
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --version)
+            VERSION_MODE=1
+            shift
+            ;;
+        --utils_channel)
+            MANAGER_ARGS+=("--utils_channel" "$2")
+            shift 2
+            ;;
+        --utils_channel=*)
+            MANAGER_ARGS+=("$1")
+            shift
+            ;;
+        --verbose)
+            MANAGER_ARGS+=("$1") # Pass verbose to manager
+            # TOOL_ARGS+=("$1")   # Also pass verbose to the tool if it supports it
+            shift
+            ;;
+        *)
+            TOOL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Get Image Tag
+if ! IMAGE_TAG=$(python3 "$MANAGER" "${MANAGER_ARGS[@]}"); then
+    exit 1
+fi
+
+if [ "$VERSION_MODE" -eq 1 ]; then
+    # Run version check inside the container
+    docker run --rm "$IMAGE_TAG" maui-ctl --internal-version
+    exit 0
+fi
+
+# Run maui-ctl inside the container
+docker run --rm -it \
+    --privileged \
+    -v /dev:/dev \
+    "$IMAGE_TAG" \
+    maui-ctl "${TOOL_ARGS[@]}"

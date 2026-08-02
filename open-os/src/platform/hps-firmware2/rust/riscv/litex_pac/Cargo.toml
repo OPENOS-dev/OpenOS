@@ -1,0 +1,21 @@
+[package]
+name = "litex_pac"
+version = "0.1.0"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[lib]
+path = "../../../build/hps_platform/litex_pac/lib.rs"
+
+[dependencies]
+bare-metal = "1.0.0"
+riscv = "0.7.0"
+vcell = "0.1.0"
+
+[dependencies.riscv-rt]
+optional = true
+version = "0.8.0"
+
+[features]
+rt = ["riscv-rt"]
+

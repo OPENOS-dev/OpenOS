@@ -1,0 +1,244 @@
+/*
+ * Copyright 2017 Google LLC
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+#include <cbfs.h>
+#include <libpayload.h>
+#include <lp_vboot.h>
+#include <stdbool.h>
+#include <vb2_api.h>
+#include <vboot_api.h>
+
+#include "drivers/ec/cros/ec.h"
+#include "drivers/ec/vboot_auxfw.h"
+#include "vboot/ui.h"
+
+static struct {
+	const VbootAuxfwOps *fw_ops;
+	enum vb2_auxfw_update_severity severity;
+	bool updated;
+} vboot_auxfw[NUM_MAX_VBOOT_AUXFW];
+
+static int vboot_auxfw_count = 0;
+
+void register_vboot_auxfw(const VbootAuxfwOps *auxfw)
+{
+	if (vboot_auxfw_count >= NUM_MAX_VBOOT_AUXFW)
+		die("NUM_MAX_VBOOT_AUXFW (%d) too small\n",
+		    NUM_MAX_VBOOT_AUXFW);
+
+	vboot_auxfw[vboot_auxfw_count++].fw_ops = auxfw;
+}
+
+/**
+ * Check device firmware version.
+ *
+ * Figure out if we have to update a given device's firmware.  If we don't
+ * have an update blob in cbfs for the device, refuse to continue.  Otherwise,
+ * report back if it's going to be a "fast" or "slow" update.
+ *
+ * @param auxfw		FW device ops
+ * @param severity	return parameter for health of auxfw
+ * @return VB2_SUCCESS, or non-zero if error.
+ */
+
+static vb2_error_t check_dev_fw_hash(const VbootAuxfwOps *auxfw,
+				     enum vb2_auxfw_update_severity *severity)
+{
+	void *want_hash;
+	size_t want_size;
+	vb2_error_t result;
+
+	/* find bundled fw hash */
+	want_hash = cbfs_map(auxfw->fw_hash_name, &want_size);
+	if (want_hash == NULL) {
+		printf("%s missing from CBFS\n", auxfw->fw_hash_name);
+		return VB2_ERROR_UNKNOWN;
+	}
+
+	result = auxfw->check_hash(auxfw, want_hash, want_size, severity);
+	free(want_hash);
+
+	return result;
+}
+
+vb2_error_t check_vboot_auxfw(enum vb2_auxfw_update_severity *severity)
+{
+	enum vb2_auxfw_update_severity max;
+	enum vb2_auxfw_update_severity current;
+	vb2_error_t status;
+
+	if (CONFIG(CROS_EC_PROBE_AUX_FW_INFO))
+		cros_ec_probe_aux_fw_chips();
+	max = VB2_AUXFW_NO_DEVICE;
+	for (int i = 0; i < vboot_auxfw_count; ++i) {
+		const VbootAuxfwOps *const auxfw = vboot_auxfw[i].fw_ops;
+
+		status = check_dev_fw_hash(auxfw, &current);
+		if (status != VB2_SUCCESS)
+			return status;
+
+		vboot_auxfw[i].severity = current;
+		max = MAX(max, current);
+	}
+
+	*severity = max;
+	return VB2_SUCCESS;
+}
+
+/**
+ * Display firmware sync screen if needed.
+ *
+ * When there'll be a slow update, try to display firmware sync screen. If
+ * the display hasn't been initialized, request a reboot.
+ *
+ * @return VB2_SUCCESS, or non-zero if error.
+ */
+static vb2_error_t display_firmware_sync_screen(void)
+{
+	struct ui_context ui;
+	struct vb2_context *ctx = vboot_get_context();
+
+	for (int i = 0; i < vboot_auxfw_count; ++i) {
+		/* Display firmware sync screen only if update is slow */
+		if (vboot_auxfw[i].severity != VB2_AUXFW_SLOW_UPDATE)
+			continue;
+
+		if (vb2api_need_reboot_for_display(ctx))
+			return VB2_REQUEST_REBOOT;
+
+		printf("AUXFW is updating. Show firmware sync screen.\n");
+		if (ui_init_context(&ui, ctx, UI_SCREEN_FIRMWARE_SYNC)
+		    == VB2_SUCCESS)
+			ui_display(&ui, NULL);
+		else
+			printf("Failed to initialize UI context.\n");
+
+		break;
+	}
+
+	return VB2_SUCCESS;
+}
+
+/**
+ * Apply the device firmware update.
+ *
+ * @param auxfw		FW device ops
+ * @return VB2_SUCCESS, or non-zero if error.
+ */
+static vb2_error_t apply_dev_fw(const VbootAuxfwOps *auxfw)
+{
+	uint8_t *want_data;
+	size_t want_size;
+	vb2_error_t result;
+
+	/* find bundled fw */
+	want_data = cbfs_map(auxfw->fw_image_name, &want_size);
+	if (want_data == NULL) {
+		printf("%s missing from CBFS\n", auxfw->fw_image_name);
+		return VB2_ERROR_UNKNOWN;
+	}
+
+	result = auxfw->update_image(auxfw, want_data, want_size);
+	free(want_data);
+
+	return result;
+}
+
+static vb2_error_t do_update(void)
+{
+	vb2_error_t status;
+
+	for (int i = 0; i < vboot_auxfw_count; ++i) {
+		const VbootAuxfwOps *auxfw;
+
+		auxfw = vboot_auxfw[i].fw_ops;
+		if (vboot_auxfw[i].severity == VB2_AUXFW_NO_DEVICE ||
+		    vboot_auxfw[i].severity == VB2_AUXFW_NO_UPDATE)
+			continue;
+
+		/* Apply update */
+		printf("Update auxfw %d\n", i);
+		status = apply_dev_fw(auxfw);
+		if (status == VB2_SUCCESS)
+			vboot_auxfw[i].updated = true;
+		else if (status == VB2_ERROR_EX_AUXFW_PERIPHERAL_BUSY)
+			status = VB2_SUCCESS;
+		else
+			return status;
+	}
+
+	return VB2_SUCCESS;
+}
+
+static vb2_error_t do_post_update(void)
+{
+	enum vb2_auxfw_update_severity severity;
+	vb2_error_t status = VB2_SUCCESS;
+
+	for (int i = 0; i < vboot_auxfw_count; ++i) {
+		vb2_error_t post_status;
+		const VbootAuxfwOps *auxfw;
+
+		if (vboot_auxfw[i].severity == VB2_AUXFW_NO_DEVICE ||
+		    vboot_auxfw[i].severity == VB2_AUXFW_NO_UPDATE)
+			continue;
+
+		/* Run post-update (such as enabling PD) after update */
+		auxfw = vboot_auxfw[i].fw_ops;
+		if (auxfw->post_update) {
+			post_status = auxfw->post_update(auxfw);
+			if (post_status != VB2_SUCCESS)
+				status = post_status;
+		}
+
+		if (!vboot_auxfw[i].updated)
+			continue;
+
+		/* Re-check hash after update */
+		post_status = check_dev_fw_hash(auxfw, &severity);
+		if (post_status != VB2_SUCCESS)
+			status = post_status;
+		else if (severity != VB2_AUXFW_NO_UPDATE)
+			status = VB2_ERROR_UNKNOWN;
+	}
+
+	return status;
+}
+
+vb2_error_t update_vboot_auxfw(void)
+{
+	vb2_error_t status, post_status;
+	bool lid_shutdown_disabled = false;
+
+	VB2_TRY(display_firmware_sync_screen());
+
+	/* Disable lid shutdown on x86 if enabled */
+	if (CONFIG(DRIVER_EC_CROS) &&
+	    CONFIG(ARCH_X86) &&
+	    cros_ec_get_lid_shutdown_mask() > 0) {
+		if (!cros_ec_set_lid_shutdown_mask(0))
+			lid_shutdown_disabled = true;
+	}
+
+	status = do_update();
+	post_status = do_post_update();
+	if (status == VB2_SUCCESS && post_status != VB2_SUCCESS)
+		status = post_status;
+
+	/* Re-enable lid shutdown event, if required */
+	if (CONFIG(DRIVER_EC_CROS) && lid_shutdown_disabled)
+		cros_ec_set_lid_shutdown_mask(1);
+
+	return status;
+}

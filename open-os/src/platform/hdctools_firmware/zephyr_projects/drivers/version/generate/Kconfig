@@ -1,0 +1,15 @@
+# Copyright 2023 The ChromiumOS Authors.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config APP_VERSION_PREFIX
+	string "Version Prefix"
+	default "v0.0.0"
+	help
+	  Base version prefix
+
+config APP_VERSION_STRING
+	string "Version Prefix"
+	default "v0.0.0"
+	help
+	  Base version prefix

@@ -1,0 +1,25 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "delay_reboot_to_ping": 90,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": false,
+    "x86": true
+  },
+  "firmware_screen": 20,
+  "hold_pwr_button_nopowerd_shutdown": 14,
+  "models": {
+    "francka": {
+      "white_screen_power_press_time": 1.666
+    }
+  },
+  "platform": "fatcat",
+  "smm_store": false,
+  "spi_voltage": "pp3300",
+  "usb_a_port_count": 0,
+  "white_screen_power_press_time": 1.1
+}

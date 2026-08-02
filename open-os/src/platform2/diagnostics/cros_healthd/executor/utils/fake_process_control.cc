@@ -1,0 +1,104 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "diagnostics/cros_healthd/executor/utils/fake_process_control.h"
+
+#include <csignal>
+#include <string>
+#include <utility>
+
+#include <base/check.h>
+#include <base/containers/span.h>
+#include <base/files/file.h>
+#include <base/files/file_util.h>
+#include <base/files/platform_file.h>
+#include <base/files/scoped_file.h>
+#include <base/files/scoped_temp_dir.h>
+#include <base/functional/callback_forward.h>
+#include <base/notreached.h>
+#include <mojo/public/cpp/system/handle.h>
+
+namespace diagnostics {
+
+FakeProcessControl::FakeProcessControl() {
+  if (!temp_dir_.CreateUniqueTempDir()) {
+    NOTREACHED() << "Failed to create unique temporary directory";
+  }
+  base::FilePath stdout_filepath;
+  stdout_fd_ = base::CreateAndOpenFdForTemporaryFileInDir(temp_dir_.GetPath(),
+                                                          &stdout_filepath);
+  base::FilePath stderr_filepath;
+  stderr_fd_ = base::CreateAndOpenFdForTemporaryFileInDir(temp_dir_.GetPath(),
+                                                          &stderr_filepath);
+  return_code_ = -1;
+  is_connected_ = false;
+}
+
+void FakeProcessControl::GetStdout(GetStdoutCallback callback) {
+  std::move(callback).Run(mojo::WrapPlatformFile(
+      base::ScopedPlatformFile(HANDLE_EINTR(dup(stdout_fd_.get())))));
+}
+
+void FakeProcessControl::GetStderr(GetStderrCallback callback) {
+  std::move(callback).Run(mojo::WrapPlatformFile(
+      base::ScopedPlatformFile(HANDLE_EINTR(dup(stderr_fd_.get())))));
+}
+
+void FakeProcessControl::GetReturnCode(GetReturnCodeCallback callback) {
+  if (return_code_ != -1) {
+    std::move(callback).Run(return_code_);
+    return;
+  }
+  get_return_code_callbacks_.push_back(std::move(callback));
+}
+
+void FakeProcessControl::SetStdoutFileContent(
+    const std::string& stdout_content) {
+  base::File stdout_file = base::File(HANDLE_EINTR(dup(stdout_fd_.get())));
+  (void)stdout_file.Write(/*offset=*/0, base::as_byte_span(stdout_content));
+  stdout_file.Close();
+}
+
+void FakeProcessControl::SetStderrFileContent(
+    const std::string& stderr_content) {
+  base::File stderr_file = base::File(HANDLE_EINTR(dup(stderr_fd_.get())));
+  (void)stderr_file.Write(/*offset=*/0, base::as_byte_span(stderr_content));
+  stderr_file.Close();
+}
+
+void FakeProcessControl::SetReturnCode(int return_code) {
+  CHECK_NE(return_code, -1);
+  return_code_ = return_code;
+  std::vector<GetReturnCodeCallback> get_return_code_callbacks;
+  get_return_code_callbacks.swap(get_return_code_callbacks_);
+  for (size_t i = 0; i < get_return_code_callbacks.size(); ++i) {
+    std::move(get_return_code_callbacks[i]).Run(return_code);
+  }
+}
+
+void FakeProcessControl::Kill() {
+  if (return_code_ == -1) {
+    // The return code if the program is killed by SIGTERM.
+    SetReturnCode(143);
+  }
+}
+
+void FakeProcessControl::BindReceiver(
+    mojo::PendingReceiver<ash::cros_healthd::mojom::ProcessControl> receiver) {
+  receiver_.Bind(std::move(receiver));
+  is_connected_ = true;
+  receiver_.set_disconnect_handler(base::BindOnce(
+      [](bool* is_connected) { *is_connected = false; }, &is_connected_));
+}
+
+bool FakeProcessControl::IsConnected() {
+  return is_connected_;
+}
+
+mojo::Receiver<ash::cros_healthd::mojom::ProcessControl>&
+FakeProcessControl::receiver() {
+  return receiver_;
+}
+
+}  // namespace diagnostics

@@ -1,0 +1,89 @@
+##
+## Copyright 2012 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+mainmenu "Depthcharge configuration"
+
+menu "General"
+
+choice
+	prompt "Architecture"
+	help
+	  The architecture depthcharge will run on.
+
+config ARCH_X86
+	bool "X86"
+
+config ARCH_ARM
+	bool "ARM"
+
+endchoice
+
+choice
+	prompt "ARM Version"
+	depends on ARCH_ARM
+	default ARCH_ARM_V7
+	help
+	  Version for ARM Arch
+
+config ARCH_ARM_V7
+	bool "ARMv7"
+
+config ARCH_ARM_V8
+	bool "ARMv8"
+
+endchoice
+
+choice
+	prompt "X86 Version"
+	depends on ARCH_X86
+	default ARCH_X86_32
+	help
+	  Version for X86 Arch
+
+config ARCH_X86_32
+	bool "x86_32"
+
+config ARCH_X86_64
+	bool "x86_64"
+
+endchoice
+
+source "src/base/Kconfig"
+source "src/boot/Kconfig"
+source "src/debug/Kconfig"
+endmenu
+
+source "src/board/Kconfig"
+
+menu "UIP network stack"
+source "src/net/Kconfig"
+endmenu
+
+menu "Fastboot"
+source "src/fastboot/Kconfig"
+endmenu
+
+menu "Netboot"
+source "src/netboot/Kconfig"
+endmenu
+
+menu "Image layout"
+source "src/image/Kconfig"
+endmenu
+
+menu "Vboot"
+source "src/vboot/Kconfig"
+endmenu
+
+menu "Drivers"
+source "src/drivers/Kconfig"
+endmenu

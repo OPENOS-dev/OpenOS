@@ -1,0 +1,43 @@
+[workspace]
+# This list is altered via sed when building with the ebuild, keep in
+# sync with `src_prepare` in `crdyboot-9999.ebuild`.
+members = [
+    "avb",
+    "buildutil",
+    "bootimg",
+    "cmem",
+    "crdyboot",
+    "crdyshim",
+    "libcrdy",
+    "tools/enroller",
+    "tools/uefi_test_tool",
+    "vboot",
+    "xtask",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "BSD-3-Clause"
+repository = "https://chromium.googlesource.com/chromiumos/platform/crdyboot"
+
+[workspace.dependencies]
+bindgen = "0.69.4"
+buildutil = { path = "buildutil" }
+cmem = { path = "cmem" }
+gpt_disk_io = "0.16.2"
+libcrdy = { path = "libcrdy" }
+log = { version = "0.4.0", default-features = false }
+mockall = "0.12.1"
+object = { version = "0.31.1", default-features = false, features = ["pe", "read_core", "unaligned"] }
+p256 = { version = "0.13.2", default-features = false, features = ["ecdsa"] }
+printf-compat = { version = "0.2.0", default-features = false }
+sbat = "0.5.0"
+sha2 = { version = "0.10.6", default-features = false }
+thiserror = { version = "2.0.0", default-features = false }
+uefi = { version = "0.34.0", default-features = false, features = ["alloc"] }
+uefi-raw = "0.10.0"
+zerocopy = { version = "0.7.32", features = ["derive"] }
+
+[profile.release]
+overflow-checks = true

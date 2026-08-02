@@ -1,0 +1,22 @@
+{
+  "chrome_usbpd": true,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "ec_ro_vbus_bug": true,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "keyboard_dev_switcher",
+  "no_broken_screen_in_dev": true,
+  "platform": "glados",
+  "servo_prog_state_delay": 10,
+  "smm_store": false,
+  "spi_voltage": "pp3300",
+  "usb_a_port_count": -1
+}

@@ -1,0 +1,33 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[package]
+name = "crdyshim"
+version = "1.0.2"
+
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+libcrdy.workspace = true
+log.workspace = true
+object.workspace = true
+p256.workspace = true
+sbat = { workspace = true, features = ["alloc"] }
+thiserror.workspace = true
+uefi.workspace = true
+
+[target.'cfg(target_os = "uefi")'.dependencies]
+uefi = { workspace = true, features = ["global_allocator", "panic_handler"] }
+
+[dev-dependencies]
+libcrdy = { workspace = true, features = ["test_util"] }
+mockall.workspace = true
+
+[features]
+# If enabled, embed a locally-created test public key (produced by xtask)
+# as the embedded public key. If disabled (the default), use the
+# official reven public key.
+use_dev_pubkey = []

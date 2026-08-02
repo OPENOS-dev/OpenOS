@@ -1,0 +1,23 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "custom_usb_enable_pins": [
+    {
+      "ioex": false,
+      "name": "EN_PP5000_USBA_R"
+    }
+  ],
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "hold_pwr_button_nopowerd_shutdown": 14,
+  "hold_pwr_button_poweron": 3,
+  "platform": "draco",
+  "smm_store": false,
+  "spi_voltage": "pp3300"
+}

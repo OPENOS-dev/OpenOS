@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Runs tests that can be run without hardware.
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NORMAL='\033[0m'
+
+set -e
+PROJECT_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")"/..)
+
+# If we're outside the chroot, rerun inside.
+if [ ! -e /etc/cros_chroot_version ] ; then
+    exec "${PROJECT_ROOT}/scripts/run-tool" "$0" "$@"
+fi
+
+source "${PROJECT_ROOT}/environment"
+
+# Crates that can be tested without hardware.
+
+cd "${PROJECT_ROOT}/rust"
+cargo test
+
+# Harware-specific crates. Just build these.
+
+cd "${PROJECT_ROOT}/rust/mcu"
+# We do a release build of MCU firmware, since stage0 doesn't support
+# non-release builds due to size constraints.
+cargo build --release
+
+echo "===== RISCV default ====="
+cd "${PROJECT_ROOT}/rust/riscv"
+cargo build
+
+echo "===== RISCV with all features ====="
+cd "${PROJECT_ROOT}/rust/riscv"
+cargo build --all-features
+
+# Run Python tests
+cd "${PROJECT_ROOT}"
+echo -e "\n\n${RED}=======================================${NORMAL}"
+echo -e "${GREEN}Running Python tests${NORMAL}"
+echo -e "${RED}=======================================${NORMAL}"
+scripts/pyrun -m unittest discover -v

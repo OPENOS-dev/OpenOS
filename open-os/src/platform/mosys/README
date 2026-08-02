@@ -1,0 +1,46 @@
+mosys - The more open system tool
+
+Introduction
+------------
+Mosys is designed to aid in obtaining obscure system-specific information
+and present it in a uniform, human-friendly manner that is also parseable. It
+is intended to complement other systems software and may overlap in some areas.
+
+Configuration & Building
+------------------------
+
+Mosys uses meson to build.  To setup the build, use:
+
+    meson output_dir
+
+Then, to compile mosys, run:
+
+    ninja -C output_dir
+
+The mosys executable will be placed at `output_dir/mains/mosys`.
+
+Usage
+-----
+Mosys uses a natural language syntax to navigate thru a command hierarchy for
+a given platform. Each supported platform will have a specific set of commands
+available.
+
+Mosys returns EXIT_SUCCESS upon successful completion of a command, or
+EXIT_FAILURE if a command is not supported on a given platform. These values
+are defined in the system's stdlib.h. In case of failure, Mosys will also print
+a message to stderr to let the user know.
+
+Use "mosys -t" to display the command tree for the host platform.
+
+Debugging
+---------
+Mosys uses a minijail to restrict behavior. This can sometimes restrict desired
+behavior, especially system calls not whitelisted by the seccomp filter.
+If a subcommand is returning with an error that should be passing, this might
+be why. In order to debug this, run seccomp_debug.sh with the failing command.
+This will print out the system calls that caused the run to fail.
+
+For example, to debug `mosys ec info`, copy over `seccomp_debug.sh` to
+the DUT and run:
+
+    ./seccomp_debug.sh mosys ec info

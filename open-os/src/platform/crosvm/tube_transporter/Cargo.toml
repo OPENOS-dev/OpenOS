@@ -1,0 +1,15 @@
+[package]
+name = "tube_transporter"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+
+[dependencies]
+base = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true, features = [ "derive" ] }
+
+[target.'cfg(windows)'.dependencies]
+win_util = { path = "../win_util"}
+winapi = "0.3"

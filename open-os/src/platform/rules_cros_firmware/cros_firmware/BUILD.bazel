@@ -1,0 +1,27 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+compile_pip_requirements(
+    name = "hdctools_requirements",
+    requirements_in = "hdctools-requirements.txt",
+    requirements_txt = "hdctools-requirements-lock.txt",
+)
+
+alias(
+    name = "update_hdctools",
+    actual = "hdctools_requirements.update",
+)
+
+compile_pip_requirements(
+    name = "zephyr_requirements",
+    requirements_in = "zephyr-requirements.txt",
+    requirements_txt = "zephyr-requirements-lock.txt",
+)
+
+alias(
+    name = "update_zephyr",
+    actual = "zephyr_requirements.update",
+)

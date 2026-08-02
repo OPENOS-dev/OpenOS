@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a *temporary* repo manifest for early fwsdk
+     experimentation.  This location is not its final home.
+
+     We need to relocate it to either the main chromiumos manifest
+     (maybe by using "-m fwsdk.xml"?), or a separate manifest
+     repository at a later point once we figure out the infrastructure
+     implications of either location. -->
+<manifest>
+  <default revision="refs/heads/main"
+           remote="cros"
+           sync-j="16" />
+
+  <!-- Remotes -->
+  <remote name="cros"
+          fetch="https://chromium.googlesource.com"
+          review="https://chromium-review.googlesource.com">
+    <annotation name="public" value="true" />
+  </remote>
+  <remote name="cros-internal"
+          fetch="https://chrome-internal.googlesource.com"
+          review="https://chrome-internal-review.googlesource.com">
+    <annotation name="public" value="false" />
+  </remote>
+
+  <!-- Repohooks -->
+  <project path="src/repohooks"
+           name="chromiumos/repohooks" />
+  <repo-hooks in-project="chromiumos/repohooks"
+              enabled-list="pre-upload" />
+
+  <!-- Projects -->
+  <project path="chromite"
+           name="chromiumos/chromite">
+    <copyfile src="AUTHORS" dest="AUTHORS" />
+    <copyfile src="LICENSE" dest="LICENSE" />
+  </project>
+  <project path="src/bazel"
+           name="chromiumos/bazel" />
+  <project path="src/platform/depthcharge"
+           name="chromiumos/platform/depthcharge" />
+  <project path="src/platform/ec"
+           name="chromiumos/platform/ec" />
+  <project path="src/platform/firmware"
+           name="chromiumos/platform/firmware" />
+  <project path="src/platform/rules_cros_firmware"
+           name="chromiumos/platform/rules_cros_firmware" />
+  <project path="src/platform/ti50/common"
+           remote="cros-internal"
+           name="ti50/common/ti50" />
+  <project path="src/platform/ti50/manifest"
+           remote="cros-internal"
+           name="ti50/manifest" />
+  <project path="src/platform/vboot_reference"
+           name="chromiumos/platform/vboot_reference" />
+  <project path="src/third_party/coreboot"
+           name="chromiumos/third_party/coreboot" />
+  <project path="src/third_party/cryptoc"
+           name="chromiumos/third_party/cryptoc" />
+  <project path="src/third_party/edk2"
+           name="chromiumos/third_party/edk2"
+           revision="refs/heads/chromeos-2017.08" />
+  <project path="src/third_party/hdctools"
+           name="chromiumos/third_party/hdctools" />
+  <project path="src/third_party/u-boot/files"
+           name="chromiumos/third_party/u-boot"
+           revision="refs/heads/chromeos-v2023.04" />
+  <project path="src/third_party/zephyr/cmsis"
+           name="chromiumos/third_party/zephyr/cmsis"
+           revision="refs/heads/chromeos-main" />
+  <project path="src/third_party/zephyr/hal_stm32"
+           name="chromiumos/third_party/zephyr/hal_stm32"
+           revision="refs/heads/chromeos-main" />
+  <project path="src/third_party/zephyr/main"
+           name="chromiumos/third_party/zephyr" />
+  <project path="src/third_party/zephyr/nanopb"
+           name="chromiumos/third_party/zephyr/nanopb" />
+
+  <!-- ti50 dependencies -->
+  <project path="src/platform/pinweaver"
+           name="chromiumos/platform/pinweaver" />
+  <project path="src/third_party/cargo/registry"
+           remote="cros-internal"
+           name="ti50/third_party/cargo/registry"
+           revision="refs/heads/chromeos" />
+  <project path="src/third_party/lowrisc/opentitan"
+           remote="cros-internal"
+           name="ti50/third_party/lowrisc/opentitan"
+           revision="refs/heads/chromeos-v1" />
+  <project path="src/third_party/ms-tpm-20-ref"
+           remote="cros-internal"
+           name="ti50/third_party/microsoft/ms-tpm-20-ref"
+           revision="refs/heads/chromeos" />
+  <project path="src/third_party/tock/libtock-c"
+           remote="cros-internal"
+           name="ti50/third_party/tock/libtock-c"
+           revision="refs/heads/chromeos" />
+  <project path="src/third_party/tock/libtock-rs"
+           remote="cros-internal"
+           name="ti50/third_party/tock/libtock-rs"
+           revision="refs/heads/chromeos-v2" />
+  <project path="src/third_party/tock/tock"
+           remote="cros-internal"
+           name="ti50/third_party/tock/tock"
+           revision="refs/heads/chromeos-v2.0" />
+</manifest>

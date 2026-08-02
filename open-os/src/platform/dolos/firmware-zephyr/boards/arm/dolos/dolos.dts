@@ -1,0 +1,143 @@
+/* Copyright 2024 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/dts-v1/;
+
+#include <ti/mspm0g1x0x_g3x0x/mspm0g3507.dtsi>
+#include "mspm0g3507-pinctrl.dtsi"
+#include "dt-bindings/adc/mspm0_adc.h"
+
+#include <freq.h>
+
+/ {
+	model = "Google DOLOS";
+	compatible = "google,dolos", "ti,mspm0g3507", "ti,mspm0g3xxx";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+	};
+
+	zephyr,user {
+		io-channels = <&adc0 1>;
+	};
+
+	leds: leds {
+		compatible = "gpio-leds";
+		lederr: led_error {
+			gpios = <&gpiob 13 GPIO_ACTIVE_LOW>;
+			label = "Error LED";
+		};
+		ledprg: led_programmed {
+			gpios = <&gpiob 14 GPIO_ACTIVE_LOW>;
+			label = "Programmed LED";
+		};
+		ledrdy: led_ready {
+			gpios = <&gpiob 15 GPIO_ACTIVE_LOW>;
+			label = "Ready LED";
+		};
+		ledpwr: led_powering {
+			gpios = <&gpiob 16 GPIO_ACTIVE_LOW>;
+			label = "Powering LED";
+		};
+	};
+
+	ctrl-pins {
+		compatible = "ctrl-pins";
+		output_enable: output_enable {
+			gpios = <&gpiob 12 GPIO_ACTIVE_HIGH>;
+			label = "Dolos output enable control pin";
+		};
+		system_present: system_present {
+			gpios = <&gpioa 13 GPIO_ACTIVE_HIGH>;
+			label = "System present input signal";
+		};
+		efuse_pg: efuse_pg {
+			gpios = <&gpiob 27 GPIO_ACTIVE_HIGH>;
+			label = "EFUSE power good input signal";
+		};
+		bq_charge_ok: bq_charge_ok {
+			gpios = <&gpioa 17 GPIO_ACTIVE_HIGH>;
+			label = "BQ Charge OK input signal";
+		};
+	};
+};
+
+&i2c0 {
+	pinctrl-0 = <&i2c0_scl_pa1 &i2c0_sda_pa0>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	bq25731: bq25731@6b {
+		compatible = "ti,bq25731";
+		reg = <0x6b>;
+	};
+
+	pac1954: pac1954@10 {
+		compatible = "microship,pac1954";
+		reg = <0x10>;
+	};
+
+	eeprom: eeprom@50 {
+		compatible = "zephyr,i2c-target-eeprom";
+		reg = <0x50>;
+		size = <1024>;
+	};
+};
+
+&i2c1 {
+	pinctrl-0 = <&i2c1_scl_pa29 &i2c1_sda_pa30>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&cpu0 {
+	clock-frequency = <DT_FREQ_M(32)>;
+};
+
+&gpioa {
+	status = "okay";
+};
+
+&gpiob {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart0_tx_pa10 &uart0_rx_pa11 &uart0_rts_pa15 &uart0_cts_pa14>;
+	pinctrl-names = "default";
+	hw-flow-control;
+};
+
+&adc0 {
+	status = "okay";
+	ti,clk-source = <MSP_ADC_CLOCK_ULPCLK>;
+	ti,clk-divider = <1>;
+	ti,clk-range = <MSP_ADC_CLOCK_RANGE_24TO32>;
+
+	pinctrl-0 = <&adc0_pa26>;
+	pinctrl-names = "default";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_VDD_1";
+		zephyr,acquisition-time =<ADC_ACQ_TIME(ADC_ACQ_TIME_TICKS, 4)>;
+		zephyr,resolution = <12>;
+	};
+};
+
+&clkmux {
+	clock-source = <&pll>;
+	clock-frequency = <DT_FREQ_M(80)>;
+	uclk-div = <2>;
+};

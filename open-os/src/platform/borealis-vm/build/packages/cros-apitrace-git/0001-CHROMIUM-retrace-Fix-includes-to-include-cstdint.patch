@@ -1,0 +1,41 @@
+From 9a1f4c8507399bf102f9f59da55a548fd86a7f63 Mon Sep 17 00:00:00 2001
+From: David Riley <davidriley@chromium.org>
+Date: Tue, 19 Aug 2025 13:22:39 -0700
+Subject: [PATCH] CHROMIUM: retrace: Fix includes to include cstdint.
+
+BUG=b:439839342
+TEST=none
+
+Change-Id: Ie3fa63a376fe972208e72c552f9f03db290b4d96
+---
+ frametrim/ft_dependecyobject.hpp | 1 +
+ retrace/metric_writer.cpp        | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/frametrim/ft_dependecyobject.hpp b/frametrim/ft_dependecyobject.hpp
+index 295ed9ac..30f9f50e 100644
+--- a/frametrim/ft_dependecyobject.hpp
++++ b/frametrim/ft_dependecyobject.hpp
+@@ -27,6 +27,7 @@
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include "ft_tracecall.hpp"
+ 
+ namespace frametrim {
+diff --git a/retrace/metric_writer.cpp b/retrace/metric_writer.cpp
+index e923ed1d..eb3f60b1 100644
+--- a/retrace/metric_writer.cpp
++++ b/retrace/metric_writer.cpp
+@@ -23,6 +23,7 @@
+  *
+  **************************************************************************/
+ 
++#include <cstdint>
+ #include <iostream>
+ 
+ #include "metric_writer.hpp"
+-- 
+2.51.0.rc1.167.g924127e9c0-goog
+

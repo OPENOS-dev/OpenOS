@@ -1,0 +1,356 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "mojo_service_manager/daemon/daemon.h"
+
+#include <linux/limits.h>
+#include <linux/sockios.h>
+#include <pwd.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <sysexits.h>
+#include <unistd.h>
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include <base/check_op.h>
+#include <base/compiler_specific.h>
+#include <base/debug/alias.h>
+#include <base/files/file_enumerator.h>
+#include <base/files/file_util.h>
+#include <base/functional/bind.h>
+#include <base/logging.h>
+#include <base/posix/eintr_wrapper.h>
+#include <base/strings/string_number_conversions.h>
+#include <base/task/single_thread_task_runner.h>
+#include <chromeos/constants/mojo_service_manager.h>
+#include <mojo/public/cpp/platform/platform_channel_endpoint.h>
+#include <mojo/public/cpp/system/invitation.h>
+
+#include "mojo_service_manager/daemon/service_manager.h"
+#include "mojo_service_manager/daemon/service_policy_loader.h"
+
+namespace chromeos::mojo_service_manager {
+namespace {
+
+// Allow others to write so others can connect to the socket. The ACLs are
+// controlled by the policy files so we don't need to do it again by the system
+// user / group.
+constexpr mode_t kSocketMode =
+    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+
+// The interval to check the FD usage. 10 seconds is chosen to balance the
+// overhead of the check and the risk of missing a rapid FD accumulation before
+// hitting the hard limit of 1024.
+constexpr base::TimeDelta kFdCheckInterval = base::Seconds(10);
+
+// The high-watermark for FD usage before we trigger a diagnostic crash.
+// 800 is chosen because a normal reading would be in the range of ~100, if the
+// usage is approaching 800, it is very likely that something is wrong and a
+// crash is imminent. We want to trigger a crash to capture the state before we
+// hit the hard limit of 1024.
+constexpr int kFdExhaustionWatermark = 800;
+
+base::ScopedFD CreateUnixDomainSocket(const base::FilePath& socket_path) {
+  base::ScopedFD socket_fd{
+      socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)};
+  if (!socket_fd.is_valid()) {
+    PLOG(ERROR) << "Failed to create socket.";
+    return base::ScopedFD{};
+  }
+
+  struct sockaddr_un unix_addr{
+      .sun_family = AF_UNIX,
+  };
+  constexpr size_t kMaxSize =
+      sizeof(unix_addr.sun_path) - /*NULL-terminator*/ 1;
+  CHECK_LE(socket_path.value().size(), kMaxSize);
+  strncpy(unix_addr.sun_path, socket_path.value().c_str(), kMaxSize);
+
+  if (bind(socket_fd.get(), reinterpret_cast<const sockaddr*>(&unix_addr),
+           sizeof(unix_addr)) < 0) {
+    PLOG(ERROR) << "Failed to bind: " << socket_path.value();
+    return base::ScopedFD{};
+  }
+
+  if (!base::SetPosixFilePermissions(socket_path, kSocketMode)) {
+    PLOG(ERROR) << "Failed to chmod the socket: " << socket_path.value();
+    return base::ScopedFD{};
+  }
+
+  if (listen(socket_fd.get(), SOMAXCONN) < 0) {
+    PLOG(ERROR) << "Failed to listen " << socket_path.value();
+    return base::ScopedFD{};
+  }
+
+  return socket_fd;
+}
+
+base::ScopedFD AcceptSocket(const base::ScopedFD& server_fd) {
+  return base::ScopedFD{HANDLE_EINTR(accept4(server_fd.get(), nullptr, nullptr,
+                                             SOCK_NONBLOCK | SOCK_CLOEXEC))};
+}
+
+mojo::PendingReceiver<mojom::ServiceManager> SendMojoInvitationAndPassReceiver(
+    base::ScopedFD peer) {
+  mojo::OutgoingInvitation invitation;
+  mojo::PendingReceiver<mojom::ServiceManager> receiver{
+      invitation.AttachMessagePipe(kMojoInvitationPipeName)};
+  mojo::OutgoingInvitation::Send(
+      std::move(invitation), base::kNullProcessHandle,
+      mojo::PlatformChannelEndpoint(mojo::PlatformHandle(std::move(peer))));
+  return receiver;
+}
+
+}  // namespace
+
+std::string GetSEContextStringFromChar(const char* buf, size_t len) {
+  // The length may or may not contains the null-terminator.
+  if (len > 0 && buf[len - 1] == '\0') {
+    return std::string(buf);
+  }
+  return std::string(buf, len);
+}
+
+Daemon::Delegate::Delegate() = default;
+
+Daemon::Delegate::~Delegate() = default;
+
+int Daemon::Delegate::GetSockOpt(const base::ScopedFD& socket,
+                                 int level,
+                                 int optname,
+                                 void* optval,
+                                 socklen_t* optlen) const {
+  return getsockopt(socket.get(), level, optname, optval, optlen);
+}
+
+const struct passwd* Daemon::Delegate::GetPWUid(uid_t uid) const {
+  return getpwuid(uid);
+}
+
+ServicePolicyMap Daemon::Delegate::LoadPolicyFiles(
+    const std::vector<base::FilePath>& policy_dir_paths) const {
+  ServicePolicyMap res;
+  LoadAllServicePolicyFileFromDirectories(policy_dir_paths, &res);
+  return res;
+}
+
+Daemon::Daemon(Delegate* delegate,
+               const base::FilePath& socket_path,
+               const std::vector<base::FilePath>& policy_dir_paths,
+               Configuration configuration)
+    : ipc_support_(std::make_unique<mojo::core::ScopedIPCSupport>(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          // Don't block shutdown. All mojo pipes are not expected to work after
+          // the broker shutdown, so we don't need to wait them.
+          mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST)),
+      delegate_(delegate),
+      socket_path_(socket_path),
+      policy_dir_paths_(std::move(policy_dir_paths)),
+      configuration_(std::move(configuration)) {}
+
+Daemon::~Daemon() {}
+
+int Daemon::OnInit() {
+  int ret = brillo::Daemon::OnInit();
+  if (ret != EX_OK) {
+    return ret;
+  }
+
+  // Creates the socket as early as possible to reduce the time of clients that
+  // poll and wait for the socket file to be created.
+  socket_fd_ = CreateUnixDomainSocket(socket_path_);
+  if (!socket_fd_.is_valid()) {
+    LOG(ERROR) << "Failed to create socket server at path: " << socket_path_;
+    return EX_OSERR;
+  }
+
+  service_manager_ = std::make_unique<ServiceManager>(
+      std::move(configuration_), delegate_->LoadPolicyFiles(policy_dir_paths_));
+
+  socket_watcher_ = base::FileDescriptorWatcher::WatchReadable(
+      socket_fd_.get(),
+      base::BindRepeating(&Daemon::SendMojoInvitationAndBindReceiver,
+                          base::Unretained(this)));
+
+  fd_check_timer_.Start(FROM_HERE, kFdCheckInterval, this,
+                        &Daemon::CheckFileDescriptorUsage);
+
+  LOG(INFO) << "mojo_service_manager started.";
+  return EX_OK;
+}
+
+void Daemon::OnShutdown(int* exit_code) {
+  LOG(INFO) << "mojo_service_manager is shutdowning with exit code: "
+            << *exit_code;
+
+  // Manually reset these objects to prevent them posting tasks to the message
+  // loop during shutdowning.
+  socket_watcher_.reset();
+  service_manager_.reset();
+  socket_fd_.reset();
+  // This need to be reset manually to trigger the shutdown of mojo. Otherwise,
+  // the mojo broker tasks could block the message queue during shutdowning.
+  ipc_support_.reset();
+}
+
+void Daemon::SendMojoInvitationAndBindReceiver() {
+  base::ScopedFD peer = AcceptSocket(socket_fd_);
+  if (!peer.is_valid()) {
+    LOG(ERROR) << "Failed to accept peer socket";
+    return;
+  }
+  mojom::ProcessIdentityPtr identity = GetProcessIdentityFromPeerSocket(peer);
+  mojo::PendingReceiver<mojom::ServiceManager> receiver =
+      SendMojoInvitationAndPassReceiver(std::move(peer));
+  if (!identity) {
+    receiver.ResetWithReason(
+        static_cast<uint32_t>(mojom::ErrorCode::kUnexpectedOsError),
+        "Cannot get identity from peer socket.");
+    return;
+  }
+  // TODO(b/234569073): Remove this log after we fully enable service manager.
+  LOG(INFO) << "Receive connection from: " << identity->security_context << ", "
+            << identity->uid << "("
+            << identity->username.value_or("unknown user") << ")";
+  CHECK(service_manager_);
+  service_manager_->AddReceiver(std::move(identity), std::move(receiver));
+}
+
+std::optional<std::string> Daemon::GetUsernameByUid(uint32_t uid) const {
+  const struct passwd* passwd = nullptr;
+  do {
+    static_assert(sizeof(uid_t) == sizeof(uint32_t));
+    passwd = delegate_->GetPWUid(static_cast<uid_t>(uid));
+  } while (passwd == nullptr && errno == EINTR);
+  if (passwd == nullptr) {
+    PLOG(ERROR) << "Failed to get username by uid " << uid;
+    return std::nullopt;
+  }
+  return std::string{passwd->pw_name};
+}
+
+mojom::ProcessIdentityPtr Daemon::GetProcessIdentityFromPeerSocket(
+    const base::ScopedFD& peer) const {
+  auto identity = mojom::ProcessIdentity::New();
+  struct ucred ucred_data{};
+  socklen_t len = sizeof(ucred_data);
+  if (delegate_->GetSockOpt(peer, SOL_SOCKET, SO_PEERCRED, &ucred_data, &len) <
+      0) {
+    PLOG(ERROR) << "Failed to get SO_PEERCRED from peer socket.";
+    return nullptr;
+  }
+  static_assert(sizeof(ucred_data.pid) == 4);
+  static_assert(sizeof(ucred_data.uid) == 4);
+  static_assert(sizeof(ucred_data.gid) == 4);
+  identity->pid = static_cast<uint32_t>(ucred_data.pid);
+  identity->uid = static_cast<uint32_t>(ucred_data.uid);
+  identity->gid = static_cast<uint32_t>(ucred_data.gid);
+  identity->username = GetUsernameByUid(identity->uid);
+
+  // TODO(b/333323875): Don't get `security_context` after migration.
+  char buf[NAME_MAX] = {};
+  len = NAME_MAX;
+  if (delegate_->GetSockOpt(peer, SOL_SOCKET, SO_PEERSEC, &buf, &len) < 0) {
+    PLOG(ERROR) << "Failed to get SO_PEERSEC from peer socket.";
+    return nullptr;
+  }
+  identity->security_context = GetSEContextStringFromChar(buf, len);
+  if (identity->security_context.size() == 0) {
+    LOG(ERROR) << "The length of security context gotten from socket is 0.";
+    return nullptr;
+  }
+  return identity;
+}
+
+[[noreturn]] NOINLINE void Daemon::CrashWithCulpritData(bool culprit_found,
+                                                        uid_t culprit_uid,
+                                                        pid_t culprit_pid,
+                                                        int queued_bytes,
+                                                        int fd_count) {
+  int culprit_found_value = culprit_found ? 1 : 0;
+
+  // base::debug::Alias forces the compiler to keep these variables alive
+  // in the local stack memory. When the process crashes, these values
+  // are guaranteed to be captured in the resulting minidump.
+  base::debug::Alias(&culprit_found_value);
+  base::debug::Alias(&culprit_uid);
+  base::debug::Alias(&culprit_pid);
+  base::debug::Alias(&queued_bytes);
+  base::debug::Alias(&fd_count);
+
+  LOG(FATAL)
+      << "Intentional crash to capture Mojo FD exhaustion culprit in minidump";
+}
+
+void Daemon::CheckFileDescriptorUsage() {
+  int fd_count = 0;
+  base::FileEnumerator count_enum(
+      base::FilePath("/proc/self/fd"), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath name = count_enum.Next(); !name.empty();
+       name = count_enum.Next()) {
+    fd_count++;
+  }
+
+  if (fd_count < kFdExhaustionWatermark) {
+    return;
+  }
+
+  // At this point, we are in the failing state. Find the culprit.
+  bool culprit_found = false;
+  int max_queued_bytes = -1;
+  struct ucred culprit_ucred = {};
+
+  base::FileEnumerator fd_enum(
+      base::FilePath("/proc/self/fd"), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath name = fd_enum.Next(); !name.empty();
+       name = fd_enum.Next()) {
+    int fd = -1;
+    if (!base::StringToInt(name.BaseName().value(), &fd) || fd < 0) {
+      continue;
+    }
+
+    // Keep the descriptor stable while collecting the socket diagnostics.
+    // If the process is too close to the FD limit to duplicate it, skip this
+    // descriptor instead of racing on an unowned fd number.
+    base::ScopedFD probe_fd(HANDLE_EINTR(dup(fd)));
+    if (!probe_fd.is_valid()) {
+      continue;
+    }
+
+    int queued_bytes = 0;
+    // SIOCOUTQ succeeds only on sockets.
+    if (ioctl(probe_fd.get(), SIOCOUTQ, &queued_bytes) == 0) {
+      if (queued_bytes <= 0) {
+        continue;
+      }
+
+      if (!culprit_found || queued_bytes > max_queued_bytes) {
+        struct ucred ucred_data = {};
+        socklen_t len = sizeof(ucred_data);
+        // Extract credentials of the slow reader.
+        if (getsockopt(probe_fd.get(), SOL_SOCKET, SO_PEERCRED, &ucred_data,
+                       &len) == 0) {
+          culprit_found = true;
+          max_queued_bytes = queued_bytes;
+          culprit_ucred = ucred_data;
+        }
+      }
+    }
+  }
+
+  // Transfer the collected data to the crash frame.
+  CrashWithCulpritData(culprit_found, culprit_ucred.uid, culprit_ucred.pid,
+                       max_queued_bytes, fd_count);
+}
+
+}  // namespace chromeos::mojo_service_manager

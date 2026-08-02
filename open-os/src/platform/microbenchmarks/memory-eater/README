@@ -1,0 +1,29 @@
+Usage: memory-eater --size MB [--speed] [--fork] [--repeat N] [--chunk P]
+  [--wait S]
+  --size MB: required to specify the buffer size
+  --fork: fork a child process to double the memory usage
+  --repeat N: access the pages in the buffer N times
+  --chunk P: access P pages in the buffer then wait for S seconds
+  --wait S: wait S seconds between chunks of page accesses
+
+The benchmark has two typical usages:
+
+1) Measure the ZRAM page swap-in rate by trying to access one byte per page.
+Example command:
+
+  memory-eater --size 3072 --speed --fork --repeat 4 --chunk 500
+
+The program will allocate a 3072MB buffer and fork a child process. Then both
+processes will try to access 500 pages in turn until the whole buffer is
+touched for 4 times. If the system only has 4GB of RAM, then each accessed page
+is paged in from swap. Both processes in the end will report pages/sec as the
+result.
+
+2) Create background memory pressure. Example command:
+
+  memory-eater --size 3072 --chunk 1000 --wait 1 &
+
+The program will create a 3072MB buffer and access 1000 pages per second. 
+
+
+

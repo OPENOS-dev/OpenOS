@@ -1,0 +1,57 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//common-mk/pkg_config.gni")
+group("all") {
+  deps = [
+    ":install_privacy_headers",
+    ":libprivacy",
+  ]
+  if (use.test) {
+    deps += [ ":privacy_test_runner" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [ "libchrome" ]
+}
+
+shared_library("libprivacy") {
+  sources = [ "log.cc" ]
+  install_path = "lib"
+  include_dirs = [ "." ]
+  public_configs = [ ":target_defaults" ]
+  deps = [ ":libprivacy_pc" ]
+}
+
+install_config("install_privacy_headers") {
+  sources = [ "log.h" ]
+  install_path = "/usr/include/privacy"
+}
+
+generate_pkg_config("libprivacy_pc") {
+  name = "libprivacy"
+  output_name = "libprivacy"
+  description = "Chrome OS privacy library"
+  version = "0.0.1"
+
+  libs = [ "-lprivacy" ]
+  install = true
+}
+
+if (use.test) {
+  executable("privacy_test_runner") {
+    sources = [ "log_test.cc" ]
+    configs += [
+      "//common-mk:test",
+
+      ":target_defaults",
+    ]
+    run_test = true
+
+    deps = [
+      ":libprivacy",
+      "//common-mk/testrunner",
+    ]
+  }
+}

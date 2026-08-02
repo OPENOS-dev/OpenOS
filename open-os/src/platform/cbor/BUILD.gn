@@ -1,0 +1,102 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":libcbor_static",
+    ":libcbor_shared",
+    ":libcbor_pc",
+  ]
+  if (use.test) {
+    deps += [ ":cbor_unittests" ]
+  }
+  if (use.fuzzer) {
+    deps += [ ":reader_fuzzer" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libchrome",
+  ]
+}
+
+generate_pkg_config("libcbor_pc") {
+  deps = [
+    ":libcbor_static",
+  ]
+  output_name = "cbor"
+  description = "Concise Binary Object Representation library"
+  version = "0.1"
+}
+
+source_set("libcbor_source_set") {
+  configs += [
+    "//common-mk:pic",
+    ":target_defaults",
+  ]
+  defines = [
+    # Define COMPONENT_BUILD so that symbols are exported. See cbor_export.h
+    "COMPONENT_BUILD",
+    "CBOR_IMPLEMENTATION",
+  ]
+  sources = [
+    "diagnostic_writer.cc",
+    "reader.cc",
+    "values.cc",
+    "writer.cc",
+  ]
+}
+
+static_library("libcbor_static") {
+  output_name = "libcbor"
+  deps = [ ":libcbor_source_set" ]
+}
+
+shared_library("libcbor_shared") {
+  output_name = "libcbor"
+  deps = [ ":libcbor_source_set" ]
+}
+
+if (use.test) {
+  pkg_config("libchrome_test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+  executable("cbor_unittests") {
+    configs += [
+      "//common-mk:test",
+      ":libchrome_test_config",
+      ":target_defaults",
+    ]
+    sources = [
+      "diagnostic_writer_unittest.cc",
+      "reader_unittest.cc",
+      "values_unittest.cc",
+      "writer_unittest.cc",
+    ]
+    deps = [
+      ":libcbor_static",
+      "//common-mk/testrunner",
+    ]
+  }
+}
+
+if (use.fuzzer) {
+  pkg_config("libchrome_test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+  executable("reader_fuzzer") {
+    configs += [
+      "//common-mk/common_fuzzer",
+      ":libchrome_test_config",
+      ":target_defaults",
+    ]
+    sources = [ "reader_fuzzer.cc" ]
+    deps = [
+      ":libcbor_static",
+    ]
+  }
+}

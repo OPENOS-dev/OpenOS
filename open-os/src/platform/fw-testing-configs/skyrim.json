@@ -1,0 +1,44 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "custom_usb_enable_pins": [
+    {
+      "ioex": false,
+      "name": "EN_PP5000_USB_A0_VBUS"
+    },
+    {
+      "ioex": false,
+      "name": "EN_PP5000_USB_A1_VBUS"
+    }
+  ],
+  "delay_powerinfo_stable": 5,
+  "delay_reboot_to_ping": 90,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "firmware_screen": 15,
+  "hold_pwr_button_poweroff": 3,
+  "max_charging_power": 100.0,
+  "minidiag_capability": {
+    "cbmem_preserved_by_ap_reset": false
+  },
+  "models": {
+    "frostflow": {
+      "max_charging_power": 45
+    },
+    "markarth": {
+      "max_charging_power": 65
+    }
+  },
+  "platform": "skyrim",
+  "rec_force_mrc": false,
+  "s3_override_to_unsupported": true,
+  "servo_prog_state_delay": 1.0,
+  "smm_store": false,
+  "white_screen_power_press_time": 1.5
+}

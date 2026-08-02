@@ -1,0 +1,15 @@
+[package]
+name = "xtask"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { version = "4.5.4", features = ["derive"] }
+fatfs = { version = "0.3.6" }
+fs-err = "3.0.0"
+gpt_disk_types = { workspace = true, features = ["std"] }
+gptman = { version = "1.0.0", default-features = false }
+rand = "0.8.5"
+tempfile = { workspace = true }

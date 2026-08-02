@@ -1,0 +1,58 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libbrillo",
+    "libpower_manager-client",
+    "mojo_service_manager",
+    "protobuf",
+    "sqlite3",
+  ]
+}
+
+source_set("libheartd") {
+  sources = [
+    "action_runner.cc",
+    "database.cc",
+    "dbus_connector_impl.cc",
+    "heartbeat_manager.cc",
+    "heartbeat_tracker.cc",
+    "heartd.cc",
+    "mojo_service.cc",
+    "top_sheriff.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  deps = [
+    "//heartd/daemon/sheriffs:sheriffs",
+    "//heartd/daemon/utils:utils",
+    "//heartd/mojom:libheartd_mojo_bindings",
+  ]
+}
+
+if (use.test) {
+  source_set("libheartd_test") {
+    pkg_deps = [ "libpower_manager-client-test" ]
+    sources = [
+      "action_runner_test.cc",
+      "database_test.cc",
+      "heartbeat_manager_test.cc",
+      "heartbeat_tracker_test.cc",
+      "heartd_test.cc",
+      "top_sheriff_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    deps = [
+      ":libheartd",
+      "//heartd/daemon/sheriffs:sheriffs_test",
+      "//heartd/daemon/test_utils:test_utils",
+      "//heartd/daemon/utils:utils_test",
+    ]
+  }
+}

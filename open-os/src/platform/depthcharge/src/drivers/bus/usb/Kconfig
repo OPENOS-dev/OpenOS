@@ -1,0 +1,62 @@
+##
+## Copyright 2013 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config DRIVER_LYNXPOINT_NO_EHCI
+	bool "Disable Intel Lynxpoint EHCI"
+	default n
+	depends on ARCH_X86
+	help
+	  This driver will issue an SMI callback to coreboot that will
+	  route all USB ports to the XHCI controller and disable the EHCI
+	  controller to save power.
+
+config DRIVER_USB_INTEL_TCSS
+	bool "Enable Intel TCSS driver"
+	default n
+	depends on DRIVER_EC_CROS
+	select DRIVER_SOC_INTEL_PMC
+	help
+	  Select this to enable support for the Intel USB Type-C subsystem
+	  (TCSS). A board_tcss_get_port_mapping() function must be provided to
+	  determine the system port mapping. Currently, this driver is
+	  applicable to Tiger Lake and Alder Lake systems.
+
+config DRIVER_USB_INTEL_TCSS_DEBUG
+	bool "Enable Intel TCSS driver debugging"
+	default n
+	depends on DRIVER_USB_INTEL_TCSS
+	select DRIVER_SOC_INTEL_PMC_DEBUG
+
+config DRIVER_USB_AP_MUX_CONTROL_CROS
+	bool "Enable AP control of type-C muxes through CrOS EC"
+	default n
+	depends on DRIVER_EC_CROS
+
+config DRIVER_USB_AP_MUX_CONTROL_CROS_DEBUG
+	bool "Enable debugging for AP control of type-C muxes through CrOS EC"
+	default n
+	depends on DRIVER_USB_AP_MUX_CONTROL_CROS
+
+config INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG
+	bool "Enable TCSS PDC PMC Mux configuration"
+	default n
+	help
+	  Select this to indicate PDC<->PMC direct connection. PDC communicates directly to PMC
+	  to configure the mux and there is no need to query the EC to get port mapping and send
+	  commands to PMC to configure the mux.
+
+config DRIVER_NO_INTEL_TCSS
+	bool "Disable Intel TCSS driver"
+	default n
+	help
+	  Select this to indicate that the platform doesn't have any Intel USB Type-C subsystem
+	  (TCSS).

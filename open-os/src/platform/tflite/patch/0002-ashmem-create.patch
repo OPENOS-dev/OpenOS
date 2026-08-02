@@ -1,0 +1,24 @@
+From 618ac0c111b571297e3bb353cf267bd3c389427f Mon Sep 17 00:00:00 2001
+From: TFLite Patcher <tflite@localhost>
+Date: Fri, 18 Oct 2024 17:55:33 +0800
+Subject: [PATCH] Fix ASharedMemory_create in nnapi
+
+PATCH_NAME=ashmem-create
+---
+ tensorflow/lite/nnapi/nnapi_implementation.cc | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tensorflow/lite/nnapi/nnapi_implementation.cc b/tensorflow/lite/nnapi/nnapi_implementation.cc
+index 5f77293b..64474a13 100644
+--- a/tensorflow/lite/nnapi/nnapi_implementation.cc
++++ b/tensorflow/lite/nnapi/nnapi_implementation.cc
+@@ -254,7 +254,8 @@ const NnApi LoadNnApi() {
+   // implementation, but don't have libneuralnetworks.so library, and
+   // platforms which use nnapi_implementation_disabled.cc stub.
+   if (libneuralnetworks != nullptr) {
+-    nnapi.ASharedMemory_create = ASharedMemory_create;
++    LOAD_FUNCTION_RENAME(libneuralnetworks, ASharedMemory_create,
++                         "ashmem_create_region");
+   }
+ #endif  // __ANDROID__
+ 

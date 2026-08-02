@@ -1,0 +1,104 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("routines") {
+  sources = [
+    "cros_healthd_routine_factory_impl.cc",
+    "routine_service.cc",
+  ]
+  public_pkg_deps = [
+    "libchrome",
+    "libmojo",
+  ]
+  pkg_deps = [ "libmetrics" ]
+  public_deps = [ "//diagnostics/mojom/public:libcros_healthd_mojo_bindings" ]
+  deps = [
+    ":utils",
+    "//diagnostics/cros_healthd/routines/android_network",
+    "//diagnostics/cros_healthd/routines/audio",
+    "//diagnostics/cros_healthd/routines/battery_and_power",
+    "//diagnostics/cros_healthd/routines/bluetooth",
+    "//diagnostics/cros_healthd/routines/camera",
+    "//diagnostics/cros_healthd/routines/fan",
+    "//diagnostics/cros_healthd/routines/fingerprint",
+    "//diagnostics/cros_healthd/routines/hardware_button",
+    "//diagnostics/cros_healthd/routines/led",
+    "//diagnostics/cros_healthd/routines/memory_and_cpu",
+    "//diagnostics/cros_healthd/routines/network",
+    "//diagnostics/cros_healthd/routines/privacy_screen",
+    "//diagnostics/cros_healthd/routines/sensor",
+    "//diagnostics/cros_healthd/routines/storage",
+    "//diagnostics/cros_healthd/system",
+    "//diagnostics/cros_healthd/utils",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "base_routine_control.cc",
+    "diag_routine_with_status.cc",
+    "interactive_routine_control.cc",
+    "noninteractive_routine_control.cc",
+    "routine_adapter.cc",
+    "simple_routine.cc",
+  ]
+  public_pkg_deps = [
+    "libchrome",
+    "libmojo",
+  ]
+  public_deps = [ "//diagnostics/mojom/public:libcros_healthd_mojo_bindings" ]
+  deps = [
+    "//diagnostics/base",
+    "//diagnostics/cros_healthd/system",
+  ]
+}
+
+if (use.test) {
+  source_set("libroutine_test_utils") {
+    sources = [
+      "fake_cros_healthd_routine_factory.cc",
+      "routine_observer_for_testing.cc",
+      "routine_test_utils.cc",
+      "routine_v2_test_utils.cc",
+    ]
+    configs += [ "//common-mk:test" ]
+    public_pkg_deps = [
+      "libchrome",
+      "libmojo",
+    ]
+    pkg_deps = [ "libchrome-test" ]
+    public_deps = [
+      ":routines",
+      ":utils",
+      "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+    ]
+    deps = [ "//diagnostics/base" ]
+  }
+
+  source_set("routine_test") {
+    sources = [
+      "base_routine_control_test.cc",
+      "diag_routine_with_status_test.cc",
+      "interactive_routine_control_test.cc",
+      "noninteractive_routine_control_test.cc",
+      "routine_service_test.cc",
+      "routine_v2_test_utils_test.cc",
+      "simple_routine_test.cc",
+    ]
+    pkg_deps = [
+      "libchrome",
+      "libchrome-test",
+      "libmojo",
+    ]
+    deps = [
+      ":libroutine_test_utils",
+      ":routines",
+      "//diagnostics/base",
+      "//diagnostics/base:healthd_testrunner",
+      "//diagnostics/cros_healthd/system:test_support",
+      "//diagnostics/dbus_bindings",
+      "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+    ]
+  }
+}

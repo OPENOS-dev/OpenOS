@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Copyright 2019 The ChromiumOS Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<!--
+  The object and interface defined in this file is used with the service name
+  "org.chromium.Attestation"
+-->
+
+<node name="/org/chromium/Attestation"
+      xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+  <interface name="org.chromium.Attestation">
+    <method name="GetFeatures">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetFeaturesRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetFeaturesReply" />
+      </arg>
+    </method>
+
+    <method name="GetKeyInfo">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetKeyInfoRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetKeyInfoReply" />
+      </arg>
+    </method>
+
+    <method name="GetEndorsementInfo">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetEndorsementInfoRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetEndorsementInfoReply" />
+      </arg>
+    </method>
+
+    <method name="GetAttestationKeyInfo">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetAttestationKeyInfoRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetAttestationKeyInfoReply" />
+      </arg>
+    </method>
+
+    <method name="ActivateAttestationKey">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::ActivateAttestationKeyRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::ActivateAttestationKeyReply" />
+      </arg>
+    </method>
+
+    <method name="CreateCertifiableKey">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::CreateCertifiableKeyRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::CreateCertifiableKeyReply" />
+      </arg>
+    </method>
+
+    <method name="Decrypt">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::DecryptRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::DecryptReply" />
+      </arg>
+    </method>
+
+    <method name="Sign">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SignRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SignReply" />
+      </arg>
+    </method>
+
+    <method name="RegisterKeyWithChapsToken">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::RegisterKeyWithChapsTokenRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::RegisterKeyWithChapsTokenReply" />
+      </arg>
+    </method>
+
+    <method name="GetEnrollmentPreparations">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetEnrollmentPreparationsRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetEnrollmentPreparationsReply" />
+      </arg>
+    </method>
+
+    <method name="GetStatus">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetStatusRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetStatusReply" />
+      </arg>
+    </method>
+
+    <method name="Verify">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::VerifyRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::VerifyReply" />
+      </arg>
+    </method>
+
+    <method name="CreateEnrollRequest">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::CreateEnrollRequestRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::CreateEnrollRequestReply" />
+      </arg>
+    </method>
+    <method name="FinishEnroll">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::FinishEnrollRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::FinishEnrollReply" />
+      </arg>
+    </method>
+    <method name="CreateCertificateRequest">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::CreateCertificateRequestRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::CreateCertificateRequestReply" />
+      </arg>
+    </method>
+    <method name="FinishCertificateRequest">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::FinishCertificateRequestRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::FinishCertificateRequestReply" />
+      </arg>
+    </method>
+    <method name="Enroll">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::EnrollRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::EnrollReply" />
+      </arg>
+    </method>
+    <method name="GetCertificate">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetCertificateRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetCertificateReply" />
+      </arg>
+    </method>
+    <method name="SignEnterpriseChallenge">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SignEnterpriseChallengeRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SignEnterpriseChallengeReply" />
+      </arg>
+    </method>
+
+    <method name="SignSimpleChallenge">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SignSimpleChallengeRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SignSimpleChallengeReply" />
+      </arg>
+    </method>
+
+    <method name="SetKeyPayload">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SetKeyPayloadRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::SetKeyPayloadReply" />
+      </arg>
+    </method>
+
+    <method name="DeleteKeys">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::DeleteKeysRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::DeleteKeysReply" />
+      </arg>
+    </method>
+
+    <method name="ResetIdentity">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::ResetIdentityRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::ResetIdentityReply" />
+      </arg>
+    </method>
+
+    <method name="GetEnrollmentId">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetEnrollmentIdRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetEnrollmentIdReply" />
+      </arg>
+    </method>
+
+    <method name="GetCertifiedNvIndex">
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetCertifiedNvIndexRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="attestation/proto_bindings/interface.pb.h;attestation::GetCertifiedNvIndexReply" />
+      </arg>
+    </method>
+  </interface>
+</node>

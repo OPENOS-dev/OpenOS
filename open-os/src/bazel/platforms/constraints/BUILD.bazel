@@ -1,0 +1,25 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load(":custom_constraint.bzl", "custom_constraint")
+
+package(default_visibility = ["//visibility:public"])
+
+custom_constraint(
+    name = "vendor",
+    default = "pc",
+    options = [
+        "cros",
+        "pc",
+    ],
+)
+
+custom_constraint(
+    name = "abi",
+    default = "gnu",
+    options = [
+        "gnu",
+        "gnueabihf",
+    ],
+)

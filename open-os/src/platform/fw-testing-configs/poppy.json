@@ -1,0 +1,23 @@
+{
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": false,
+    "lid": true,
+    "x86": true
+  },
+  "firmware_screen": 15,
+  "has_keyboard": false,
+  "is_detachable": true,
+  "keypress_delay": 1,
+  "max_charging_power": 45.0,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "tablet_detachable_switcher",
+  "platform": "poppy",
+  "smm_store": false,
+  "usb_a_port_count": -1,
+  "usb_image_boot_timeout": 60
+}

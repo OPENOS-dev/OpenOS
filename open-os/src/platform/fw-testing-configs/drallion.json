@@ -1,0 +1,32 @@
+{
+  "ap_access_ec_flash": false,
+  "ap_up_after_cr50_reboot": false,
+  "chrome_ec": false,
+  "delay_reboot_to_ping": 70,
+  "ec_capability": {
+    "arm": false,
+    "battery": false,
+    "cbi": false,
+    "charging": false,
+    "keyboard": false,
+    "lid": false,
+    "x86": false
+  },
+  "ec_forwards_short_pp_press": true,
+  "firmware_screen": 15,
+  "firmware_screen_rec_mode": 15,
+  "has_diagnostics_image": true,
+  "has_keyboard": false,
+  "hold_pwr_button_poweroff": 10,
+  "hold_pwr_button_poweron": 1.2,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "keyboard_dev_switcher",
+  "platform": "drallion",
+  "power_button_dev_switch": true,
+  "rec_force_mrc": false,
+  "serial_number_length": 7,
+  "smm_store": false,
+  "spi_voltage": "pp3300",
+  "usb_a_port_count": -1
+}

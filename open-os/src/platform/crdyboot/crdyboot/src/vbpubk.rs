@@ -1,0 +1,186 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+use core::slice;
+use libcrdy::arch::PeFileForCurrentArch;
+use libcrdy::util::u32_to_usize;
+use log::info;
+use uefi::proto::loaded_image::LoadedImage;
+use uefi::{boot, Status};
+
+#[derive(Clone, Copy, Debug, thiserror::Error)]
+pub enum VbpubkError {
+    #[error("image is larger than usize: {0}")]
+    ImageTooBig(u64),
+
+    #[error("invalid PE: {0}")]
+    InvalidPe(object::Error),
+
+    #[error("invalid section bounds: addr={addr:#016x}, len={len:#x}")]
+    InvalidSectionBounds { addr: usize, len: usize },
+
+    #[error("missing .vbpubk section")]
+    MissingSection,
+
+    #[error("multiple .vbpubk section")]
+    MultipleSections,
+
+    #[error("failed to open LoadedImage protocol: {0}")]
+    OpenLoadedImageProtocolFailed(Status),
+}
+
+/// Get the currently-executing image's data.
+///
+/// The returned slice has a static lifetime because it's valid for as
+/// long as the executable is running.
+fn get_loaded_image_data() -> Result<&'static [u8], VbpubkError> {
+    // Use the `LoadedImage` protocol to get a pointer to the data of
+    // the currently-executing image.
+    let li = boot::open_protocol_exclusive::<LoadedImage>(boot::image_handle())
+        .map_err(|err| VbpubkError::OpenLoadedImageProtocolFailed(err.status()))?;
+    let (image_ptr, image_len) = li.info();
+    let image_ptr: *const u8 = image_ptr.cast();
+
+    info!("image base: {:x?}", image_ptr);
+    info!("image size: {} bytes", image_len);
+
+    // Convert the pointer and length to a byte slice.
+    let image_len = usize::try_from(image_len).map_err(|_| VbpubkError::ImageTooBig(image_len))?;
+    let image_data: &'static [u8] = unsafe { slice::from_raw_parts(image_ptr, image_len) };
+
+    Ok(image_data)
+}
+
+/// Parse `image_data` as a PE, then extract the packed public key data
+/// from the `.vbpubk` section.
+fn get_vbpubk_from_image_data(image_data: &[u8]) -> Result<&[u8], VbpubkError> {
+    let pe = PeFileForCurrentArch::parse(image_data).map_err(VbpubkError::InvalidPe)?;
+
+    // Find the target section.
+    let section_name = ".vbpubk";
+    let mut section_iter = pe
+        .section_table()
+        .iter()
+        .filter(|section| section.raw_name() == section_name.as_bytes());
+    let section = section_iter.next().ok_or(VbpubkError::MissingSection)?;
+    // Return an error if there's more than one vbpubk section, as that
+    // could indicate something wrong with the signer.
+    if section_iter.next().is_some() {
+        return Err(VbpubkError::MultipleSections);
+    }
+
+    // Get the section's data range (relative to the image_ptr).
+    let (section_addr, section_len) = section.pe_address_range();
+    let section_addr = u32_to_usize(section_addr);
+    let section_len = u32_to_usize(section_len);
+    info!("{section_name} section: offset={section_addr:#x}, len={section_len:#x}");
+
+    // Get the section's data as a slice.
+    let err = VbpubkError::InvalidSectionBounds {
+        addr: section_addr,
+        len: section_len,
+    };
+    let section_end = section_addr.checked_add(section_len).ok_or(err)?;
+    let section_range = section_addr..section_end;
+    let section_data = image_data.get(section_range).ok_or(err)?;
+
+    Ok(section_data)
+}
+
+/// Read the packed public key data from the `.vbpubk` section of the
+/// currently-executing image.
+///
+/// The returned slice has a static lifetime because it's valid for as
+/// long as the executable is running.
+pub fn get_vbpubk_from_image() -> Result<&'static [u8], VbpubkError> {
+    let image_data = get_loaded_image_data()?;
+    get_vbpubk_from_image_data(image_data)
+}
+
+#[cfg(test)]
+pub(crate) mod tests {
+    use super::*;
+
+    const TEST_VBPUBK_SECTION_DATA: &[u8] = b"some test data";
+
+    pub(crate) fn create_test_pe(num_vbpubk_sections: u16) -> Vec<u8> {
+        let mut image_data = Vec::new();
+        let mut writer = object::write::pe::Writer::new(
+            /*is_64=*/ true,
+            /*section_alignment=*/ 4096,
+            /*file_alignment=*/ 4096,
+            &mut image_data,
+        );
+
+        writer.reserve_dos_header();
+        writer.reserve_nt_headers(16);
+        writer.reserve_section_headers(num_vbpubk_sections);
+
+        let mut vbpubk_sections = Vec::new();
+        for _ in 0..num_vbpubk_sections {
+            vbpubk_sections.push(writer.reserve_section(
+                *b".vbpubk\0",
+                /*characteristics=*/ 0,
+                /*virtual_size=*/ 4096,
+                /*data_size=*/ TEST_VBPUBK_SECTION_DATA.len().try_into().unwrap(),
+            ));
+        }
+
+        writer.write_empty_dos_header().unwrap();
+        writer.write_nt_headers(object::write::pe::NtHeaders {
+            machine: object::pe::IMAGE_FILE_MACHINE_I386,
+            time_date_stamp: 0,
+            characteristics: object::pe::IMAGE_FILE_EXECUTABLE_IMAGE,
+            major_linker_version: 0,
+            minor_linker_version: 0,
+            address_of_entry_point: 2048,
+            image_base: 0,
+            major_operating_system_version: 0,
+            minor_operating_system_version: 0,
+            major_image_version: 0,
+            minor_image_version: 0,
+            major_subsystem_version: 0,
+            minor_subsystem_version: 0,
+            subsystem: object::pe::IMAGE_SUBSYSTEM_EFI_APPLICATION,
+            dll_characteristics: 0,
+            size_of_stack_reserve: 0,
+            size_of_stack_commit: 0,
+            size_of_heap_reserve: 0,
+            size_of_heap_commit: 0,
+        });
+        writer.write_section_headers();
+
+        for section in vbpubk_sections {
+            writer.write_section(section.file_offset, TEST_VBPUBK_SECTION_DATA);
+        }
+
+        image_data
+    }
+
+    #[test]
+    fn test_get_vbpubk_from_image_data() {
+        assert!(matches!(
+            get_vbpubk_from_image_data(&[]),
+            Err(VbpubkError::InvalidPe(_))
+        ));
+
+        assert!(matches!(
+            get_vbpubk_from_image_data(&create_test_pe(0)),
+            Err(VbpubkError::MissingSection)
+        ));
+
+        assert!(matches!(
+            get_vbpubk_from_image_data(&create_test_pe(2)),
+            Err(VbpubkError::MultipleSections)
+        ));
+
+        let mut expected_data = TEST_VBPUBK_SECTION_DATA.to_vec();
+        // Pad the size up to the section alignment.
+        expected_data.resize(4096, 0);
+        assert_eq!(
+            get_vbpubk_from_image_data(&create_test_pe(1)).unwrap(),
+            expected_data,
+        );
+    }
+}

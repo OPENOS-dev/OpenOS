@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Copyright 2024 The ChromiumOS Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<!--
+  The object and interface defined in this file is used with the service name
+  "org.chromium.Regmond"
+
+  The protobuf specified in this file can be found in:
+  platform2/system_api/dbus/regmon/regmon_service.proto
+
+  Note: If you update this file, please remember to update the dbus-constants
+  file at:
+  platform2/system_api/dbus/regmon/dbus-constants.h
+-->
+
+<node name="/org/chromium/Regmond"
+      xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+  <interface name="org.chromium.Regmond">
+    <method name="RecordPolicyViolation">
+      <tp:docstring>
+        Test dbus method for PoC.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="regmon/proto_bindings/regmon_service.pb.h;::regmon::RecordPolicyViolationRequest" />
+      </arg>
+      <arg name="reply" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="regmon/proto_bindings/regmon_service.pb.h;::regmon::RecordPolicyViolationResponse" />
+      </arg>
+      <annotation name="org.chromium.DBus.Method.Kind" value="async"/>
+    </method>
+  </interface>
+</node>

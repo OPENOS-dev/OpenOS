@@ -1,0 +1,24 @@
+{
+  "delay_reboot_to_ping": 80,
+  "ec_boot_to_console": 0.3,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "ec_ro_vbus_bug": true,
+  "firmware_screen": 25,
+  "max_charging_power": 45.0,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "keyboard_dev_switcher",
+  "no_broken_screen_in_dev": true,
+  "platform": "reef",
+  "smm_store": false,
+  "usb_a_port_count": -1,
+  "usb_plug": 45
+}

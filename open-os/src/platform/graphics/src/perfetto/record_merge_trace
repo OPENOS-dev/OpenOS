@@ -1,0 +1,193 @@
+#!/bin/bash
+# Copyright 2021 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+echo "WARNING: this script might not work as expected.  See README.md."
+
+print_prereqs_and_exit () {
+  echo "error: $1"
+  echo """
+WORKSTATION SETUP
+ - record_cros_trace in PATH (src/platform/graphics/src/perfetto/)
+ - vperfetto_merge in PATH (build https://github.com/batesj/vperfetto)
+ - in ~/.ssh/config, cache connections for both host and guest, like:
+    ControlM*ster auto
+    ControlPersist yes
+    ControlPath ~/.ssh/connection-%h-%p-%r
+HOST AND GUEST SETUP
+ - perCetto library installed (https://github.com/olvaffe/percetto)
+ - perfetto installed (perfetto tool must be in PATH).
+ - code instrumented with frequent* perCetto trace events.
+ - traced service running.
+ - [for ARCVM] developer mode and adb enabled.
+ - only up to 2 VMs can run simultaneously, one of them being ARCVM.
+* There must be frequent events on both host and guest for merging to
+  work. The incremental update in perCetto will contain this time sync data.
+  That defaults to 1 second intervals. Pass -i <ms> to change that period for
+  traces that are less than 2 seconds long. Guest sommelier now has its own
+  perfetto time sync events tied to the guest app's frame submits, so if
+  the trace includes multiple guest app frames, there will be enough data to
+  synchronize."""
+  exit 1
+}
+
+if [[ "$1" = "--help" ]] || [[ -z "$1" ]] || [[ -z "$2" ]]; then
+  echo "syntax: $0 <host-ssh-ip> <guest-ssh-ip> [args for record_cros_trace]..."
+  echo "example: $0 hostip guestip -t 5000 virgl virgls"
+  echo "example: $0 hostip hostip-arcvm virgl virgls gfx wm view"
+  echo "         Without the -t option, you will need to Ctrl+C on both sides"
+  exit 1
+fi
+
+verbose=false
+vperfetto_merge=vperfetto_merge
+record_cros_trace=record_cros_trace
+command -v "${vperfetto_merge}" > /dev/null 2>&1 || \
+  print_prereqs_and_exit "missing ${vperfetto_merge}"
+command -v "${record_cros_trace}" > /dev/null 2>&1 || \
+  print_prereqs_and_exit "missing ${record_cros_trace}"
+
+host_file=/tmp/trace-host
+guest_file=/tmp/trace-guest
+rm -f "${host_file}" "${guest_file}"
+
+host=$1
+guest=$2
+
+# Determine what tsc-offset to use. Debugfs has files for each VM.
+# This script supports at most two VMs running: ARCVM + one other.
+is_arcvm=false
+if [[ "${guest}" == *-arcvm ]]; then
+  is_arcvm=true
+fi
+
+sync_app="com.google.perfettoguesttimesync"
+
+if [[ "${is_arcvm}" == true ]]; then
+  found=$(ssh -q "${host}" "adb shell pm list packages | grep ${sync_app}")
+  vperfetto_dir=$(dirname $(which "${vperfetto_merge}"))
+  apk_root="${vperfetto_dir}/../utils/arcvm-time-sync-app"
+  install=false
+
+  if [[ -z "${found}" ]]; then
+    install=true
+  else
+    # Check if installed version is older than latest available.
+    latest_version=$(sed -n 's/.*versionCode\"\: \([0-9]*\)\,$/\1/p' < \
+        "${apk_root}/app/release/output-metadata.json")
+    install_version=$(ssh -q ${host} adb shell dumpsys package ${sync_app} | \
+        grep versionCode | sed -n 's/.*versionCode\=\([0-9]*\) .*/\1/p')
+    if [[ ( ${install_version} < ${latest_version} ) ]]; then
+      echo "upgrading ${sync_app} from ${install_version} to ${latest_version}"
+      install=true
+    fi
+  fi
+
+  if [[ "${install}" == true ]]; then
+    echo "attempting to install ${sync_app} from vperfetto..."
+    apk="${apk_root}/app/release/app-release.apk"
+    scp "${apk}" "${host}":/tmp/app.apk \
+        || print_prereqs_and_exit "error: could not find ${apk}"
+    ssh -q "${host}" "adb install -r /tmp/app.apk" || exit 1
+  fi
+
+  # Start the time trace service.
+  ssh -q "${host}" "adb shell \
+      am start-foreground-service ${sync_app}/${sync_app}.TimeTrace" \
+      > /dev/null
+  trap "ssh -q ${host} adb shell am force-stop ${sync_app}" EXIT
+fi
+
+find_tsc_offsets="find /sys/kernel/debug/ -name 'tsc-offset' -or -name 'cntvoff'"
+
+vm_pids=$(ssh -q "${host}" "${find_tsc_offsets}" \
+          | sed -r 's/.*kvm\/([0-9]*).*/\1/g' | sort | uniq)
+
+if [[ $(echo "{vm_pids}" | wc -w) -gt "2" ]]; then
+  print_prereqs_and_exit "error: more than 2 VMs are running"
+fi
+
+found_guest_pid=''
+for pid in ${vm_pids}
+do
+  cmd_arcvm=$(ssh -q "${host}" "cat /proc/${pid}/cmdline" \
+              | grep arcvm > /dev/null && echo arcvm)
+  if [[ "${is_arcvm}" == true ]]; then
+    if [[ "${cmd_arcvm}" == "arcvm" ]]; then
+      found_guest_pid="${pid}"
+    fi
+  else
+    if [[ ! "${cmd_arcvm}" == "arcvm" ]]; then
+      found_guest_pid="${pid}"
+    fi
+  fi
+done
+
+if [[ -z "${found_guest_pid}" ]] && [[ "${is_arcvm}" == true ]]; then
+  # ARC++ is detected.
+  tsc_offset=0
+  echo "warning: ARC++ perfetto may not support --txt config option"
+else
+  if [[ -z "${found_guest_pid}" ]]; then
+    echo "error: guest tsc offset not found -- is guest running?"
+    exit 1
+  fi
+
+  tsc_offset_files=$(ssh -q "${host}" "${find_tsc_offsets} \
+              | grep ${found_guest_pid}-")
+
+  # Make sure the tsc offsets are all the same for each vcpu.
+  tsc_offset=$(ssh -q "${host}" "${find_tsc_offsets} \
+              | grep ${found_guest_pid}- | xargs cat" | uniq)
+
+
+  for f in ${tsc_offset_files}; do
+    f=`basename $f`
+    echo "f: $f"
+    # The cntvoff in debugfs on arm64 inverts the sign compared to
+    # tsc-offset on x86:
+    if [ "$f" = "cntvoff" ]; then
+      tsc_offset=$((-tsc_offset))
+    fi
+    break
+  done
+
+  if [[ ! $(echo "${tsc_offset}" | wc -w) == "1" ]]; then
+    echo "error: guest tsc offsets are inconsistent; file a bug on this script"
+    exit 1
+  fi
+fi
+
+[[ "${verbose}" == true ]] && echo "guest tsc-offset is ${tsc_offset}"
+
+args_file="/tmp/trace-args.txt"
+
+"${record_cros_trace}" --ssh "${host}" -o "${host_file}" "${@:3}" \
+    --write-args "${args_file}" &
+pids="$!"
+"${record_cros_trace}" --ssh "${guest}" -o "${guest_file}" "${@:3}" &
+pids+=" $!"
+trap "echo ; kill -s SIGUSR1 ${pids}" SIGINT
+# First wait may get canceled by the SIGINT.
+wait
+# Second wait waits for background processes to finish.
+# Don't allow SIGINT while waiting to avoid accidental interrupt.
+trap "" SIGINT
+wait
+trap - SIGINT
+
+now=$(date +"%Y-%m-%d_%H-%M-%S")
+outfile="${host}-${guest}-perfetto-trace-$(cat ${args_file})-${now}"
+rm -f "${args_file}"
+"${vperfetto_merge}" "${guest_file}" "${host_file}" "${outfile}" \
+  --merge-guest-into-host --guest-tsc-offset "${tsc_offset}" && \
+  ls -hs "./${outfile}"
+
+# merge debugging:
+#d=$(pwd)
+#cd path/to/perfetto
+#out/linux/trace_to_text text "${guest_file}" "${d}/trace-guest.txt"
+#out/linux/trace_to_text text "${host_file}" "${d}/trace-host.txt"
+#out/linux/trace_to_text text "${d}/${outfile}" "${d}/${outfile}.txt"
+#cd -

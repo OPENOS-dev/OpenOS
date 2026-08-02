@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+UNIT=cros-port-listener.service
+STAGE=$1
+
+systemctl --system daemon-reload >/dev/null || true
+
+if [ "${STAGE}" = "remove" ]; then
+  deb-systemd-invoke stop "${UNIT}" || exit $?
+fi

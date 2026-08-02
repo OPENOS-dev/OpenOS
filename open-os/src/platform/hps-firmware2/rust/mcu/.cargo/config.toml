@@ -1,0 +1,12 @@
+[target.thumbv6m-none-eabi]
+# This can be used for running on a Nucleo board.
+runner = 'probe-run --probe 0483:374b --chip STM32G071RBTx'
+linker = "ld.lld"
+rustflags = [
+  "-C", "link-arg=-Tlink.x",
+  # We need this so that we have a symbol for the start of our vector table.
+  "-C", "link-arg=-T../hps-common-link.x",
+]
+
+[build]
+target = "thumbv6m-none-eabi" # Cortex-M0 and Cortex-M0+

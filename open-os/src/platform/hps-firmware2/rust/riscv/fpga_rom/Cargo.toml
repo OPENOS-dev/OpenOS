@@ -1,0 +1,26 @@
+[package]
+name = "fpga_rom"
+version = "0.1.0"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[dependencies]
+litex_pac = { path = "../litex_pac", features = ["rt"] }
+log = { version = "0.4.14", features = [ "release_max_level_off" ] }
+mcu_common = { path = "../../mcu_common" }
+riscv = "0.7.0"
+riscv-rt = "0.8.0"
+fpga_app = { path = "../../fpga_app" }
+fpga_hal = { path = "../fpga_hal" }
+tflm_inference = { path = "../tflm_inference", optional = true }
+
+[build-dependencies]
+anyhow = "1.0.38"
+
+[features]
+image-transfer = [ "fpga_app/image-transfer" ]
+dev = [ "fpga_app/dev" ]
+tflm = [ "tflm_inference", "fpga_app/self-test" ]
+default = [
+    "tflm",
+]

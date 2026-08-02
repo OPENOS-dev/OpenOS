@@ -1,0 +1,553 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//! Provides an interface to implement `AvbOps` that can be passed to `libavb`'s
+//! `avb_slot_verify` function.
+//!
+//! See [avb_ops.h] for a description of the functions that must be implemented for
+//! [`avb_slot_verify`].
+//!
+//! [`avb_slot_verify`]: https://android.googlesource.com/platform/external/avb/+/refs/heads/main/libavb/avb_slot_verify.h#391
+//! [avb_ops.h]: https://android.googlesource.com/platform/external/avb/+/refs/heads/main/libavb/avb_ops.h
+use crate::avb_sys::{AvbIOResult, AvbOps};
+use core::ffi::{c_char, c_void, CStr};
+use core::{ptr, slice, str};
+use log::{error, info, warn};
+
+/// Wrapper around a `&mut AvbDiskOps`. A pointer to this type is thin,
+/// unlike a pointer to `AvbDiskOps`, allowing it to be used in
+/// `AvbOps.user_data`.
+pub struct AvbDiskOpsRef<'a>(pub &'a mut dyn AvbDiskOps);
+
+/// Trait implementing the necessary functions required to process
+/// the callbacks necessary from libavb's `avb_ops.h`
+pub trait AvbDiskOps {
+    /// Read data from the partition with `name` into `dst`.
+    /// `start_byte` is the offset from the start of the partition
+    /// where the read starts.
+    ///
+    /// # Errors
+    ///
+    /// * `AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION` if the partition is not found.
+    /// * `AVB_IO_RESULT_ERROR_IO` if there is an IO error from the underlying device.
+    /// * `AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION` if the `start_byte` is out of
+    ///   range for the partition.
+    fn read_from_partition(
+        &mut self,
+        name: &str,
+        start_byte: u64,
+        dst: &mut [u8],
+    ) -> Result<(), AvbIOResult>;
+
+    /// Write data from `buffer` into the partition with `name` starting
+    /// at `offset` from the beginning of the partition.
+    ///
+    /// # Errors
+    ///
+    /// * `AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION` if the partition is not found.
+    /// * `AVB_IO_RESULT_ERROR_IO` if there is an IO error from the underlying device.
+    /// * `AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION` if the `offset` is out of
+    ///   range for the partition.
+    fn write_to_partition(
+        &mut self,
+        name: &str,
+        offset: u64,
+        buffer: &[u8],
+    ) -> Result<(), AvbIOResult>;
+
+    /// Get the size of the partition with `name`.
+    ///
+    /// # Errors
+    ///
+    /// * `AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION` if the partition is not found.
+    fn get_size_of_partition(&mut self, name: &str) -> Result<u64, AvbIOResult>;
+
+    /// Get the unique partition GUID for the partition with `name`.
+    ///
+    /// # Errors
+    ///
+    /// * `AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION` if the partition is not found.
+    fn get_unique_guid_for_partition(
+        &mut self,
+        name: &str,
+        dest: &mut [u8; 36],
+    ) -> Result<(), AvbIOResult>;
+}
+
+/// Create `AvbOps` to pass into libavb's `avb_slot_verify` function.
+pub fn create_ops(ops_impl: &mut AvbDiskOpsRef) -> AvbOps {
+    AvbOps {
+        // pointer to the AvbDiskOps that will be called
+        user_data: ptr::from_mut(ops_impl).cast(),
+        // ab_ops is optional and not needed.
+        ab_ops: ptr::null_mut(),
+        // cert_ops is optional and not needed.
+        cert_ops: ptr::null_mut(),
+        read_from_partition: Some(read_from_partition),
+        // Could be NULL but probably should be considered for use.
+        get_preloaded_partition: Some(get_preloaded_partition),
+        write_to_partition: Some(write_to_partition),
+        validate_vbmeta_public_key: Some(validate_vbmeta_public_key),
+        read_rollback_index: Some(read_rollback_index),
+        write_rollback_index: Some(write_rollback_index),
+        read_is_device_unlocked: Some(read_is_device_unlocked),
+        get_unique_guid_for_partition: Some(get_unique_guid_for_partition),
+        get_size_of_partition: Some(get_size_of_partition),
+        read_persistent_value: Some(read_persistent_value),
+        write_persistent_value: Some(write_persistent_value),
+        validate_public_key_for_partition: Some(validate_public_key_for_partition),
+    }
+}
+
+/// Cast the avbops `user_data` pointer to the expected contained
+/// value set by `create_ops`.
+unsafe fn ops_to_dimpl<'a>(ops: *mut AvbOps) -> &'a mut dyn AvbDiskOps {
+    let user_data: *mut AvbDiskOpsRef = (*ops).user_data.cast();
+    (*user_data).0
+}
+
+/// Return the positive offset from the front of the
+/// partition of `partition_size` for `offset`.
+/// If the `offset` is negative this will give the
+/// offset from the front of the partition.
+///
+/// Returns `None` if the offset is out of range for
+/// the partition.
+fn actual_offset(partition_size: u64, offset: i64) -> Option<u64> {
+    Some(if offset < 0 {
+        let offset = u64::try_from(-offset).ok()?;
+        partition_size.checked_sub(offset)?
+    } else {
+        u64::try_from(offset).ok()?
+    })
+}
+
+/// Determine the bytes remaining for the `partition_size` from
+/// the given `offset` from the beginning.
+/// Returns `None` if offset is too large or the difference cannot
+/// be converted to a usize.
+fn bytes_left(partition_size: u64, offset: u64) -> Option<usize> {
+    partition_size.checked_sub(offset)?.try_into().ok()
+}
+
+// `AvbOps` callback functions:
+#[no_mangle]
+/// Read `num_bytes` from the `offset` from the partition
+/// with the name `partition` into `buffer`.
+///
+/// Positive `offset` values specify the offset from
+/// the beginning of the of the partition to start reading.
+/// Negative `offset` values indicate an offset from
+/// the end of the partition to read.
+/// A partial read can occur if reading past the end of the
+/// partition. In this case `out_num_read` will be less
+/// than `num_bytes`
+///
+/// See [read_from_partition](https://android.googlesource.com/platform/external/avb/+/refs/heads/main/libavb/avb_ops.h#129)
+///
+/// # Returns
+///
+/// * The number of bytes read into `out_num_read`.
+/// * `AVB_IO_RESULT_OK` on success.
+///
+/// # Errors
+///
+/// * `AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION` if the partition is not found.
+/// * `AVB_IO_RESULT_ERROR_IO` if there is an IO error from the underlying device.
+/// * `AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION` if the `start_byte` is out of
+///   range for the partition.
+unsafe extern "C" fn read_from_partition(
+    ops: *mut AvbOps,
+    partition: *const c_char,
+    offset: i64,
+    num_bytes: usize,
+    buffer: *mut c_void,
+    out_num_read: *mut usize,
+) -> AvbIOResult {
+    let Ok(pname) = CStr::from_ptr(partition).to_str() else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION;
+    };
+
+    #[cfg(test)]
+    println!("read_from_partition: {pname} {offset} {num_bytes}");
+    info!("read_from_partition: {pname} {offset} {num_bytes}");
+
+    let dimpl = ops_to_dimpl(ops);
+
+    // Must get the size to determine what the offset from
+    // the end might be.
+    let size = match dimpl.get_size_of_partition(pname) {
+        Err(e) => return e,
+        Ok(f) => f,
+    };
+
+    // Callers are allowed to pass in a negative offset indicating
+    // that it's a read from the end of the partition.
+    // Calculate the actual offset from the front.
+    let Some(offset) = actual_offset(size, offset) else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION;
+    };
+
+    // Determine the bytes between the offset and end of the partition.
+    let Some(bytes_available) = bytes_left(size, offset) else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION;
+    };
+
+    // Callers expect that this function will limit the read
+    // length by the bytes remaining in the partition from the
+    // offset.
+    let num_bytes = num_bytes.min(bytes_available);
+
+    // Must take the word of the caller that the buffer is long enough.
+    let dst: &mut [u8] = slice::from_raw_parts_mut(buffer.cast(), num_bytes);
+
+    if let Err(e) = dimpl.read_from_partition(pname, offset, dst) {
+        return e;
+    }
+
+    let bytes_read = dst.len();
+
+    *out_num_read = bytes_read;
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+unsafe extern "C" fn get_preloaded_partition(
+    _ops: *mut AvbOps,
+    _partition: *const c_char,
+    _num_bytes: usize,
+    out_pointer: *mut *mut u8,
+    _out_num_bytes_preloaded: *mut usize,
+) -> AvbIOResult {
+    // TODO: Return NULL to indicate to libavb it isn't implemented
+    // and partitions aren't preloaded.
+    // TODO: Determine if preloaded partitions are relevant for
+    // this bootloader.
+    *out_pointer = ptr::null_mut();
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+/// Write `num_bytes` of data from `buffer` into the partition with the
+/// name `partition` at the `offset`.
+///
+/// A negative `offset` indicates an offset from the end of the partition.
+/// If the full `buffer` is not able to be written a failure is returned.
+/// There are no partial writes.
+/// This function does not do partial I/O, all of `num_bytes` must be
+/// transfered.
+///
+/// Returns `AVB_IO_RESULT_OK` on success.
+///
+/// See
+/// [write_to_partition](https://android.googlesource.com/platform/external/avb/+/refs/heads/main/libavb/avb_ops.h#173)
+///
+/// # Errors
+///
+/// * `AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION` if the partition is not found.
+/// * `AVB_IO_RESULT_ERROR_IO` if there is an IO error from the underlying device.
+/// * `AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION` if the `offset` is out of
+///   range for the partition.
+unsafe extern "C" fn write_to_partition(
+    ops: *mut AvbOps,
+    partition: *const c_char,
+    offset: i64,
+    num_bytes: usize,
+    buffer: *const c_void,
+) -> AvbIOResult {
+    let dimpl = ops_to_dimpl(ops);
+    let Ok(pname) = CStr::from_ptr(partition).to_str() else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION;
+    };
+
+    #[cfg(test)]
+    println!("write_to_partition: {pname} {offset} {num_bytes}");
+    info!("write_to_partition: {pname} {offset} {num_bytes}");
+
+    // Must get the size to determine what the offset from
+    // the end and if the write is too large.
+    let size = match dimpl.get_size_of_partition(pname) {
+        Err(e) => return e,
+        Ok(f) => f,
+    };
+
+    // Callers are allowed to pass in a negative offset indicating
+    // that it's a write starting from an offset from the
+    // end of the partition.
+    // Calculate the actual offset from the front.
+    let Some(offset) = actual_offset(size, offset) else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION;
+    };
+
+    // Determine the maximum write length from the offset.
+    let Some(max_write) = bytes_left(size, offset) else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION;
+    };
+
+    // Writes must not exceed the size of the partition.
+    if num_bytes > max_write {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_RANGE_OUTSIDE_PARTITION;
+    }
+
+    // Must take the word of the caller that the buffer is long enough.
+    let buffer: &[u8] = slice::from_raw_parts(buffer.cast(), num_bytes);
+
+    if let Err(e) = dimpl.write_to_partition(pname, offset, buffer) {
+        return e;
+    }
+
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+unsafe extern "C" fn validate_vbmeta_public_key(
+    _ops: *mut AvbOps,
+    _public_key_data: *const u8,
+    _public_key_length: usize,
+    _public_key_metadata: *const u8,
+    _public_key_metadata_length: usize,
+    out_is_trusted: *mut bool,
+) -> AvbIOResult {
+    // TODO(b/378751463): Check the key against the one embedded in crdyboot.
+    warn!("b/78751463: vbmeta key check skipped");
+    *out_is_trusted = true;
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+unsafe extern "C" fn read_rollback_index(
+    _ops: *mut AvbOps,
+    rollback_index_location: usize,
+    out_rollback_index: *mut u64,
+) -> AvbIOResult {
+    // TODO(b/378751466): Implement an appropriate rollback index.
+    info!("rollback_index_location: {rollback_index_location}");
+    if !out_rollback_index.is_null() {
+        *out_rollback_index = 0;
+    }
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+unsafe extern "C" fn write_rollback_index(
+    _ops: *mut AvbOps,
+    rollback_index_location: usize,
+    _rollback_index: u64,
+) -> AvbIOResult {
+    // This is not called by libavb for this bootloader.
+    // Warn and fail if this happens to change avoiding
+    // the need to audit possible NULL pointer uses.
+    error!("write_rollback_index is not implemented: {rollback_index_location}");
+    AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION
+}
+
+#[no_mangle]
+unsafe extern "C" fn read_is_device_unlocked(
+    _ops: *mut AvbOps,
+    out_is_unlocked: *mut bool,
+) -> AvbIOResult {
+    // TODO(b/378751102): Determine if devices can be considered locked.
+    *out_is_unlocked = true;
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+/// See
+/// [get_unique_guid_for_partition](https://android.googlesource.com/platform/external/avb/+/refs/heads/main/libavb/avb_ops.h#249)
+unsafe extern "C" fn get_unique_guid_for_partition(
+    ops: *mut AvbOps,
+    partition: *const c_char,
+    guid_buf: *mut c_char,
+    guid_buf_size: usize,
+) -> AvbIOResult {
+    let dimpl = ops_to_dimpl(ops);
+    let Ok(pname) = CStr::from_ptr(partition).to_str() else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION;
+    };
+
+    #[cfg(test)]
+    println!("get_unique_guid_for_partition: {pname}");
+    info!("get_unique_guid_for_partition: {pname}");
+
+    // The trait writes a 36 character string without a NUL
+    // terminator.
+    let mut guid: [u8; 36] = [0; 36];
+
+    // The passed buffer includes space for a trailing NUL.
+    // Don't allow a buffer of the wrong size.
+    if guid_buf_size != guid.len() + 1 {
+        error!("guid_buf_size must be 37");
+        return AvbIOResult::AVB_IO_RESULT_ERROR_INVALID_VALUE_SIZE;
+    }
+
+    if let Err(e) = dimpl.get_unique_guid_for_partition(pname, &mut guid) {
+        return e;
+    }
+
+    // Must trust caller that their buffer is the size they claim.
+    let guid_buf: &mut [u8] = slice::from_raw_parts_mut(guid_buf.cast(), guid_buf_size);
+
+    guid_buf[..guid.len()].copy_from_slice(&guid);
+    // Add the NUL terminator.
+    guid_buf[guid.len()] = 0;
+
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+/// [get_size_of_partition](https://android.googlesource.com/platform/external/avb/+/refs/heads/main/libavb/avb_ops.h#263)
+unsafe extern "C" fn get_size_of_partition(
+    ops: *mut AvbOps,
+    partition: *const c_char,
+    out_size_num_bytes: *mut u64,
+) -> AvbIOResult {
+    let Ok(pname) = CStr::from_ptr(partition).to_str() else {
+        return AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION;
+    };
+
+    #[cfg(test)]
+    println!("get_size_of_partition: {pname}");
+    info!("get_size_of_partition: {pname}");
+
+    let dimpl = ops_to_dimpl(ops);
+
+    let size = match dimpl.get_size_of_partition(pname) {
+        Err(e) => return e,
+        Ok(f) => f,
+    };
+
+    *out_size_num_bytes = size;
+    AvbIOResult::AVB_IO_RESULT_OK
+}
+
+#[no_mangle]
+unsafe extern "C" fn read_persistent_value(
+    _ops: *mut AvbOps,
+    _name: *const c_char,
+    _buffer_size: usize,
+    _out_buffer: *mut u8,
+    _out_num_bytes_read: *mut usize,
+) -> AvbIOResult {
+    // `read_persistent_value` is only needed for `avb_slot_verify` with
+    // `AvbHashtreeErrorMode::AVB_HASHTREE_ERROR_MODE_MANAGED_RESTART_AND_EIO`.
+    // Avoid any potential NULL access and return a failure if it does
+    // get called.
+    error!("read_persistent_value is not implemented");
+    AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION
+}
+
+#[no_mangle]
+unsafe extern "C" fn write_persistent_value(
+    _ops: *mut AvbOps,
+    _name: *const c_char,
+    _value_size: usize,
+    _value: *const u8,
+) -> AvbIOResult {
+    // `write_persistent_value` is only needed for `avb_slot_verify` with
+    // `AvbHashtreeErrorMode::AVB_HASHTREE_ERROR_MODE_MANAGED_RESTART_AND_EIO`.
+    // Avoid any potential NULL access and return a failure if it does
+    // get called.
+    error!("write_persistent_value is not implemented");
+    AvbIOResult::AVB_IO_RESULT_ERROR_NO_SUCH_PARTITION
+}
+
+#[no_mangle]
+unsafe extern "C" fn validate_public_key_for_partition(
+    _ops: *mut AvbOps,
+    _partition: *const c_char,
+    _public_key_data: *const u8,
+    _public_key_length: usize,
+    _public_key_metadata: *const u8,
+    _public_key_metadata_length: usize,
+    _out_is_trusted: *mut bool,
+    _out_rollback_index_location: *mut u32,
+) -> AvbIOResult {
+    // This is only needed if AVB_SLOT_VERIFY_FLAGS_NO_VBMETA_PARTITION is being
+    // used with slot_verify.
+    panic!("validate public key for partition was called, must use vbmeta")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::avb_sys::{
+        avb_slot_verify, AvbHashtreeErrorMode, AvbSlotVerifyData, AvbSlotVerifyFlags,
+        AvbSlotVerifyResult,
+    };
+
+    #[derive(Debug)]
+    struct TestAvbOps;
+
+    impl<'a> AvbDiskOps for TestAvbOps {
+        fn read_from_partition(
+            &mut self,
+            _name: &str,
+            _start_byte: u64,
+            _dst: &mut [u8],
+        ) -> Result<(), AvbIOResult> {
+            todo!();
+        }
+
+        fn write_to_partition(
+            &mut self,
+            _name: &str,
+            _offset: u64,
+            _buffer: &[u8],
+        ) -> Result<(), AvbIOResult> {
+            todo!();
+        }
+
+        fn get_size_of_partition(&mut self, _name: &str) -> Result<u64, AvbIOResult> {
+            todo!();
+        }
+
+        fn get_unique_guid_for_partition(
+            &mut self,
+            _name: &str,
+            _dest: &mut [u8; 36],
+        ) -> Result<(), AvbIOResult> {
+            todo!();
+        }
+    }
+
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_create_ops() {
+        let mut ops_impl = TestAvbOps;
+
+        let mut avbops_ref = AvbDiskOpsRef(&mut ops_impl);
+
+        let mut avbops = create_ops(&mut avbops_ref);
+
+        let requested_partitions = [c"boot", c"vendor_boot", c"init_boot"];
+        // Null-pointer terminated list of partitions for
+        // the call to verify.
+        let ptrs = [
+            requested_partitions[0].as_ptr(),
+            requested_partitions[1].as_ptr(),
+            requested_partitions[2].as_ptr(),
+            ptr::null(),
+        ];
+
+        let slot = c"_a";
+
+        let mut data: *mut AvbSlotVerifyData = ptr::null_mut();
+
+        // TODO: Improve (add more useful) tests.
+        unsafe {
+            let res = avb_slot_verify(
+                &mut avbops,
+                ptrs.as_ptr(),
+                slot.as_ptr(),
+                AvbSlotVerifyFlags::AVB_SLOT_VERIFY_FLAGS_NONE,
+                AvbHashtreeErrorMode::AVB_HASHTREE_ERROR_MODE_LOGGING,
+                &mut data,
+            );
+            assert_eq!(
+                res,
+                AvbSlotVerifyResult::AVB_SLOT_VERIFY_RESULT_ERROR_INVALID_ARGUMENT
+            );
+        }
+    }
+}

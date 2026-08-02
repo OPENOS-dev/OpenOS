@@ -1,0 +1,12 @@
+/* Copyright 2022 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/dts-v1/;
+
+#include <ite/it81xx2.dtsi>
+#include <ite/it81202cx.dtsi>
+#include "it8xxx2.dtsi"
+#include "it8xxx2_1m_rom.dtsi"
+#include "it8xxx2_128k_ram.dtsi"

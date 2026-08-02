@@ -1,0 +1,22 @@
+[package]
+name = "application"
+version = "0.1.0"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[dependencies]
+embedded-hal = "0.2.4"
+i2c_peripheral = { path = "../i2c_peripheral" }
+i2c_protocol = { path = "../i2c_protocol" }
+log = {version = "0.4.14" }
+mcu_common = { path = "../mcu_common" }
+num_enum = { version = "0.5.1", default-features = false }
+
+[dev-dependencies]
+fake_i2c = { path = "../fake_i2c" }
+hps_interface = { path = "../hps_interface" }
+mcu_common = { path = "../mcu_common", features = [ "std" ] }
+
+[features]
+dev = [ "mcu_common/dev" ]
+image-transfer = [ "mcu_common/image-transfer" ]

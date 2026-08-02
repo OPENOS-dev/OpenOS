@@ -1,0 +1,63 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "runtime_probe/utils/function_test_utils.h"
+
+#include <algorithm>
+#include <utility>
+#include <vector>
+
+#include <base/check.h>
+#include <base/json/json_reader.h>
+#include <gtest/gtest.h>
+
+namespace runtime_probe {
+
+BaseFunctionTest::BaseFunctionTest() {
+  SetTestRoot(mock_context()->root_dir());
+}
+
+BaseFunctionTest::~BaseFunctionTest() = default;
+
+// static
+base::ListValue BaseFunctionTest::CreateProbeResultFromJson(
+    const std::string& str) {
+  auto res = base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  CHECK(res.has_value() && res->is_list());
+  return std::move(res->GetList());
+}
+
+// static
+void BaseFunctionTest::ExpectUnorderedListEqual(const base::ListValue& result,
+                                                const base::ListValue& ans) {
+  // A workaround for UnorderedElementsAreArray() not accepting non-copyable
+  // types.
+  std::vector<::testing::Matcher<std::reference_wrapper<const base::Value>>>
+      ans_matcher_list;
+  std::transform(
+      ans.begin(), ans.end(), std::back_inserter(ans_matcher_list),
+      [](const base::Value& entry) { return ::testing::Eq(std::cref(entry)); });
+
+  EXPECT_THAT(result, ::testing::UnorderedElementsAreArray(ans_matcher_list));
+}
+
+FakeProbeFunction::FakeProbeFunction(const std::string& probe_result) {
+  auto res = base::JSONReader::Read(probe_result,
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  fake_result_ = std::move(res->GetList());
+}
+
+FakeProbeFunction::~FakeProbeFunction() = default;
+
+FakeProbeFunction::DataType FakeProbeFunction::EvalImpl() const {
+  return fake_result_.Clone();
+}
+
+ProbeFunction::DataType EvalProbeFunction(ProbeFunction* probe_function) {
+  base::test::TestFuture<ProbeFunction::DataType> future;
+  probe_function->Eval(future.GetCallback());
+  return future.Get().Clone();
+}
+
+}  // namespace runtime_probe

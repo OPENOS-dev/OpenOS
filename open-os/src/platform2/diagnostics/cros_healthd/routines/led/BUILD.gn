@@ -1,0 +1,44 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("led") {
+  sources = [
+    "keyboard_backlight.cc",
+    "led_lit_up.cc",
+  ]
+  public_pkg_deps = [
+    "libchrome",
+    "libmojo",
+  ]
+  pkg_deps = [ "libpower_manager-client" ]
+  public_deps = [
+    "//diagnostics/cros_healthd/routines:utils",
+    "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+  ]
+  deps = [ "//diagnostics/cros_healthd/system" ]
+}
+
+if (use.test) {
+  source_set("led_test") {
+    sources = [
+      "keyboard_backlight_test.cc",
+      "led_lit_up_test.cc",
+    ]
+    pkg_deps = [
+      "libchrome-test",
+      "libmojo",
+      "libpower_manager-client",
+      "libpower_manager-client-test",
+    ]
+    deps = [
+      ":led",
+      "//diagnostics/base",
+      "//diagnostics/base:healthd_testrunner",
+      "//diagnostics/base:test_support",
+      "//diagnostics/cros_healthd/routines:libroutine_test_utils",
+      "//diagnostics/cros_healthd/system:test_support",
+      "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+    ]
+  }
+}

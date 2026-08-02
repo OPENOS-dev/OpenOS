@@ -1,0 +1,21 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[MESSAGES CONTROL]
+
+disable=
+    # These have nothing to do with black, they are just annoying
+    fixme,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-branches,
+    too-many-locals,
+    too-many-nested-blocks,
+    too-many-statements,
+    too-many-instance-attributes
+
+[REPORTS]
+
+reports=no
+score=no

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Copyright 2016 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+UI_MACHINE_INFO_FILE=/run/session_manager/machine-info
+
+# Just continue if one of the commands below fails.
+set +e
+
+# Create an empty file so that we can simply append to it.
+true > "${UI_MACHINE_INFO_FILE}"
+
+# If we're on Flex, use the Flex state key as the re-enrollment key.
+if command -v flex_id_tool >/dev/null; then
+  echo "\"re_enrollment_key\"=\"$(flex_id_tool --type=state_key)\"" \
+  >> "${UI_MACHINE_INFO_FILE}"
+fi
+
+ROOTDEV=$(rootdev -s -d || true)
+udevadm info --query=property --name="${ROOTDEV}" |
+    awk -F = '/^ID_SERIAL=/ { print "\"root_disk_serial_number\"=\"" $2 "\""}' \
+    >> "${UI_MACHINE_INFO_FILE}"

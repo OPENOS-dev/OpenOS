@@ -1,0 +1,28 @@
+##
+## Copyright 2013 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config TIMESTAMP_RAW
+	bool "Use raw TSC timestamp in coreboot timestamp table"
+	default ARCH_X86
+
+config HEADLESS
+	bool "Allow headless mode of operation"
+	default n
+	help
+	  "Set to 'y' for devices without display screens"
+
+config VPD_QCOM
+	bool "Use Qualcomm VPD implementation"
+	default n
+	help
+	  Use Qualcomm-specific VPD implementation that retrieves data
+	  from SMEM instead of traditional VPD storage.

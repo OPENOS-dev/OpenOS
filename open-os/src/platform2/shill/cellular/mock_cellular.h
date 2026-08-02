@@ -1,0 +1,52 @@
+// Copyright 2018 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SHILL_CELLULAR_MOCK_CELLULAR_H_
+#define SHILL_CELLULAR_MOCK_CELLULAR_H_
+
+#include <string>
+
+#include <chromeos/net-base/mac_address.h>
+#include <gmock/gmock.h>
+
+#include "shill/cellular/cellular.h"
+#include "shill/tethering_manager.h"
+
+namespace shill {
+
+class MockCellular : public Cellular {
+ public:
+  MockCellular(Manager* manager,
+               const std::string& link_name,
+               net_base::MacAddress mac_address,
+               int interface_index,
+               const std::string& service,
+               const RpcIdentifier& path);
+  MockCellular(const MockCellular&) = delete;
+  MockCellular& operator=(const MockCellular&) = delete;
+
+  ~MockCellular() override;
+
+  MOCK_METHOD(void, Connect, (CellularService*, Error*), (override));
+  MOCK_METHOD(void, Disconnect, (Error*, const char*), (override));
+  MOCK_METHOD(void, ConfigureAttachApn, (bool), (override));
+  MOCK_METHOD(Network*, GetPrimaryNetwork, (), (const override));
+  MOCK_METHOD(void, StartPPP, (const std::string&), (override));
+  MOCK_METHOD(void,
+              AcquireTetheringNetwork,
+              (TetheringManager::UpdateTimeoutCallback,
+               (AcquireTetheringNetworkResultCallback),
+               TetheringManager::CellularUpstreamEventCallback,
+               bool),
+              (override));
+  MOCK_METHOD(void,
+              EntitlementCheck,
+              (EntitlementCheckResultCallback, bool),
+              (override));
+  MOCK_METHOD(bool, FirmwareSupportsTethering, (), (override));
+};
+
+}  // namespace shill
+
+#endif  // SHILL_CELLULAR_MOCK_CELLULAR_H_

@@ -1,0 +1,214 @@
+/* Copyright 2023 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* PVT1 uses STM32G473MET6. 512KB of flash and 128KB RAM */
+
+/dts-v1/;
+
+#include <st/g4/stm32g473Xc.dtsi>
+#include <st/g4/stm32g473m(b-c-e)tx-pinctrl.dtsi>
+
+/ {
+	model = "STMicroelectronics STM32G473";
+	compatible = "st,stm32g473";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &boot_partition;
+		zephyr,shell-uart = &cdc_acm_uart0;
+	};
+
+	gpio {
+		/* ADC Input pin for the SIM Host voltage. */
+		vcc_sim_host_sns {
+			compatible = "voltage-divider";
+			label = "ADC_SIM_HOST_SNS";
+			io-channels = <&adc1 1>;
+			output-ohms = <10000>;
+			full-ohms = <20000>;
+		};
+
+		led {
+			compatible = "gpio-keys";
+			label = "LED";
+
+			/* LED mode indicator. */
+			led_mode {
+				label = "LED_MODE";
+				gpios = <&gpioc 12 GPIO_ACTIVE_LOW>,
+				        <&gpioc 13 GPIO_ACTIVE_LOW>;
+			};
+
+			/* Controls the LEDs on the individual slots */
+			led_sim_slot {
+				label = "LED_SLOT";
+				gpios = <&gpiob 0 GPIO_ACTIVE_LOW>,
+				        <&gpiob 1 GPIO_ACTIVE_LOW>,
+				        <&gpiob 2 GPIO_ACTIVE_LOW>,
+				        <&gpiob 3 GPIO_ACTIVE_LOW>,
+				        <&gpiob 5 GPIO_ACTIVE_LOW>,
+				        <&gpiob 9 GPIO_ACTIVE_LOW>,
+				        <&gpiob 10 GPIO_ACTIVE_LOW>,
+				        <&gpiob 15 GPIO_ACTIVE_LOW>;
+			};
+		};
+		button {
+			compatible = "gpio-keys";
+			label = "BUTTON";
+			mode {
+				label = "BUTTON_MODE";
+				gpios = <&gpiob 13 (GPIO_ACTIVE_LOW)>;
+			};
+			next {
+				label = "BUTTON_NEXT";
+				gpios = <&gpiob 12 GPIO_ACTIVE_LOW>;
+			};
+			prev {
+				label = "BUTTON_PREV";
+				gpios = <&gpiob 11 GPIO_ACTIVE_LOW>;
+			};
+		};
+		sim {
+			compatible = "gpio-keys";
+			label = "SIM";
+			/* Read the SIM slot chip detection pins */
+			chip_detect {
+				label = "SIM_CD";
+				gpios = <&gpioc 0 GPIO_ACTIVE_LOW>,
+				        <&gpioc 1 GPIO_ACTIVE_LOW>,
+				        <&gpioc 2 GPIO_ACTIVE_LOW>,
+				        <&gpioc 3 GPIO_ACTIVE_LOW>,
+				        <&gpioc 4 GPIO_ACTIVE_LOW>,
+				        <&gpioc 5 GPIO_ACTIVE_LOW>,
+				        <&gpioc 6 GPIO_ACTIVE_LOW>,
+				        <&gpioc 7 GPIO_ACTIVE_LOW>;
+			};
+
+			/* Controls the SPDT switch for the DUT SIM detection. */
+			sim_det_cntrl {
+				label = "SIM_DET_CNTRL";
+				gpios = <&gpioa 1 GPIO_ACTIVE_HIGH>;
+			};
+
+			/* Control the voltage shifter, handles SIM disconnect. */
+			sim_host_en {
+				label = "SIM_HOST_EN";
+				gpios = <&gpioe 7 GPIO_ACTIVE_HIGH>;
+			};
+
+			/* Select the SIM mux address from 0 to 7 */
+			sim_mux_addr {
+				label = "SIM_MUX_ADDR";
+				gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>,
+				        <&gpioa 5 GPIO_ACTIVE_HIGH>,
+				        <&gpioa 6 GPIO_ACTIVE_HIGH>;
+			};
+
+			/* Control the ESIM Enables for each data line */
+			sim_mux_clk_en {
+				label = "SIM_MUX_CLK_EN";
+				gpios = <&gpioe 10 GPIO_ACTIVE_HIGH>;
+			};
+			sim_mux_data_en {
+				label = "SIM_MUX_DATA_EN";
+				gpios = <&gpioe 11 GPIO_ACTIVE_HIGH>;
+			};
+			sim_mux_rst_en {
+				label = "SIM_MUX_RST_EN";
+				gpios = <&gpioe 12 GPIO_ACTIVE_HIGH>;
+			};
+
+			/* Select the SIM card voltage between 1.8V and 3.0V. */
+			sim_vcc_sel {
+				label = "VSIM_VCC_SEL";
+				gpios = <&gpioe 9 GPIO_ACTIVE_HIGH>;
+			};
+		};
+	};
+};
+
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "boot";
+			reg = <0x00000000 DT_SIZE_K(116)>;
+		};
+
+		storage_partition: partition@1d000 {
+			label = "storage";
+			reg = <0x0001d000 DT_SIZE_K(12)>;
+		};
+	};
+};
+
+
+/* Enable 16MHz HSI */
+&clk_hsi{
+	status = "okay";
+};
+
+
+/* Enable 48MHz HSI48 */
+&clk_hsi48 {
+	status = "okay";
+};
+
+
+/* Set PLLCLK to 96MHz */
+&pll {
+	div-m = <1>;
+	mul-n = <12>;
+	div-p = <2>;
+	div-q = <4>;
+	div-r = <2>;
+	clocks = <&clk_hsi>;
+	status = "okay";
+};
+
+
+/* SYSCLK set to 96MHz */
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(48)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <1>;
+	apb2-prescaler = <1>;
+};
+
+
+zephyr_udc0: &usb {
+	pinctrl-0 = <&usb_dm_pa11 &usb_dp_pa12>;
+	pinctrl-names = "default";
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+	status = "okay";
+};
+
+
+&adc1 {
+	pinctrl-0 = <&adc1_in1_pa0>;
+	pinctrl-names = "default";
+	st,adc-clock-source = <SYNC>;
+	st,adc-prescaler = <4>;
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+};
+

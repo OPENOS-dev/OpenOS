@@ -1,0 +1,6 @@
+# See project subdirectories for individual OWNERS files.
+
+# We don't set general owners as we don't want subdirs to inherit these.
+per-file ./LICENSE, /PRESUBMIT.cfg, /PRESUBMIT.py = file:/common-mk/OWNERS
+per-file .clang-format, .clang-tidy = file:chromiumos/third_party/toolchain-utils:/OWNERS.toolchain
+per-file .../*.policy = file:chromiumos/owners:v1:/security/OWNERS.seccomp

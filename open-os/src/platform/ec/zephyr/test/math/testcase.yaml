@@ -1,0 +1,10 @@
+common:
+  platform_allow:
+  - native_sim
+tests:
+  util.math.fixed_point:
+    extra_overlay_confs:
+    - ./fixed_point.conf
+  util.math.floating_point:
+    extra_overlay_confs:
+    - ./floating_point.conf

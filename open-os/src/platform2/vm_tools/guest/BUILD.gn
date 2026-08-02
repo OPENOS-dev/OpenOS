@@ -1,0 +1,50 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+import("../sommelier/wayland_protocol.gni")
+
+group("guest") {
+  deps = [
+    "//vm_tools/garcon",
+    "//vm_tools/guest_service_failure_notifier",
+    "//vm_tools/maitred",
+    "//vm_tools/port_listener",
+    "//vm_tools/syslog:vm_syslog",
+    "//vm_tools/vsh:vshd",
+  ]
+  if (!use.fuzzer) {
+    # Exclude notificationd and the demos from fuzzer builds since they
+    # pull in wayland, which causes build problems.
+    deps += [
+      "//vm_tools/demos:wayland_demo",
+      "//vm_tools/demos:x11_demo",
+      "//vm_tools/notificationd",
+    ]
+  }
+  if (use.test) {
+    deps += [
+      "//vm_tools/garcon:garcon_desktop_file_test",
+      "//vm_tools/garcon:garcon_icon_finder_test",
+      "//vm_tools/garcon:garcon_icon_index_file_test",
+      "//vm_tools/garcon:garcon_mime_types_parser_test",
+      "//vm_tools/maitred:maitred_init_test",
+      "//vm_tools/maitred:maitred_service_test",
+      "//vm_tools/notificationd:notificationd_test",
+      "//vm_tools/syslog:maitred_syslog_test",
+    ]
+  }
+  if (use.fuzzer) {
+    deps += [
+      "//vm_tools/garcon:garcon_desktop_file_fuzzer",
+      "//vm_tools/garcon:garcon_icon_index_file_fuzzer",
+      "//vm_tools/garcon:garcon_ini_parse_util_fuzzer",
+      "//vm_tools/garcon:garcon_mime_types_parser_fuzzer",
+    ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [ "libchrome" ]
+}

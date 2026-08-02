@@ -1,0 +1,41 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "charger_profile_override": true,
+  "cr50_capability": {
+    "ec_hibernate_breaks_rdd": true
+  },
+  "custom_max_tpm_init_us": 150000,
+  "ec_capability": {
+    "arm": true,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": false,
+    "lid": true,
+    "x86": false
+  },
+  "firmware_screen_rec_mode": 10,
+  "has_keyboard": false,
+  "is_detachable": true,
+  "minidiag_capability": {
+    "cbmem_preserved_by_ap_reset": false,
+    "event_log_launch_count": false
+  },
+  "minios_enabled": false,
+  "models": {
+    "coachz": {
+      "usbc_input_voltage_limit": 15
+    },
+    "homestar": {
+      "delay_reboot_to_ping": 65
+    },
+    "quackingstick": {
+      "delay_reboot_to_ping": 70
+    },
+    "wormdingler": {
+      "delay_reboot_to_ping": 70
+    }
+  },
+  "platform": "strongbad",
+  "usb_a_port_count": -1
+}

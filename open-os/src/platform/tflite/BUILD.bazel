@@ -1,0 +1,33 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "cros_sample_delegate",
+    actual = "//delegate/sample:tensorflowlite_cros_sample_delegate",
+)
+
+alias(
+    name = "stable_gpu_delegate",
+    actual = "//delegate/gpu:tensorflowlite_stable_gpu_delegate",
+)
+
+alias(
+    name = "mtk_neuron_delegate",
+    actual = "//delegate/mtk_neuron:tensorflowlite_mtk_neuron_delegate",
+)
+
+alias(
+    name = "intel_openvino_delegate",
+    actual = "//delegate/intel_openvino:tensorflowlite_intel_openvino_delegate",
+)
+
+alias(
+    name = "libnativewindow.so",
+    actual = "//android:libnativewindow.so",
+)
+
+alias(
+    name = "async_delegate_test",
+    actual = "//common:async_delegate_test",
+)

@@ -1,0 +1,29 @@
+[package]
+name = "flexor"
+version = "1.0.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[workspace.dependencies]
+anyhow = "1.0"
+gpt_disk_types = "0.16.0"
+tempfile = "3.0"
+
+[dependencies]
+anyhow = { workspace = true }
+gpt_disk_io = { version = "0.16.0", features = ["std"] }
+gpt_disk_types = { workspace = true }
+libchromeos = { path = "../libchromeos-rs" } # provided by ebuild
+vboot_reference-sys = { path = "../../platform/vboot_reference/rust/vboot_reference-sys" } # provided by ebuild
+log = "0.4.20"
+nix = "0.23"
+tar = "0.4.40"
+tempfile = { workspace = true }
+xz2 = "0.1.7"
+rand = "0.8.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uguid = "2.2.0"
+
+[workspace]
+members = ["xtask"]

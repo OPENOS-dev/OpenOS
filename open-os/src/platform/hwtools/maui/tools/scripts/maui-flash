@@ -1,0 +1,112 @@
+#!/bin/bash
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Wrapper to run maui-flash inside the maui-utils Docker container.
+# Handles file path translation by copying files to a temp directory.
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MANAGER="${SCRIPT_DIR}/maui_image_manager.py"
+
+# Separate arguments for manager vs tool
+MANAGER_ARGS=()
+TOOL_ARGS=()
+VERSION_MODE=0
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --version)
+            VERSION_MODE=1
+            shift
+            ;;
+        --utils_channel)
+            MANAGER_ARGS+=("--utils_channel" "$2")
+            shift 2
+            ;;
+        --utils_channel=*)
+            MANAGER_ARGS+=("$1")
+            shift
+            ;;
+        --fw_channel)
+            TOOL_ARGS+=("--fw_channel" "$2")
+            shift 2
+            ;;
+        --fw_channel=*)
+            TOOL_ARGS+=("$1")
+            shift
+            ;;
+        --verbose)
+            MANAGER_ARGS+=("$1") # Pass verbose to manager
+            # TOOL_ARGS+=("$1")   # Also pass verbose to the tool if it supports it
+            shift
+            ;;
+        *)
+            TOOL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Get Image Tag
+if ! IMAGE_TAG=$(python3 "$MANAGER" "${MANAGER_ARGS[@]}"); then
+    exit 1
+fi
+
+if [ "$VERSION_MODE" -eq 1 ]; then
+    # Run version check inside the container
+    docker run --rm "$IMAGE_TAG" maui-flash --internal-version
+    exit 0
+fi
+
+# Create a temporary directory on the host
+HOST_TMP_DIR=$(mktemp -d -t maui-flash-XXXXXX)
+# Ensure cleanup on exit
+trap 'rm -rf "$HOST_TMP_DIR"' EXIT
+
+CONTAINER_MOUNT_POINT="/mnt/firmware_dir"
+CMD_ARGS=()
+FILE_ARG_NEXT=0
+
+# Iterate through parsed tool arguments to find file paths
+for arg in "${TOOL_ARGS[@]}"; do
+    if [ "$FILE_ARG_NEXT" -eq 1 ]; then
+        # This argument is the file path for --file (space separated)
+        if [ -f "$arg" ]; then
+            FILE_NAME="$(basename "$arg")"
+            cp "$arg" "$HOST_TMP_DIR/$FILE_NAME"
+            CMD_ARGS+=("$CONTAINER_MOUNT_POINT/$FILE_NAME")
+        else
+            echo "Error: File not found: $arg"
+            exit 1
+        fi
+        FILE_ARG_NEXT=0
+    elif [[ "$arg" == "--file="* ]]; then
+        # This argument is --file=/path/to/file (equals separated)
+        FILE_PATH="${arg#--file=}"
+        if [ -f "$FILE_PATH" ]; then
+            FILE_NAME="$(basename "$FILE_PATH")"
+            cp "$FILE_PATH" "$HOST_TMP_DIR/$FILE_NAME"
+            CMD_ARGS+=("--file" "$CONTAINER_MOUNT_POINT/$FILE_NAME")
+        else
+            echo "Error: File not found: $FILE_PATH"
+            exit 1
+        fi
+    elif [ "$arg" == "--file" ]; then
+        CMD_ARGS+=("$arg")
+        FILE_ARG_NEXT=1
+    else
+        CMD_ARGS+=("$arg")
+    fi
+done
+
+# Run maui-flash inside the container
+docker run --rm -it \
+    --privileged \
+    -v /dev:/dev \
+    -v "$HOST_TMP_DIR:$CONTAINER_MOUNT_POINT" \
+    "${IMAGE_TAG}" \
+    maui-flash "${CMD_ARGS[@]}"

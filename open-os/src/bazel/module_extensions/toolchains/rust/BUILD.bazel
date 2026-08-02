@@ -1,0 +1,59 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@bazel_skylib//rules/directory:glob.bzl", "directory_glob")
+load("//bazel/build_defs:bool_flag.bzl", "bool_flag", "config_setting_all")
+
+package(default_visibility = ["//visibility:public"])
+
+bool_flag(
+    name = "hermetic",
+    default = False,
+)
+
+config_setting_all(
+    name = "use_hermetic_launcher_config",
+    targets = [
+        ":hermetic_enabled",
+        "//bazel/platforms/constraints:vendor_pc",
+    ],
+)
+
+alias(
+    name = "use_hermetic_launcher",
+    actual = select({
+        ":use_hermetic_launcher_config": "//bazel/build_defs/bool_flag:true",
+        "//conditions:default": "//bazel/build_defs/bool_flag:false",
+    }),
+)
+
+directory_glob(
+    name = "cargo",
+    srcs = ["usr/bin/cargo"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+)
+
+directory_glob(
+    name = "llvm_cov",
+    srcs = ["bin/llvm-cov"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+)
+
+directory_glob(
+    name = "rustc",
+    srcs = ["usr/bin/rustc"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+)
+
+directory_glob(
+    name = "rustdoc",
+    srcs = ["usr/bin/rustdoc"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+)
+
+directory_glob(
+    name = "rustfmt",
+    srcs = ["usr/bin/rustfmt"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+)

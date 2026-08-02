@@ -1,0 +1,146 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/ebpf_gen.gni")
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":bpf-fdmon",
+    ":bpf-genmon",
+    ":bpf-lockmon",
+    ":bpf-memmon",
+    ":bpf-mons-fdmem-test",
+    ":bpf-mons-lock-test",
+    ":bpf-psimon",
+    ":install_configs",
+  ]
+}
+
+pkg_config("target_defaults") {
+  # NOSORT
+  pkg_deps = [
+    "libbpf",
+    "libelf",
+  ]
+}
+
+generate_vmlinux("vmlinux_h") {
+  vmlinux_out_dir = "include/mons/vmlinux"
+  btf_out_dir = "bpf"
+}
+
+generate_ebpf_skeletons("bpf_memmon") {
+  sources = [ "memmon.bpf.c" ]
+  bpf_skeleton_out_dir = "include/mons/bpf_skeletons"
+  btf_inout_dir = "bpf"
+  deps = [ ":vmlinux_h" ]
+}
+
+generate_ebpf_skeletons("bpf_fdmon") {
+  sources = [ "fdmon.bpf.c" ]
+  bpf_skeleton_out_dir = "include/mons/bpf_skeletons"
+  btf_inout_dir = "bpf"
+  deps = [ ":vmlinux_h" ]
+}
+
+generate_ebpf_skeletons("bpf_lockmon") {
+  sources = [ "lockmon.bpf.c" ]
+  bpf_skeleton_out_dir = "include/mons/bpf_skeletons"
+  btf_inout_dir = "bpf"
+  deps = [ ":vmlinux_h" ]
+}
+
+generate_ebpf_skeletons("bpf_psimon") {
+  sources = [ "psimon.bpf.c" ]
+  bpf_skeleton_out_dir = "include/mons/bpf_skeletons"
+  btf_inout_dir = "bpf"
+  deps = [ ":vmlinux_h" ]
+}
+
+generate_ebpf_skeletons("bpf_genmon") {
+  sources = [ "genmon.bpf.c" ]
+  bpf_skeleton_out_dir = "include/mons/bpf_skeletons"
+  btf_inout_dir = "bpf"
+  deps = [ ":vmlinux_h" ]
+}
+
+executable("bpf-memmon") {
+  sources = [
+    "libmon.cc",
+    "memmon.cc",
+    "memmon_tracing.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  libs = [ "blazesym_c" ]
+  deps = [ ":bpf_memmon" ]
+  pkg_deps = [ "perfetto" ]
+  install_path = "bin"
+}
+
+executable("bpf-fdmon") {
+  sources = [
+    "fdmon.cc",
+    "libmon.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  libs = [ "blazesym_c" ]
+  deps = [ ":bpf_fdmon" ]
+  install_path = "bin"
+}
+
+executable("bpf-lockmon") {
+  sources = [
+    "libmon.cc",
+    "lockmon.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  libs = [ "blazesym_c" ]
+  deps = [ ":bpf_lockmon" ]
+  install_path = "bin"
+}
+
+executable("bpf-psimon") {
+  sources = [
+    "libmon.cc",
+    "psimon.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  libs = [ "blazesym_c" ]
+  deps = [ ":bpf_psimon" ]
+  install_path = "bin"
+}
+
+executable("bpf-genmon") {
+  sources = [
+    "genmon.cc",
+    "libmon.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  libs = [ "blazesym_c" ]
+  deps = [ ":bpf_genmon" ]
+  install_path = "bin"
+}
+
+install_config("install_configs") {
+  sources = [ "conf/memmon-perfetto.conf" ]
+  install_path = "/etc/bpf-mons/"
+}
+
+config("target_test_defaults") {
+  cflags_cc = [
+    "-O0",
+    "-g",
+  ]
+}
+
+executable("bpf-mons-fdmem-test") {
+  sources = [ "test/fdmem-test.cc" ]
+  configs += [ ":target_test_defaults" ]
+}
+
+executable("bpf-mons-lock-test") {
+  sources = [ "test/lock-test.cc" ]
+  configs += [ ":target_test_defaults" ]
+}

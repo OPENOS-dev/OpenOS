@@ -1,0 +1,46 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef FBPREPROCESSOR_DBUS_ADAPTOR_H_
+#define FBPREPROCESSOR_DBUS_ADAPTOR_H_
+
+#include <memory>
+#include <utility>
+
+#include <brillo/dbus/dbus_method_response.h>
+#include <brillo/dbus/dbus_object.h>
+#include <dbus/bus.h>
+#include <fbpreprocessor/dbus_adaptors/org.chromium.FbPreprocessor.h>
+#include <fbpreprocessor/proto_bindings/fbpreprocessor.pb.h>
+
+#include "fbpreprocessor/manager.h"
+
+namespace fbpreprocessor {
+
+class DBusAdaptor : public org::chromium::FbPreprocessorInterface,
+                    public org::chromium::FbPreprocessorAdaptor {
+ public:
+  explicit DBusAdaptor(scoped_refptr<dbus::Bus> bus, Manager* manager);
+  DBusAdaptor(const DBusAdaptor&) = delete;
+  DBusAdaptor& operator=(const DBusAdaptor&) = delete;
+
+  void RegisterAsync(
+      brillo::dbus_utils::AsyncEventSequencer::CompletionAction cb) {
+    RegisterWithDBusObject(&dbus_object_);
+    dbus_object_.RegisterAsync(std::move(cb));
+  }
+
+  void GetDebugDumps(
+      std::unique_ptr<brillo::dbus_utils::DBusMethodResponse<DebugDumps>>
+          response) const override;
+
+ private:
+  brillo::dbus_utils::DBusObject dbus_object_;
+
+  Manager* manager_;
+};
+
+}  // namespace fbpreprocessor
+
+#endif  // FBPREPROCESSOR_DBUS_ADAPTOR_H_

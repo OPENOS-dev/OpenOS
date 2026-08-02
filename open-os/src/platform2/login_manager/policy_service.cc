@@ -1,0 +1,322 @@
+// Copyright 2012 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "login_manager/policy_service.h"
+
+#include <stdint.h>
+
+#include <string>
+#include <utility>
+
+#include <base/check.h>
+#include <base/check_op.h>
+#include <base/functional/bind.h>
+#include <base/functional/callback.h>
+#include <base/location.h>
+#include <base/logging.h>
+#include <base/notreached.h>
+#include <base/strings/stringprintf.h>
+#include <base/synchronization/waitable_event.h>
+#include <base/types/expected.h>
+#include <brillo/message_loops/message_loop.h>
+#include <chromeos/dbus/service_constants.h>
+
+#include "bindings/device_management_backend.pb.h"
+#include "crypto/signature_verifier.h"
+#include "login_manager/blob_util.h"
+#include "login_manager/dbus_util.h"
+#include "login_manager/nss_util.h"
+#include "login_manager/policy_key.h"
+#include "login_manager/policy_service_util.h"
+#include "login_manager/policy_store.h"
+#include "login_manager/resilient_policy_store.h"
+#include "login_manager/system_utils.h"
+#include "login_manager/validator_utils.h"
+
+namespace em = enterprise_management;
+
+namespace login_manager {
+
+namespace {
+
+const char* GetKeyName(bool is_extension_install_policy) {
+  return is_extension_install_policy
+             ? "extension install policy key"
+             : "policy key";
+}
+
+}  // namespace
+
+PolicyNamespace MakeChromePolicyNamespace() {
+  return std::make_pair(POLICY_DOMAIN_CHROME, std::string());
+}
+
+PolicyNamespace MakeExtensionInstallPolicyNamespace() {
+  return std::make_pair(POLICY_DOMAIN_EXTENSION_INSTALL, std::string());
+}
+
+// Returns true if the domain, when part of a PolicyNamespace, expects a
+// non-empty |component_id()|.
+bool IsComponentDomain(PolicyDomain domain) {
+  switch (domain) {
+    case POLICY_DOMAIN_CHROME:
+    case POLICY_DOMAIN_EXTENSION_INSTALL:
+      return false;
+    case POLICY_DOMAIN_EXTENSIONS:
+    case POLICY_DOMAIN_SIGNIN_EXTENSIONS:
+      return true;
+  }
+  NOTREACHED();
+}
+
+constexpr char PolicyService::kChromePolicyFileName[] = "policy";
+constexpr char PolicyService::kExtensionInstallPolicyFileName[] =
+    "extension_install_policy";
+constexpr char PolicyService::kExtensionsPolicyFileNamePrefix[] =
+    "policy_extension_id_";
+constexpr char PolicyService::kSignInExtensionsPolicyFileNamePrefix[] =
+    "policy_signin_extension_id_";
+
+PolicyService::PolicyService(SystemUtils* system_utils,
+                             const base::FilePath& policy_dir,
+                             PolicyKey* policy_key,
+                             PolicyKey* extension_install_policy_key,
+                             LoginMetrics* metrics,
+                             bool resilient_chrome_policy_store)
+    : metrics_(metrics),
+      system_utils_(system_utils),
+      policy_dir_(policy_dir),
+      policy_key_(policy_key),
+      extension_install_policy_key_(extension_install_policy_key),
+      resilient_chrome_policy_store_(resilient_chrome_policy_store),
+      delegate_(nullptr),
+      weak_ptr_factory_(this) {}
+
+PolicyService::~PolicyService() = default;
+
+void PolicyService::Store(const PolicyNamespace& ns,
+                          const std::vector<uint8_t>& policy_blob,
+                          int key_flags,
+                          Completion completion) {
+  em::PolicyFetchResponse policy;
+  if (!policy.ParseFromArray(policy_blob.data(), policy_blob.size()) ||
+      !policy.has_policy_data()) {
+    std::move(completion)
+        .Run(CREATE_ERROR_AND_LOG(dbus_error::kSigDecodeFail,
+                                  "Unable to parse policy protobuf."));
+    return;
+  }
+
+  StorePolicy(ns, policy, key_flags, std::move(completion));
+}
+
+bool PolicyService::Retrieve(const PolicyNamespace& ns,
+                             std::vector<uint8_t>* policy_blob) {
+  *policy_blob = SerializeAsBlob(GetOrCreateStore(ns)->Get());
+  return true;
+}
+
+void PolicyService::PersistPolicy(const PolicyNamespace& ns,
+                                  Completion completion) {
+  const bool success = GetOrCreateStore(ns)->Persist();
+  OnPolicyPersisted(std::move(completion),
+                    success ? dbus_error::kNone : dbus_error::kSigEncodeFail);
+}
+
+PolicyStore* PolicyService::GetOrCreateStore(const PolicyNamespace& ns) {
+  PolicyStoreMap::const_iterator iter = policy_stores_.find(ns);
+  if (iter != policy_stores_.end()) {
+    return iter->second.get();
+  }
+
+  bool resilient = ((ns == MakeChromePolicyNamespace() ||
+                     ns == MakeExtensionInstallPolicyNamespace()) &&
+                    resilient_chrome_policy_store_);
+  std::unique_ptr<PolicyStore> store;
+  if (resilient) {
+    store = std::make_unique<ResilientPolicyStore>(system_utils_,
+                                                   GetPolicyPath(ns), metrics_);
+  } else {
+    store = std::make_unique<PolicyStore>(system_utils_, GetPolicyPath(ns));
+  }
+
+  store->EnsureLoadedOrCreated();
+  PolicyStore* policy_store_ptr = store.get();
+  policy_stores_[ns] = std::move(store);
+  return policy_store_ptr;
+}
+
+void PolicyService::SetStoreForTesting(const PolicyNamespace& ns,
+                                       std::unique_ptr<PolicyStore> store) {
+  policy_stores_[ns] = std::move(store);
+}
+
+void PolicyService::StorePolicy(const PolicyNamespace& ns,
+                                const em::PolicyFetchResponse& policy,
+                                int key_flags,
+                                Completion completion) {
+  PolicyKey* validation_key = ns.first == POLICY_DOMAIN_EXTENSION_INSTALL
+                                  ? extension_install_policy_key_
+                                  : policy_key_;
+  const char* key_name = GetKeyName(ns.first == POLICY_DOMAIN_EXTENSION_INSTALL);
+  if (!validation_key) {
+    constexpr char kNoNamespaceFormat[] = "No %s for namespace.";
+    std::string error_message =
+        base::StringPrintf(kNoNamespaceFormat, key_name);
+    LOG(ERROR) << error_message;
+    std::move(completion)
+        .Run(CreateError(dbus_error::kInvalidParameter, error_message));
+    return;
+  }
+
+  // Use `policy_data_signature_type` field to determine which algorithm
+  // to use.
+  // In some cases the field is missing, but the blob is still signed
+  // with SHA1_RSA (e.g. device owner settings). That's why we default to
+  // SHA1_RSA.
+  // The algorithm is used to validate both new keys signatures and policy data
+  // signatures. Refer to the PolicyFetchResponse definition for more details.
+  em::PolicyFetchRequest::SignatureType policy_data_signature_type =
+      em::PolicyFetchRequest::SHA1_RSA;
+  if (policy.has_policy_data_signature_type()) {
+    policy_data_signature_type = policy.policy_data_signature_type();
+  }
+  // Treat `signature_type` of `em::PolicyFetchRequest::NONE` as unsigned,
+  // which is not supported.
+  base::expected<crypto::SignatureVerifier::SignatureAlgorithm, std::string>
+      mapped_policy_data_signature_type =
+          MapSignatureType(policy_data_signature_type);
+  if (!mapped_policy_data_signature_type.has_value()) {
+    constexpr char kErrorMessage[] = "Invalid policy data signature type.";
+    LOG(ERROR) << kErrorMessage << " Signature type mapping error: "
+               << mapped_policy_data_signature_type.error() << ".";
+    std::move(completion)
+        .Run(CreateError(dbus_error::kInvalidParameter, kErrorMessage));
+
+    return;
+  }
+
+  // Determine if the policy has pushed a new owner key and, if so, set it.
+  if (policy.has_new_public_key() &&
+      !validation_key->Equals(policy.new_public_key())) {
+    // The policy contains a new key, and it is different from |key_|.
+    std::vector<uint8_t> der = StringToBlob(policy.new_public_key());
+
+    bool installed = false;
+    if (validation_key->IsPopulated()) {
+      if (policy.has_new_public_key_signature() && (key_flags & KEY_ROTATE)) {
+        // Graceful key rotation.
+        LOG(INFO) << "Attempting " << key_name << " rotation.";
+        installed = validation_key->Rotate(
+            der, StringToBlob(policy.new_public_key_signature()),
+            mapped_policy_data_signature_type.value());
+      }
+    } else if (key_flags & KEY_INSTALL_NEW) {
+      LOG(INFO) << "Attempting to install new " << key_name << ".";
+      installed = validation_key->PopulateFromBuffer(der);
+    }
+    if (!installed && (key_flags & KEY_CLOBBER)) {
+      LOG(INFO) << "Clobbering existing " << key_name << ".";
+      installed = validation_key->ClobberCompromisedKey(der);
+    }
+
+    if (!installed) {
+      constexpr char kFailedInstallFormat[] = "Failed to install %s!";
+      std::string error_message =
+          base::StringPrintf(kFailedInstallFormat, key_name);
+      LOG(ERROR) << error_message << " Used signature type: "
+                 << mapped_policy_data_signature_type.value() << ".";
+      std::move(completion)
+          .Run(CreateError(dbus_error::kPubkeySetIllegal, error_message));
+
+      return;
+    }
+
+    // If here, need to persist the key just loaded into memory to disk.
+    PersistKey(validation_key);
+  }
+
+  // Validate signature on policy and persist to disk.
+  if (!validation_key->Verify(StringToBlob(policy.policy_data()),
+                              StringToBlob(policy.policy_data_signature()),
+                              mapped_policy_data_signature_type.value())) {
+    constexpr char kErrorMessage[] = "Signature could not be verified.";
+    LOG(ERROR) << kErrorMessage << " Used signature type: "
+               << mapped_policy_data_signature_type.value() << ".";
+    std::move(completion)
+        .Run(CreateError(dbus_error::kVerifyFail, kErrorMessage));
+
+    return;
+  }
+
+  GetOrCreateStore(ns)->Set(policy);
+  PersistPolicy(ns, std::move(completion));
+}
+
+void PolicyService::OnKeyPersisted(PolicyKey* key, bool status) {
+  const char* key_name = GetKeyName(key == extension_install_policy_key_);
+  if (status) {
+    LOG(INFO) << "Persisted " << key_name << " to disk.";
+  } else {
+    LOG(ERROR) << "Failed to persist " << key_name << " to disk.";
+  }
+  if (delegate_) {
+    delegate_->OnKeyPersisted(key, status);
+  }
+}
+
+void PolicyService::OnPolicyPersisted(Completion completion,
+                                      const std::string& dbus_error_code) {
+  if (completion.is_null()) {
+    LOG(INFO) << "Policy persisted with no completion, result: "
+              << dbus_error_code;
+  } else {
+    brillo::ErrorPtr error;
+    if (dbus_error_code != dbus_error::kNone) {
+      constexpr char kMessage[] = "Failed to persist policy to disk.";
+      LOG(ERROR) << kMessage << ": " << dbus_error_code;
+      error = CreateError(dbus_error_code, kMessage);
+    }
+
+    std::move(completion).Run(std::move(error));
+  }
+
+  if (delegate_) {
+    delegate_->OnPolicyPersisted(dbus_error_code == dbus_error::kNone);
+  }
+}
+
+void PolicyService::PersistKey(PolicyKey* key) {
+  CHECK(key);
+  OnKeyPersisted(key, key->Persist());
+}
+
+base::FilePath PolicyService::GetPolicyPath(const PolicyNamespace& ns) {
+  // If the store has already been already created, return the store's path.
+  PolicyStoreMap::const_iterator iter = policy_stores_.find(ns);
+  if (iter != policy_stores_.end()) {
+    return iter->second->policy_path();
+  }
+
+  const PolicyDomain& domain = ns.first;
+  const std::string& component_id = ns.second;
+  switch (domain) {
+    case POLICY_DOMAIN_CHROME:
+      return policy_dir_.AppendASCII(kChromePolicyFileName);
+    case POLICY_DOMAIN_EXTENSION_INSTALL:
+      return policy_dir_.AppendASCII(kExtensionInstallPolicyFileName);
+    case POLICY_DOMAIN_EXTENSIONS:
+      // Double-check extension ID (should have already been checked before).
+      CHECK(ValidateExtensionId(component_id));
+      return policy_dir_.AppendASCII(kExtensionsPolicyFileNamePrefix +
+                                     component_id);
+    case POLICY_DOMAIN_SIGNIN_EXTENSIONS:
+      // Double-check extension ID (should have already been checked before).
+      CHECK(ValidateExtensionId(component_id));
+      return policy_dir_.AppendASCII(kSignInExtensionsPolicyFileNamePrefix +
+                                     component_id);
+  }
+}
+
+}  // namespace login_manager

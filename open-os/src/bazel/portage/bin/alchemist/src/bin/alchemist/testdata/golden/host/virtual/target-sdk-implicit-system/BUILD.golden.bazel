@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "1-r4",
+    actual = "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1-r4_debug",
+    actual = "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1-r4_package_set",
+    actual = "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1-r4_install",
+    actual = "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1-r4_installed",
+    actual = "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "1-r4_install_list",
+    actual = "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "target-sdk-implicit-system",
+    actual = ":1-r4",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":1-r4_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "target-sdk-implicit-system_debug",
+    actual = ":1-r4_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":1-r4_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "target-sdk-implicit-system_package_set",
+    actual = ":1-r4_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":1-r4_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "target-sdk-implicit-system_install",
+    actual = ":1-r4_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":1-r4_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "target-sdk-implicit-system_installed",
+    actual = ":1-r4_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":1-r4_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "target-sdk-implicit-system_install_list",
+    actual = ":1-r4_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "1-r4_test",
+    tests = [ "//internal/packages/stage2/host/chromiumos/virtual/target-sdk-implicit-system:1-r4_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":1-r4_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "target-sdk-implicit-system_test",
+    tests = [ ":1-r4_test" ],
+    visibility = ["@//bazel:internal"],
+)

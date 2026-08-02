@@ -1,0 +1,50 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option go_package = "go.chromium.org/chromiumos/feature_management/go/api/software";
+
+package chromiumos.feature_management.api.software;
+
+message Feature {
+  // Name of the feature
+  string name = 1;
+
+  // Contact emails
+  message Contact {
+    string email = 1;
+  }
+  repeated Contact contacts = 2;
+
+  // Feature availability: at which level the feature is avaiable.
+  uint32 feature_level = 3;
+
+  // Device set where the feature is available.
+  enum Scope {
+    SCOPE_UNSPECIFIED = 0;
+    SCOPE_DEVICES_0 = 1;
+    SCOPE_DEVICES_1 = 2;
+  }
+  repeated Scope scopes = 4;
+
+  // Feature Usage: where the features is going to be used.
+  // Local usage via C++ is implied.
+  // Setting chrome and android allows the feature to be seen in each.
+  enum Usage {
+    USAGE_UNSPECIFIED = 0;
+    USAGE_LOCAL = 1;
+    USAGE_CHROME = 2;
+    USAGE_ANDROID = 3;
+  }
+  repeated Usage usages = 5;
+
+  // Planned initial release
+  uint32 release = 6;
+}
+
+// A proto to contain all the features
+message FeatureBundle {
+  repeated Feature features = 1;
+}

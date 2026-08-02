@@ -1,0 +1,50 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Maintainer: Femi Adegunloye <mrfemi@google.com>
+
+pkgname=xray-git
+pkgver=VERSION
+pkgrel=1
+pkgdesc="X11 Test Suite"
+arch=('x86_64')
+url=""
+license=('BSD')
+groups=()
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+replaces=()
+backup=()
+options=()
+install=
+_borealis_branch_tracked=('main')
+_borealis_current_ref=('commit=8cd0524515614e71ddcac52092f7448c21141786')
+source=("graphics::git+https://chromium.googlesource.com/chromiumos/platform/graphics#${_borealis_current_ref}")
+noextract=()
+
+### Check sha512
+sha512sums=('SKIP')
+
+pkgver() {
+        cd "$srcdir/graphics/src/${pkgname%-git}"
+
+        printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+        cd "$srcdir/graphics/src/${pkgname%-git}"
+}
+
+build() {
+        cd "$srcdir/graphics/src/${pkgname%-git}"
+        make -j
+}
+
+package() {
+        cd "$srcdir/graphics/src/${pkgname%-git}"
+        make prefix=/usr DESTDIR="$pkgdir/" install
+
+        install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "${srcdir}/graphics/src/${pkgname%-git}/LICENSE"
+}

@@ -1,0 +1,43 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config TEST_AP_POWER_ADL
+	bool "AP power sequence tests for Alderlake"
+	help
+	  Run the AP power sequence tests for the Alderlake chipset.
+	  This is a generic Alderlake implementation that doesn't
+	  match a particular board.
+
+config TEST_AP_POWER_MTL
+	bool "AP power sequence tests for Meteorlake"
+	help
+	  Run the AP power sequence tests for the Meteorlake chipset.
+	  This is a generic Meteorlake implementation that doesn't
+	  match a particular board.
+
+config TEST_AP_POWER_ATRIARVP
+	bool "AP Power sequence tests for Atria RVP project"
+	help
+	  Run the AP power sequence tests using the Atria RVP devicetree
+	  configuration and the Atria RVP project specific source files.
+
+config TEST_AP_POWER_BROX
+	bool "AP Power sequence tests for Brox project"
+	help
+	  Run the AP power sequence tests using the Brox devicetree
+	  configuration and the Brox project specific source files.
+
+config TEST_AP_POWER_OCELOTRVP
+	bool "AP Power sequence tests for Ocelot RVP project"
+	help
+	  Run the AP power sequence tests using the Ocelot RVP devicetree
+	  configuration and the Ocelot RVP project specific source files.
+
+config TEST_AP_POWER_RECOVERY_MODE
+	bool "AP power sequencing tests for recovery boot"
+	help
+	  Run AP power sequencing tests, but boot into recovery mode and verify
+	  functionality of the CSE early recovery GPIO driver.
+
+source "Kconfig.zephyr"

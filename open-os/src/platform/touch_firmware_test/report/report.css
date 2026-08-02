@@ -1,0 +1,202 @@
+body {
+  background: #ced6d6;
+  color: #151818;
+  font-family: Sans-serif;
+}
+
+#headings {
+  text-align: center
+}
+
+#headings div {
+  font-size: small;
+  border: 1px solid #b2afa8;
+  padding: 5px;
+}
+
+div.test_version, div.test_title {
+  background: #fffaf0;
+}
+
+div.warning {
+  background: #ff9999;
+  margin: 10px;
+}
+
+h2.section_title, h3.prompt {
+  text-align: center;
+}
+
+h2.section_title, h4.timestamp {
+  text-align: right;
+}
+
+ul.validators {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+ul.validators > li {
+  margin: 5px;
+  padding: 5px;
+  position: relative;
+  clear: both;
+  overflow: hidden;
+}
+
+ul.result_details > div.description {
+  font-size: small;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin-top: 0.75cm;
+  margin-bottom: 0.25cm;
+  margin-right: 0.5cm;
+  padding: 0.125cm;
+}
+
+ul.validators > li.heading {
+  font-weight: bold;
+  height: 2cm;
+}
+
+ul.validators > li > div.overlay {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width:100%;
+  height: 100%;
+  z-index: 1;
+}
+
+ul.validators > li:hover > div.overlay {
+  background: #000;
+  opacity: 0.2;
+}
+
+ul.validators > li > div.contents {
+  position: relative;
+  clear: both;
+  overflow: hidden;
+  z-index: 2;
+}
+
+ul.validators > li div.name {
+  float: left;
+}
+
+ul.validators > li.heading > div.name {
+  padding-top: 1.25cm;
+}
+
+ul.validators > li div.scores,
+ul.validators > li div.values {
+  float: right;
+  padding-left: 0.5cm;
+  text-align: center;
+}
+
+ul.validators > li div.scores > div,
+ul.validators > li div.values > div {
+  float: right;
+  width: 2cm;
+}
+
+ul.validators > li div.values > div.units {
+  border-right: 1px black solid;
+}
+
+ul.result_details {
+  display: none;
+  list-style-type: none;
+  clear:left;
+}
+
+ul.result_details > li:not(.heading):before {
+  margin-left: -0.5cm;
+  padding: 0.5cm;
+  font-weight: bold;
+  content: '\25a0';
+  text-shadow: 1px 1px 2px black,
+               1px -1px 2px black,
+               -1px 1px 2px black,
+               -1px -1px 2px black;
+}
+
+ul.result_details > li.heading {
+  font-weight: bold;
+  margin-left: 0.5cm;
+}
+
+ul.result_details > li a {
+  text-decoration: none;
+}
+
+ul.result_details > li a:hover {
+  font-weight: bold;
+}
+
+ul.result_details > li div.score,
+ul.result_details > li div.value {
+  display: inline-block;
+  min-width: 2cm;
+}
+
+a:link {
+  color: #0d47a1;
+}
+
+a:visited {
+  color: #4527a0;
+}
+
+a:hover {
+  color: #1565c0;
+}
+
+a:active {
+  color: #673ab7;
+}
+
+ul.test_details > li {
+  clear: both;
+  border: 1px solid black;
+  overflow: hidden;
+  padding: 5px;
+  margin: 5px;
+  max-width: 30cm;
+}
+
+ul.test_details > li div.validator_details {
+  clear: right;
+  float: right;
+  width: 48%;
+  padding-bottom: 0.5cm;
+}
+
+ul.test_details > li div.validator_details > table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+ul.test_details > li div.validator_details td {
+  border: 1px solid #929e9e;
+}
+
+ul.test_details > li div.validator_details td.label {
+  width: 1mm;
+}
+
+ul.test_details > li div.validator_details td.name {
+  text-align: center;
+  font-weight: bold;
+}
+
+ul.test_details > li div.validator_details tr.value:hover {
+  background: #aabbbb;
+}
+
+img.plot {
+  float: left;
+  width: 48%;
+  background: black;
+}

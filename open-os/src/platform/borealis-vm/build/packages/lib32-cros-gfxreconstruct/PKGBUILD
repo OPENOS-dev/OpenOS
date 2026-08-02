@@ -1,0 +1,70 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Maintainer: Lina Versace <linyaa@google.com>
+# Maintainer: Phillip Pearson <philpearson@google.com>
+
+# This lib32 package installs only the 32-bit library, which is unusable
+# without the Vulkan layer json file. We rely on the non-lib32 package to
+# provide the architecture-independent json file and also the Python scripts.
+# This package must not install them because it would produce file conflicts
+# between the packages.
+
+pkgname='lib32-cros-gfxreconstruct'
+pkgver='0.9.16.1'
+_vk_headers_ver='1.3.236'
+pkgrel=1
+pkgdesc='gfxreconstruct tool (32-bit)'
+arch=('x86_64')
+url='https://github.com/LunarG/gfxreconstruct'
+license=('Apache')
+depends=(
+  'lib32-libx11'
+  'lib32-libxcb'
+  'lib32-libxrandr'
+  'lib32-lz4'
+  'lib32-wayland'
+  'lib32-xcb-util-keysyms'
+  'lib32-zlib'
+  'lib32-zstd'
+)
+makedepends=('cmake>=3.4')
+provides=('gfxreconstruct')
+source=(
+  "gfxreconstruct-${pkgver}.tar.gz::https://github.com/LunarG/gfxreconstruct/archive/refs/tags/v${pkgver}.tar.gz"
+  "vulkan-headers-${_vk_headers_ver}.tar.gz::https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v${_vk_headers_ver}.tar.gz"
+)
+sha256sums=(
+  '3a137e996885445d2cb86465a48ce21868309c1625006f26e0684095ef3133dd'
+  'a86b8c38618b764057b359cf0f18c12a7c81b7760fe6fca1acf9adb471d55d4c'
+)
+
+prepare() {
+  rmdir "gfxreconstruct-$pkgver/external/Vulkan-Headers"
+  ln -fTsr "Vulkan-Headers-$_vk_headers_ver" "gfxreconstruct-$pkgver/external/Vulkan-Headers"
+}
+
+build() {
+  cmake \
+    -GNinja \
+    -H"gfxreconstruct-$pkgver" \
+    -Bbuild \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain/linux_x86_32.cmake \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib32 \
+    -DVMA_STATS_STRING_ENABLED=0
+
+  sed "s/#define VMA_STATS_STRING_ENABLED 1/#define VMA_STATS_STRING_ENABLED 0/" -i "gfxreconstruct-0.9.16.1/external/VulkanMemoryAllocator/include/vk_mem_alloc.h"
+
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+
+  rm -r "$pkgdir/usr/bin"
+  rm "$pkgdir/usr/share/vulkan/explicit_layer.d/VkLayer_gfxreconstruct.json"
+  (cd "$pkgdir/usr" && rmdir -p share/vulkan/explicit_layer.d)
+}

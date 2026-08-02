@@ -1,0 +1,55 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/flatbuffer.gni")
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [ ":install_hwsec-optee-plugin" ]
+  if (use.test) {
+    deps += [ ":hwsec-optee-plugin_test" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+  ]
+  libs = [
+    "hwsec",
+    "hwsec-foundation",
+  ]
+  cflags = [ "-Wconsumed" ]
+}
+
+shared_library("hwsec-optee-plugin") {
+  sources = [ "hwsec-optee-plugin.cc" ]
+  configs += [ ":target_defaults" ]
+}
+
+install_config("install_hwsec-optee-plugin") {
+  uuid = "69b7c987-4a1a-4953-b647-0cf79eb397b9"
+  sources = [ "${root_out_dir}/lib/libhwsec-optee-plugin.so" ]
+  outputs = [ "${uuid}.plugin" ]
+  install_path = "/usr/lib/tee-supplicant/plugins"
+  type = "executable"
+  deps = [ ":hwsec-optee-plugin" ]
+}
+
+if (use.test) {
+  executable("hwsec-optee-plugin_test") {
+    sources = [
+      "hwsec-optee-plugin.cc",
+      "hwsec-optee-plugin_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    run_test = true
+    defines = [ "UNIT_TEST" ]
+    deps = [ "//common-mk/testrunner:testrunner" ]
+  }
+}

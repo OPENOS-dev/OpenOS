@@ -1,0 +1,92 @@
+{
+    "port_config": {
+        "WLAN_2G": [
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            },
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            },
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            }
+        ],
+        "WLAN_5G": [
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_5g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_5g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            },
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_5g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_5g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            },
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_5g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_5g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            }
+        ],
+        "BLUETOOTH": [
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            }
+        ],
+        "802_15_4": [
+            {
+                "TX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_tx0"],
+                    "port_mapping": "dummy_port"
+                },
+                "RX": {
+                    "pathloss": ["sample_pathloss.csv", "wlan_2g_rx0"],
+                    "port_mapping": "dummy_port"
+                }
+            }
+        ]
+    }
+}

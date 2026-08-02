@@ -1,0 +1,41 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("all") {
+  deps = [
+    ":install_init_config",
+    ":install_service_manager_policy_config",
+    ":install_tmpfiles_config",
+    "//diagnostics/cros_health_tool",
+    "//diagnostics/cros_healthd",
+    "//diagnostics/cros_healthd/delegate",
+    "//diagnostics/cros_healthd/seccomp",
+    "//diagnostics/dbus_bindings",
+    "//diagnostics/mojom",
+  ]
+  if (use.test) {
+    deps += [ "//diagnostics/cros_healthd:cros_healthd_test" ]
+  }
+  if (use.fuzzer) {
+    deps += [
+      "//diagnostics/cros_healthd/events:crash_events_uploads_log_parser_fuzzer",
+      "//diagnostics/cros_healthd/fetchers:fetch_system_info_fuzzer",
+    ]
+  }
+}
+
+install_config("install_init_config") {
+  sources = [ "init/cros_healthd.conf" ]
+  install_path = "upstart"
+}
+
+install_config("install_tmpfiles_config") {
+  sources = [ "init/tmpfiles.d/cros_healthd.conf" ]
+  install_path = "tmpfiled_ondemand"
+}
+
+install_config("install_service_manager_policy_config") {
+  sources = [ "init/mojo/cros_healthd.jsonc" ]
+  install_path = "/etc/mojo/service_manager/policy"
+}

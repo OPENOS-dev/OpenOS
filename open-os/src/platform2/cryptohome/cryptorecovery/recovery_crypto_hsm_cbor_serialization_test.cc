@@ -1,0 +1,1362 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "cryptohome/cryptorecovery/recovery_crypto_hsm_cbor_serialization.h"
+
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include <base/strings/strcat.h>
+#include <base/strings/string_number_conversions.h>
+#include <brillo/secure_blob.h>
+#include <chromeos/cbor/diagnostic_writer.h>
+#include <chromeos/cbor/reader.h>
+#include <chromeos/cbor/values.h>
+#include <chromeos/cbor/writer.h>
+#include <crypto/scoped_openssl_types.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <libhwsec-foundation/crypto/big_num_util.h>
+#include <libhwsec-foundation/crypto/elliptic_curve.h>
+#include <libhwsec-foundation/crypto/secure_blob_util.h>
+#include <openssl/bn.h>
+
+#include "cryptohome/cryptorecovery/recovery_crypto_util.h"
+
+using ::hwsec_foundation::BigNumFromValue;
+using ::hwsec_foundation::BigNumToSecureBlob;
+using ::hwsec_foundation::CreateBigNumContext;
+using ::hwsec_foundation::CreateRandomBlob;
+using ::hwsec_foundation::CreateSecureRandomBlob;
+using ::hwsec_foundation::EllipticCurve;
+using ::hwsec_foundation::ScopedBN_CTX;
+using ::hwsec_foundation::SecureBlobToBigNum;
+using ::testing::ElementsAre;
+using ::testing::ExplainMatchResult;
+using ::testing::HasSubstr;
+using ::testing::Pair;
+using ::testing::PrintToString;
+using ::testing::StrEq;
+using ::testing::UnorderedElementsAre;
+
+namespace cryptohome {
+namespace cryptorecovery {
+
+namespace {
+
+constexpr EllipticCurve::CurveType kCurve = EllipticCurve::CurveType::kPrime256;
+// Size of public/private key for EllipticCurve::CurveType::kPrime256.
+constexpr size_t kEc256PubKeySize = 65;
+constexpr size_t kEc256PrivKeySize = 32;
+
+const char kFakeUserId[] = "fake user id";
+const char kFakeAccessToken[] = "fake access token";
+const char kFakeRapt[] = "fake RAPT";
+const char kFakeHsmPayloadCipherText[] = "fake hsm payload cipher text";
+const char kFakeHsmPayloadAd[] = "fake hsm payload ad";
+const char kFakeHsmPayloadIv[] = "fake hsm payload iv";
+const char kFakeHsmPayloadTag[] = "fake hsm payload tag";
+const char kFakePayloadCipherText[] = "fake cipher text";
+const char kFakePayloadAd[] = "fake ad";
+const char kFakePayloadIv[] = "fake iv";
+const char kFakePayloadTag[] = "fake tag";
+const char kFakeResponseSalt[] = "fake response salt";
+const char kFakeMetadataCborKey[] = "fake metadata cbor key";
+const char kFakeMetadataCborValue[] = "fake metadata cbor value";
+const char kFakeHsmPubKeyHash[] = "fake hsm pub key hash";
+// HEX-encoded serialized CBOR with content:
+// {
+//   "schema_version": 1,
+//   "channel_pub_key":
+//   h'3059301306072A8648CE3D020106082A8648CE3D030107034200049A3990196A5E9B36B7E
+//     B7D278EBE5DB641CAD338CEDB27B74C2567F854B5071B3467FB60DFD0171875BCC4032A57
+//     5CA7ED6805CE9FD85DD8FA5C060A1718CB3A',
+//   "publisher_pub_key":
+//   h'3059301306072A8648CE3D020106082A8648CE3D03010703420004F6D4DD203D9556AA67D
+//     51192A112C2A29CF6E4FA371FBF1CA2287343917182FFEC9047242B36B9CA665FF4128C42
+//     4732910D117D6F8956A584AFB5035D488B2E',
+//   "onboarding_meta_data": {
+//     "rlz_code": "Rlz Code",
+//     "board_name": "Board Name",
+//     "form_factor": "Form factor",
+//     "recovery_id": "Recovery ID",
+//     "device_user_id": "Device User ID",
+//     "schema_version": 1,
+//     "cryptohome_user": "User ID",
+//     "cryptohome_user_type": 1
+//   }
+// }
+const char kFakeHsmAssociatedDataWithoutPubKeyHashV1[] =
+    "A46E736368656D615F76657273696F6E016F6368616E6E656C5F7075625F6B6579585B3059"
+    "301306072A8648CE3D020106082A8648CE3D030107034200049A3990196A5E9B36B7EB7D27"
+    "8EBE5DB641CAD338CEDB27B74C2567F854B5071B3467FB60DFD0171875BCC4032A575CA7ED"
+    "6805CE9FD85DD8FA5C060A1718CB3A717075626C69736865725F7075625F6B6579585B3059"
+    "301306072A8648CE3D020106082A8648CE3D03010703420004F6D4DD203D9556AA67D51192"
+    "A112C2A29CF6E4FA371FBF1CA2287343917182FFEC9047242B36B9CA665FF4128C42473291"
+    "0D117D6F8956A584AFB5035D488B2E746F6E626F617264696E675F6D6574615F64617461A8"
+    "68726C7A5F636F646568526C7A20436F64656A626F6172645F6E616D656A426F617264204E"
+    "616D656B666F726D5F666163746F726B466F726D20666163746F726B7265636F766572795F"
+    "69646B5265636F766572792049446E6465766963655F757365725F69646E44657669636520"
+    "557365722049446E736368656D615F76657273696F6E016F63727970746F686F6D655F7573"
+    "657267557365722049447463727970746F686F6D655F757365725F7479706501";
+// HEX-encoded serialized CBOR with content:
+// {
+//   "schema_version": 2,
+//   "channel_pub_key":
+//   h'3059301306072A8648CE3D020106082A8648CE3D030107034200049A3990196A5E9B36B7E
+//     B7D278EBE5DB641CAD338CEDB27B74C2567F854B5071B3467FB60DFD0171875BCC4032A57
+//     5CA7ED6805CE9FD85DD8FA5C060A1718CB3A',
+//   "publisher_pub_key":
+//   h'3059301306072A8648CE3D020106082A8648CE3D03010703420004F6D4DD203D9556AA67D
+//     51192A112C2A29CF6E4FA371FBF1CA2287343917182FFEC9047242B36B9CA665FF4128C42
+//     4732910D117D6F8956A584AFB5035D488B2E',
+//   "onboarding_meta_data": {
+//     "rlz_code": "Rlz Code",
+//     "board_name": "Board Name",
+//     "form_factor": "Form factor",
+//     "recovery_id": "Recovery ID",
+//     "device_user_id": "Device User ID",
+//     "schema_version": 1,
+//     "cryptohome_user": "User ID",
+//     "cryptohome_user_type": 1
+//   }
+// }
+const char kFakeHsmAssociatedDataWithoutPubKeyHashV2[] =
+    "A46E736368656D615F76657273696F6E016F6368616E6E656C5F7075625F6B6579585B3059"
+    "301306072A8648CE3D020106082A8648CE3D030107034200049A3990196A5E9B36B7EB7D27"
+    "8EBE5DB641CAD338CEDB27B74C2567F854B5071B3467FB60DFD0171875BCC4032A575CA7ED"
+    "6805CE9FD85DD8FA5C060A1718CB3A717075626C69736865725F7075625F6B6579585B3059"
+    "301306072A8648CE3D020106082A8648CE3D03010703420004F6D4DD203D9556AA67D51192"
+    "A112C2A29CF6E4FA371FBF1CA2287343917182FFEC9047242B36B9CA665FF4128C42473291"
+    "0D117D6F8956A584AFB5035D488B2E746F6E626F617264696E675F6D6574615F64617461A8"
+    "68726C7A5F636F646568526C7A20436F64656A626F6172645F6E616D656A426F617264204E"
+    "616D656B666F726D5F666163746F726B466F726D20666163746F726B7265636F766572795F"
+    "69646B5265636F766572792049446E6465766963655F757365725F69646E44657669636520"
+    "557365722049446E736368656D615F76657273696F6E026F63727970746F686F6D655F7573"
+    "657267557365722049447463727970746F686F6D655F757365725F7479706501";
+// HEX-encoded serialized CBOR with content:
+// {
+//   "schema_version": 3,
+//   "channel_pub_key":
+//   h'3059301306072A8648CE3D020106082A8648CE3D030107034200049A3990196A5E9B36B7E
+//     B7D278EBE5DB641CAD338CEDB27B74C2567F854B5071B3467FB60DFD0171875BCC4032A57
+//     5CA7ED6805CE9FD85DD8FA5C060A1718CB3A',
+//   "publisher_pub_key":
+//   h'3059301306072A8648CE3D020106082A8648CE3D03010703420004F6D4DD203D9556AA67D
+//     51192A112C2A29CF6E4FA371FBF1CA2287343917182FFEC9047242B36B9CA665FF4128C42
+//     4732910D117D6F8956A584AFB5035D488B2E',
+//   "onboarding_meta_data": {
+//     "rlz_code": "Rlz Code",
+//     "board_name": "Board Name",
+//     "form_factor": "Form factor",
+//     "recovery_id": "Recovery ID",
+//     "device_user_id": "Device User ID",
+//     "schema_version": 1,
+//     "cryptohome_user": "User ID",
+//     "cryptohome_user_type": 1
+//   }
+// }
+const char kFakeHsmAssociatedDataWithoutPubKeyHashV3[] =
+    "A46E736368656D615F76657273696F6E016F6368616E6E656C5F7075625F6B6579585B3059"
+    "301306072A8648CE3D020106082A8648CE3D030107034200049A3990196A5E9B36B7EB7D27"
+    "8EBE5DB641CAD338CEDB27B74C2567F854B5071B3467FB60DFD0171875BCC4032A575CA7ED"
+    "6805CE9FD85DD8FA5C060A1718CB3A717075626C69736865725F7075625F6B6579585B3059"
+    "301306072A8648CE3D020106082A8648CE3D03010703420004F6D4DD203D9556AA67D51192"
+    "A112C2A29CF6E4FA371FBF1CA2287343917182FFEC9047242B36B9CA665FF4128C42473291"
+    "0D117D6F8956A584AFB5035D488B2E746F6E626F617264696E675F6D6574615F64617461A8"
+    "68726C7A5F636F646568526C7A20436F64656A626F6172645F6E616D656A426F617264204E"
+    "616D656B666F726D5F666163746F726B466F726D20666163746F726B7265636F766572795F"
+    "69646B5265636F766572792049446E6465766963655F757365725F69646E44657669636520"
+    "557365722049446E736368656D615F76657273696F6E036F63727970746F686F6D655F7573"
+    "657267557365722049447463727970746F686F6D655F757365725F7479706501";
+// Generated by RecoveryResponseCborHelperTest.DeserializeRecoveryResponse with
+// field order manually changed.
+const char kFakeResponsePayloadWithOutOfOrderKeyHex[] =
+    "A4637461674866616B65207461676261644766616B652061646263745066616B6520636970"
+    "68657220746578746269764766616B65206976";
+// HEX-encoded serialized CBOR with content:
+// {
+//     "log_entry_hash": h
+//     'CC1CAB36511F9D6BFFB6456F69C1711021F8CCBB57D6699496A1FFCF634B1AFD',
+//     "public_timestamp": 1661126400,
+//     "recovery_id":
+//     "50aac70f6240d40132f6c53b3fd067532c62313e7bab1a6251eba69dd428bf55",
+//     "schema_version": 1
+// }
+constexpr char kFakePublicLedgerEntryHex[] =
+    "A46E6C6F675F656E7472795F686173685820CC1CAB36511F9D6BFFB6456F69C1711021F8CC"
+    "BB57D6699496A1FFCF634B1AFD707075626C69635F74696D657374616D701A6302C7006B72"
+    "65636F766572795F6964784035306161633730663632343064343031333266366335336233"
+    "66643036373533326336323331336537626162316136323531656261363964643432386266"
+    "35356E736368656D615F76657273696F6E01";
+// HEX-encoded serialized CBOR with content:
+// {
+//     "onboarding_meta_data": {
+//         "board_name": "fake_board",
+//         "cryptohome_user": "123456789012345678901",
+//         "cryptohome_user_type": 1,
+//         "device_user_id": "fake_device_user_id",
+//         "form_factor": "fake_form_factor",
+//         "recovery_id":
+//         "50aac70f6240d40132f6c53b3fd067532c62313e7bab1a6251eba69dd428bf55",
+//         "rlz_code": "fake_rlz_code",
+//         "schema_version": 1
+//     },
+//     "public_timestamp": 1661126400,
+//     "requestor_user": "",
+//     "requestor_user_type": 0,
+//     "schema_version": 1,
+//     "timestamp": 1661162418
+// }
+constexpr char kFakePrivateLogEntryHex[] =
+    "A6746F6E626F617264696E675F6D6574615F64617461A86A626F6172645F6E616D656A6661"
+    "6B655F626F6172646F63727970746F686F6D655F7573657275313233343536373839303132"
+    "3334353637383930317463727970746F686F6D655F757365725F74797065016E6465766963"
+    "655F757365725F69647366616B655F6465766963655F757365725F69646B666F726D5F6661"
+    "63746F727066616B655F666F726D5F666163746F726B7265636F766572795F696478403530"
+    "61616337306636323430643430313332663663353362336664303637353332633632333133"
+    "6537626162316136323531656261363964643432386266353568726C7A5F636F64656D6661"
+    "6B655F726C7A5F636F64656E736368656D615F76657273696F6E01707075626C69635F7469"
+    "6D657374616D701A6302C7006E726571756573746F725F757365726073726571756573746F"
+    "725F757365725F74797065006E736368656D615F76657273696F6E016974696D657374616D"
+    "701A630353B2";
+constexpr int kFakeTimestamp = 1661162418;
+constexpr int kFakePublicTimestamp = 1661126400;
+const OnboardingMetadata kFakeMetadata{
+    .cryptohome_user_type = UserType::kGaiaId,
+    .cryptohome_user = "123456789012345678901",
+    .device_user_id = "fake_device_user_id",
+    .board_name = "fake_board",
+    .form_factor = "fake_form_factor",
+    .rlz_code = "fake_rlz_code",
+    .recovery_id =
+        "50aac70f6240d40132f6c53b3fd067532c62313e7bab1a6251eba69dd428bf55",
+    .info_format = OnboardingMetadata::InfoFormat::kFixed,
+};
+
+bool HexStringToBlob(const std::string& hex, brillo::Blob* blob) {
+  std::string str;
+  if (!base::HexStringToString(hex, &str)) {
+    return false;
+  }
+  *blob = brillo::BlobFromString(str);
+  return true;
+}
+
+// Matches a `cbor::Value` if it has a string with value equal to `str`.
+MATCHER_P(CborString,
+          str,
+          base::StrCat({negation ? "isn't" : "is",
+                        " a cbor value with a string value matching: ",
+                        PrintToString(str)})) {
+  if (!arg.is_string()) {
+    *result_listener << "which does not have a string value";
+    return false;
+  }
+  *result_listener << "which has a string value " << arg.GetString();
+  return ExplainMatchResult(StrEq(str), arg.GetString(), result_listener);
+}
+
+// Matches a `cbor::Value` if it has an integer with value matching `num`.
+MATCHER_P(CborInt,
+          num,
+          base::StrCat({negation ? "isn't" : "is",
+                        " a cbor value with an integer value matching: ",
+                        PrintToString(num)})) {
+  if (!arg.is_integer()) {
+    *result_listener << "which does not have an integer value";
+    return false;
+  }
+  *result_listener << "which has an integer value " << arg.GetInteger();
+  return ExplainMatchResult(num, arg.GetInteger(), result_listener);
+}
+
+// Matches a `cbor::Value` if it has a bytestring with value matching `bstr`.
+MATCHER_P(CborBytestring,
+          bstr,
+          base::StrCat({negation ? "isn't" : "is",
+                        " a cbor value with an array value matching: ",
+                        PrintToString(bstr)})) {
+  if (!arg.is_bytestring()) {
+    *result_listener << "which does not have a bytestring value";
+    return false;
+  }
+  *result_listener << "which has a bytestring value "
+                   << PrintToString(arg.GetBytestring());
+  return ExplainMatchResult(bstr, arg.GetBytestring(), result_listener);
+}
+
+// Matches a `cbor::Value` if it has a map with value matching `map`.
+MATCHER_P(CborMap,
+          map,
+          base::StrCat({negation ? "isn't" : "is",
+                        " a cbor value with a map value matching: ",
+                        PrintToString(map)})) {
+  if (!arg.is_map()) {
+    *result_listener << "which does not have a map value";
+    return false;
+  }
+  *result_listener << "which has a map value "
+                   << cbor::DiagnosticWriter::Write(arg);
+  return ExplainMatchResult(map, arg.GetMap(), result_listener);
+}
+
+// Matches a `cbor::Value` if it has an array with value matching `arr`.
+MATCHER_P(CborArray,
+          arr,
+          base::StrCat({negation ? "isn't" : "is",
+                        " a cbor value with an array value matching: ",
+                        PrintToString(arr)})) {
+  if (!arg.is_array()) {
+    *result_listener << "which does not have an array value";
+    return false;
+  }
+  *result_listener << "which has an array value "
+                   << cbor::DiagnosticWriter::Write(arg);
+  return ExplainMatchResult(arr, arg.GetArray(), result_listener);
+}
+
+// A matcher that deserialize a Blob or SecureBlob into a cbor value
+// which matches with nested matchers.
+class IsSerializedCbor {
+ public:
+  using is_gtest_matcher = void;
+  using InnerMatcher = ::testing::Matcher<const cbor::Value&>;
+
+  explicit IsSerializedCbor(const InnerMatcher& inner_matcher)
+      : inner_matcher_(inner_matcher) {}
+  ~IsSerializedCbor() {}
+
+  bool MatchAndExplain(const base::span<const uint8_t>& arg,
+                       ::testing::MatchResultListener* listener) const {
+    // Deserializes the blob arg as a cbor value.
+    std::optional<cbor::Value> deserialized_arg = Deserialize(arg);
+    if (!listener->IsInterested()) {
+      // No need to explain the match result.
+      return deserialized_arg.has_value() &&
+             inner_matcher_.Matches(*deserialized_arg);
+    }
+
+    std::ostream* const os = listener->stream();
+    if (!deserialized_arg) {
+      *os << "which cannot be deserialized as a cbor value";
+      return false;
+    }
+
+    *os << "which deserializes to "
+        << cbor::DiagnosticWriter::Write(*deserialized_arg);
+
+    ::testing::StringMatchResultListener inner_listener;
+    const bool match =
+        inner_matcher_.MatchAndExplain(*deserialized_arg, &inner_listener);
+    const std::string explain = inner_listener.str();
+    if (explain != "") {
+      *os << ",\n" << explain;
+    }
+
+    return match;
+  }
+
+  void DescribeTo(std::ostream* os) const {
+    *os << "can be deserialized as a cbor value that ";
+    inner_matcher_.DescribeTo(os);
+  }
+
+  void DescribeNegationTo(std::ostream* os) const {
+    *os << "cannot be deserialized as a cbor value that ";
+    inner_matcher_.DescribeTo(os);
+  }
+
+ private:
+  std::optional<cbor::Value> Deserialize(
+      const base::span<const uint8_t>& arg) const {
+    cbor::Reader::DecoderError error_code;
+    cbor::Reader::Config config;
+    config.error_code_out = &error_code;
+    config.allow_and_canonicalize_out_of_order_keys = true;
+    std::optional<cbor::Value> cbor_response = cbor::Reader::Read(arg, config);
+    if (!cbor_response) {
+      return std::nullopt;
+    }
+    if (error_code != cbor::Reader::DecoderError::CBOR_NO_ERROR) {
+      return std::nullopt;
+    }
+    return cbor_response;
+  }
+
+  const InnerMatcher inner_matcher_;
+};
+
+}  // namespace
+
+class HsmPayloadCborHelperTest : public testing::Test {
+ public:
+  void SetUp() override {
+    context_ = CreateBigNumContext();
+    ASSERT_TRUE(context_);
+    ec_ = EllipticCurve::Create(kCurve, context_.get());
+    ASSERT_TRUE(ec_);
+    brillo::Blob pub_key;
+    ASSERT_TRUE(ec_->GenerateKeysAsSecureBlobs(&pub_key, &publisher_priv_key_,
+                                               context_.get()));
+    publisher_pub_key_.assign(pub_key.begin(), pub_key.end());
+    ASSERT_TRUE(ec_->GenerateKeysAsSecureBlobs(&pub_key, &channel_priv_key_,
+                                               context_.get()));
+    channel_pub_key_.assign(pub_key.begin(), pub_key.end());
+    ASSERT_TRUE(ec_->GenerateKeysAsSecureBlobs(&pub_key, &dealer_priv_key_,
+                                               context_.get()));
+    dealer_pub_key_.assign(pub_key.begin(), pub_key.end());
+
+    OnboardingMetadata onboarding_meta_data;
+    onboarding_meta_data.cryptohome_user_type = UserType::kGaiaId;
+    onboarding_meta_data.cryptohome_user = "User ID";
+    onboarding_meta_data.device_user_id = "Device User ID";
+    onboarding_meta_data.board_name = "Board Name";
+    onboarding_meta_data.form_factor = "Form factor";
+    onboarding_meta_data.rlz_code = "Rlz Code";
+    onboarding_meta_data.hsm_pub_key_hash =
+        brillo::BlobFromString(kFakeHsmPubKeyHash);
+    onboarding_meta_data.recovery_id = "Recovery ID";
+    onboarding_meta_data.info_format =
+        OnboardingMetadata::InfoFormat::kIncludesRecoveryId;
+    hsm_associated_data_.publisher_pub_key = publisher_pub_key_;
+    hsm_associated_data_.channel_pub_key = channel_pub_key_;
+    hsm_associated_data_.rsa_public_key = rsa_public_key_;
+    hsm_associated_data_.onboarding_meta_data = onboarding_meta_data;
+  }
+
+  void ExpectEqualsToFakeHsmAssociatedData(
+      const HsmAssociatedData& hsm_ad) const {
+    EXPECT_EQ(hsm_associated_data_.publisher_pub_key, hsm_ad.publisher_pub_key);
+    EXPECT_EQ(hsm_associated_data_.channel_pub_key, hsm_ad.channel_pub_key);
+    EXPECT_EQ(hsm_associated_data_.rsa_public_key, hsm_ad.rsa_public_key);
+
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.cryptohome_user_type,
+              hsm_ad.onboarding_meta_data.cryptohome_user_type);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.cryptohome_user,
+              hsm_ad.onboarding_meta_data.cryptohome_user);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.device_user_id,
+              hsm_ad.onboarding_meta_data.device_user_id);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.board_name,
+              hsm_ad.onboarding_meta_data.board_name);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.form_factor,
+              hsm_ad.onboarding_meta_data.form_factor);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.rlz_code,
+              hsm_ad.onboarding_meta_data.rlz_code);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.hsm_pub_key_hash,
+              hsm_ad.onboarding_meta_data.hsm_pub_key_hash);
+    EXPECT_EQ(hsm_associated_data_.onboarding_meta_data.recovery_id,
+              hsm_ad.onboarding_meta_data.recovery_id);
+  }
+
+ protected:
+  ScopedBN_CTX context_;
+  std::optional<EllipticCurve> ec_;
+  brillo::Blob publisher_pub_key_;
+  brillo::SecureBlob publisher_priv_key_;
+  brillo::Blob channel_pub_key_;
+  brillo::SecureBlob channel_priv_key_;
+  brillo::Blob dealer_pub_key_;
+  brillo::SecureBlob dealer_priv_key_;
+  brillo::Blob rsa_public_key_;
+  HsmAssociatedData hsm_associated_data_;
+};
+
+class AeadPayloadHelper {
+ public:
+  AeadPayloadHelper() {
+    fake_aead_payload_.cipher_text =
+        brillo::BlobFromString(kFakePayloadCipherText);
+    fake_aead_payload_.associated_data = brillo::BlobFromString(kFakePayloadAd);
+    fake_aead_payload_.iv = brillo::BlobFromString(kFakePayloadIv);
+    fake_aead_payload_.tag = brillo::BlobFromString(kFakePayloadTag);
+  }
+
+  const AeadPayload& GetFakePayload() const { return fake_aead_payload_; }
+
+  cbor::Value::MapValue GetFakePayloadCborMap() const {
+    cbor::Value::MapValue payload;
+    payload.emplace(kAeadCipherText, fake_aead_payload_.cipher_text);
+    payload.emplace(kAeadAd, fake_aead_payload_.associated_data);
+    payload.emplace(kAeadIv, fake_aead_payload_.iv);
+    payload.emplace(kAeadTag, fake_aead_payload_.tag);
+    return payload;
+  }
+
+  void ExpectEqualsToFakeAeadPayload(const brillo::Blob& payload) const {
+    EXPECT_THAT(
+        payload,
+        IsSerializedCbor(CborMap(UnorderedElementsAre(
+            Pair(CborString(kAeadCipherText),
+                 CborBytestring(fake_aead_payload_.cipher_text)),
+            Pair(CborString(kAeadAd),
+                 CborBytestring(fake_aead_payload_.associated_data)),
+            Pair(CborString(kAeadIv), CborBytestring(fake_aead_payload_.iv)),
+            Pair(CborString(kAeadTag),
+                 CborBytestring(fake_aead_payload_.tag))))));
+  }
+
+  void ExpectEqualsToFakeAeadPayload(const AeadPayload& payload) const {
+    EXPECT_EQ(payload.cipher_text, fake_aead_payload_.cipher_text);
+    EXPECT_EQ(payload.associated_data, fake_aead_payload_.associated_data);
+    EXPECT_EQ(payload.iv, fake_aead_payload_.iv);
+    EXPECT_EQ(payload.tag, fake_aead_payload_.tag);
+  }
+
+  void ExpectEqualsToFakeAeadPayload(
+      const cbor::Value::MapValue& cbor_map) const {
+    EXPECT_THAT(
+        cbor_map,
+        UnorderedElementsAre(
+            Pair(CborString(kAeadCipherText),
+                 CborBytestring(fake_aead_payload_.cipher_text)),
+            Pair(CborString(kAeadAd),
+                 CborBytestring(fake_aead_payload_.associated_data)),
+            Pair(CborString(kAeadIv), CborBytestring(fake_aead_payload_.iv)),
+            Pair(CborString(kAeadTag),
+                 CborBytestring(fake_aead_payload_.tag))));
+  }
+
+ private:
+  AeadPayload fake_aead_payload_;
+};
+
+class RecoveryRequestCborHelperTest : public testing::Test {
+ public:
+  RecoveryRequestCborHelperTest() {
+    request_meta_data_.requestor_user_id = kFakeUserId;
+    request_meta_data_.requestor_user_id_type = UserType::kGaiaId;
+    AuthClaim auth_claim;
+    auth_claim.gaia_access_token = kFakeAccessToken;
+    auth_claim.gaia_reauth_proof_token = kFakeRapt;
+    request_meta_data_.auth_claim = auth_claim;
+
+    cbor::Value::MapValue meta_data_cbor;
+    meta_data_cbor.emplace(kFakeMetadataCborKey, kFakeMetadataCborValue);
+    epoch_meta_data_.meta_data_cbor = cbor::Value(meta_data_cbor);
+  }
+  ~RecoveryRequestCborHelperTest() = default;
+
+  void SetUp() override {
+    context_ = CreateBigNumContext();
+    ASSERT_TRUE(context_);
+    ec_ = EllipticCurve::Create(kCurve, context_.get());
+    ASSERT_TRUE(ec_);
+    brillo::Blob pub_key;
+    ASSERT_TRUE(ec_->GenerateKeysAsSecureBlobs(&pub_key, &epoch_priv_key_,
+                                               context_.get()));
+    epoch_pub_key_.assign(pub_key.begin(), pub_key.end());
+  }
+
+ protected:
+  AeadPayloadHelper aead_helper_;
+  ScopedBN_CTX context_;
+  std::optional<EllipticCurve> ec_;
+  brillo::SecureBlob epoch_pub_key_;
+  brillo::SecureBlob epoch_priv_key_;
+  RequestMetadata request_meta_data_;
+  EpochMetadata epoch_meta_data_;
+};
+
+class ResponsePayloadCborHelperTest : public testing::Test {
+ public:
+  ResponsePayloadCborHelperTest() = default;
+
+  void SetUp() override {
+    LoggedRecord logged_record;
+    ASSERT_TRUE(
+        base::HexStringToBytes(kFakePublicLedgerEntryHex,
+                               &logged_record.serialized_public_ledger_entry));
+    ASSERT_TRUE(base::HexStringToBytes(
+        kFakePrivateLogEntryHex, &logged_record.serialized_private_log_entry));
+    ledger_signed_proof_.logged_record = logged_record;
+    ledger_signed_proof_.checkpoint_note = kFakeCheckpointNote;
+    ledger_signed_proof_.inclusion_proof = kFakeInclusionProof;
+  }
+
+ protected:
+  AeadPayloadHelper aead_helper_;
+  const brillo::Blob fake_pub_key_ = CreateRandomBlob(kEc256PubKeySize);
+  const brillo::SecureBlob fake_priv_key_ =
+      CreateSecureRandomBlob(kEc256PrivKeySize);
+  const brillo::Blob salt_ = brillo::BlobFromString(kFakeResponseSalt);
+
+  const std::vector<uint8_t> kFakeCheckpointNote = {100, 200, 250};
+  const std::vector<std::vector<uint8_t>> kFakeInclusionProof = {
+      std::vector<uint8_t>({100, 200, 250})};
+  LedgerSignedProof ledger_signed_proof_;
+};
+
+TEST_F(ResponsePayloadCborHelperTest, DeserializePublicLedgerEntryFromCbor) {
+  auto serialized_entry =
+      ledger_signed_proof_.logged_record.serialized_public_ledger_entry;
+  PublicLedgerEntry public_ledger_entry;
+  EXPECT_TRUE(DeserializePublicLedgerEntryFromCbor(serialized_entry,
+                                                   &public_ledger_entry));
+  EXPECT_EQ(public_ledger_entry.recovery_id, kFakeMetadata.recovery_id);
+  EXPECT_EQ(public_ledger_entry.public_timestamp, kFakePublicTimestamp);
+}
+
+TEST_F(ResponsePayloadCborHelperTest, DeserializePrivateLogEntryFromCbor) {
+  auto serialized_entry =
+      ledger_signed_proof_.logged_record.serialized_private_log_entry;
+  PrivateLogEntry private_log_entry;
+  EXPECT_TRUE(
+      DeserializePrivateLogEntryFromCbor(serialized_entry, &private_log_entry));
+  EXPECT_EQ(private_log_entry.public_timestamp, kFakePublicTimestamp);
+  EXPECT_EQ(private_log_entry.timestamp, kFakeTimestamp);
+}
+
+// Verifies serialization of HSM payload associated data to CBOR.
+TEST_F(HsmPayloadCborHelperTest, GenerateAdCborWithEmptyRsaPublicKey) {
+  brillo::Blob cbor_output;
+  hsm_associated_data_.rsa_public_key = brillo::Blob();
+  ASSERT_TRUE(
+      SerializeHsmAssociatedDataToCbor(hsm_associated_data_, &cbor_output));
+
+  auto onboarding_metadata_matcher = CborMap(UnorderedElementsAre(
+      Pair(CborString(kSchemaVersion),
+           CborInt(kOnboardingMetaDataSchemaVersionRecoveryIdInfo)),
+      Pair(CborString(kCryptohomeUser),
+           CborString(
+               hsm_associated_data_.onboarding_meta_data.cryptohome_user)),
+      Pair(
+          CborString(kDeviceUserId),
+          CborString(hsm_associated_data_.onboarding_meta_data.device_user_id)),
+      Pair(CborString(kBoardName),
+           CborString(hsm_associated_data_.onboarding_meta_data.board_name)),
+      Pair(CborString(kFormFactor),
+           CborString(hsm_associated_data_.onboarding_meta_data.form_factor)),
+      Pair(CborString(kRlzCode),
+           CborString(hsm_associated_data_.onboarding_meta_data.rlz_code)),
+      Pair(CborString(kHsmPubKeyHash),
+           CborBytestring(
+               hsm_associated_data_.onboarding_meta_data.hsm_pub_key_hash)),
+      Pair(CborString(kRecoveryId),
+           CborString(hsm_associated_data_.onboarding_meta_data.recovery_id)),
+      Pair(CborString(kCryptohomeUserType),
+           CborInt(static_cast<int>(hsm_associated_data_.onboarding_meta_data
+                                        .cryptohome_user_type)))));
+  EXPECT_THAT(cbor_output,
+              IsSerializedCbor(CborMap(UnorderedElementsAre(
+                  Pair(CborString(kSchemaVersion),
+                       CborInt(kHsmAssociatedDataSchemaVersion)),
+                  Pair(CborString(kPublisherPublicKey),
+                       CborBytestring(hsm_associated_data_.publisher_pub_key)),
+                  Pair(CborString(kChannelPublicKey),
+                       CborBytestring(hsm_associated_data_.channel_pub_key)),
+                  Pair(CborString(kOnboardingMetaData),
+                       onboarding_metadata_matcher)))));
+}
+
+// Verifies serialization of HSM payload associated data to CBOR.
+TEST_F(HsmPayloadCborHelperTest, GenerateAdCborWithEmptyHsmPublicKeyHash) {
+  brillo::Blob cbor_output;
+  hsm_associated_data_.onboarding_meta_data.hsm_pub_key_hash = brillo::Blob();
+  ASSERT_TRUE(
+      SerializeHsmAssociatedDataToCbor(hsm_associated_data_, &cbor_output));
+
+  // metadata contains no public key hash.
+  auto onboarding_metadata_matcher = CborMap(UnorderedElementsAre(
+      Pair(CborString(kSchemaVersion),
+           CborInt(kOnboardingMetaDataSchemaVersionRecoveryIdInfo)),
+      Pair(CborString(kCryptohomeUser),
+           CborString(
+               hsm_associated_data_.onboarding_meta_data.cryptohome_user)),
+      Pair(
+          CborString(kDeviceUserId),
+          CborString(hsm_associated_data_.onboarding_meta_data.device_user_id)),
+      Pair(CborString(kBoardName),
+           CborString(hsm_associated_data_.onboarding_meta_data.board_name)),
+      Pair(CborString(kFormFactor),
+           CborString(hsm_associated_data_.onboarding_meta_data.form_factor)),
+      Pair(CborString(kRlzCode),
+           CborString(hsm_associated_data_.onboarding_meta_data.rlz_code)),
+      Pair(CborString(kRecoveryId),
+           CborString(hsm_associated_data_.onboarding_meta_data.recovery_id)),
+      Pair(CborString(kCryptohomeUserType),
+           CborInt(static_cast<int>(hsm_associated_data_.onboarding_meta_data
+                                        .cryptohome_user_type)))));
+  EXPECT_THAT(cbor_output,
+              IsSerializedCbor(CborMap(UnorderedElementsAre(
+                  Pair(CborString(kSchemaVersion),
+                       CborInt(kHsmAssociatedDataSchemaVersion)),
+                  Pair(CborString(kPublisherPublicKey),
+                       CborBytestring(hsm_associated_data_.publisher_pub_key)),
+                  Pair(CborString(kChannelPublicKey),
+                       CborBytestring(hsm_associated_data_.channel_pub_key)),
+                  Pair(CborString(kOnboardingMetaData),
+                       onboarding_metadata_matcher)))));
+}
+
+// Verifies serialization of HSM payload plain text encrypted payload to CBOR
+// with key auth value.
+TEST_F(HsmPayloadCborHelperTest, GeneratePlainTextHsmPayloadCborWithKav) {
+  brillo::SecureBlob key_auth_value("key auth value");
+  brillo::SecureBlob mediator_share;
+  brillo::SecureBlob cbor_output;
+
+  crypto::ScopedBIGNUM scalar = BigNumFromValue(123123123u);
+  ASSERT_TRUE(scalar);
+  ASSERT_TRUE(BigNumToSecureBlob(*scalar, 10, &mediator_share));
+
+  // Serialize plain text payload with kav.
+  HsmPlainText hsm_plain_text;
+  hsm_plain_text.mediator_share = mediator_share;
+  hsm_plain_text.dealer_pub_key = dealer_pub_key_;
+  hsm_plain_text.key_auth_value = key_auth_value;
+  ASSERT_TRUE(SerializeHsmPlainTextToCbor(hsm_plain_text, &cbor_output));
+
+  EXPECT_THAT(
+      cbor_output,
+      IsSerializedCbor(CborMap(UnorderedElementsAre(
+          Pair(CborString(kDealerPublicKey), CborBytestring(dealer_pub_key_)),
+          Pair(CborString(kKeyAuthValue), CborBytestring(brillo::BlobFromString(
+                                              key_auth_value.to_string()))),
+          Pair(CborString(kMediatorShare),
+               CborBytestring(
+                   brillo::BlobFromString(mediator_share.to_string())))))));
+}
+
+// Verifies serialization of HSM payload plain text encrypted payload to CBOR
+// without key auth value.
+TEST_F(HsmPayloadCborHelperTest, GeneratePlainTextHsmPayloadCbor) {
+  brillo::SecureBlob mediator_share;
+  brillo::SecureBlob cbor_output;
+
+  crypto::ScopedBIGNUM scalar = BigNumFromValue(123123123u);
+  ASSERT_TRUE(scalar);
+  ASSERT_TRUE(BigNumToSecureBlob(*scalar, 10, &mediator_share));
+
+  // Serialize plain text payload without kav.
+  HsmPlainText hsm_plain_text;
+  hsm_plain_text.mediator_share = mediator_share;
+  hsm_plain_text.dealer_pub_key = dealer_pub_key_;
+  ASSERT_TRUE(SerializeHsmPlainTextToCbor(hsm_plain_text, &cbor_output));
+
+  EXPECT_THAT(
+      cbor_output,
+      IsSerializedCbor(CborMap(UnorderedElementsAre(
+          Pair(CborString(kDealerPublicKey), CborBytestring(dealer_pub_key_)),
+          Pair(CborString(kMediatorShare),
+               CborBytestring(
+                   brillo::BlobFromString(mediator_share.to_string())))))));
+}
+
+// Verifies deserialization of HSM associated data from CBOR.
+TEST_F(HsmPayloadCborHelperTest, SerializeDeserializeHsmAssociatedData) {
+  brillo::Blob cbor_output;
+  ASSERT_TRUE(
+      SerializeHsmAssociatedDataToCbor(hsm_associated_data_, &cbor_output));
+
+  HsmAssociatedData hsm_ad_output;
+  EXPECT_TRUE(
+      DeserializeHsmAssociatedDataFromCbor(cbor_output, &hsm_ad_output));
+
+  ExpectEqualsToFakeHsmAssociatedData(hsm_ad_output);
+}
+
+// Verifies deserialization of schema v1 HSM associated data from CBOR.
+TEST_F(HsmPayloadCborHelperTest, DeserializeOnboardingMetaDataWithoutPubKeyV1) {
+  brillo::Blob cbor;
+  ASSERT_TRUE(
+      base::HexStringToBytes(kFakeHsmAssociatedDataWithoutPubKeyHashV1, &cbor));
+
+  HsmAssociatedData hsm_ad;
+  EXPECT_TRUE(DeserializeHsmAssociatedDataFromCbor(cbor, &hsm_ad));
+
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.cryptohome_user_type,
+            UserType::kGaiaId);
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.cryptohome_user, "User ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.device_user_id, "Device User ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.board_name, "Board Name");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.form_factor, "Form factor");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.rlz_code, "Rlz Code");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.hsm_pub_key_hash, brillo::Blob());
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.recovery_id, "Recovery ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.info_format,
+            OnboardingMetadata::InfoFormat::kFixed);
+}
+
+// Verifies deserialization of schema v2 HSM associated data from CBOR.
+TEST_F(HsmPayloadCborHelperTest, DeserializeOnboardingMetaDataWithoutPubKeyV2) {
+  brillo::Blob cbor;
+  ASSERT_TRUE(
+      base::HexStringToBytes(kFakeHsmAssociatedDataWithoutPubKeyHashV2, &cbor));
+
+  HsmAssociatedData hsm_ad;
+  EXPECT_TRUE(DeserializeHsmAssociatedDataFromCbor(cbor, &hsm_ad));
+
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.cryptohome_user_type,
+            UserType::kGaiaId);
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.cryptohome_user, "User ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.device_user_id, "Device User ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.board_name, "Board Name");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.form_factor, "Form factor");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.rlz_code, "Rlz Code");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.hsm_pub_key_hash, brillo::Blob());
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.recovery_id, "Recovery ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.info_format,
+            OnboardingMetadata::InfoFormat::kIncludesUserId);
+}
+
+// Verifies deserialization of schema v3 HSM associated data from CBOR.
+TEST_F(HsmPayloadCborHelperTest, DeserializeOnboardingMetaDataWithoutPubKeyV3) {
+  brillo::Blob cbor;
+  ASSERT_TRUE(
+      base::HexStringToBytes(kFakeHsmAssociatedDataWithoutPubKeyHashV3, &cbor));
+
+  HsmAssociatedData hsm_ad;
+  EXPECT_TRUE(DeserializeHsmAssociatedDataFromCbor(cbor, &hsm_ad));
+
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.cryptohome_user_type,
+            UserType::kGaiaId);
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.cryptohome_user, "User ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.device_user_id, "Device User ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.board_name, "Board Name");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.form_factor, "Form factor");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.rlz_code, "Rlz Code");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.hsm_pub_key_hash, brillo::Blob());
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.recovery_id, "Recovery ID");
+  EXPECT_EQ(hsm_ad.onboarding_meta_data.info_format,
+            OnboardingMetadata::InfoFormat::kIncludesRecoveryId);
+}
+
+// Verifies that the deserialization of HSM associated data text from CBOR fails
+// if input is not a CBOR.
+TEST_F(HsmPayloadCborHelperTest, DeserializeAssociatedDataHsmPayloadNotCbor) {
+  HsmAssociatedData hsm_associated_data;
+  brillo::Blob hsm_cbor = brillo::BlobFromString("actually not a CBOR");
+  EXPECT_FALSE(
+      DeserializeHsmAssociatedDataFromCbor(hsm_cbor, &hsm_associated_data));
+}
+
+// Verifies that the deserialization of HSM payload plain text from CBOR fails
+// if input is not a CBOR map.
+TEST_F(HsmPayloadCborHelperTest, DeserializeAssociatedDataHsmPayloadNotMap) {
+  HsmAssociatedData hsm_associated_data;
+  std::optional<std::vector<uint8_t>> serialized =
+      cbor::Writer::Write(cbor::Value("a CBOR but not a map"));
+  ASSERT_TRUE(serialized.has_value());
+  brillo::Blob hsm_cbor(serialized.value().begin(), serialized.value().end());
+  EXPECT_FALSE(
+      DeserializeHsmAssociatedDataFromCbor(hsm_cbor, &hsm_associated_data));
+}
+
+// Verifies that the deserialization of HSM payload plain text from CBOR fails
+// if CBOR has wrong format.
+TEST_F(HsmPayloadCborHelperTest,
+       DeserializeAssociatedDataHsmPayloadWrongFormat) {
+  HsmAssociatedData hsm_associated_data;
+  cbor::Value::MapValue fake_map;
+  fake_map.emplace(kMediatorShare, "a string value instead of bytes");
+  fake_map.emplace(kDealerPublicKey, dealer_pub_key_);
+  fake_map.emplace(kKeyAuthValue, brillo::SecureBlob());
+  brillo::Blob hsm_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(fake_map, &hsm_cbor));
+  EXPECT_FALSE(
+      DeserializeHsmAssociatedDataFromCbor(hsm_cbor, &hsm_associated_data));
+}
+
+// Verifies deserialization of HSM payload plain text from CBOR.
+TEST_F(HsmPayloadCborHelperTest, DeserializePlainTextHsmPayload) {
+  brillo::SecureBlob mediator_share;
+
+  crypto::ScopedBIGNUM scalar = BigNumFromValue(123123123u);
+  ASSERT_TRUE(scalar);
+  ASSERT_TRUE(BigNumToSecureBlob(*scalar, 10, &mediator_share));
+
+  // Serialize plain text payload with empty kav.
+  cbor::Value::MapValue fake_map;
+  fake_map.emplace(kDealerPublicKey, dealer_pub_key_);
+  fake_map.emplace(kMediatorShare, mediator_share);
+  fake_map.emplace(kKeyAuthValue, brillo::SecureBlob());
+  brillo::SecureBlob hsm_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(fake_map, &hsm_cbor));
+
+  HsmPlainText hsm_plain_text;
+  EXPECT_TRUE(DeserializeHsmPlainTextFromCbor(hsm_cbor, &hsm_plain_text));
+
+  EXPECT_EQ(hsm_plain_text.dealer_pub_key, dealer_pub_key_);
+  EXPECT_EQ(hsm_plain_text.mediator_share, mediator_share);
+  EXPECT_TRUE(hsm_plain_text.key_auth_value.empty());
+}
+
+// Verifies that the deserialization of HSM payload plain text from CBOR fails
+// if input is not a CBOR.
+TEST_F(HsmPayloadCborHelperTest, DeserializePlainTextHsmPayloadNotCbor) {
+  HsmPlainText hsm_plain_text;
+  brillo::SecureBlob hsm_cbor("actually not a CBOR");
+  EXPECT_FALSE(DeserializeHsmPlainTextFromCbor(hsm_cbor, &hsm_plain_text));
+}
+
+// Verifies that the deserialization of HSM payload plain text from CBOR fails
+// if input is not a CBOR map.
+TEST_F(HsmPayloadCborHelperTest, DeserializePlainTextHsmPayloadNotMap) {
+  HsmPlainText hsm_plain_text;
+  std::optional<std::vector<uint8_t>> serialized =
+      cbor::Writer::Write(cbor::Value("a CBOR but not a map"));
+  ASSERT_TRUE(serialized.has_value());
+  brillo::SecureBlob hsm_cbor(serialized.value().begin(),
+                              serialized.value().end());
+  EXPECT_FALSE(DeserializeHsmPlainTextFromCbor(hsm_cbor, &hsm_plain_text));
+}
+
+// Verifies that the deserialization of HSM payload plain text from CBOR fails
+// if CBOR has wrong format.
+TEST_F(HsmPayloadCborHelperTest, DeserializePlainTextHsmPayloadWrongFormat) {
+  HsmPlainText hsm_plain_text;
+  brillo::SecureBlob cbor_output;
+  cbor::Value::MapValue fake_map;
+  fake_map.emplace(kMediatorShare, "a string value instead of bytes");
+  fake_map.emplace(kDealerPublicKey, dealer_pub_key_);
+  fake_map.emplace(kKeyAuthValue, brillo::SecureBlob());
+  brillo::SecureBlob hsm_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(fake_map, &hsm_cbor));
+  EXPECT_FALSE(DeserializeHsmPlainTextFromCbor(hsm_cbor, &hsm_plain_text));
+}
+
+// Verifies serialization of Recovery Request payload associated data to CBOR.
+TEST_F(RecoveryRequestCborHelperTest, GenerateAd) {
+  brillo::Blob salt = brillo::BlobFromString("fake salt");
+  brillo::Blob cbor_output;
+
+  HsmPayload hsm_payload;
+  hsm_payload.cipher_text = brillo::BlobFromString(kFakeHsmPayloadCipherText);
+  hsm_payload.associated_data = brillo::BlobFromString(kFakeHsmPayloadAd);
+  hsm_payload.iv = brillo::BlobFromString(kFakeHsmPayloadIv);
+  hsm_payload.tag = brillo::BlobFromString(kFakeHsmPayloadTag);
+
+  RecoveryRequestAssociatedData request_ad;
+  request_ad.hsm_payload = std::move(hsm_payload);
+  request_ad.request_meta_data = request_meta_data_;
+  request_ad.epoch_meta_data = epoch_meta_data_;
+  request_ad.request_payload_salt = salt;
+  ASSERT_TRUE(
+      SerializeRecoveryRequestAssociatedDataToCbor(request_ad, &cbor_output));
+
+  auto hsm_aead_matcher = CborMap(UnorderedElementsAre(
+      Pair(CborString(kAeadCipherText),
+           CborBytestring(brillo::BlobFromString(kFakeHsmPayloadCipherText))),
+      Pair(CborString(kAeadAd),
+           CborBytestring(brillo::BlobFromString(kFakeHsmPayloadAd))),
+      Pair(CborString(kAeadIv),
+           CborBytestring(brillo::BlobFromString(kFakeHsmPayloadIv))),
+      Pair(CborString(kAeadTag),
+           CborBytestring(brillo::BlobFromString(kFakeHsmPayloadTag)))));
+  auto request_metadata_matcher = CborMap(UnorderedElementsAre(
+      Pair(CborString(kRequestorUser),
+           CborString(request_meta_data_.requestor_user_id)),
+      Pair(
+          CborString(kRequestorUserType),
+          CborInt(static_cast<int>(request_meta_data_.requestor_user_id_type))),
+      Pair(CborString(kSchemaVersion), CborInt(kRequestMetaDataSchemaVersion)),
+      Pair(
+          CborString(kAuthClaim),
+          CborMap(UnorderedElementsAre(
+              Pair(CborString(kGaiaAccessToken),
+                   CborString(request_meta_data_.auth_claim.gaia_access_token)),
+              Pair(CborString(kGaiaReauthProofToken),
+                   CborString(request_meta_data_.auth_claim
+                                  .gaia_reauth_proof_token)))))));
+  EXPECT_THAT(cbor_output,
+              IsSerializedCbor(CborMap(UnorderedElementsAre(
+                  Pair(CborString(kHsmAead), hsm_aead_matcher),
+                  Pair(CborString(kRequestMetaData), request_metadata_matcher),
+                  Pair(CborString(kRequestPayloadSalt), CborBytestring(salt)),
+                  Pair(CborString(kEpochMetaData),
+                       CborMap(UnorderedElementsAre(
+                           Pair(CborString(kFakeMetadataCborKey),
+                                CborString(kFakeMetadataCborValue)))))))));
+}
+
+// Verifies serialization of Recovery Request payload plain text encrypted
+// payload to CBOR.
+TEST_F(RecoveryRequestCborHelperTest, GeneratePlainText) {
+  brillo::Blob ephemeral_inverse_key;
+  crypto::ScopedBIGNUM scalar = BigNumFromValue(123u);
+  ASSERT_TRUE(scalar);
+  BN_set_negative(scalar.get(), 1);
+  crypto::ScopedEC_POINT inverse_point =
+      ec_->MultiplyWithGenerator(*scalar, context_.get());
+  ASSERT_TRUE(inverse_point);
+  crypto::ScopedEC_KEY inverse_key = ec_->PointToEccKey(*inverse_point);
+  ASSERT_TRUE(inverse_key);
+  ASSERT_TRUE(ec_->EncodeToSpkiDer(inverse_key, &ephemeral_inverse_key,
+                                   context_.get()));
+
+  brillo::SecureBlob cbor_output;
+  RecoveryRequestPlainText plain_text;
+  plain_text.ephemeral_pub_inv_key = ephemeral_inverse_key;
+  ASSERT_TRUE(
+      SerializeRecoveryRequestPlainTextToCbor(plain_text, &cbor_output));
+
+  EXPECT_THAT(cbor_output, IsSerializedCbor(CborMap(UnorderedElementsAre(
+                               Pair(CborString(kEphemeralPublicInvKey),
+                                    CborBytestring(ephemeral_inverse_key))))));
+}
+
+// Verifies serialization of Recovery Request and Request Payload to CBOR.
+TEST_F(RecoveryRequestCborHelperTest, SerializeRecoveryRequest) {
+  RecoveryRequest request;
+  RequestPayload request_payload = aead_helper_.GetFakePayload();
+  ASSERT_TRUE(SerializeRecoveryRequestPayloadToCbor(request_payload,
+                                                    &request.request_payload));
+
+  brillo::Blob cbor_output;
+  EXPECT_TRUE(SerializeRecoveryRequestToCbor(request, &cbor_output));
+
+  RequestPayload deserialized_request_payload;
+  ASSERT_TRUE(DeserializeRecoveryRequestPayloadFromCbor(
+      request.request_payload, &deserialized_request_payload));
+  aead_helper_.ExpectEqualsToFakeAeadPayload(deserialized_request_payload);
+}
+
+// Verifies deserialization of Recovery Request from CBOR.
+TEST_F(RecoveryRequestCborHelperTest, DeserializeRecoveryRequestPayload) {
+  brillo::Blob request_payload_cbor;
+  ASSERT_TRUE(SerializeRecoveryRequestPayloadToCbor(
+      aead_helper_.GetFakePayload(), &request_payload_cbor));
+
+  RequestPayload request_payload;
+  EXPECT_TRUE(DeserializeRecoveryRequestPayloadFromCbor(request_payload_cbor,
+                                                        &request_payload));
+  aead_helper_.ExpectEqualsToFakeAeadPayload(request_payload);
+}
+
+// Verifies that deserialization of Recovery Request from CBOR fails if payload
+// has a missing field.
+TEST_F(RecoveryRequestCborHelperTest,
+       DeserializeRecoveryRequestPayloadMissingField) {
+  cbor::Value::MapValue payload = aead_helper_.GetFakePayloadCborMap();
+  // Remove `iv` value.
+  payload.erase(payload.find(cbor::Value(kAeadIv)));
+
+  brillo::Blob request_payload_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(payload, &request_payload_cbor));
+  RequestPayload request_payload;
+  EXPECT_FALSE(DeserializeRecoveryRequestPayloadFromCbor(request_payload_cbor,
+                                                         &request_payload));
+}
+
+// Verifies deserialization of Recovery Request from CBOR.
+TEST_F(RecoveryRequestCborHelperTest, DeserializeRecoveryRequest) {
+  cbor::Value::MapValue request;
+  RequestPayload payload = aead_helper_.GetFakePayload();
+  brillo::Blob request_payload_cbor;
+  ASSERT_TRUE(
+      SerializeRecoveryRequestPayloadToCbor(payload, &request_payload_cbor));
+  request.emplace(kRequestAead, request_payload_cbor);
+  brillo::Blob request_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(request, &request_cbor));
+
+  RecoveryRequest recovery_request;
+  EXPECT_TRUE(
+      DeserializeRecoveryRequestFromCbor(request_cbor, &recovery_request));
+  RequestPayload request_payload;
+  EXPECT_TRUE(DeserializeRecoveryRequestPayloadFromCbor(
+      recovery_request.request_payload, &request_payload));
+  aead_helper_.ExpectEqualsToFakeAeadPayload(request_payload);
+}
+
+// Verifies that deserialization of Recovery Request from CBOR fails if payload
+// has wrong format.
+TEST_F(RecoveryRequestCborHelperTest, DeserializeRecoveryRequestWrongFormat) {
+  cbor::Value::MapValue request;
+  // Field value is nested map instead of serialized CBOR.
+  request.emplace(kRequestAead, aead_helper_.GetFakePayloadCborMap());
+  brillo::Blob request_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(request, &request_cbor));
+
+  RecoveryRequest recovery_request;
+  EXPECT_FALSE(
+      DeserializeRecoveryRequestFromCbor(request_cbor, &recovery_request));
+}
+
+// Verifies that deserialization of Recovery Request from CBOR fails if payload
+// has a missing field.
+TEST_F(RecoveryRequestCborHelperTest, DeserializeRecoveryRequestMissingField) {
+  cbor::Value::MapValue request;
+  // Does not emplace `kRequestAead` value.
+  brillo::Blob request_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(request, &request_cbor));
+
+  RecoveryRequest recovery_request;
+  EXPECT_FALSE(
+      DeserializeRecoveryRequestFromCbor(request_cbor, &recovery_request));
+}
+
+// Verifies serialization of Response payload associated data to CBOR.
+TEST_F(ResponsePayloadCborHelperTest, SerializeAssociatedData) {
+  HsmResponseAssociatedData response_ad;
+  response_ad.response_payload_salt = salt_;
+  response_ad.ledger_signed_proof = ledger_signed_proof_;
+  brillo::Blob cbor_output;
+  ASSERT_TRUE(
+      SerializeHsmResponseAssociatedDataToCbor(response_ad, &cbor_output));
+
+  auto logged_record_matcher = CborMap(UnorderedElementsAre(
+      Pair(CborString(kSchemaVersion),
+           CborInt(kLedgerSignedProofSchemaVersion)),
+      Pair(CborString(kPublicLedgerEntryProof),
+           CborBytestring(ledger_signed_proof_.logged_record
+                              .serialized_public_ledger_entry)),
+      Pair(
+          CborString(kPrivateLogEntryProof),
+          CborBytestring(
+              ledger_signed_proof_.logged_record.serialized_private_log_entry)),
+      Pair(CborString(kLeafIndex),
+           CborInt(ledger_signed_proof_.logged_record.leaf_index))));
+  auto ledger_signed_proof_matcher = CborMap(UnorderedElementsAre(
+      Pair(CborString(kSchemaVersion), CborInt(kHsmMetaDataSchemaVersion)),
+      Pair(CborString(kCheckpointNote),
+           CborBytestring(ledger_signed_proof_.checkpoint_note)),
+      Pair(CborString(kInclusionProof),
+           CborArray(ElementsAre(CborBytestring(kFakeInclusionProof[0])))),
+      Pair(CborString(kLoggedRecord), logged_record_matcher)));
+  EXPECT_THAT(
+      cbor_output,
+      IsSerializedCbor(CborMap(UnorderedElementsAre(
+          Pair(CborString(kResponseHsmMetaData),
+               CborMap(UnorderedElementsAre(
+                   Pair(CborString(kSchemaVersion),
+                        CborInt(kHsmMetaDataSchemaVersion))))),
+          Pair(CborString(kLedgerSignedProof), ledger_signed_proof_matcher),
+          Pair(CborString(kResponsePayloadSalt), CborBytestring(salt_))))));
+}
+
+// Verifies serialization of Response payload plain text to CBOR, without kav.
+TEST_F(ResponsePayloadCborHelperTest, SerializePlainTextWithoutKav) {
+  brillo::SecureBlob mediated_point("mediated point");
+
+  HsmResponsePlainText response_plain_text;
+  response_plain_text.mediated_point = mediated_point;
+  response_plain_text.dealer_pub_key = fake_pub_key_;
+  response_plain_text.key_auth_value = brillo::SecureBlob();
+  brillo::SecureBlob cbor_output;
+  ASSERT_TRUE(
+      SerializeHsmResponsePlainTextToCbor(response_plain_text, &cbor_output));
+
+  EXPECT_THAT(
+      cbor_output,
+      IsSerializedCbor(CborMap(UnorderedElementsAre(
+          Pair(CborString(kMediatedShare),
+               CborBytestring(
+                   brillo::BlobFromString(mediated_point.to_string()))),
+          Pair(CborString(kDealerPublicKey), CborBytestring(fake_pub_key_)),
+          Pair(CborString(kKeyAuthValue), CborBytestring(brillo::Blob()))))));
+}
+
+// Verifies serialization of Response payload plain text to CBOR.
+TEST_F(ResponsePayloadCborHelperTest, SerializePlainText) {
+  brillo::SecureBlob mediated_point("mediated point");
+  brillo::SecureBlob key_auth_value("key auth value");
+
+  HsmResponsePlainText response_plain_text;
+  response_plain_text.mediated_point = mediated_point;
+  response_plain_text.dealer_pub_key = fake_pub_key_;
+  response_plain_text.key_auth_value = key_auth_value;
+  brillo::SecureBlob cbor_output;
+  ASSERT_TRUE(
+      SerializeHsmResponsePlainTextToCbor(response_plain_text, &cbor_output));
+
+  EXPECT_THAT(
+      cbor_output,
+      IsSerializedCbor(CborMap(UnorderedElementsAre(
+          Pair(CborString(kMediatedShare),
+               CborBytestring(
+                   brillo::BlobFromString(mediated_point.to_string()))),
+          Pair(CborString(kDealerPublicKey), CborBytestring(fake_pub_key_)),
+          Pair(CborString(kKeyAuthValue), CborBytestring(brillo::BlobFromString(
+                                              key_auth_value.to_string())))))));
+}
+
+// Verifies deserialization of Response payload associated data from CBOR.
+TEST_F(ResponsePayloadCborHelperTest, DeserializeAssociatedData) {
+  HsmResponseAssociatedData expected_response_ad;
+  expected_response_ad.response_payload_salt = salt_;
+  expected_response_ad.ledger_signed_proof = ledger_signed_proof_;
+  brillo::Blob response_cbor;
+  ASSERT_TRUE(SerializeHsmResponseAssociatedDataToCbor(expected_response_ad,
+                                                       &response_cbor));
+
+  HsmResponseAssociatedData response_ad;
+  EXPECT_TRUE(DeserializeHsmResponseAssociatedDataFromCbor(response_cbor,
+                                                           &response_ad));
+  EXPECT_EQ(response_ad.response_payload_salt, salt_);
+  EXPECT_EQ(response_ad.ledger_signed_proof.checkpoint_note,
+            kFakeCheckpointNote);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record
+                .serialized_public_ledger_entry,
+            ledger_signed_proof_.logged_record.serialized_public_ledger_entry);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record
+                .serialized_private_log_entry,
+            ledger_signed_proof_.logged_record.serialized_private_log_entry);
+  EXPECT_EQ(
+      response_ad.ledger_signed_proof.logged_record.private_log_entry.timestamp,
+      kFakeTimestamp);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .public_timestamp,
+            kFakePublicTimestamp);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.cryptohome_user_type,
+            kFakeMetadata.cryptohome_user_type);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.cryptohome_user,
+            kFakeMetadata.cryptohome_user);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.device_user_id,
+            kFakeMetadata.device_user_id);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.board_name,
+            kFakeMetadata.board_name);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.form_factor,
+            kFakeMetadata.form_factor);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.rlz_code,
+            kFakeMetadata.rlz_code);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.recovery_id,
+            kFakeMetadata.recovery_id);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.hsm_pub_key_hash,
+            kFakeMetadata.hsm_pub_key_hash);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.private_log_entry
+                .onboarding_meta_data.info_format,
+            kFakeMetadata.info_format);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.public_ledger_entry
+                .recovery_id,
+            kFakeMetadata.recovery_id);
+  EXPECT_EQ(response_ad.ledger_signed_proof.logged_record.public_ledger_entry
+                .public_timestamp,
+            kFakePublicTimestamp);
+  // Note: Don't check the map size, as the CBOR sent from the server may
+  // contain additional fields.
+}
+
+// Verifies that deserialization of Response payload associated data from CBOR
+// fails when input is not a map.
+TEST_F(ResponsePayloadCborHelperTest, DeserializeAssociatedDataNotMap) {
+  std::optional<std::vector<uint8_t>> serialized =
+      cbor::Writer::Write(cbor::Value("a CBOR but not a map"));
+  ASSERT_TRUE(serialized.has_value());
+  brillo::Blob response_cbor(serialized.value().begin(),
+                             serialized.value().end());
+
+  HsmResponseAssociatedData response_ad;
+  EXPECT_FALSE(DeserializeHsmResponseAssociatedDataFromCbor(response_cbor,
+                                                            &response_ad));
+}
+
+// Verifies that deserialization of Response payload associated data from CBOR
+// fails when a field has a wrong format.
+TEST_F(ResponsePayloadCborHelperTest, DeserializeAssociatedDataWrongFormat) {
+  cbor::Value::MapValue fake_map;
+  fake_map.emplace(kResponseHsmMetaData, "a string value instead of bytes");
+  fake_map.emplace(kResponsePayloadSalt, salt_);
+  brillo::Blob response_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(fake_map, &response_cbor));
+
+  HsmResponseAssociatedData response_ad;
+  EXPECT_FALSE(DeserializeHsmResponseAssociatedDataFromCbor(response_cbor,
+                                                            &response_ad));
+}
+
+// Verifies deserialization of Response payload plain text from CBOR.
+TEST_F(ResponsePayloadCborHelperTest, DeserializePlainText) {
+  brillo::SecureBlob mediated_point("mediated point");
+  cbor::Value::MapValue fake_map;
+  fake_map.emplace(kMediatedShare, mediated_point);
+  fake_map.emplace(kDealerPublicKey, fake_pub_key_);
+  fake_map.emplace(kKeyAuthValue, brillo::SecureBlob());
+  brillo::SecureBlob response_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(fake_map, &response_cbor));
+
+  HsmResponsePlainText response_plain_text;
+  EXPECT_TRUE(DeserializeHsmResponsePlainTextFromCbor(response_cbor,
+                                                      &response_plain_text));
+  EXPECT_EQ(response_plain_text.mediated_point, mediated_point);
+  EXPECT_EQ(response_plain_text.dealer_pub_key, fake_pub_key_);
+  EXPECT_EQ(response_plain_text.key_auth_value, brillo::SecureBlob());
+}
+
+// Verifies that deserialization of Response payload plain text from CBOR fails
+// when input is not a map.
+TEST_F(ResponsePayloadCborHelperTest, DeserializePlainTextNotMap) {
+  std::optional<std::vector<uint8_t>> serialized =
+      cbor::Writer::Write(cbor::Value("a CBOR but not a map"));
+  ASSERT_TRUE(serialized.has_value());
+  brillo::SecureBlob response_cbor(serialized.value().begin(),
+                                   serialized.value().end());
+
+  HsmResponsePlainText response_plain_text;
+  EXPECT_FALSE(DeserializeHsmResponsePlainTextFromCbor(response_cbor,
+                                                       &response_plain_text));
+}
+
+// Verifies that deserialization of Response payload plain text from CBOR fails
+// when a field has a wrong format.
+TEST_F(ResponsePayloadCborHelperTest, DeserializePlainTextWrongFormat) {
+  cbor::Value::MapValue fake_map;
+  fake_map.emplace(kMediatedShare, "a string value instead of bytes");
+  fake_map.emplace(kDealerPublicKey, fake_pub_key_);
+  fake_map.emplace(kKeyAuthValue, brillo::SecureBlob());
+  brillo::SecureBlob response_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(fake_map, &response_cbor));
+
+  HsmResponsePlainText response_plain_text;
+  EXPECT_FALSE(DeserializeHsmResponsePlainTextFromCbor(response_cbor,
+                                                       &response_plain_text));
+}
+
+// Verifies serialization of Recovery Response to CBOR.
+TEST_F(ResponsePayloadCborHelperTest, SerializeResponsePayload) {
+  ResponsePayload response_payload = aead_helper_.GetFakePayload();
+
+  brillo::Blob cbor_output;
+  EXPECT_TRUE(SerializeResponsePayloadToCbor(response_payload, &cbor_output));
+
+  aead_helper_.ExpectEqualsToFakeAeadPayload(cbor_output);
+}
+
+// Verifies deserialization of Recovery Response from CBOR.
+TEST_F(ResponsePayloadCborHelperTest, DeserializeResponsePayload) {
+  brillo::Blob response_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(aead_helper_.GetFakePayloadCborMap(),
+                                         &response_cbor));
+
+  ResponsePayload recovery_response;
+  EXPECT_TRUE(
+      DeserializeResponsePayloadFromCbor(response_cbor, &recovery_response));
+  aead_helper_.ExpectEqualsToFakeAeadPayload(recovery_response);
+}
+
+// Verifies that deserialization of Recovery Response from CBOR fails if payload
+// has a wrong format.
+TEST_F(ResponsePayloadCborHelperTest, DeserializeResponsePayloadWrongFormat) {
+  cbor::Value::MapValue response = aead_helper_.GetFakePayloadCborMap();
+  response.erase(cbor::Value(kAeadIv));
+  brillo::Blob payload_cbor;
+  ASSERT_TRUE(SerializeCborMapForTesting(response, &payload_cbor));
+
+  ResponsePayload recovery_response;
+  EXPECT_FALSE(
+      DeserializeResponsePayloadFromCbor(payload_cbor, &recovery_response));
+}
+
+TEST_F(ResponsePayloadCborHelperTest, DeserializeFakeResponsePayload) {
+  brillo::Blob response_cbor;
+  ASSERT_TRUE(HexStringToBlob(kFakeResponsePayloadWithOutOfOrderKeyHex,
+                              &response_cbor));
+
+  ResponsePayload recovery_response;
+  EXPECT_TRUE(
+      DeserializeResponsePayloadFromCbor(response_cbor, &recovery_response));
+  aead_helper_.ExpectEqualsToFakeAeadPayload(recovery_response);
+}
+
+}  // namespace cryptorecovery
+}  // namespace cryptohome

@@ -1,0 +1,10 @@
+[Unit]
+Description=Reference VM installer
+After=refvm-mode-setup.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/install-refvm
+StandardOutput=journal+console
+StandardError=journal+console

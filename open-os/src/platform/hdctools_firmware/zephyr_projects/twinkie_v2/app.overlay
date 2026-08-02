@@ -1,0 +1,77 @@
+/* Copyright 2023 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/ {
+	chosen {
+		zephyr,shell_uart = &cdc_acm_uart0;
+		zephyr,console = &cdc_acm_uart1;
+	};
+
+        csa_cc2: vconc {
+                sense-gain-mult = <200>;
+	};
+
+	cc_config {
+		compatible = "gpio-leds";
+		cc1_en: cc1en {
+			gpios = <&gpiob 2 GPIO_ACTIVE_LOW>;
+		};
+
+		cc2_en: cc2en {
+			gpios = <&gpiob 13 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	aliases {
+		encc1 = &cc1_en;
+		encc2 = &cc2_en;
+	};
+};
+
+zephyr_udc0: &usb {
+	/* Twinkie V2 Command Shell */
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+
+	/* Twinkie V2 Packet Logging */
+	cdc_acm_uart1: cdc_acm_uart1 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+
+	pinctrl-0 = <&usb_dm_pa11 &usb_dp_pa12>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&clk_lsi {
+	status = "okay";
+};
+
+&clk_hsi48 {
+	status = "okay";
+};
+
+&adc1 {
+	channel@1 {
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 2)>;
+	};
+
+	channel@3 {
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 2)>;
+	};
+
+	channel@15 {
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 2)>;
+	};
+
+	channel@17 {
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 2)>;
+	};
+
+	channel@18 {
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 2)>;
+	};
+};

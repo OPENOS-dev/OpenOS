@@ -1,0 +1,17 @@
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/6357
+dEQP-VK.compute.zero_initialize_workgroup_memory.max_workgroup_memory.128
+dEQP-VK.compute.pipeline.zero_initialize_workgroup_memory.max_workgroup_memory.128
+dEQP-VK.compute.pipeline.zero_initialize_workgroup_memory.max_workgroup_memory.64
+
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/6172
+dEQP-VK.memory_model.message_passing.core11
+dEQP-VK.memory_model.message_passing.ext
+dEQP-VK.memory_model.transitive
+dEQP-VK.memory_model.write_after_read
+
+# Times out
+dEQP-VK.ssbo.layout.random.8bit.all_per_block_buffers.6
+
+# timeouts on octopus
+dEQP-VK.api.external.fence.sync_fd.export_multiple_times_temporary
+dEQP-VK.api.external.semaphore.sync_fd.export_multiple_times_temporary

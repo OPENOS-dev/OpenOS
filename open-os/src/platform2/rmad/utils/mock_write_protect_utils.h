@@ -1,0 +1,38 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef RMAD_UTILS_MOCK_WRITE_PROTECT_UTILS_H_
+#define RMAD_UTILS_MOCK_WRITE_PROTECT_UTILS_H_
+
+#include <gmock/gmock.h>
+
+#include "rmad/utils/write_protect_utils.h"
+
+namespace rmad {
+
+class MockWriteProtectUtils : public WriteProtectUtils {
+ public:
+  MockWriteProtectUtils() = default;
+  ~MockWriteProtectUtils() override = default;
+
+  MOCK_METHOD(std::optional<bool>,
+              GetHardwareWriteProtectionStatus,
+              (),
+              (const, override));
+  MOCK_METHOD(std::optional<bool>,
+              GetApWriteProtectionStatus,
+              (),
+              (const, override));
+  MOCK_METHOD(std::optional<bool>,
+              GetEcWriteProtectionStatus,
+              (),
+              (const, override));
+  MOCK_METHOD(bool, DisableSoftwareWriteProtection, (), (override));
+  MOCK_METHOD(bool, EnableSoftwareWriteProtection, (), (override));
+  MOCK_METHOD(bool, ReadyForFactoryMode, (), (override));
+};
+
+}  // namespace rmad
+
+#endif  // RMAD_UTILS_MOCK_WRITE_PROTECT_UTILS_H_

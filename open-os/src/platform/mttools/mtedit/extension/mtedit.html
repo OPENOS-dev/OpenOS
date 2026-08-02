@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Multi-Touch Log Viewer</title>
+    <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.8.16.custom.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" media="all" />
+
+    <script src="js/base64-binary.js"></script>
+    <script src="js/bzip2.js"></script>
+    <script src="js/jquery-1.6.4.min.js"></script>
+    <script src="js/jquery.mousewheel.js"></script>
+    <script src="js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script src="js/js-inflate.js"></script>
+    <script src="js/js-unzip.js"></script>
+    <script src="js/jsxcompressor.js"></script>
+    <script src="js/purl.js"></script>
+
+    <script src="finger_view_controller.js"></script>
+    <script src="graph_controller.js"></script>
+    <script src="secret_entries.js"></script>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <img style="display:none" id="screenshot" alt="" src="screenshot.jpg" />
+      <div id="viewer">
+        <h2 style="display:none" class="pad">Touchpad Activity Viewer</h2>
+        <h2 style="display:none" class="screen">Touchscreen Viewer</h2>
+        <h3 style="display:none" id="loading">Loading...</h3>
+        <select style="display:none" id="select"></select>
+        <br />
+        <div class="screen">
+          <input type="checkbox" checked="true" id="paint-style" />
+          <label for="paint-style">Paint Style</label>
+        </div>
+        <div class="viewspan" id="inputview">
+          <h3 class="pad">Input</h3>
+          <div class="view-container">
+            <canvas class="view" id="fview" width="480" height="320"></canvas>
+          </div>
+          <br/>
+          <button class="button" id="in-resetzoom">Reset Zoom</button>
+          <div class="pad" id="intext">Time: 123123123.123<br/>Finger Cnt: 2<br/>Touch Cnt: 2</div>
+          <div id="popup">Time: 123123123.123<br/>Finger Cnt: 2<br/>Touch Cnt: 2</div>
+        </div>
+        <div class="viewspan pad">
+          <h3>Output</h3>
+          <div class="view-container">
+            <canvas class="view" id="gview" width="480" height="320"></canvas>
+          <br/>
+          <button class="button" id="out-resetzoom">Reset Zoom</button>
+          <input type="checkbox" id="out-lock-head" />
+          <label for="out-lock-head">Lock Head Location</label>
+        </div>
+        <div class="midviewspan" id="button_div"></div>
+      </div>
+      <div id="playbar">
+        <h2>Time Range</h2>
+        <button id="playpause">Play</button>
+        <button id="play">Play</button>
+        <button id="shrink">Shrink Range</button>
+        <div id="sliderdiv"><div id="slider"></div></div>
+        <div id="begin">
+          <h3>Begin Time</h3>
+          <button id="begin_stepback">Begin Step Back</button>
+          <button id="begin_stepforward">Begin Step Forward</button>
+          Set begin time: <input type='text' id='input_begin_time'
+                              onkeyup="setBeginTimestamp()" />
+          <br/>
+          <textarea rows="4" id="begin_event" readonly="readonly"></textarea>
+        </div>
+        <div id="end">
+          <h3>End Time</h3>
+          <button id="end_stepback">End Step Back</button>
+          <button id="end_stepforward">End Step Forward</button>
+          Set end time: <input type='text' id='input_end_time'
+                            onkeyup="setEndTimestamp()" />
+          <br/>
+          <textarea rows="4" id="end_event" readonly="readonly"></textarea>
+        </div>
+        <div id="touchselect">
+          <span id='num_fts'></span>
+          <button id="first_finger_touch"> &lt;&lt; </button>
+          <button id="prev_finger_touch"> &lt; </button>
+          <button id="all_finger_touch"> all </button>
+          <button id="next_finger_touch"> &gt; </button>
+          <button id="last_finger_touch"> &gt;&gt; </button>
+        </div>
+      </div>
+      <div id="load">
+        <h2>Load/Save Activity Log</h2>
+        <div id="textdiv">
+          <h3>From Text File</h3>
+          <button id="export">Export Selected Range</button>
+          <button id="link">Link</button>
+          <button class="screen" id="flag-noise">Flag noise</button>
+          <button class="screen" id="flag-good">Flag good</button>
+          <button class="screen" id="flag-unknown">Flag unknown</button>
+          <button class="screen" id="next-noise">Next noise</button>
+          <textarea id="text_box">Drag and drop a touchpad/touchscreen log file here.</textarea>
+        </div>
+        <div id="feedbackupload">
+          <h3>From Feedback Report</h3>
+          Load from Feedback Report: <input type="file" id="upload"></input>
+        </div>
+        <br style="clear: both;"/>
+      </div>
+      <div id="unittest_div">
+        <input id="unittest_interpreter" value="InterpreterName"/>
+        <input id="unittest_testname" value="TestName"/>
+        <button id="unittest">Generate Unittest</button>
+        <textarea rows="24" cols="80" id="unittest_box"></textarea>
+      </div>
+    </div>
+  </body>
+</html>

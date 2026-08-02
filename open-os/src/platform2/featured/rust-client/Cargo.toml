@@ -1,0 +1,25 @@
+[workspace]
+# So cargo does not think this package belongs to a workspace.
+
+[package]
+name = "featured"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+# test feature is used as a replacement for cfg(test) in build.rs,
+# as cfg(test) is not supported in build.rs;
+# https://github.com/rust-lang/cargo/issues/2549
+[features]
+fake_backend = []
+
+[dependencies]
+once_cell = "1"
+thiserror = "1.0.30"
+dbus = { version = "0.9", features = ["futures"] }
+
+[build-dependencies]
+bindgen = "0.69.4"
+
+[dev-dependencies]
+log = "0.4"

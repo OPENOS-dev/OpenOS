@@ -1,0 +1,61 @@
+[Unit]
+Description=X11 sommelier at display %i
+
+[Service]
+Environment="DISPLAY_VAR=DISPLAY"
+Environment="XCURSOR_SIZE_VAR=XCURSOR_SIZE"
+Environment="SOMMELIER_SCALE=1.0"
+# For Xwayland, the font paths are normally built into the Xwayland binary
+# at build time. These paths are lifted from the xorg-server source package
+# on Debian stretch. This is the value of the --with-default-font-path argument
+# to the configure script.
+# TODO(smbarber): Factor this out for different distros.
+Environment="SOMMELIER_XFONT_PATH=/usr/share/fonts/X11/misc,\
+/usr/share/fonts/X11/cyrillic,\
+/usr/share/fonts/X11/100dpi/:unscaled,\
+/usr/share/fonts/X11/75dpi/:unscaled,\
+/usr/share/fonts/X11/Type1,\
+/usr/share/fonts/X11/100dpi,\
+/usr/share/fonts/X11/75dpi,\
+built-ins"
+Type=notify
+# TODO(b/294167210): This is a workaround for Bruschetta, remove this
+# when we have a better approach.
+ExecStartPre=/bin/bash -c \
+                 "i=0; \
+                  while [[ ! -f /dev/.container_token ]]; do \
+                    sleep 0.1; \
+                    i=$((i=i+1)); \
+                    if [[ $i == 50 ]]; then \
+                      >&2 echo sommelier-x: WARNING: still waiting for /dev/.container_token; \
+                    fi \
+                  done; \
+                  /bin/systemctl --user set-environment \
+                      SOMMELIER_VM_IDENTIFIER=$(cat /dev/.container_token); \
+                  /usr/bin/test -c /dev/dri/renderD128 && \
+                      /bin/systemctl --user set-environment \
+                          SOMMELIER_DRM_DEVICE=/dev/dri/renderD128 \
+                          SOMMELIER_GLAMOR=1; \
+                  /bin/true"
+ExecStart=/usr/bin/sommelier \
+              -X \
+              --x-display=%i \
+              --sd-notify="READY=1" \
+              --no-exit-with-child \
+              --x-auth=${HOME}/.Xauthority \
+              --stable-scaling \
+              --enable-xshape \
+              --enable-linux-dmabuf \
+              /bin/sh -c \
+                  "systemctl --user set-environment ${DISPLAY_VAR}=$${DISPLAY}; \
+                   systemctl --user set-environment ${XCURSOR_SIZE_VAR}=$${XCURSOR_SIZE}; \
+                   systemctl --user import-environment SOMMELIER_VERSION; \
+                   touch ${HOME}/.Xauthority; \
+                   xauth -f ${HOME}/.Xauthority add ${HOST}:%i . $(xxd -l 16 -p /dev/urandom); \
+                   . /etc/sommelierrc"
+ExecStopPost=/opt/google/cros-containers/bin/guest_service_failure_notifier sommelier-x
+Restart=always
+
+[Install]
+WantedBy=default.target
+DefaultInstance=0

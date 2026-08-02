@@ -1,0 +1,108 @@
+{
+  "manifest_version": 1,
+  "ec_version": "model-0.0.0-abcdefa",
+  "component_list": [
+    {
+      "component_type": "base_sensor",
+      "component_name": "base_sensor_1",
+      "i2c": {
+        "port": 3,
+        "addr": "0x01",
+        "expect": [
+          {
+            "reg": "0x00",
+            "mask": "0xff",
+            "value": "0x00"
+          },
+          {
+            "reg": "0x01",
+            "mask": "0x0f",
+            "value": "0x01"
+          },
+          {
+            "reg": "0x02",
+            "value": "0x02"
+          },
+          {
+            "reg": "0x03",
+            "mask": "0x00",
+            "value": "0x01",
+            "override_addr": "0x2",
+            "override_mask": "0xff",
+            "override_value": "0x03",
+            "bytes": 1
+          }
+        ]
+      }
+    },
+    {
+      "component_type": "base_sensor",
+      "component_name": "base_sensor_2",
+      "i2c": {
+        "port": 3,
+        "addr": "0x01",
+        "expect": [
+          {
+            "reg": "0x02"
+          }
+        ]
+      }
+    },
+    {
+      "component_type": "base_sensor",
+      "component_name": "base_sensor_3",
+      "i2c": {
+        "port": 3,
+        "addr": "0x01",
+        "expect": [
+          {
+            "reg": "0x03",
+            "multi_byte_value": "0x01020304",
+            "bytes": 4
+          },
+          {
+            "reg": "0x04",
+            "multi_byte_mask": "0x00ff00ff",
+            "multi_byte_value": "0x00110022",
+            "bytes": 4
+          }
+        ]
+      }
+    },
+    {
+      "component_type": "base_sensor",
+      "component_name": "base_sensor_4",
+      "i2c": {
+        "port": 3,
+        "addr": "0x01",
+        "expect": [
+          {
+            "reg": "0x03",
+            "write_data": "0xaabbcc"
+          }
+        ]
+      }
+    },
+    {
+      "component_type": "base_sensor",
+      "component_name": "base_sensor_5",
+      "i2c": {
+        "port": 3,
+        "addr": "0x01",
+        "expect": [
+          {
+            "reg": "0x00",
+            "mask": "0xff",
+            "value": "0x00"
+          },
+          {
+            "reg": "0x01",
+            "mask": "0x0f",
+            "value": "0x01"
+          }
+        ]
+      },
+      "probe": "low_power_probe_once"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+firmware_common: &firmware_common
+  $build-target: "reef"
+  bcs-overlay: "overlay-{{$build-target}}-private"
+  build-targets:
+    coreboot: "{{$build-target}}"
+    ec: "{{$build-target}}"
+    depthcharge: "{{$build-target}}"
+    libpayload: "{{$build-target}}"
+
+firmwares:
+  reef_fw: &reef_fw
+    <<: *firmware_common
+    name: "reef"
+  reef_sand_fw: &reef_sand_fw
+    <<: *firmware_common
+    name: "sand"
+  pyro_fw: &pyro_fw
+    <<: *firmware_common
+    $build-target: "pyro"
+
+
+base_config: &base_config
+  name: "{{$device-name}}"
+
+device_config: &device_config
+  <<: *base_config
+  identity:
+    platform-name: "SomePlatform"
+    frid: "Google_{{$device-name}}"
+  firmware-signing:
+    key-id: "{{$key-id}}"
+    signature-id: "{{$device-name}}"
+
+cl_device_config: &cl_device_config
+  <<: *base_config
+  $signature-id: "{{$device-name}}-{{$customlabel-tag}}"
+  identity:
+    platform-name: "SomePlatform"
+    frid: "Google_{{$device-name}}"
+    custom-label-tag: "{{$customlabel-tag}}"
+  firmware-signing:
+    key-id: "{{$key-id}}"
+    signature-id: "{{$signature-id}}"
+    sig-id-in-customization-id: true
+
+chromeos:
+  devices:
+    - $device-name: "reef"
+      products:
+        - $key-id: "REEF"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_fw
+    - $device-name: "electro"
+      products:
+        - $key-id: "ELECTRO"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_fw
+    - $device-name: "basking"
+      products:
+        - $key-id: "BASKING"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_sand_fw
+    - $device-name: "sand"
+      products:
+        - $key-id: "SAND"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_sand_fw
+    - $device-name: "pyro"
+      products:
+        - $key-id: "PYRO"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *pyro_fw
+    - $device-name: "customlabel_test"
+      products:
+        - $key-id: "CUSTOMLABEL"
+      skus:
+        - config:
+            <<: *device_config
+            firmware: *reef_sand_fw
+    - $device-name: "zero-touch-customlabel"
+      products:
+        - $customlabel-tag: "" # default
+          $signature-id: "{{$device-name}}-default"
+          $key-id: ""
+        - $customlabel-tag: "zt1"
+          $key-id: "ZT1"
+        - $customlabel-tag: "zt2"
+          $key-id: "ZT2"
+      skus:
+        - config:
+            <<: *cl_device_config
+            firmware: *reef_fw
+    - $device-name: "clref"
+      products:
+        - $customlabel-tag: "" # default
+          $signature-id: "{{$device-name}}-default"
+          $key-id: "REEF"
+        - $customlabel-tag: "cltag1"
+          $key-id: "CLREF-CLTAG1"
+        - $customlabel-tag: "cltag2"
+          $key-id: "CLREF-CLTAG2"
+      skus:
+        - config:
+            <<: *cl_device_config
+            firmware: *reef_fw

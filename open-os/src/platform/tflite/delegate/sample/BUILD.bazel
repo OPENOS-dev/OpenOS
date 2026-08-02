@@ -1,0 +1,149 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@org_tensorflow//tensorflow/lite:build_def.bzl", "tflite_cc_shared_object", "tflite_copts")
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_library_with_tflite(
+    name = "core",
+    srcs = [
+        "core.cc",
+    ],
+    hdrs = [
+        "core.h",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:common",
+    ],
+    deps = [
+        "//common:log",
+        "@com_google_absl//absl/time",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "async_kernel",
+    srcs = [
+        "async_kernel.cc",
+    ],
+    hdrs = [
+        "async_kernel.h",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        ":core",
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:common",
+    ],
+    deps = [
+        "//android:hardware_buffer",
+        "//common:log",
+        "@com_google_absl//absl/cleanup",
+        "@com_google_absl//absl/synchronization",
+        "@org_tensorflow//tensorflow/lite/async:backend_async_kernel_interface",
+        "@org_tensorflow//tensorflow/lite/async/interop/c:constants",
+        "@org_tensorflow//tensorflow/lite/core/async/c:task",
+        "@org_tensorflow//tensorflow/lite/delegates/utils:async_type_helpers",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "kernel",
+    srcs = [
+        "kernel.cc",
+    ],
+    hdrs = [
+        "kernel.h",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        ":async_kernel",
+        ":core",
+        "//common:simple_async_delegate",
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:common",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "delegate",
+    srcs = [
+        "delegate.cc",
+    ],
+    hdrs = [
+        "delegate.h",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        ":kernel",
+        "//common:simple_async_delegate",
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:common",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "external",
+    srcs = [
+        "external.cc",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        ":delegate",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration/c:delegate_plugin",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration/c:stable_delegate",
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:stable_delegate_interface",
+    ],
+)
+
+cc_binary(
+    name = "external_test",
+    testonly = True,
+    srcs = [
+        "external_test.cc",
+    ],
+    copts = tflite_copts(),
+    data = [
+        ":tensorflowlite_cros_sample_delegate",
+        ":test_settings.json",
+        "@org_tensorflow//tensorflow/lite:testdata/add.bin",
+    ],
+    deps = [
+        "@com_google_absl//absl/cleanup",
+        "@com_google_googletest//:gtest",
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:delegate_loader",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:tflite_settings_json_parser",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
+
+tflite_cc_shared_object(
+    name = "tensorflowlite_cros_sample_delegate",
+    srcs = ["//android:libnativewindow.so"],
+    linkopts = [
+        "-Wl,--no-undefined",
+        # Expose necessary symbols only.
+        "-Wl,--version-script,$(location @org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:version_script.lds)",
+    ],
+    per_os_targets = True,
+    visibility = ["//:__pkg__"],
+    deps = [
+        ":external_opaque_delegate",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:version_script.lds",
+    ],
+)

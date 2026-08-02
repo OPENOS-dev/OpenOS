@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+UNIT=cros-port-listener.service
+
+deb-systemd-helper unmask "${UNIT}" >/dev/null || true
+
+# was-enabled defaults to true, so new installations run enable.
+if deb-systemd-helper --quiet was-enabled "${UNIT}"; then
+  # Enables the unit on first installation, creates new
+  # symlinks on upgrades if the unit file has changed.
+  deb-systemd-helper enable "${UNIT}" >/dev/null || true
+else
+  # Update the statefile to add new symlinks (if any), which need to be
+  # cleaned up on purge. Also remove old symlinks.
+  deb-systemd-helper update-state "${UNIT}" >/dev/null || true
+fi
+
+systemctl --system daemon-reload >/dev/null || true
+deb-systemd-invoke start "${UNIT}" >/dev/null || exit $?

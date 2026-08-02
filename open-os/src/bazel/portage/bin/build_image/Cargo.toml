@@ -1,0 +1,17 @@
+[package]
+name = "build_image"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cliutil = { path = "../../common/cliutil" }
+fileutil = { path = "../../common/fileutil" }
+container = { path = "../../common/container" }
+binarypackage = { path = "../../common/portage/binarypackage" }
+
+anyhow.workspace = true
+clap.workspace = true
+runfiles.workspace = true
+users.workspace = true

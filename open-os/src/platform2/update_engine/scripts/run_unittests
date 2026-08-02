@@ -1,0 +1,19 @@
+#!/bin/bash
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Runs update_payload unittests
+
+set -e
+
+# Invoke unittest scripts.
+for unittest_script in update_payload/*_unittest.py; do
+  filename=$(basename "${unittest_script}")
+  python -m update_payload."${filename%.*}"
+done
+
+./payload_info_unittest.py
+./paycheck_unittest.py
+
+exit 0

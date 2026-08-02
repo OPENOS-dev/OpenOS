@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Builds the Rust FPGA ROM.
+
+set -e
+
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+ROM="${PROJECT_ROOT}/build/hps_platform/fpga_rom.bin"
+
+# If we're outside the chroot, rerun inside.
+if [ ! -e /etc/cros_chroot_version ] ; then
+    exec "${PROJECT_ROOT}/scripts/run-tool" "$0" "$@"
+fi
+
+FEATURES="${FEATURES-tflm}"
+PROFILE="${PROFILE-release}"
+
+source "${PROJECT_ROOT}/environment"
+
+cd "${PROJECT_ROOT}/rust/riscv"
+BUILD_FLAGS=(
+    -p fpga_rom
+    --profile "${PROFILE}"
+    --no-default-features
+    --features "${FEATURES}")
+
+cargo build "${BUILD_FLAGS[@]}"
+
+# For the dev profile, cargo outputs to "debug". For "release" and any custom
+# profiles it outputs to the profile name.
+if [[ "${PROFILE}" == "dev" ]]; then
+    PROFILE_OUT="debug"
+else
+    PROFILE_OUT="${PROFILE}"
+fi
+
+llvm-objcopy \
+    "target/riscv32i-unknown-none-elf/${PROFILE_OUT}/fpga_rom" \
+    -O binary \
+    "${ROM}"

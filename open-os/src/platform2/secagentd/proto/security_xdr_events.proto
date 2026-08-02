@@ -1,0 +1,442 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
+package cros_xdr.reporting;
+
+// The building blocks for the event types.
+
+// Attributes that are common to the entire event.
+message CommonEventDataFields {
+  optional string local_timezone = 1;
+  optional int64 device_boot_time = 2;
+}
+
+// Trusted Computing Base attributes.
+message TcbAttributes {
+  enum FirmwareSecureBoot {
+    NONE = 0;
+    CROS_FLEX_UEFI_SECURE_BOOT = 1;
+    CROS_VERIFIED_BOOT = 2;
+  }
+  optional string system_firmware_version = 1;
+  optional FirmwareSecureBoot firmware_secure_boot = 2;
+  // Attributes of the security chip.
+  message SecurityChip {
+    enum Kind {
+      NONE = 0;
+      TPM = 1;
+      GOOGLE_SECURITY_CHIP = 2;
+    }
+    optional Kind kind = 1;
+    optional string chip_version = 2;
+    optional string spec_family = 3;
+    optional string spec_level = 4;
+    optional string manufacturer = 5;
+    optional string vendor_id = 6;
+    optional string tpm_model = 7;
+    optional string firmware_version = 8;
+  }
+  optional SecurityChip security_chip = 3;
+  optional string linux_kernel_version = 4;
+}
+
+// The attributes of a file image.
+message FileImage {
+  optional string pathname =
+      1;  // The pathname as seen from the context of the mount namespace.
+  optional uint64 mnt_ns = 2;           // The inode of the mount namespace.
+  optional uint64 inode_device_id = 3;  // The device ID both major and minor.
+  optional uint64 inode = 4;            // The inode of the file.
+  optional string sha256 = 5;           // The SHA256 of the file.
+  optional uint64 canonical_uid = 6;    // Owning UID.
+  optional uint64 canonical_gid = 7;    // Owning GID.
+  optional uint32 mode = 8;             // Mode.
+  optional bool partial_sha256 = 9;     // SHA256 computed from sampled data.
+}
+
+// The attributes of a process.
+message Process {
+  optional string process_uuid = 1;
+  optional uint64 canonical_pid = 2;
+  optional uint64 canonical_uid = 3;
+  optional string commandline = 4;
+  optional FileImage image = 5;
+  optional int64 rel_start_time_s = 6;
+  optional bool meta_first_appearance = 7;
+}
+
+// Namespaces for a process.
+message Namespaces {
+  optional uint64 cgroup_ns = 1;
+  optional uint64 ipc_ns = 2;
+  optional uint64 pid_ns = 3;
+  optional uint64 user_ns = 4;
+  optional uint64 uts_ns = 5;
+  optional uint64 mnt_ns = 6;
+  optional uint64 net_ns = 7;
+}
+
+// The composed event types.
+
+// Encapsulates fields that are common to each message in a
+// batch.
+message CommonEventVariantDataFields {
+  optional int64 create_timestamp_us = 1;
+  optional string device_user = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USERNAME]
+      // copybara:datapol_end
+      ;
+  // Possible values of device_user:
+  // User’s email (affiliated)
+  // "UnaffiliatedUser-" prepended to Random UUID (unaffiliated)
+  // "" (empty string when no user signed in)
+  // "Unknown" (The user is unknown because of internal error) or
+  //     the user's affiliation cannot be determined because they have
+  //     never previously signed into the device or removed account from device.
+  // "GuestUser" (logged in as guest user)
+  // "ManagedGuest" (logged in as managed guest set by organization)
+  // "KioskApp" (Any kiosk app being used)
+  // "SAML-PublicSession" (https://support.google.com/a/answer/6262987?hl=en)
+}
+
+// Agent Events.
+
+// Event emitted at the start of execution of an agent process.
+message AgentStartEvent {
+  optional TcbAttributes tcb = 1;
+}
+
+// Periodic event to indicate that an agent is running.
+message AgentHeartbeatEvent {
+  optional TcbAttributes tcb = 1;
+}
+
+message AgentEventAtomicVariant {
+  optional CommonEventVariantDataFields common = 1;
+  oneof variant_type {
+    AgentStartEvent agent_start = 2;
+    AgentHeartbeatEvent agent_heartbeat = 3;
+  }
+}
+
+// Agent Events wrapper.
+message XdrAgentEvent {
+  optional CommonEventDataFields common = 1;
+  oneof message_type {
+    AgentStartEvent agent_start = 2 [deprecated = true];
+    AgentHeartbeatEvent agent_heartbeat = 3 [deprecated = true];
+  }
+  repeated AgentEventAtomicVariant batched_events = 4;
+}
+
+// Process Events.
+
+// Acting process (forked and) exec'd a new child process.
+message ProcessExecEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional Process spawn_process = 3;
+  optional Namespaces spawn_namespaces = 4;
+  optional int64 terminate_timestamp_us = 5;
+}
+
+// Acting process (was) terminated.
+message ProcessTerminateEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+}
+
+// Singular Process event.
+message ProcessEventAtomicVariant {
+  optional CommonEventVariantDataFields common = 1;
+  oneof variant_type {
+    ProcessExecEvent process_exec = 2;
+    ProcessTerminateEvent process_terminate = 3;
+  }
+}
+
+// Process Events wrapper.
+message XdrProcessEvent {
+  optional CommonEventDataFields common = 1;
+  oneof message_type {
+    ProcessExecEvent process_exec = 2 [deprecated = true];
+    ProcessTerminateEvent process_terminate = 3 [deprecated = true];
+  }
+  repeated ProcessEventAtomicVariant batched_events = 4;
+}
+
+// Network Events.
+
+// Singular network event.
+message NetworkEventAtomicVariant {
+  optional CommonEventVariantDataFields common = 1;
+  oneof variant_type {
+    NetworkFlowEvent network_flow = 2;
+    NetworkSocketListenEvent network_socket_listen = 3;
+  }
+}
+
+// Network Event wrapper.
+message XdrNetworkEvent {
+  optional CommonEventDataFields common = 1;
+  repeated NetworkEventAtomicVariant batched_events = 2;
+}
+
+// Used for Network Events.
+enum NetworkProtocol {
+  NETWORK_PROTOCOL_UNKNOWN = 0;
+  TCP = 1;
+  UDP = 2;
+  ICMP = 3;
+  RAW = 4;
+}
+
+enum SocketType {
+  SOCK_STREAM = 1;
+  SOCK_DGRAM = 2;
+  SOCK_SEQPACKET = 3;
+  SOCK_RAW = 4;
+  SOCK_RDM = 5;
+  SOCK_PACKET = 6;  // According to socket(2) is obsolete.
+}
+
+message NetworkFlow {
+  enum Direction {
+    DIRECTION_UNKNOWN = 0;
+    INCOMING = 1;
+    OUTGOING = 2;
+  }
+  enum ApplicationProtocol {
+    APPLICATION_PROTOCOL_UNKNOWN = 0;
+    HTTP = 1;
+    HTTPS = 2;
+    DNS = 3;
+  }
+  optional string community_id_v1 = 1;
+  optional string local_ip = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_IP_ADDRESS]
+      // copybara:datapol_end
+      ;
+  optional uint64 local_port = 3;
+  optional string remote_ip = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_IP_ADDRESS]
+      // copybara:datapol_end
+      ;
+  optional uint64 remote_port = 5
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NOT_REQUIRED]
+      // copybara:datapol_end
+      ;
+  optional NetworkProtocol protocol = 6;
+  optional Direction direction = 7;
+  optional string remote_hostname = 8
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
+  optional uint64 rx_bytes = 9;
+  optional uint64 tx_bytes = 10;
+  optional ApplicationProtocol application_protocol = 11;
+  optional string http_host = 12
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
+  optional string sni_host = 13
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
+}
+
+// Acting process communicated externally over the network.
+message NetworkFlowEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional NetworkFlow network_flow = 3;
+}
+
+message Socket {
+  optional NetworkProtocol protocol = 1;
+  optional string bind_addr = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_IP_ADDRESS]
+      // copybara:datapol_end
+      ;
+  optional uint64 bind_port = 3;
+  optional SocketType socket_type = 4;
+}
+
+// Acting process is listening for connections on a socket.
+message NetworkSocketListenEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional Socket socket = 3;
+}
+
+// User Events.
+
+// User Event Wrapper.
+message XdrUserEvent {
+  optional CommonEventDataFields common = 1;
+  repeated UserEventAtomicVariant batched_events = 2;
+}
+
+// Singular User event.
+message UserEventAtomicVariant {
+  optional CommonEventVariantDataFields common = 1;
+  oneof variant_type {
+    AuthenticateEvent logon = 2;
+    AuthenticateEvent logoff = 3;
+    AuthenticateEvent unlock = 4;
+    AuthenticateEvent lock = 5;
+    AuthenticateEvent failure = 6;
+  }
+}
+
+// Authentication Events.
+
+// authentication field only used for entry events.
+message AuthenticateEvent {
+  optional Authentication authentication = 1;
+}
+
+// num_failed_attempts only used for the "failure" AuthenticateEvent.
+message Authentication {
+  // This should follow the Cryptohome AuthFactorType.
+  // https://chromium.googlesource.com/chromiumos/platform2/+/main/cryptohome/auth_factor/auth_factor_type.h#13
+  enum AuthenticationType {
+    AUTH_TYPE_UNKNOWN = 0;
+    AUTH_PASSWORD = 1;
+    AUTH_PIN = 2;
+    AUTH_ONLINE_RECOVERY = 3;
+    AUTH_KIOSK = 4;
+    AUTH_SMART_CARD = 5;
+    AUTH_FINGERPRINT = 6;
+    AUTH_NEW_USER = 7;
+  }
+  repeated AuthenticationType auth_factor = 1 [packed = true];
+  optional uint64 num_failed_attempts = 2;
+}
+
+// File Events.
+enum SensitiveFileType {
+  SENSITIVE_FILE_TYPE_UNKNOWN = 0;
+  // The file resides on the read only rootfs.
+  ROOT_FS = 1;
+  // The file resides in the MyFiles subdirectory on the decrypted user file
+  // system.
+  USER_FILE = 2;
+  // The file is located on the Google Drive filesystem.
+  USER_GOOGLE_DRIVE_FILE = 3;
+  // The file is a web cookie.
+  USER_WEB_COOKIE = 4;
+  // The file is an encrypted user credential, also known as the user secret
+  // stash (USS).
+  USER_ENCRYPTED_CREDENTIAL = 5;
+  // This file is associated with a user password, it contains some data
+  // considered not sensitive but also contains the sealed HVKKM which is used
+  // in the process of decrypting the user data blob.
+  USER_AUTH_FACTORS_FILE = 6;
+  // Cache file for the current logged in user policy.
+  USER_POLICY = 7;
+  // Public key used to verify the signature of a user policy.
+  USER_POLICY_PUBLIC_KEY = 8;
+  // Cache file for device policy.
+  DEVICE_POLICY = 9;
+  // The public key used to verify the signature of a device policy.
+  DEVICE_POLICY_PUBLIC_KEY = 10;
+  // Unencrypted public TPM RSA Key used in conjunction with password material
+  // to generate the sealed hardware vault keyset key material(HVKKM) using the
+  // TPM. This process is performed once per lifetime of a password and this
+  // HVKKM is stored to disk. On login the sealed HVKKM is used in conjunection
+  // with an ephemeral low entropy password key material to generate the
+  // ephemeral vault keyset key (VKK). The VKK decrypts the sealed user secret
+  // stash (USS) which is used to decrypt the encrypted user data blob on user
+  // login.
+  SYSTEM_TPM_PUBLIC_KEY = 11;
+  // The file is located on device identified as USB mass storage.
+  USB_MASS_STORAGE = 12;
+  // System passwords (/etc/passwd). Contains the passwords for system logins.
+  // In ChromeOS system users are typically associated with system services
+  // and not individual human users.
+  SYSTEM_PASSWORDS = 13;
+  // Chrome File Extensions (/home/user/<hash>/Extensions). A good indicator
+  // that a chrome extension is being installed. Activity under
+  // /home/user/<hash>/Extension/Temp is ignored to reduce event spam.
+  CHROME_EXTENSIONS = 14;
+}
+
+message FileProvenance {
+  optional string referer_url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_REFERER_URL]
+      // copybara:datapol_end
+      ;                            // The URL that refers to the source url.
+  optional string source_url = 2;  // The URL that the file was downloaded from.
+}
+
+// File read.
+message FileRead {
+  optional SensitiveFileType sensitive_file_type = 1;
+  optional FileProvenance file_provenance = 2;
+  optional FileImage image = 3;
+}
+
+// File read event.
+message FileReadEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional FileRead file_read = 3;
+}
+
+// File modify, either a write, modify attribute or both.
+message FileModify {
+  enum ModifyType {
+    MODIFY_TYPE_UNKNOWN = 0;
+    MODIFY_ATTRIBUTE = 1;
+    WRITE = 2;
+    WRITE_AND_MODIFY_ATTRIBUTE = 3;
+  }
+  optional SensitiveFileType sensitive_file_type = 1;
+  optional FileProvenance file_provenance = 2;
+  // present only when
+  // modify_type=MODIFY_ATTRIBUTE or WRITE_AND_MODIFY_ATTRIBUTE.
+  // When present only mode, uid, gid are present.
+  optional FileImage attributes_before = 3;
+  optional FileImage image_after = 4;
+  optional ModifyType modify_type = 5;
+}
+
+// File modify event.
+message FileModifyEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional FileModify file_modify = 3;
+}
+
+// Singular File event.
+message FileEventAtomicVariant {
+  optional CommonEventVariantDataFields common = 1;
+  oneof variant_type {
+    FileReadEvent sensitive_read = 2;
+    FileModifyEvent sensitive_modify = 3;
+  }
+}
+
+// File Event Wrapper.
+message XdrFileEvent {
+  optional CommonEventDataFields common = 1;
+  repeated FileEventAtomicVariant batched_events = 2;
+}

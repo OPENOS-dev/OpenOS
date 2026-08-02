@@ -1,0 +1,104 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("//bazel/build_defs/generate_cargo_toml:workspace.bzl", "cargo_workspace_lock", "cargo_workspace_toml")
+load("//bazel/build_defs/generate_cargo_toml:workspace_metadata.bzl", "cargo_workspace")
+
+# The group of non-generated packages considered internal to Alchemy.
+# If you need to make a non-generated Alchemy target accessible from other
+# non-generated Alchemy targets, this is a good default. Of course it's even
+# better if you could use a smaller group though. Never use //visibility:public
+# in Alchemy targets to avoid unexpected dependencies.
+#
+# If you need to expose a non-generated Alchemy target to a generated target
+# you should instead add `@portage//:__subpacakges__`. This syntax is special
+# cased so that the non-generated targets won't depend on the @portage
+# repository.
+package_group(
+    name = "internal",
+    packages = [
+        "//bazel/...",
+        # The top-level package defining a few special targets.
+        "//",
+    ],
+)
+
+# This file is filled with a timestamp in tools/bazel on each bazel invocation.
+# Thus, depending on this file will ensure that your action always runs.
+filegroup(
+    name = "now",
+    srcs = [".now"],
+    visibility = ["//visibility:public"],
+)
+
+cargo_workspace(
+    name = "cargo_workspace",
+    testonly = True,
+    lockfile = "//bazel/rust/alchemy_crates:Cargo.lock",
+    manifest = "//bazel/rust/alchemy_crates:Cargo.toml",
+    members = [
+        "//bazel/portage/bin/action_wrapper:cargo_toml",
+        "//bazel/portage/bin/alchemist:cargo_toml",
+        "//bazel/portage/bin/build_image:cargo_toml",
+        "//bazel/portage/bin/build_package:cargo_toml",
+        "//bazel/portage/bin/build_sdk:cargo_toml",
+        "//bazel/portage/bin/create_interface_layer:cargo_toml",
+        "//bazel/portage/bin/drive_binary_package:cargo_toml",
+        "//bazel/portage/bin/extract_interface:cargo_toml",
+        "//bazel/portage/bin/extract_package:cargo_toml",
+        "//bazel/portage/bin/extract_package_from_manifest/extract:cargo_toml",
+        "//bazel/portage/bin/extract_package_from_manifest/package:cargo_toml",
+        "//bazel/portage/bin/extract_package_from_manifest/update_manifest:cargo_toml",
+        "//bazel/portage/bin/fast_install_packages:cargo_toml",
+        "//bazel/portage/bin/generate_reclient_inputs:cargo_toml",
+        "//bazel/portage/bin/overlayfs_mount_helper:cargo_toml",
+        "//bazel/portage/bin/run_in_container:cargo_toml",
+        "//bazel/portage/bin/sdk_from_archive:cargo_toml",
+        "//bazel/portage/bin/sdk_to_archive:cargo_toml",
+        "//bazel/portage/bin/sdk_install_glibc:cargo_toml",
+        "//bazel/portage/bin/sdk_update:cargo_toml",
+        "//bazel/portage/bin/xpaktool:cargo_toml",
+        "//bazel/portage/common/chrome_trace:cargo_toml",
+        "//bazel/portage/common/cliutil:cargo_toml",
+        "//bazel/portage/common/container:cargo_toml",
+        "//bazel/portage/common/durabletree:cargo_toml",
+        "//bazel/portage/common/durabletree_test:cargo_toml",
+        "//bazel/portage/common/extract_tarball:cargo_toml",
+        "//bazel/portage/common/fileutil:cargo_toml",
+        "//bazel/portage/common/portage/binarypackage:cargo_toml",
+        "//bazel/portage/common/portage/vdb:cargo_toml",
+        "//bazel/portage/common/portage/version:cargo_toml",
+        "//bazel/portage/common/processes:cargo_toml",
+        "//bazel/portage/common/run_in_container_lib:cargo_toml",
+        "//bazel/portage/common/testutil:cargo_toml",
+        "//bazel/portage/common/tracing_chrome_trace:cargo_toml",
+        "//bazel/portage/tools/process_artifacts:cargo_toml",
+        "//bazel/rust/examples:cargo_toml",
+        "//bazel/rust/runfiles:cargo_toml",
+        "//bazel/rust/ide_support:cargo_toml",
+    ],
+)
+
+cargo_workspace_toml(
+    name = "cargo_toml",
+    testonly = True,
+    workspace = ":cargo_workspace",
+)
+
+cargo_workspace_lock(
+    name = "cargo_lock",
+    testonly = True,
+    manifest = ":cargo_toml",
+    workspace = ":cargo_workspace",
+)
+
+write_source_files(
+    name = "generate_cargo_files",
+    testonly = True,
+    files = {
+        "Cargo.lock": ":cargo_lock",
+        "Cargo.toml": ":cargo_toml",
+    },
+)

@@ -1,0 +1,13 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+**/__pycache__
+*.pyc
+*egg-info
+.pytest_cache/
+.venv/
+build/
+dist/
+doloscmd/proto/*pb2*
+doloscmd/proto/*pyi*

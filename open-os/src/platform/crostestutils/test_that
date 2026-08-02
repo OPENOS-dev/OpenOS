@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+SCR="/mnt/host/source/src/third_party/autotest/files/site_utils/test_that.py"
+
+if [ ! -f $SCR ]; then
+    echo "You appear to have a minilayout checkout, without autotest and"
+    echo "test_that.py available in your source tree. Aborting."
+    exit 1
+fi
+
+trap : SIGTERM SIGINT
+
+ssh-agent $SCR "$@" &
+child_pid=$!
+wait $child_pid
+readonly cached_exit_status=$?
+
+if [[ $cached_exit_status -gt 128 ]]
+then
+    sudo kill $child_pid
+    wait $child_pid
+fi
+
+exit $cached_exit_status

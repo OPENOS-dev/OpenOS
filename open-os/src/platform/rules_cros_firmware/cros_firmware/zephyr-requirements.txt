@@ -1,0 +1,21 @@
+# TODO: Validate SHAs!
+# Required by cmsis
+colorama==0.4.6
+docopt==0.6.2
+packaging==23.0
+pyelftools==0.28
+pykwalify==1.8.0
+# FIXME: This is a binman dep, not a zephyr dep
+pylibfdt @ https://storage.googleapis.com/chromeos-localmirror/fwsdk/experimental/distfiles/pylibfdt-1.7.1-cp311-cp311-linux_x86_64.whl
+python-dateutil==2.8.2
+pyyaml==6.0
+ruamel.yaml.clib==0.2.7
+ruamel.yaml==0.17.21
+six==1.16.0
+swig==4.1.1
+
+# Twister
+psutil==5.9.5
+anytree==2.8.0
+ply==3.11
+natsort==8.3.1

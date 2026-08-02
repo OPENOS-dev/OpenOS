@@ -1,0 +1,233 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "crash-reporter/arc_java_collector.h"
+
+#include <ctime>
+#include <memory>
+#include <utility>
+
+#include <base/files/file.h>
+#include <base/files/file_util.h>
+#include <base/functional/bind.h>
+#include <base/logging.h>
+#include <base/memory/ref_counted.h>
+#include <base/memory/scoped_refptr.h>
+#include <base/time/time.h>
+#include <metrics/metrics_library.h>
+
+#include "crash-reporter/arc_util.h"
+#include "crash-reporter/crash_collection_status.h"
+#include "crash-reporter/crash_collector.h"
+#include "crash-reporter/crash_collector_names.h"
+#include "crash-reporter/crash_sending_mode.h"
+
+using base::File;
+using base::FilePath;
+
+ArcJavaCollector::ArcJavaCollector(
+    const scoped_refptr<
+        base::RefCountedData<std::unique_ptr<MetricsLibraryInterface>>>&
+        metrics_lib)
+    : CrashCollector(CrashReporterCollector::kArcJava,
+                     kAlwaysUseUserCrashDirectory,
+                     CrashSendingMode::kNormal,
+                     metrics_lib,
+                     GetNameForCollector(CrashReporterCollector::kArcJava)) {}
+
+CrashCollectionStatus ArcJavaCollector::HandleCrash(
+    const std::string& crash_type,
+    const arc_util::BuildProperty& build_property,
+    base::TimeDelta uptime) {
+  std::ostringstream message;
+  message << "Received " << crash_type << " notification";
+  received_crash_type_ = crash_type;
+
+  std::string contents;
+  if (!base::ReadStreamToString(stdin, &contents)) {
+    PLOG(ERROR) << "Failed to read crash log";
+    return CrashCollectionStatus::kFailureReadingJavaCrash;
+  }
+  if (contents.empty()) {
+    LOG(ERROR) << "crash log was empty";
+    return CrashCollectionStatus::kJavaCrashEmpty;
+  }
+
+  CrashLogHeaderMap map;
+  std::string exception_info, log;
+  if (!arc_util::ParseCrashLog(crash_type, contents, &map, &exception_info,
+                               &log)) {
+    LOG(ERROR) << "Failed to parse crash log";
+    return CrashCollectionStatus::kFailureParsingCrashLog;
+  }
+
+  const auto exec = arc_util::GetCrashLogHeader(map, arc_util::kProcessKey);
+  message << " for " << exec;
+  LogCrash(message.str(), "handling");
+
+  bool out_of_capacity = false;
+  CrashCollectionStatus status =
+      CreateReportForJavaCrash(crash_type, build_property, map, exception_info,
+                               log, uptime, &out_of_capacity);
+  if (!IsSuccessCode(status) && !out_of_capacity) {
+    EnqueueCollectionErrorLog(status, exec);
+  }
+  return status;
+}
+
+// The parameter |exec_name| is unused as we are computing the crash severity
+// based on the received_crash_type member variable.
+// Note: The logic to compute crash severity is taken from the source:
+// go/cros-stability-metrics#logic.
+CrashCollector::ComputedCrashSeverity ArcJavaCollector::ComputeSeverity(
+    const std::string& exec_name) {
+  CrashCollector::ComputedCrashSeverity computed_severity =
+      ComputedCrashSeverity{
+          .crash_severity = CrashSeverity::kUnspecified,
+          // The crash product_group is always `kArc`.
+          .product_group = Product::kArc,
+      };
+
+  if ((received_crash_type_ == arc_util::kSystemServerCrash) ||
+      (received_crash_type_ == arc_util::kSystemServerWatchdog)) {
+    computed_severity.crash_severity = CrashSeverity::kFatal;
+  } else if ((received_crash_type_ == arc_util::kSystemAppCrash) ||
+             (received_crash_type_ == arc_util::kSystemAppAnr) ||
+             (received_crash_type_ == arc_util::kNativeCrash)) {
+    computed_severity.crash_severity = CrashSeverity::kError;
+  } else if ((received_crash_type_ == arc_util::kDataAppAnr) ||
+             (received_crash_type_ == arc_util::kDataAppCrash) ||
+             (received_crash_type_ == arc_util::kDataAppNativeCrash)) {
+    computed_severity.crash_severity = CrashSeverity::kWarning;
+  } else if ((received_crash_type_ == arc_util::kSystemAppWtf) ||
+             (received_crash_type_ == arc_util::kSystemServerWtf)) {
+    computed_severity.crash_severity = CrashSeverity::kInfo;
+  }
+
+  return computed_severity;
+}
+
+std::string ArcJavaCollector::GetProductVersion() const {
+  return arc_util::GetProductVersion();
+}
+
+void ArcJavaCollector::AddArcMetaData(const std::string& process,
+                                      const std::string& crash_type,
+                                      base::TimeDelta uptime) {
+  for (const auto& metadata :
+       arc_util::ListBasicARCRelatedMetadata(process, crash_type)) {
+    AddCrashMetaUploadData(metadata.first, metadata.second);
+  }
+  AddCrashMetaUploadData(arc_util::kChromeOsVersionField, GetOsVersion());
+
+#if USE_ARCPP
+  if (uptime.is_zero()) {
+    SetUpDBus();
+    if (!arc_util::GetArcContainerUptime(session_manager_proxy_.get(),
+                                         &uptime)) {
+      uptime = base::TimeDelta();
+    }
+  }
+#endif  // USE_ARCPP
+  if (!uptime.is_zero()) {
+    AddCrashMetaUploadData(arc_util::kUptimeField,
+                           arc_util::FormatDuration(uptime));
+  }
+
+  if (arc_util::IsSilentReport(crash_type)) {
+    AddCrashMetaData(arc_util::kSilentKey, "true");
+  }
+}
+
+CrashCollectionStatus ArcJavaCollector::CreateReportForJavaCrash(
+    const std::string& crash_type,
+    const arc_util::BuildProperty& build_property,
+    const CrashLogHeaderMap& map,
+    const std::string& exception_info,
+    const std::string& log,
+    base::TimeDelta uptime,
+    bool* out_of_capacity) {
+  FilePath crash_dir;
+  CrashCollectionStatus status =
+      GetCreatedCrashDirectoryByEuid(geteuid(), &crash_dir, out_of_capacity);
+  if (!IsSuccessCode(status)) {
+    LOG(ERROR) << "Failed to create or find crash directory: " << status;
+    return status;
+  }
+
+  const auto process = arc_util::GetCrashLogHeader(map, arc_util::kProcessKey);
+  pid_t dt = arc_util::CreateRandomPID();
+  const auto basename = FormatDumpBasename(process, std::time(nullptr), dt);
+  const FilePath log_path = GetCrashPath(crash_dir, basename, "log");
+
+  const int size = static_cast<int>(log.size());
+  if (WriteNewFile(log_path, log) != size) {
+    PLOG(ERROR) << "Failed to write log";
+    return CrashCollectionStatus::kFailedLogFileWrite;
+  }
+
+  AddArcMetaData(process, crash_type, uptime);
+  for (auto metadata : arc_util::ListMetadataForBuildProperty(build_property)) {
+    AddCrashMetaUploadData(metadata.first, metadata.second);
+  }
+
+  for (const auto& mapping : arc_util::kHeaderToFieldMapping) {
+    if (map.count(mapping.first)) {
+      AddCrashMetaUploadData(mapping.second,
+                             arc_util::GetCrashLogHeader(map, mapping.first));
+    }
+  }
+
+  if (exception_info.empty()) {
+    if (const char* const tag = arc_util::GetSubjectTag(crash_type)) {
+      std::ostringstream out;
+      out << '[' << tag << ']';
+      const auto it = map.find(arc_util::kSubjectKey);
+      if (it != map.end()) {
+        out << ' ' << it->second;
+      }
+
+      AddCrashMetaData(arc_util::kSignatureField, out.str());
+    } else {
+      LOG(ERROR) << "Invalid crash type: " << crash_type;
+      return CrashCollectionStatus::kInvalidCrashType;
+    }
+  } else {
+    const FilePath info_path = GetCrashPath(crash_dir, basename, "info");
+    const int size = static_cast<int>(exception_info.size());
+
+    if (WriteNewFile(info_path, exception_info) != size) {
+      PLOG(ERROR) << "Failed to write exception info";
+      return CrashCollectionStatus::kFailedInfoFileWrite;
+    }
+
+    AddCrashMetaUploadText(arc_util::kExceptionInfoField,
+                           info_path.BaseName().value());
+  }
+
+  const FilePath meta_path = GetCrashPath(crash_dir, basename, "meta");
+  return FinishCrash(meta_path, process, log_path.BaseName().value());
+}
+
+// static
+CollectorInfo ArcJavaCollector::GetHandlerInfo(
+    const std::string& arc_java_crash,
+    const arc_util::BuildProperty& build_property,
+    int64_t uptime_millis,
+    const scoped_refptr<
+        base::RefCountedData<std::unique_ptr<MetricsLibraryInterface>>>&
+        metrics_lib) {
+  auto arc_java_collector = std::make_shared<ArcJavaCollector>(metrics_lib);
+  return {
+      .collector = arc_java_collector,
+      .handlers = {{
+          // This handles Java app crashes of ARC++ and ARCVM.
+          .should_handle = !arc_java_crash.empty(),
+          .cb = base::BindRepeating(&ArcJavaCollector::HandleCrash,
+                                    arc_java_collector, arc_java_crash,
+                                    build_property,
+                                    base::Milliseconds(uptime_millis)),
+      }},
+  };
+}

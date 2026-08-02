@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+
+# Crates that are arch-independent go here.
+members = [
+    "application",
+    "debug_logger",
+    "delayed_i2c",
+    "fake_i2c",
+    "fpga_app",
+    "gateware_compress",
+    "hm01b0",
+    "host_dev_common",
+    "hps_interface",
+    "hps-factory",
+    "hps-util",
+    "hps-mon",
+    "i2c_peripheral",
+    "i2c_protocol",
+    "libstage0",
+    "mcp2221",
+    "mcu_common",
+    "sign-rom",
+    "stm32_bootloader_client",
+    "unix_socket",
+]
+# Crates/workspaces that can't be compiled for Linux are listed here.
+exclude = [
+    "riscv",
+    "mcu",
+]
+
+# For release builds of host utilities, size is more of an issue than
+# performance.
+[profile.release.package."*"]
+opt-level = "s"
+codegen-units = 1
+
+[profile.release]
+lto = true
+opt-level = "s"

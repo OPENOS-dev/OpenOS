@@ -1,0 +1,56 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Install seccomp policy files by `install_config` and have a static check in
+# the compile stage.
+
+# Args:
+#   sources: A list of files to be installed and checked.
+#   install_path: An install destination path.
+#   install_compiled_bpf (optional): A boolean to install the compiled bpf
+#     instead of the original sources.
+
+template("install_seccomp_policy") {
+  _compile_seccomp_target = "_${target_name}-compile_seccomp"
+
+  action_foreach(_compile_seccomp_target) {
+    forward_variables_from(invoker, [ "sources" ])
+    script = "/usr/bin/compile_seccomp_policy"
+
+    # Since data is required under `/build/${BOARD}`, this compiler will be
+    # invoked in the compile stage instead of the pre-submit stage.
+
+    inputs = [ getenv("SYSROOT") + "/build/share/constants.json" ]
+
+    # We need the architecture-specific `constants.json` file that contains the
+    # mapping of syscall names to numbers.
+    # Ref: https://github.com/google/minijail/blob/HEAD/tools/README.md#compile_seccomp_policypy
+
+    outputs = [ "${target_gen_dir}/seccomp/{{source_name_part}}.bpf.policy" ]
+    args = [
+      "--arch-json",
+      inputs[0],
+      "{{source}}",
+      outputs[0],
+    ]
+  }
+
+  install_config(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "install_compiled_bpf",
+                             "install_path",
+                             "outputs",
+                             "sources",
+                           ])
+    if (!defined(install_compiled_bpf)) {
+      install_compiled_bpf = false
+    }
+    if (install_compiled_bpf) {
+      sources = []
+      sources = get_target_outputs(":${_compile_seccomp_target}")
+    }
+    deps = [ ":${_compile_seccomp_target}" ]
+  }
+}

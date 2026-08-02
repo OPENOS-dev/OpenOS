@@ -1,0 +1,37 @@
+From 637cbeaf49c64e9879dedcbfddb893c159ee4fd5 Mon Sep 17 00:00:00 2001
+From: Grace Cham <hscham@chromium.org>
+Date: Wed, 15 Jun 2022 23:23:05 +0900
+Subject: [PATCH] Remove ICU dependency for base::Time::Explode
+
+ICU dependency was introduced for Explode implementation to tackle Y2038
+problem but it signigicantly increases binary size. Removed as Y2038
+boards will be EOL by then.
+
+patch-name: long-term-0100-Remove-ICU-dependency-for-base-Time-Explode.patch
+Change-Id: I644b97c1c47481eb6ddff6b7b109d10e4ff27a82
+---
+ base/time/time_exploded_posix.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/base/time/time_exploded_posix.cc b/base/time/time_exploded_posix.cc
+index 8cc737611a..3cba1afd6b 100644
+--- a/base/time/time_exploded_posix.cc
++++ b/base/time/time_exploded_posix.cc
+@@ -126,12 +126,14 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
+ 
+   // For systems with a Y2038 problem, use ICU as the Explode() implementation.
+   if (sizeof(SysTime) < 8) {
++#if 0 // Not to introduce icu dependency for now. Y2038 boards will be EOL by then.
+ // TODO(b/167763382) Find an alternate solution for Chromecast devices, since
+ // adding the icui18n dep significantly increases the binary size.
+ #if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
+     ExplodeUsingIcu(millis_since_unix_epoch, is_local, exploded);
+     return;
+ #endif  // !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
++#endif
+   }
+ 
+   // Split the |millis_since_unix_epoch| into separate seconds and millisecond
+-- 
+2.42.0.582.g8ccd20d70d-goog
+

@@ -1,0 +1,130 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@org_tensorflow//tensorflow/lite:build_def.bzl", "tflite_cc_shared_object")
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+exports_files(["settings.json"])
+
+cc_library_with_tflite(
+    name = "neuron_implementation",
+    srcs = [
+        "neuron_implementation.cc",
+        "neuron_types.h",
+    ],
+    hdrs = [
+        "neuron_implementation.h",
+    ],
+    generate_opaque_delegate_target = True,
+    deps = [
+        "//common:minimal_logging",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "neuron_delegate",
+    srcs = [
+        "mtk/mtk_minimal_logging.h",
+        "mtk/mtk_utils.cc",
+        "mtk/mtk_utils.h",
+        "mtk/mtkext_ops.h",
+        "neuron_async_kernel.cc",
+        "neuron_async_kernel.h",
+        "neuron_delegate.cc",
+        "neuron_delegate_builder.h",
+        "neuron_delegate_kernel.cc",
+        "neuron_delegate_kernel.h",
+        "neuron_delegate_options.h",
+        "neuron_delegate_utils.h",
+        "neuron_delegate_validation.cc",
+        "neuron_delegate_validation.h",
+        "neuron_types.h",
+        "neuron_version.h",
+    ],
+    hdrs = [
+        "neuron_delegate.h",
+    ],
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:c_api_types",
+        "@org_tensorflow//tensorflow/lite/delegates/utils:simple_opaque_delegate",
+        "//common:simple_async_delegate",
+    ],
+    deps = [
+        ":neuron_implementation",
+        "//android:hardware_buffer",
+        "//common:minimal_logging",
+        "@farmhash_archive//:farmhash",
+        "@org_tensorflow//tensorflow/lite/async:backend_async_kernel_interface",
+        "@org_tensorflow//tensorflow/lite/async/c:async_kernel",
+        "@org_tensorflow//tensorflow/lite/async/c:types",
+        "@org_tensorflow//tensorflow/lite/async/interop/c:attribute_map",
+        "@org_tensorflow//tensorflow/lite/async/interop/c:types",
+        "@org_tensorflow//tensorflow/lite/core/async/c:async_kernel",
+        "@org_tensorflow//tensorflow/lite/core/async/c:task",
+        "@org_tensorflow//tensorflow/lite/core/async/interop/c:attribute_map",
+        "@org_tensorflow//tensorflow/lite/core/async/interop/c:constants",
+        "@org_tensorflow//tensorflow/lite/delegates/utils",
+        "@org_tensorflow//tensorflow/lite/delegates/utils:async_type_helpers",
+        "@org_tensorflow//tensorflow/lite/delegates/utils:ret_macros",
+        "@org_tensorflow//tensorflow/lite/delegates/utils:sync_fence",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "neuron_delegate_external",
+    srcs = [
+        "neuron_delegate_external.cc",
+    ],
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        ":neuron_delegate",
+        "//common:simple_async_delegate",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration/c:delegate_plugin",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration/c:stable_delegate",
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:stable_delegate_interface",
+    ],
+)
+
+tflite_cc_shared_object(
+    name = "tensorflowlite_mtk_neuron_delegate",
+    srcs = ["//android:libnativewindow.so"],
+    linkopts = [
+        "-Wl,--no-undefined",
+        # Expose necessary symbols only.
+        "-Wl,--version-script,$(location @org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:version_script.lds)",
+    ],
+    per_os_targets = True,
+    visibility = ["//:__pkg__"],
+    deps = [
+        ":neuron_delegate_external_opaque_delegate",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:version_script.lds",
+    ],
+)
+
+cc_binary(
+    name = "neuron_delegate_test",
+    testonly = True,
+    srcs = [
+        "neuron_delegate_test.cc",
+    ],
+    deps = [
+        "//common:simple_model_builder",
+        "//common:sync_driver",
+        "//common/test_util:aligned_tflite_buffer_allocator",
+        "//common/test_util:fp16_compare",
+        "@com_google_absl//absl/random",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/time",
+        "@com_google_googletest//:gtest",
+        "@org_tensorflow//tensorflow/lite:framework",
+        "@org_tensorflow//tensorflow/lite/delegates/utils/experimental/stable_delegate:delegate_loader",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)

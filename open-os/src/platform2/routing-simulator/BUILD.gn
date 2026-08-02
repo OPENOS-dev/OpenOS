@@ -1,0 +1,65 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("all") {
+  deps = [ ":routing-simulator" ]
+  if (use.test) {
+    deps += [ ":routing_simulator_testrunner" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  cflags = [ "-Wconversion" ]
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libnet-base",
+  ]
+}
+
+static_library("librouting-simulator") {
+  sources = [
+    "packet.cc",
+    "process_executor.cc",
+    "route.cc",
+    "route_manager.cc",
+    "routing_decision_result.cc",
+    "routing_policy_entry.cc",
+    "routing_table.cc",
+  ]
+  configs += [ ":target_defaults" ]
+}
+
+executable("routing-simulator") {
+  sources = [ "main.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "bin"
+  deps = [ ":librouting-simulator" ]
+}
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+  executable("routing_simulator_testrunner") {
+    run_test = true
+    sources = [
+      "mock_process_executor.cc",
+      "packet_test.cc",
+      "route_manager_test.cc",
+      "route_test.cc",
+      "routing_policy_entry_test.cc",
+      "routing_table_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      ":librouting-simulator",
+      "//common-mk/testrunner",
+    ]
+  }
+}
