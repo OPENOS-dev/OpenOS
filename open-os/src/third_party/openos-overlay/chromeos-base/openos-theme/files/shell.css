@@ -1,0 +1,171 @@
+/* NOTHING UI v1.0 — Open-OS System Shell
+ * Ash Desktop: Shelf (taskbar), Launcher, System Tray, Overview
+ * Dark-first, 4px grid, cyan accent, 32px density
+ */
+@import './tokens.css';
+
+/* ============================================================
+   Shelf / Taskbar
+   ============================================================ */
+#shelf,
+.shelf-container,
+#shelf-container {
+  background: var(--nothing-surface-2) !important;
+  border-top: 1px solid var(--nothing-border-subtle) !important;
+  height: 48px !important;
+  box-shadow: var(--nothing-shadow-2) !important;
+}
+
+.shelf-item,
+.shelf-button,
+.launcher-button,
+.app-list-icon {
+  border-radius: var(--nothing-radius-sm) !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin: 4px 2px !important;
+  transition: background 100ms ease !important;
+}
+
+.shelf-item:hover,
+.shelf-button:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.shelf-item.active,
+.app-active {
+  background: var(--nothing-accent-bg) !important;
+  border-bottom: 2px solid var(--nothing-accent) !important;
+}
+
+/* ============================================================
+   Launcher / App Grid
+   ============================================================ */
+#launcher,
+.launcher-container,
+.apps-grid-container {
+  background: var(--nothing-surface-2) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  box-shadow: var(--nothing-shadow-4) !important;
+}
+
+.launcher-search,
+.apps-grid-search {
+  background: var(--nothing-surface-3) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  height: 32px !important;
+}
+
+.launcher-search:focus-within {
+  border-color: var(--nothing-accent) !important;
+  background: var(--nothing-surface-3) !important;
+}
+
+.app-grid-item,
+.app-result-item {
+  border-radius: var(--nothing-radius-sm) !important;
+  padding: var(--nothing-space-2) !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+.app-grid-item:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* ============================================================
+   System Tray / Quick Settings
+   ============================================================ */
+#system-tray,
+.system-tray,
+.quick-settings {
+  background: var(--nothing-surface-4) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  box-shadow: var(--nothing-shadow-4) !important;
+}
+
+.system-tray-item,
+.tray-button {
+  color: var(--nothing-text-secondary) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+}
+
+.system-tray-item:hover {
+  background: rgba(255,255,255,0.04) !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+/* Quick settings slider (brightness/volume) */
+.slider,
+.settings-slider {
+  height: 4px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+}
+
+.slider-fill,
+.slider-active {
+  background: var(--nothing-accent) !important;
+}
+
+/* Toggle switch */
+.toggle-switch[active] {
+  background: var(--nothing-accent) !important;
+}
+
+/* ============================================================
+   Overview / Window Manager
+   ============================================================ */
+#overview,
+.overview-container,
+.window-cycle {
+  background: rgba(10,10,10,0.95) !important;
+}
+
+.overview-window,
+.window-preview {
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  box-shadow: var(--nothing-shadow-3) !important;
+}
+
+/* ============================================================
+   Status Area
+   ============================================================ */
+#status-area,
+.status-area {
+  color: var(--nothing-text-secondary) !important;
+  font-size: 12px !important;
+  font-family: var(--nothing-font-ui) !important;
+}
+
+.clock,
+.status-area-clock {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+/* ============================================================
+   Notifications
+   ============================================================ */
+.notification,
+.message-center-notification {
+  background: var(--nothing-surface-3) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  box-shadow: var(--nothing-shadow-3) !important;
+  margin: var(--nothing-space-2) !important;
+}
+
+.notification-title {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+.notification-body {
+  font-size: 12px !important;
+  color: var(--nothing-text-secondary) !important;
+}

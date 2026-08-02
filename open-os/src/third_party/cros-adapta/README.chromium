@@ -1,0 +1,57 @@
+Name: adapta crostini theme
+Short Name: cros-adapta
+URL: https://chromium.googlesource.com/chromiumos/third_party/cros-adapta
+Version: 0.0.1
+License: GPLv2.0, CC-SA-4.0
+License File: LICENSE.adapta_styles, LICENSE.adapta_icons
+Security Critical: no
+
+Description:
+This contains themes compatible with Gtk2, Gtk3, Gtk+ for styling
+UI elements from Crostini to match Chrome OS defaults.
+
+It is a fork of the Adapta-gtk-theme (https://github.com/adapta-project/adapta-gtk-theme).
+
+Adapta's styling is licensed under GPLv2.0 and Adapta's SVG icons used from Adapta are licensed under CC-SA-4.0
+
+Instructions for generating the initial checkin to this repository from the Adapta source code:
+
+- Install Adapta Dependencies
+
+* autoconf
+* automake
+* inkscape                                  >= 0.91
+* libgdk-pixbuf2.0-dev (gdk-pixbuf2-devel)  >= 2.32.2
+* libglib2.0-dev (glib2-devel)              >= 2.48.0
+* libsass0 (libsass)                        >= 3.3
+* libxml2-utils (libxml2)
+* pkg-config (pkgconfig)
+* sassc                                     >= 3.3
+
+- Build Adapta
+
+./autogen.sh
+make
+
+- Install Adapta (installs files to /usr/share/themes/Adapta)
+make install
+
+- Extract Adapta files into the current directory.
+  - The output forms the initial checkin of this repository
+  - Install libglib2.0-dev
+  - Copy theme files from "/usr/share/themes/Adapta/*" to "./"
+    - For each gtk version that uses a gtk.gresource file run:
+
+DEST="./"
+ROOT="/org/adapta-project/"
+SOURCE="/usr/share/themes/Adapta/gtk-$VERSION/gtk.gresource"
+
+LIST=( $(gresource list $SOURCE) )
+
+for (( i=0; i<${#LIST[@]}; i++ ));
+do
+  FILE="${LIST[i]}"
+  NEW_FILE=$(echo "$FILE" | sed 's#'$ROOT'#'$DEST'#')
+  mkdir -p "$(dirname $NEW_FILE)"
+  gresource extract "$SOURCE" "$FILE" > "$NEW_FILE"
+done

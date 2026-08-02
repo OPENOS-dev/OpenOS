@@ -1,0 +1,28 @@
+# Description
+# This test makes sure that power_VideoEncode is working fine while optionally
+# force discharge.
+#
+# "FDO" is short for "force discharge optional." Test will use EC command to
+# force DUT to discharge. If it fails, then use AC as the power source.
+
+NAME = "power_VideoEncode.FDO_fast"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+}
+# ATTRIBUTES = ("suite:power_daily_video_encode, group:release-health, release-health_power")
+TEST_TYPE = "client"
+
+formats = [
+    ('h264', 'hd', 24),
+    ('vp9', 'hvga', 24),
+    ('vp8', 'qhvga', 15),
+]
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_VideoEncode', tag=NAME.split('.')[1], seconds_per_test=30,
+             seconds_period=5, format=formats, pdash_note=pdash_note,
+             force_discharge='optional')

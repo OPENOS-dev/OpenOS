@@ -1,0 +1,67 @@
+This directory contains a copy of the installed kernel headers
+required by the iHD driver to communicate with the kernel.
+Whenever driver needs new definitions for new kernel
+APIs, these files should be updated.
+
+These files in master should only be updated once the changes have landed
+in the drm-next tree (see https://cgit.freedesktop.org/drm/drm/).
+
+You can copy files installed after running this from the kernel
+repository, at version the driver require:
+
+$ make headers_install INSTALL_HDR_PATH=/path/to/install
+
+The last update was done at the following kernel commit:
+
+commit 81b1b599dfd71c958418dad586fa72c8d30d1065
+Author: Fei Yang <fei.yang@intel.com>
+Date:   Tue Jun 6 12:00:42 2023 +0200
+
+    drm/i915: Allow user to set cache at BO creation
+
+    To comply with the design that buffer objects shall have immutable
+    cache setting through out their life cycle, {set, get}_caching ioctl's
+    are no longer supported from MTL onward. With that change caching
+    policy can only be set at object creation time. The current code
+    applies a default (platform dependent) cache setting for all objects.
+    However this is not optimal for performance tuning. The patch extends
+    the existing gem_create uAPI to let user set PAT index for the object
+    at creation time.
+    The new extension is platform independent, so UMD's can switch to using
+    this extension for older platforms as well, while {set, get}_caching are
+    still supported on these legacy paltforms for compatibility reason.
+    However, since PAT index was not clearly defined for platforms prior to
+    GEN12 (TGL), so we are limiting this externsion to GEN12+ platforms
+    only. See ext_set_pat() in for the implementation details.
+
+    The documentation related to the PAT/MOCS tables is currently available
+    for Tiger Lake here:
+    https://www.intel.com/content/www/us/en/docs/graphics-for-linux/developer-reference/1-0/tiger-lake.html
+
+    The documentation for other platforms is currently being updated.
+
+    BSpec: 45101
+
+    Mesa support has been submitted in this merge request:
+    https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/22878
+
+    The media driver supprt has bin submitted in this merge request:
+    https://github.com/intel/media-driver/pull/1680
+
+    The IGT test related to this change is
+    igt@gem_create@create-ext-set-pat
+
+    Signed-off-by: Fei Yang <fei.yang@intel.com>
+    Cc: Chris Wilson <chris.p.wilson@linux.intel.com>
+    Cc: Matt Roper <matthew.d.roper@intel.com>
+    Cc: Andi Shyti <andi.shyti@linux.intel.com>
+    Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+    Acked-by: Jordan Justen <jordan.l.justen@intel.com>
+    Tested-by: Jordan Justen <jordan.l.justen@intel.com>
+    Acked-by: Carl Zhang <carl.zhang@intel.com>
+    Tested-by: Lihao Gu <lihao.gu@intel.com>
+    Signed-off-by: Andi Shyti <andi.shyti@linux.intel.com>
+    Acked-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+    Acked-by: Slawomir Milczarek <slawomir.milczarek@intel.com>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20230606100042.482345-2-andi.shyti@linux.intel.com
+

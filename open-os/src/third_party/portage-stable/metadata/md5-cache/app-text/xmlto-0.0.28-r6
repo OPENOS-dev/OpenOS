@@ -1,0 +1,14 @@
+BDEPEND=>=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure prepare
+DEPEND=app-text/docbook-xsl-stylesheets app-text/docbook-xml-dtd:4.2 dev-libs/libxslt || ( sys-apps/util-linux app-misc/getopt ) text? ( || ( virtual/w3m www-client/elinks www-client/links www-client/lynx ) ) latex? ( dev-texlive/texlive-formatsextra )
+DESCRIPTION=Script for converting XML and DocBook documents to a variety of output formats
+EAPI=7
+HOMEPAGE=https://pagure.io/xmlto
+IUSE=latex text
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=app-text/docbook-xsl-stylesheets app-text/docbook-xml-dtd:4.2 dev-libs/libxslt || ( sys-apps/util-linux app-misc/getopt ) text? ( || ( virtual/w3m www-client/elinks www-client/links www-client/lynx ) ) latex? ( dev-texlive/texlive-formatsextra )
+SLOT=0
+SRC_URI=https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	libtool	f143db5a74ccd9ca28c1234deffede96	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=9d81d47ff73d6eeb15743dc7952b5878

@@ -1,0 +1,39 @@
+From 415fdd4279b85eeec9d54775ce13c5c412451e08 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tomhughes@chromium.org>
+Date: Thu, 13 Mar 2025 11:04:32 -0700
+Subject: [PATCH] Disable linker warning that uses stabs
+
+llvm does not support stabs debug format
+
+<inline asm>:1:8: error: unsupported directive '.stabs'
+    1 | .stabs "_chown is not implemented and will always fail",30,0,0,0
+
+BUG=b:254674977
+---
+ libgloss/libnosys/warning.h | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/libgloss/libnosys/warning.h b/libgloss/libnosys/warning.h
+index 9232a9244..b746bb25f 100644
+--- a/libgloss/libnosys/warning.h
++++ b/libgloss/libnosys/warning.h
+@@ -26,9 +26,15 @@
+ 
+ #else /* !ELF */
+ 
+-#  define link_warning(symbol, msg)             \
++#  if defined(__clang__)
++     /* clang doesn't support stabs debug format. */
++#    define link_warning(symbol, msg)
++#  else
++#    define link_warning(symbol, msg)             \
+   asm(".stabs \"" msg "\",30,0,0,0\n"   \
+       ".stabs \"" __SYMBOL_PREFIX #symbol "\",1,0,0,0\n");
++#  endif
++
+ # endif
+ #else /* !GNULD */
+ /* We will never be heard; they will all die horribly.  */
+-- 
+2.49.0.rc1.451.g8f38331e32-goog
+

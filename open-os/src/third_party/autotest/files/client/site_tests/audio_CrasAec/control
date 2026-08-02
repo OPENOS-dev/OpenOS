@@ -1,0 +1,22 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'audio_CrasAec'
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "Check if the echo cancellation works good under various recording formats."
+}
+
+# ATTRIBUTES = 'suite:audio'
+TEST_TYPE = 'client'
+
+'''
+Test echo cancellation function using the post DSP delayed loopback device
+in CRAS. Since the loopback content is expected to be the same as the fixed
+playback human voice, the processed recording is expected to have very low
+average rms value.
+'''
+
+job.run_test('audio_CrasAec')

@@ -1,0 +1,19 @@
+# proto-file: chromiumos/build/api/subtools.proto
+# proto-message: chromiumos.build.api.SubtoolPackage
+
+name: "ti50-sdk"
+type: EXPORT_GCS
+gcs_export_options: {
+  bucket: "chromiumos-sdk"
+  prefix: "toolchains"
+  archive_format: ARCHIVE_FORMAT_TAR_ZST
+}
+max_files: 5000
+symlink_mode: SYMLINK_PRESERVE
+
+paths: {
+  input: "/opt/ti50-sdk/**"
+  dest: "/"
+  strip_prefix_regex: "^/opt/ti50-sdk/"
+  ebuild_filter: "dev-embedded/ti50-sdk"
+}

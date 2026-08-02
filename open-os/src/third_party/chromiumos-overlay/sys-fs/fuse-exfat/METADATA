@@ -1,0 +1,15 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Metadata information for which CVEs do not affect ChromeOS or have been
+# patched in and the associated bug component.
+#
+# For more information, see:
+#     http://go/third-party-package-remediation-playbook#special-case-back-ported-patches
+third_party {
+  security {
+    # ChromeOS > Software > Files
+    tag: "vuln_reporting:buganizer_component:167289"
+  }
+}

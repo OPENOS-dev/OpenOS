@@ -1,0 +1,73 @@
+From: Piotr Pawliczek <pawliczek@chromium.org>
+
+The function load_plugin_library() is only used in hplip when the
+plugin lj.so is required. In ChromeOS, this plugin is loaded via DLC to
+a directory somewhere under /run/imageloader. The exact directory where
+the plugin is located is passed in the PPD file. This patch extends the
+function load_plugin_library() to load the plugin lj.so from the path
+provided in the PPD file. If the PPD file does not contain the location
+of the plugin, the function fails.
+
+--- a/common/utils.c
++++ b/common/utils.c
+@@ -11,6 +11,8 @@
+ 
+ extern int errno;
+ 
++const char* kHplipPluginPath = NULL;
++
+ unsigned char IsChromeOs(void)
+ {
+   int file_size=0,i=0;
+@@ -218,8 +220,13 @@ void *load_plugin_library (enum UTILS_PLUGIN_LIBRARY_TYPE eLibraryType, const ch
+     if (eLibraryType == UTILS_PRINT_PLUGIN_LIBRARY){
+         if(!isChrome)
+           snprintf(szLibraryFile, sizeof(szLibraryFile), "%s/prnt/plugins/%s", szHome, szPluginName);
+-        else   
+-          snprintf(szLibraryFile, sizeof(szLibraryFile), "%s/filter/%s", szHome, szPluginName);
++        else if (kHplipPluginPath)
++          snprintf(szLibraryFile, sizeof(szLibraryFile), "%s/%s", kHplipPluginPath, szPluginName);
++        else
++        {
++          BUG("Hplip plugin is not loaded\n");
++          return NULL;
++        }
+     }
+     else if (eLibraryType == UTILS_SCAN_PLUGIN_LIBRARY)
+         snprintf(szLibraryFile, sizeof(szLibraryFile), "%s/scan/plugins/%s", szHome, szPluginName);
+@@ -231,6 +238,7 @@ void *load_plugin_library (enum UTILS_PLUGIN_LIBRARY_TYPE eLibraryType, const ch
+         return pHandler;
+     }
+ 
++    szLibraryFile[sizeof(szLibraryFile)-1] = '\0';
+     return load_library (szLibraryFile);
+     
+ }
+--- a/common/utils.h
++++ b/common/utils.h
+@@ -58,6 +58,8 @@ enum UTILS_PLUGIN_LIBRARY_TYPE
+ extern "C" {
+ #endif
+    
++    extern const char* kHplipPluginPath;
++
+     /*
+      * get_conf - get key value from hplip.conf
+      *
+--- a/prnt/hpcups/HPCupsFilter.cpp
++++ b/prnt/hpcups/HPCupsFilter.cpp
+@@ -558,6 +558,14 @@ int HPCupsFilter::StartPrintJob(int  argc, char *argv[])
+         return SYSTEM_ERROR;
+     }
+ 
++    // Read the attribute with the path to hplip-plugin. It is set only if the
++    // plugin is required.
++    ppd_attr_t *attr = ppdFindAttr(m_ppd, "chromeOSHplipPluginPath", NULL);
++    if (attr != NULL && attr->value != NULL)
++    {
++        kHplipPluginPath = attr->value;
++    }
++
+     m_argv = argv;
+     if (m_iLogLevel & BASIC_LOG) {
+         for (int i = 0; i < argc; i++) {

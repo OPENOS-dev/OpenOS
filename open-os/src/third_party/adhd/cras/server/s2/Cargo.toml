@@ -1,0 +1,20 @@
+[package]
+name = "cras_s2"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+audio_processor = { workspace = true }
+cras_common = { workspace = true }
+cras_ini = { workspace = true }
+cras_feature_tier = { workspace = true }
+
+anyhow = { workspace = true }
+libc = { workspace = true }
+log = { workspace = true }
+once_cell = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+zerocopy = { workspace = true }

@@ -1,0 +1,501 @@
+{
+  "version": 1,
+  "tests": [
+    {
+      "name": "meet-basic-2",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_two",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "meet-basic-2-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_lacros_two",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "meet-basic-small",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_small",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "meet-basic-small-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_lacros_small",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "meet-basic-large",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_large",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "meet-basic-large-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_lacros_large",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "meet-basic-class",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_class",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "meet-basic-class-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.basic_lacros_class",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "meet-plus-large",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.plus_large",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "meet-plus-large-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.plus_lacros_large",
+      "attributes": ["plus", "lacros"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "meet-plus-class",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.plus_class",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "meet-plus-class-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.plus_lacros_class",
+      "attributes": ["plus", "lacros"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "meet-premium-large",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.premium_large",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "meet-premium-large-lacros",
+      "tool": "tast",
+      "test_expr": "ui.GoogleMeetCUJ.premium_lacros_large",
+      "attributes": ["premium", "lacros"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "tabswitch-basic-noproxy",
+      "tool": "tast",
+      "test_expr": "ui.TabSwitchCUJ2.basic_noproxy",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "tabswitch-basic-noproxy-lacros",
+      "tool": "tast",
+      "test_expr": "ui.TabSwitchCUJ2.basic_lacros_noproxy",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "tabswitch-plus-noproxy",
+      "tool": "tast",
+      "test_expr": "ui.TabSwitchCUJ2.plus_noproxy",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "tabswitch-plus-noproxy-lacros",
+      "tool": "tast",
+      "test_expr": "ui.TabSwitchCUJ2.plus_lacros_noproxy",
+      "attributes": ["plus", "lacros"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "tabswitch-premium-noproxy",
+      "tool": "tast",
+      "test_expr": "ui.TabSwitchCUJ2.premium_noproxy",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "tabswitch-premium-noproxy-lacros",
+      "tool": "tast",
+      "test_expr": "ui.TabSwitchCUJ2.premium_lacros_noproxy",
+      "attributes": ["premium", "lacros"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "quick-check-unlock",
+      "tool": "tast",
+      "test_expr": "ui.QuickCheckCUJ2.basic_unlock",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "quick-check-unlock-lacros",
+      "tool": "tast",
+      "test_expr": "ui.QuickCheckCUJ2.basic_lacros_unlock",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "quick-check-wakeup",
+      "tool": "tast",
+      "test_expr": "ui.QuickCheckCUJ2.basic_wakeup",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "quick-check-wakeup-lacros",
+      "tool": "tast",
+      "test_expr": "ui.QuickCheckCUJ2.basic_lacros_wakeup",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "video-basic-youtube-web",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.basic_youtube_web",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "video-basic-youtube-web-lacros",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.basic_lacros_youtube_web",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "video-premium-youtube-web",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.premium_youtube_web",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "video-premium-youtube-web-lacros",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.premium_lacros_youtube_web",
+      "attributes": ["premium", "lacros"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "video-basic-youtube-app",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.basic_youtube_app",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "video-basic-youtube-app-lacros",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.basic_lacros_youtube_app",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "video-premium-youtube-app",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.premium_youtube_app",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "video-premium-youtube-app-lacros",
+      "tool": "tast",
+      "test_expr": "ui.VideoCUJ2.premium_lacros_youtube_app",
+      "attributes": ["premium", "lacros"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "everyday-basic-ytmusic",
+      "tool": "tast",
+      "test_expr": "ui.EverydayMultiTaskingCUJ.basic_ytmusic",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "everyday-basic-ytmusic-lacros",
+      "tool": "tast",
+      "test_expr": "ui.EverydayMultiTaskingCUJ.basic_lacros_ytmusic",
+      "attributes": ["basic", "lacros"]
+    },
+    {
+      "name": "everyday-plus-ytmusic",
+      "tool": "tast",
+      "test_expr": "ui.EverydayMultiTaskingCUJ.plus_ytmusic",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "everyday-plus-ytmusic-lacros",
+      "tool": "tast",
+      "test_expr": "ui.EverydayMultiTaskingCUJ.plus_lacros_ytmusic",
+      "attributes": ["plus", "lacros"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "extended-display-meet",
+      "tool": "tast",
+      "test_expr": "ui.ExtendedDisplayCUJ.premium_meet_large",
+      "attributes": ["premium"],
+      "deps": ["external_display", "premium"]
+    },
+    {
+      "name": "extended-display-meet-lacros",
+      "tool": "tast",
+      "test_expr": "ui.ExtendedDisplayCUJ.premium_lacros_meet_large",
+      "attributes": ["premium", "lacros"],
+      "deps": ["external_display", "premium"]
+    },
+    {
+      "name": "extended-display-video",
+      "tool": "tast",
+      "test_expr": "ui.ExtendedDisplayCUJ.plus_video_youtube_web",
+      "attributes": ["plus"],
+      "deps": ["external_display", "plus"]
+    },
+    {
+      "name": "extended-display-video-lacros",
+      "tool": "tast",
+      "test_expr": "ui.ExtendedDisplayCUJ.plus_lacros_video_youtube_web",
+      "attributes": ["plus", "lacros"],
+      "deps": ["external_display", "plus"]
+    },
+    {
+      "name": "zoom-basic-two",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.basic_two",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "zoom-basic-small",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.basic_small",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "zoom-basic-large",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.basic_large",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "zoom-basic-class",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.basic_class",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "zoom-plus-large",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.plus_large",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "zoom-plus-class",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.plus_class",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "zoom-premium-large",
+      "tool": "tast",
+      "test_expr": "ui.ZoomConfCUJ.premium_large",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "gdocs-basic",
+      "tool": "tast",
+      "test_expr": "ui.GoogleDocsWebCUJ.basic",
+      "attributes": ["basic"]
+    },
+    {
+      "name": "gdocs-premium",
+      "tool": "tast",
+      "test_expr": "ui.GoogleDocsWebCUJ.premium",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "msoffice-plus",
+      "tool": "tast",
+      "test_expr": "ui.MicrosoftOfficeWebCUJ.plus",
+      "attributes": ["plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "msoffice-premium",
+      "tool": "tast",
+      "test_expr": "ui.MicrosoftOfficeWebCUJ.premium",
+      "attributes": ["premium"],
+      "deps": ["premium"]
+    },
+    {
+      "name": "gaming-proxy-basic",
+      "tool": "tast",
+      "test_expr": "spera.GamingProxyCUJ.basic_h264_1080p_60fps",
+      "attributes": ["gaming", "basic"]
+    },
+    {
+      "name": "gaming-proxy-basic-lacros",
+      "tool": "tast",
+      "test_expr": "spera.GamingProxyCUJ.basic_lacros_h264_1080p_60fps",
+      "attributes": ["gaming", "basic", "lacros"]
+    },
+    {
+      "name": "gaming-proxy-plus-h264",
+      "tool": "tast",
+      "test_expr": "spera.GamingProxyCUJ.plus_h264_4k_60fps",
+      "attributes": ["gaming", "plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "gaming-proxy-plus-h264-lacros",
+      "tool": "tast",
+      "test_expr": "spera.GamingProxyCUJ.plus_lacros_h264_4k_60fps",
+      "attributes": ["gaming", "plus", "lacros"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "gaming-proxy-plus-av1",
+      "tool": "tast",
+      "test_expr": "spera.GamingProxyCUJ.plus_av1_4k_60fps",
+      "attributes": ["gaming", "plus"],
+      "deps": ["plus"]
+    },
+    {
+      "name": "gaming-proxy-plus-av1-lacros",
+      "tool": "tast",
+      "test_expr": "spera.GamingProxyCUJ.plus_lacros_av1_4k_60fps",
+      "attributes": ["gaming", "plus", "lacros"],
+      "deps": ["plus"]
+    }
+  ],
+  "suites": [
+    {
+      "name": "performance_cuj_experimental",
+      "args_file": "perf_cuj.config",
+      "tests": [
+        {"test": "meet-basic-2", "repeats": 1},
+        {"test": "meet-basic-small", "repeats": 1},
+        {"test": "meet-basic-large", "repeats": 1},
+        {"test": "meet-basic-class", "repeats": 1},
+        {"test": "meet-plus-large", "repeats": 1},
+        {"test": "meet-plus-class", "repeats": 1},
+        {"test": "meet-premium-large", "repeats": 1},
+        {"test": "tabswitch-basic-noproxy", "repeats": 1},
+        {"test": "tabswitch-plus-noproxy", "repeats": 1},
+        {"test": "tabswitch-premium-noproxy", "repeats": 1},
+        {"test": "quick-check-unlock", "repeats": 1},
+        {"test": "quick-check-wakeup", "repeats": 1},
+        {"test": "video-basic-youtube-web", "repeats": 1},
+        {"test": "video-premium-youtube-web", "repeats": 1},
+        {"test": "video-basic-youtube-app", "repeats": 1},
+        {"test": "video-premium-youtube-app", "repeats": 1},
+        {"test": "everyday-basic-ytmusic", "repeats": 1},
+        {"test": "everyday-plus-ytmusic", "repeats": 1},
+        {"test": "extended-display-meet", "repeats": 1},
+        {"test": "extended-display-video", "repeats":1},
+        {"test": "zoom-basic-two", "repeats": 1},
+        {"test": "zoom-basic-small", "repeats": 1},
+        {"test": "zoom-basic-large", "repeats": 1},
+        {"test": "zoom-basic-class", "repeats": 1},
+        {"test": "zoom-plus-large", "repeats": 1},
+        {"test": "zoom-plus-class", "repeats": 1},
+        {"test": "zoom-premium-large", "repeats": 1},
+        {"test": "gdocs-basic", "repeats": 1},
+        {"test": "gdocs-premium", "repeats": 1},
+        {"test": "msoffice-plus", "repeats": 1},
+        {"test": "msoffice-premium", "repeats": 1}
+      ]
+    },
+    {
+      "name": "performance_cuj_quick",
+      "args_file": "perf_cuj.config",
+      "tests": [
+        {"test": "meet-basic-2", "repeats": 1},
+        {"test": "meet-plus-large", "repeats": 1},
+        {"test": "meet-premium-large", "repeats": 1},
+        {"test": "tabswitch-basic-noproxy", "repeats": 1},
+        {"test": "quick-check-unlock", "repeats": 1},
+        {"test": "quick-check-wakeup", "repeats": 1},
+        {"test": "video-basic-youtube-web", "repeats": 1},
+        {"test": "video-basic-youtube-app", "repeats": 1},
+        {"test": "everyday-basic-ytmusic", "repeats": 1},
+        {"test": "extended-display-meet", "repeats": 1}
+      ]
+    },
+    {
+      "name": "performance_cuj",
+      "args_file": "perf_cuj.config",
+      "tests": [
+        {"test": "meet-basic-2", "repeats": 10},
+        {"test": "meet-basic-small", "repeats": 10},
+        {"test": "meet-basic-large", "repeats": 10},
+        {"test": "meet-basic-class", "repeats": 10},
+        {"test": "meet-plus-large", "repeats": 10},
+        {"test": "meet-plus-class", "repeats": 10},
+        {"test": "meet-premium-large", "repeats": 10},
+        {"test": "tabswitch-basic-noproxy", "repeats": 10},
+        {"test": "tabswitch-plus-noproxy", "repeats": 10},
+        {"test": "tabswitch-premium-noproxy", "repeats": 10},
+        {"test": "quick-check-unlock", "repeats": 10},
+        {"test": "quick-check-wakeup", "repeats": 10},
+        {"test": "video-basic-youtube-web", "repeats": 10},
+        {"test": "video-premium-youtube-web", "repeats": 10},
+        {"test": "video-basic-youtube-app", "repeats": 10},
+        {"test": "video-premium-youtube-app", "repeats": 10},
+        {"test": "everyday-basic-ytmusic", "repeats": 10},
+        {"test": "everyday-plus-ytmusic", "repeats": 10},
+        {"test": "extended-display-meet", "repeats": 10}
+      ]
+    },
+    {
+      "name": "performance_cuj_lacros",
+      "args_file": "perf_cuj.config",
+      "tests": [
+        {"test": "meet-basic-2-lacros", "repeats": 10},
+        {"test": "meet-basic-small-lacros", "repeats": 10},
+        {"test": "meet-basic-large-lacros", "repeats": 10},
+        {"test": "meet-basic-class-lacros", "repeats": 10},
+        {"test": "meet-plus-large-lacros", "repeats": 10},
+        {"test": "meet-plus-class-lacros", "repeats": 10},
+        {"test": "meet-premium-large-lacros", "repeats": 10},
+        {"test": "tabswitch-basic-noproxy-lacros", "repeats": 10},
+        {"test": "tabswitch-plus-noproxy-lacros", "repeats": 10},
+        {"test": "tabswitch-premium-noproxy-lacros", "repeats": 10},
+        {"test": "quick-check-unlock-lacros", "repeats": 10},
+        {"test": "quick-check-wakeup-lacros", "repeats": 10},
+        {"test": "video-basic-youtube-web-lacros", "repeats": 10},
+        {"test": "video-premium-youtube-web-lacros", "repeats": 10},
+        {"test": "video-basic-youtube-app-lacros", "repeats": 10},
+        {"test": "video-premium-youtube-app-lacros", "repeats": 10},
+        {"test": "everyday-basic-ytmusic-lacros", "repeats": 10},
+        {"test": "everyday-plus-ytmusic-lacros", "repeats": 10},
+        {"test": "extended-display-meet-lacros", "repeats": 10},
+        {"test": "extended-display-video-lacros", "repeats": 10}
+      ]
+    },
+    {
+      "name": "performance_cuj_gaming",
+      "args_file": "perf_cuj.config",
+      "tests": [
+        {"test": "gaming-proxy-basic", "repeats": 2},
+        {"test": "gaming-proxy-plus-h264", "repeats": 2},
+        {"test": "gaming-proxy-plus-av1", "repeats": 2}
+      ]
+    },
+    {
+      "name": "performance_cuj_gaming_lacros",
+      "args_file": "perf_cuj.config",
+      "tests": [
+        {"test": "gaming-proxy-basic-lacros", "repeats": 2},
+        {"test": "gaming-proxy-plus-h264-lacros", "repeats": 2},
+        {"test": "gaming-proxy-plus-av1-lacros", "repeats": 2}
+      ]
+    }
+  ]
+}

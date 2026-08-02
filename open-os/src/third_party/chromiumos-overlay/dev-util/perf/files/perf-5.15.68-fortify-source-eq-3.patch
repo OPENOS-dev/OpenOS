@@ -1,0 +1,51 @@
+CrOS uses _FORTIFY_SOURCE=3 as the default. This conflicts with perf's intended
+default of 2. Use the stronger version.
+
+diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+index 69a43d9..497e498 100644
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -90,7 +90,7 @@ __BUILDXX = $(CXX) $(CXXFLAGS) -MD -Wall -Werror -o $@ $(patsubst %.bin,%.cpp,$(
+ ###############################
+ 
+ $(OUTPUT)test-all.bin:
+-	$(BUILD) -fstack-protector-all -O2 -D_FORTIFY_SOURCE=2 -ldw -lelf -lnuma -lelf -I/usr/include/slang -lslang $(FLAGS_PERL_EMBED) $(FLAGS_PYTHON_EMBED) -DPACKAGE='"perf"' -lbfd -ldl -lz -llzma -lzstd -lcap
++	$(BUILD) -fstack-protector-all -O2 -D_FORTIFY_SOURCE=3 -ldw -lelf -lnuma -lelf -I/usr/include/slang -lslang $(FLAGS_PERL_EMBED) $(FLAGS_PYTHON_EMBED) -DPACKAGE='"perf"' -lbfd -ldl -lz -llzma -lzstd -lcap
+ 
+ $(OUTPUT)test-hello.bin:
+ 	$(BUILD)
+@@ -105,7 +105,7 @@ $(OUTPUT)test-stackprotector-all.bin:
+ 	$(BUILD) -fstack-protector-all
+ 
+ $(OUTPUT)test-fortify-source.bin:
+-	$(BUILD) -O2 -D_FORTIFY_SOURCE=2
++	$(BUILD) -O2 -D_FORTIFY_SOURCE=3
+ 
+ $(OUTPUT)test-bionic.bin:
+ 	$(BUILD)
+diff --git a/tools/lib/subcmd/Makefile b/tools/lib/subcmd/Makefile
+index 1c777a7..b4445aa 100644
+--- a/tools/lib/subcmd/Makefile
++++ b/tools/lib/subcmd/Makefile
+@@ -23,7 +23,7 @@ CFLAGS := -ggdb3 -Wall -Wextra -std=gnu99 -fPIC
+ 
+ ifeq ($(DEBUG),0)
+   ifeq ($(feature-fortify-source), 1)
+-    CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2
++    CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3
+   endif
+ endif
+ 
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index 35e1f2a..9549e20 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -337,7 +337,7 @@ endif
+ 
+ ifeq ($(DEBUG),0)
+   ifeq ($(feature-fortify-source), 1)
+-    CORE_CFLAGS += -D_FORTIFY_SOURCE=2
++    CORE_CFLAGS += -D_FORTIFY_SOURCE=3
+   endif
+ endif
+ 

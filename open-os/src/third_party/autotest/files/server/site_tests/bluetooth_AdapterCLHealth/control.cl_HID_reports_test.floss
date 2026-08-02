@@ -1,0 +1,43 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Verify that the bluetooth adapter of the DUT could receive HID reports
+# sent from a connected bluetooth device correctly.
+#
+# Purpose: Test bluetooth adapter receiving reports from bluetooth HID devices.
+
+# Deprecated variables:
+#     TIME = 'SHORT'
+#     TEST_CATEGORY = 'Functional'
+
+from autotest_lib.server import utils
+
+NAME = 'bluetooth_AdapterCLHealth.cl_HID_reports_test.floss'
+METADATA = {
+    'contacts': ['chromeos-bt-team@google.com'],
+    # ChromeOS > Platform > Connectivity > Bluetooth
+    'bug_component': 'b:167317',
+    'criteria': 'Adapter should receive HID events correctly.',
+    'hw_agnostic': False,
+    'variant_category': '{"name": "BT_Chipset_Kernel"}',
+    'requirements': ['bt-gen-0001-v01'],
+}
+
+
+ATTRIBUTES = 'suite:bluetooth_floss,suite:bluetooth_floss_cq, group:release-health, release-health_bt'
+TEST_TYPE = 'server'
+DEPENDENCIES = 'bluetooth_state:NORMAL, working_bluetooth_btpeer:1'
+
+
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('bluetooth_AdapterCLHealth', host=host,
+                 tag='.'.join(NAME.split('.')[1:]),
+                 num_iterations=1, args_dict=args_dict,
+                 test_name=NAME.split('.')[1], floss=True,
+                 floss_lm_quirk=True)
+
+parallel_simple(run, machines)

@@ -1,0 +1,10 @@
+# This group controls the access to the Perfettto system tracing service daemon
+# "traced" as a trusted consumer. Users in this group are permitted to send
+# control commands to the service daemon and read collected trace data back.
+# Users in this group:
+#  * traced: the user to run the service daemon "traced".
+#  * chronos: for running the "perfetto" command in the crosh shell or collect
+#      trace using the Perfetto UI (ui.perfetto.dev).
+group:traced-consumer
+gid:20164
+users:chronos,debugd,traced

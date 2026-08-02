@@ -1,0 +1,31 @@
+# Copyright 1999-2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+DIST_AUTHOR=ETHER
+DIST_VERSION=0.26
+inherit perl-module
+
+DESCRIPTION="Execute code after a scope finished compilation"
+
+SLOT="0"
+KEYWORDS="*"
+IUSE="test"
+
+RDEPEND="
+	>=dev-perl/Module-Implementation-0.50.0
+	virtual/perl-Scalar-List-Utils
+	>=dev-perl/Sub-Exporter-Progressive-0.1.6
+	>=dev-perl/Variable-Magic-0.480.0
+"
+BDEPEND="
+	${RDEPEND}
+	virtual/perl-ExtUtils-MakeMaker
+	virtual/perl-Text-ParseWords
+	test? (
+		>=virtual/perl-CPAN-Meta-2.120.900
+		virtual/perl-File-Spec
+		>=virtual/perl-Test-Simple-0.880.0
+	)
+"

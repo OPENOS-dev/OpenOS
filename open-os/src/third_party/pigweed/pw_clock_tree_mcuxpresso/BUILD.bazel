@@ -1,0 +1,142 @@
+# Copyright 2024 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_python//sphinxdocs:sphinx_docs_library.bzl", "sphinx_docs_library")
+load("//pw_build:compatibility.bzl", "incompatible_with_mcu")
+load("//pw_unit_test:pw_cc_test.bzl", "pw_cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+cc_library(
+    name = "sync_selector",
+    hdrs = ["public/pw_clock_tree_mcuxpresso/sync_selector.h"],
+    strip_include_prefix = "public",
+    target_compatible_with = [
+        "//pw_build/constraints/board:mimxrt595_evk",
+    ],
+    deps = [
+        "//pw_assert:assert",
+        "//pw_clock_tree",
+        "//pw_status",
+        "//targets:mcuxpresso_sdk",
+    ],
+)
+
+cc_library(
+    name = "sync_selector_testing",
+    hdrs = ["public/pw_clock_tree_mcuxpresso/sync_selector.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":test_mocks",
+        "//pw_assert:assert",
+        "//pw_clock_tree",
+        "//pw_status",
+    ],
+)
+
+cc_library(
+    name = "pw_clock_tree_mcuxpresso",
+    hdrs = ["public/pw_clock_tree_mcuxpresso/clock_tree.h"],
+    strip_include_prefix = "public",
+    target_compatible_with = [
+        "//pw_build/constraints/board:mimxrt595_evk",
+    ],
+    deps = [
+        "//pw_clock_tree",
+        "//pw_preprocessor",
+        "//targets:mcuxpresso_sdk",
+    ],
+)
+
+cc_library(
+    name = "test_mocks",
+    srcs = ["test_mocks/mocks.cc"],
+    hdrs = [
+        "test_mocks/fsl_clock.h",
+        "test_mocks/fsl_power.h",
+        "test_mocks/mocks.h",
+    ],
+    strip_include_prefix = "test_mocks",
+)
+
+cc_library(
+    name = "pw_clock_tree_mcuxpresso_testing",
+    hdrs = ["public/pw_clock_tree_mcuxpresso/clock_tree.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":test_mocks",
+        "//pw_clock_tree",
+        "//pw_preprocessor",
+    ],
+)
+
+pw_cc_test(
+    name = "clock_tree_test",
+    srcs = ["clock_tree_test.cc"],
+    deps = [
+        ":pw_clock_tree_mcuxpresso_testing",
+        ":sync_selector_testing",
+        ":test_mocks",
+        "//pw_unit_test",
+    ],
+)
+
+pw_cc_test(
+    name = "clock_tree_mcuxpresso_examples",
+    srcs = ["examples.cc"],
+    target_compatible_with = incompatible_with_mcu(),
+    deps = [
+        ":pw_clock_tree_mcuxpresso_testing",
+        ":sync_selector_testing",
+        ":test_mocks",
+        "//pw_unit_test",
+    ],
+)
+
+pw_cc_test(
+    name = "sync_selector_test",
+    srcs = [
+        "sync_selector_nc_test.cc",
+        "sync_selector_test.cc",
+    ],
+    has_nc_test = True,
+    deps = [
+        ":pw_clock_tree_mcuxpresso_testing",
+        ":sync_selector_testing",
+        ":test_mocks",
+        "//pw_log",
+        "//pw_unit_test",
+    ],
+)
+
+filegroup(
+    name = "doxygen",
+    srcs = [
+        "public/pw_clock_tree_mcuxpresso/clock_tree.h",
+        "public/pw_clock_tree_mcuxpresso/sync_selector.h",
+    ],
+)
+
+sphinx_docs_library(
+    name = "docs",
+    srcs = [
+        "docs.rst",
+        "examples.cc",
+    ],
+    prefix = "pw_clock_tree_mcuxpresso/",
+    target_compatible_with = incompatible_with_mcu(),
+)

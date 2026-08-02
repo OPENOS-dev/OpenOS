@@ -1,0 +1,17 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "touch_ScrollDirection"
+METADATA = {
+    "contacts": ["chromeos-tango@google.com"],
+    "bug_component": "b:167253",
+    "criteria": "Touchpad scroll occurs in expected direction. Repeats with Australian.",
+    "hw_agnostic": False,
+    'variant_category': '{"name": "Touchpad_SoC_Controller_Variant-def-plus-kernelnext"}',
+}
+ATTRIBUTES = "suite:touch_replay_touchpad, group:release-health, release-health_touch"
+TEST_TYPE = "client"
+DEPENDENCIES = "touchpad"
+
+job.run_test('touch_ScrollDirection')

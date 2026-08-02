@@ -1,0 +1,95 @@
+From 787dd9551938d2bee8f4abadc62092f2efa17a75 Mon Sep 17 00:00:00 2001
+From: Sarthak Kukreti <sarthakkukreti@google.com>
+Date: Mon, 14 Oct 2024 13:11:42 -0700
+Subject: [PATCH] fallocate: Add support for fixed goal extent allocations
+
+Add a new flag to allow fallocate() to do fixed goal allocations
+
+Signed-off-by: Sarthak Kukreti <sarthakkukreti@google.com>
+---
+ lib/ext2fs/ext2fs.h    |  3 ++-
+ lib/ext2fs/fallocate.c | 21 +++++++++++++++++++--
+ 2 files changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
+index 6e87829f..313c5981 100644
+--- a/lib/ext2fs/ext2fs.h
++++ b/lib/ext2fs/ext2fs.h
+@@ -1446,7 +1446,8 @@ extern errcode_t ext2fs_decode_extent(struct ext2fs_extent *to, void *from,
+ #define EXT2_FALLOCATE_FORCE_INIT	(0x2)
+ #define EXT2_FALLOCATE_FORCE_UNINIT	(0x4)
+ #define EXT2_FALLOCATE_INIT_BEYOND_EOF	(0x8)
+-#define EXT2_FALLOCATE_ALL_FLAGS	(0xF)
++#define EXT2_FALLOCATE_FIXED_GOAL	(0x10)
++#define EXT2_FALLOCATE_ALL_FLAGS	(0x1F)
+ errcode_t ext2fs_fallocate(ext2_filsys fs, int flags, ext2_ino_t ino,
+ 			   struct ext2_inode *inode, blk64_t goal,
+ 			   blk64_t start, blk64_t len);
+diff --git a/lib/ext2fs/fallocate.c b/lib/ext2fs/fallocate.c
+index 5cde7d5c..20aa9c9f 100644
+--- a/lib/ext2fs/fallocate.c
++++ b/lib/ext2fs/fallocate.c
+@@ -103,7 +103,7 @@ static errcode_t ext_falloc_helper(ext2_filsys fs,
+ 				   blk64_t alloc_goal)
+ {
+ 	struct ext2fs_extent	newex, ex;
+-	int			op;
++	int			op, new_range_flags = 0;
+ 	blk64_t			fillable, pblk, plen, x, y;
+ 	blk64_t			eof_blk = 0, cluster_fill = 0;
+ 	errcode_t		err;
+@@ -132,6 +132,9 @@ static errcode_t ext_falloc_helper(ext2_filsys fs,
+ 	max_uninit_len = EXT_UNINIT_MAX_LEN & ~EXT2FS_CLUSTER_MASK(fs);
+ 	max_init_len = EXT_INIT_MAX_LEN & ~EXT2FS_CLUSTER_MASK(fs);
+ 
++	if (flags & EXT2_FALLOCATE_FIXED_GOAL)
++		goto no_implied;
++
+ 	/* We must lengthen the left extent to the end of the cluster */
+ 	if (left_ext && EXT2FS_CLUSTER_RATIO(fs) > 1) {
+ 		/* How many more blocks can be attached to left_ext? */
+@@ -605,12 +608,15 @@ no_implied:
+ 		max_extent_len = max_uninit_len;
+ 		newex.e_flags = EXT2_EXTENT_FLAGS_UNINIT;
+ 	}
++
++	if (flags & EXT2_FALLOCATE_FIXED_GOAL)
++		new_range_flags = EXT2_NEWRANGE_FIXED_GOAL | EXT2_NEWRANGE_MIN_LENGTH;
+ 	pblk = alloc_goal;
+ 	y = range_len;
+ 	for (x = 0; x < y;) {
+ 		cluster_fill = newex.e_lblk & EXT2FS_CLUSTER_MASK(fs);
+ 		fillable = min(range_len + cluster_fill, max_extent_len);
+-		err = ext2fs_new_range(fs, 0, pblk & ~EXT2FS_CLUSTER_MASK(fs),
++		err = ext2fs_new_range(fs, new_range_flags, pblk & ~EXT2FS_CLUSTER_MASK(fs),
+ 				       fillable,
+ 				       NULL, &pblk, &plen);
+ 		if (err)
+@@ -681,6 +687,16 @@ static errcode_t extent_fallocate(ext2_filsys fs, int flags, ext2_ino_t ino,
+ 	if (err)
+ 		return err;
+ 
++	/*
++	 * For fixed goal allocations, let the allocations fail iff we can't
++	 * find the exact goal extent.
++	 */
++	if (flags & EXT2_FALLOCATE_FIXED_GOAL) {
++		err = ext_falloc_helper(fs, flags, ino, inode, handle, NULL,
++					NULL, start, len, goal);
++		goto errout;
++	}
++
+ 	/*
+ 	 * Find the extent closest to the start of the alloc range.  We don't
+ 	 * check the return value because _goto() sets the current node to the
+@@ -796,6 +812,7 @@ errout:
+  * - EXT2_FALLOCATE_FORCE_INIT: Create only initialized extents.
+  * - EXT2_FALLOCATE_FORCE_UNINIT: Create only uninitialized extents.
+  * - EXT2_FALLOCATE_INIT_BEYOND_EOF: Create extents beyond EOF.
++ * - EXT2_FALLOCATE_FIXED_GOAL: Ensure range starts at goal.
+  *
+  * If neither FORCE_INIT nor FORCE_UNINIT are specified, this function will
+  * try to expand any extents it finds, zeroing blocks as necessary.
+-- 
+2.47.0.rc1.288.g06298d1525-goog
+

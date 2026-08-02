@@ -1,0 +1,26 @@
+From 6e4a22df3cf40cf29fe96b4060c70f78e34210c9 Mon Sep 17 00:00:00 2001
+From: Jae Hoon Kim <kimjae@google.com>
+Date: Thu, 21 Dec 2023 18:00:00 +0000
+Subject: [PATCH] squashfs-tools: Add missing regex header
+
+.. so we can compile.
+---
+ squashfs-tools/xattr.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/squashfs-tools/xattr.h b/squashfs-tools/xattr.h
+index 1e4c89d..7d00a14 100644
+--- a/squashfs-tools/xattr.h
++++ b/squashfs-tools/xattr.h
+@@ -26,6 +26,8 @@
+ 
+ #include "squashfs_fs.h"
+ 
++#include <regex.h>
++
+ #define XATTR_VALUE_OOL		SQUASHFS_XATTR_VALUE_OOL
+ #define XATTR_PREFIX_MASK	SQUASHFS_XATTR_PREFIX_MASK
+ 
+-- 
+2.43.0.472.g3155946c3a-goog
+

@@ -1,0 +1,26 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'audio_CrasDevSwitchStress.input'
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "Fail if device buffer drifts too high.."
+}
+# ATTRIBUTES = "suite:audio"
+TEST_TYPE = 'client'
+
+from autotest_lib.client.bin import utils
+from autotest_lib.client.cros.audio import audio_spec
+internal_mic_node = audio_spec.get_internal_mic_node(
+    utils.get_board_type(), utils.get_board(), utils.get_platform(), utils.get_sku())
+
+"""
+Test device buffer can stay at reasonable level under repeated switching.
+"""
+
+job.run_test('audio_CrasDevSwitchStress',
+             type_a='MIC',
+             type_b=internal_mic_node,
+             pinned_type=internal_mic_node)

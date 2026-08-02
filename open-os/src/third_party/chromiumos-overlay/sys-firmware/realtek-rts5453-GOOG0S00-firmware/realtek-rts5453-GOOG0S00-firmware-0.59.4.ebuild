@@ -1,0 +1,1 @@
+realtek-rts5453-GOOG0S00-firmware-0.49.4-r1.ebuild

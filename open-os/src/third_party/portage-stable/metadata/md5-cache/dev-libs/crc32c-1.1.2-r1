@@ -1,0 +1,13 @@
+BDEPEND=test? ( dev-cpp/gtest ) >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5
+DEFINED_PHASES=compile configure install prepare test
+DESCRIPTION=CRC32C implementation with support for CPU-specific acceleration instructions
+EAPI=7
+HOMEPAGE=https://github.com/google/crc32c
+IUSE=test
+KEYWORDS=*
+LICENSE=BSD
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/google/crc32c/archive/1.1.2.tar.gz -> crc32c-1.1.2.tar.gz
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=84a7f3de81071ced6003f758cd9dd9c5

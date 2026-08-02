@@ -1,0 +1,1 @@
+handwriting-base-0.0.24.ebuild

@@ -1,0 +1,8 @@
+# Copyright 2025 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+cros_pre_src_configure_binutils_readelf() {
+	# The mpers build scripts run readelf but assume GNU binutils-specific flags
+	# and output formats.
+	export READELF="${CHOST}-readelf"
+}

@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure prepare
+DEPEND=sys-libs/zlib:=
+DESCRIPTION=Library and cli tools for Android sparse files
+EAPI=7
+HOMEPAGE=https://android.googlesource.com/platform/system/core
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=sys-libs/zlib:=
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/aosp-platform-system-core-630e05b6af5f76bd7f063840e543186bde40ff0a.tar.gz
+_eclasses_=cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=119e147801c019cd652665c251061cb2

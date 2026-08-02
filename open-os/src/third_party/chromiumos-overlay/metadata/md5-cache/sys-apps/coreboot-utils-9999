@@ -1,0 +1,15 @@
+BDEPEND=virtual/pkgconfig dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=!static? ( sys-apps/pciutils sys-apps/flashrom ) static? ( sys-apps/pciutils[static-libs(+)] sys-apps/flashrom )
+DESCRIPTION=Utilities for modifying coreboot firmware images
+EAPI=7
+HOMEPAGE=http://coreboot.org
+IUSE=cros_host mma +pci static cros_host cros_workon_tree_ asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=~*
+LICENSE=GPL-2
+PROPERTIES=live
+RDEPEND=!static? ( sys-apps/pciutils sys-apps/flashrom )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-subtool	33cbd2873ed95f1f5b811cef24258032	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=2594e11d0e031ffe7bf5defa852d1904

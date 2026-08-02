@@ -1,0 +1,16 @@
+BDEPEND=abi_x86_x32? ( >=dev-lang/yasm-1.2.0-r1 ) amd64? ( dev-lang/yasm ) x86? ( dev-lang/nasm )
+DEFINED_PHASES=compile install postinst postrm preinst prepare test
+DEPEND=natspec? ( dev-libs/libnatspec ) dev-util/desktop-file-utils x11-misc/shared-mime-info
+DESCRIPTION=Port of 7-Zip archiver for Unix
+EAPI=7
+HOMEPAGE=https://github.com/p7zip-project/p7zip
+IUSE=abi_x86_x32 natspec +pch rar test
+KEYWORDS=*
+LICENSE=LGPL-2.1 rar? ( unRAR )
+RDEPEND=natspec? ( dev-libs/libnatspec )
+REQUIRED_USE=test? ( rar )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/p7zip-project/p7zip/archive/v17.05.tar.gz -> p7zip-17.05.tar.gz
+_eclasses_=multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	wrapper	4251d4c84c25f59094fd557e0063a974	xdg	c7ba313ea1eaf266f95cc6235f7d6a07	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=0711d4ac87ad5eec1e581a35b5c2919c

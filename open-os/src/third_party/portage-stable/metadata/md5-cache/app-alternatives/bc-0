@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DESCRIPTION=bc symlink
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Project:Base/Alternatives
+IUSE=+gnu gh
+KEYWORDS=*
+LICENSE=CC0-1.0
+RDEPEND=!<sys-devel/bc-1.07.1-r6 gnu? ( >=sys-devel/bc-1.07.1-r6 ) gh? ( sci-calculators/bc-gh )
+REQUIRED_USE=^^ ( gnu gh )
+SLOT=0
+_eclasses_=app-alternatives	0d485a9273e176378fd2c635a815950f
+_md5_=8ec1f60820410e74b2990374113f951c

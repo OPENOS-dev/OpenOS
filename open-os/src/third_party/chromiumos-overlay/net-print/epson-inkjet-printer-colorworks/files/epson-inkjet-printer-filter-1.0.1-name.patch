@@ -1,0 +1,26 @@
+Call the output binary epson_colorworks instead of epson_inkjet_printer_filter
+because the original name may clash with other generic filters.
+
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -11,9 +11,9 @@
+ 
+ bindir = $(CUPS_SERVER_DIR)/filter
+ 
+-bin_PROGRAMS = epson_inkjet_printer_filter
++bin_PROGRAMS = epson_colorworks
+ 
+-epson_inkjet_printer_filter_LDADD = \
++epson_colorworks_LDADD = \
+ 	@DL_LIBS@ \
+ 	@STDCPP_LIBS@ \
+ 	@CUPS_IMAGE_LIBS@ \
+@@ -22,7 +22,7 @@
+ 	./filteropt/libfilteropt.la \
+ 	./raster/libraster.la
+ 
+-epson_inkjet_printer_filter_SOURCES = \
++epson_colorworks_SOURCES = \
+ 	main.c \
+ 	debuglog.h \
+ 	raster_to_epson.c raster_to_epson.h

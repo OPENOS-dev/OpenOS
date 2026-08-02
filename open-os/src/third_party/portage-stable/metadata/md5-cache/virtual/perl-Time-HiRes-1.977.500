@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for Time-HiRes
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* =dev-lang/perl-5.38* ~perl-core/Time-HiRes-1.977.500 ) !<perl-core/Time-HiRes-1.977.500 !>perl-core/Time-HiRes-1.977.500-r999
+SLOT=0
+_md5_=cb64c2069cd57515d74c618eda7051af

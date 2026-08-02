@@ -1,0 +1,14 @@
+BDEPEND=python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) >=dev-python/gpep517-9[python_targets_python3_12(-)?,python_targets_python3_11(-)?,python_targets_python3_10(-)?,python_targets_python3_9(-)?,python_targets_python3_8(-)?] >=dev-python/flit-core-3.8.0[python_targets_python3_12(-)?,python_targets_python3_11(-)?,python_targets_python3_10(-)?,python_targets_python3_9(-)?,python_targets_python3_8(-)?]
+DEFINED_PHASES=compile configure install prepare test
+DESCRIPTION=Module for determining appropriate platform-specific dirs
+EAPI=7
+HOMEPAGE=https://github.com/ActiveState/appdirs
+IUSE=python_targets_python3_12 python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 python_targets_python3_8
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 )
+REQUIRED_USE=|| ( python_targets_python3_12 python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 python_targets_python3_8 )
+SLOT=0
+SRC_URI=https://github.com/ActiveState/appdirs/archive/1.4.4.tar.gz -> appdirs-1.4.4.tar.gz
+_eclasses_=distutils-r1	fc8d51ffaf532da88283691b0ed10932	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=0b456dc28fa771cd66ccb7c0770ba7bc

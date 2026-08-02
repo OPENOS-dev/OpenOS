@@ -1,0 +1,8 @@
+set noparent
+
+include ../OWNERS.general
+
+# Bot that commits cache updates.
+include chromiumos/owners:v1:/bots/OWNERS.metadata_cache
+
+# COMPONENT: Infra>ChromeOS>Build>Platform

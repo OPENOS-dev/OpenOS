@@ -1,0 +1,18 @@
+# Description
+# This test records power and temperature related statistics while open WebGL
+# heavy page, WebGL Aquarium with 3000 fish.
+
+NAME = "power_ThermalLoad"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "puthik",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("")
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_ThermalLoad', pdash_note=pdash_note)

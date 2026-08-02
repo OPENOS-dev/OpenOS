@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig verify-sig? ( sec-keys/openpgp-keys-netfilter ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install setup unpack
+DEPEND=>=net-libs/libmnl-1.0.3 >=net-libs/libnfnetlink-1.0.0
+DESCRIPTION=Programming interface (API) to the in-kernel connection tracking state table
+EAPI=7
+HOMEPAGE=https://www.netfilter.org/projects/libnetfilter_conntrack/
+IUSE=kernel_linux verify-sig
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=>=net-libs/libmnl-1.0.3 >=net-libs/libnfnetlink-1.0.0
+SLOT=0
+SRC_URI=https://www.netfilter.org/projects/libnetfilter_conntrack/files/libnetfilter_conntrack-1.0.9.tar.bz2 verify-sig? ( https://www.netfilter.org/projects/libnetfilter_conntrack/files/libnetfilter_conntrack-1.0.9.tar.bz2.sig )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	linux-info	327865b9921771330775d971263dc234	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=6e54ceba13a619681d7d005a1754918e

@@ -1,0 +1,14 @@
+BDEPEND=python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=~dev-util/vulkan-headers-1.4.313.0 wayland? ( dev-libs/wayland:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] ) X? ( x11-libs/libX11:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] x11-libs/libXrandr:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] )
+DESCRIPTION=Vulkan Installable Client Driver (ICD) Loader
+EAPI=7
+HOMEPAGE=https://github.com/KhronosGroup/Vulkan-Loader
+IUSE=layers wayland X abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64 python_targets_python3_11
+KEYWORDS=* ~loong ~riscv
+LICENSE=Apache-2.0
+PDEPEND=layers? ( media-libs/vulkan-layers:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] )
+SLOT=0
+SRC_URI=https://github.com/KhronosGroup/Vulkan-Loader/archive/vulkan-sdk-1.4.313.0.tar.gz -> vulkan-loader-1.4.313.0.tar.gz
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	cmake-multilib	37d23064f303dcf23453353ab8c77059	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=c4fed6891f0a91c51ad2379128171a99

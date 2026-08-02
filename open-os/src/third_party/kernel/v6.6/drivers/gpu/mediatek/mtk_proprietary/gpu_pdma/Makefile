@@ -1,0 +1,20 @@
+#
+# Copyright (C) 2018 MediaTek Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See http://www.gnu.org/licenses/gpl-2.0.html for more details.
+#
+
+ccflags-y += -I$(MTK_TOP)/gpu_pdma/include
+ccflags-y += -I$(MTK_TOP)/ged/include
+ccflags-y += -I$(MTK_TOP)/gpueb/include
+ccflags-y += -I$(MTK_TOP)/gpufreq
+
+mtk_gpu_pdma_mt8196-y := gpu_pdma_mt8196.o
+obj-y += mtk_gpu_pdma_mt8196.o

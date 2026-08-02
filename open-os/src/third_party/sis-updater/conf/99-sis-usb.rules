@@ -1,0 +1,9 @@
+# DEVPATH is used here to compare VID/PID, as hidraw device event don't
+# explicitly list them.
+ACTION=="add", KERNEL=="hidraw*", SUBSYSTEM=="hidraw", DEVPATH=="*:266E:0102*|*:266E:0110*", \
+  OWNER="cfm-firmware-updaters", GROUP="cfm-firmware-updaters", MODE="0664", \
+  RUN+="/sbin/minijail0 -e -i -I -N -v -r -n -p -u cfm-firmware-updaters -g cfm-firmware-updaters /usr/sbin/sis-updater --single -n=/dev/%k /lib/firmware/sis/WYD_101_WYD_9255_A353_V04.bin"
+
+ACTION=="add", KERNEL=="hidraw*", SUBSYSTEM=="hidraw", DEVPATH=="*:0457:0817*", \
+  OWNER="cfm-firmware-updaters", GROUP="cfm-firmware-updaters", MODE="0664", \
+  RUN+="/sbin/minijail0 -e -i -I -N -v -r -n -p -u cfm-firmware-updaters -g cfm-firmware-updaters /usr/sbin/sis-updater --single -n=/dev/%k --recovery /lib/firmware/sis/WYD_101_WYD_9255_A353_V04.bin"

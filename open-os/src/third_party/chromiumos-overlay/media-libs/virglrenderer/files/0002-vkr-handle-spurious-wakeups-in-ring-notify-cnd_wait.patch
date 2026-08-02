@@ -1,0 +1,47 @@
+From 587874cb2063cc29236dd11f7ad7a94ad13f5a1f Mon Sep 17 00:00:00 2001
+From: Yiwei Zhang <zzyiwei@chromium.org>
+Date: Wed, 25 Mar 2026 20:52:29 -0700
+Subject: [PATCH] vkr: handle spurious wakeups in ring notify cnd_wait
+
+This ensures we don't unexpectedly unset VK_RING_STATUS_IDLE_BIT_MESA
+when the ring is still idle when spurious wakeups occur. The bug pattern
+would be driver side stuck in ring seqno progression. This change also
+properly handles cnd_wait errors.
+
+Part-of: <https://gitlab.freedesktop.org/virgl/virglrenderer/-/merge_requests/1610>
+---
+ src/venus/vkr_ring.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/src/venus/vkr_ring.c b/src/venus/vkr_ring.c
+index c4944e64..9476b6a7 100644
+--- a/src/venus/vkr_ring.c
++++ b/src/venus/vkr_ring.c
+@@ -274,8 +274,14 @@ vkr_ring_thread(void *arg)
+          TRACE_SCOPE("ring idle");
+ 
+          mtx_lock(&ring->mutex);
+-         if (ring->started && !ring->pending_notify)
+-            cnd_wait(&ring->cond, &ring->mutex);
++         while (ring->started && !ring->pending_notify) {
++            ret = cnd_wait(&ring->cond, &ring->mutex);
++            if (ret != thrd_success) {
++               vkr_log("%s: ring idle cnd_wait has failed(%d)", __func__, ret);
++               ret = -EINVAL;
++               goto out;
++            }
++         }
+          vkr_ring_unset_status_bits(ring, VK_RING_STATUS_IDLE_BIT_MESA);
+          mtx_unlock(&ring->mutex);
+ 
+@@ -326,6 +332,7 @@ vkr_ring_thread(void *arg)
+       }
+    }
+ 
++out:
+    if (ret < 0) {
+       vkr_ring_set_status_bits(ring, VK_RING_STATUS_FATAL_BIT_MESA);
+       vkr_context_on_ring_fatal(ctx);
+-- 
+2.53.0.1018.g2bb0e51243-goog
+

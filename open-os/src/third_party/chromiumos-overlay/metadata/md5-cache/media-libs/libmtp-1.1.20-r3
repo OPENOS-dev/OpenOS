@@ -1,0 +1,15 @@
+BDEPEND=>=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install prepare
+DEPEND=virtual/libusb:1 crypt? ( dev-libs/libgcrypt ) virtual/pkgconfig doc? ( app-doc/doxygen )
+DESCRIPTION=An implementation of Microsoft's Media Transfer Protocol (MTP).
+EAPI=7
+HOMEPAGE=http://libmtp.sourceforge.net/
+IUSE=-asan +crypt doc examples static-libs asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=LGPL-2.1
+RDEPEND=virtual/libusb:1 crypt? ( dev-libs/libgcrypt )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=mirror://sourceforge/libmtp/libmtp-1.1.20.tar.gz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=bb64814ea3ced3e80939f32260519ada

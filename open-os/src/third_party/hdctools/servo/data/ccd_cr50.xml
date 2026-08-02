@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<root>
+  <include>
+    <name>cr50.xml</name>
+  </include>
+  <include>
+    <name>ccd_common.xml</name>
+  </include>
+  <control>
+    <name>ccd_cpu_fw_spi</name>
+    <doc>Enable SPI mode for flashing CPU firmware over CCD</doc>
+    <params interface="servo" drv="macro" map="onoff">
+      <content>
+        <item key="macro_map">
+          <item key="1">
+            <item>ap_flash_select:on</item>
+            <item>cold_reset:on</item>
+          </item>
+          <item key="0">
+            <item>ap_flash_select:off</item>
+            <item>cold_reset:off</item>
+          </item>
+        </item>
+      </content>
+    </params>
+  </control>
+  <control>
+    <name>servo_adcs_enabled</name>
+    <params name="EN_PP3300_INA_L" clobber_ok="patch"></params>
+  </control>
+</root>

@@ -1,0 +1,227 @@
+From 0bac1ed2422f15308414dd1e9d09812a966b0348 Mon Sep 17 00:00:00 2001
+From: Daan De Meyer <daan.j.demeyer@gmail.com>
+Date: Tue, 25 Nov 2025 16:46:04 +0100
+Subject: [PATCH] tree-wide: Fix constness issues with newer glibc
+
+Latest glibc uses _Generic to have strstr() and other functions return
+const char* or char* based on whether the input is a const char* or a
+char*. This causes build failures as we previously always expected a char*.
+
+Let's fix the compilation failures and add our own macros similar to glibc's
+to have string functions that return a mutable or const pointer depending on
+the input.
+
+[ Adrian: backported to systemd-utils v251.8. The upstream commit adds a
+  const_generic() macro and touches 26 files across the whole tree.
+  systemd-utils only builds a subset (basic, libsystemd-shared, udev,
+  tmpfiles, sysusers, boot), so only the affected spots compiled here are
+  fixed, using the same technique upstream applies: const-ify the receiving
+  variables, and cast inside the strstr_ptr()/bsearch_safe() helper bodies
+  mirroring upstream's *_internal() functions. ]
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+---
+ src/basic/path-util.c               |  3 ++-
+ src/basic/sort-util.h               |  2 +-
+ src/basic/string-util.c             |  3 ++-
+ src/basic/string-util.h             |  2 +-
+ src/basic/time-util.c               |  2 +-
+ src/basic/unit-name.c               |  6 +++---
+ src/libsystemd/sd-bus/sd-bus.c      | 10 +++++-----
+ src/libsystemd/sd-hwdb/sd-hwdb.c    |  2 +-
+ src/libsystemd/sd-journal/catalog.c |  3 ++-
+ src/shared/pager.c                  |  2 +-
+ src/shared/socket-netlink.c         |  2 +-
+ 11 files changed, 20 insertions(+), 17 deletions(-)
+
+diff --git a/src/basic/path-util.c b/src/basic/path-util.c
+index a3346c9..f4e9da2 100644
+--- a/src/basic/path-util.c
++++ b/src/basic/path-util.c
+@@ -1164,7 +1164,8 @@ bool path_is_normalized(const char *p) {
+ }
+ 
+ char *file_in_same_dir(const char *path, const char *filename) {
+-        char *e, *ret;
++        const char *e;
++        char *ret;
+         size_t k;
+ 
+         assert(path);
+diff --git a/src/basic/sort-util.h b/src/basic/sort-util.h
+index f0bf246..674369d 100644
+--- a/src/basic/sort-util.h
++++ b/src/basic/sort-util.h
+@@ -31,7 +31,7 @@ static inline void* bsearch_safe(const void *key, const void *base,
+                 return NULL;
+ 
+         assert(base);
+-        return bsearch(key, base, nmemb, size, compar);
++        return (void*) bsearch(key, base, nmemb, size, compar);
+ }
+ 
+ #define typesafe_bsearch(k, b, n, func)                                 \
+diff --git a/src/basic/string-util.c b/src/basic/string-util.c
+index 128aea9..9158b6d 100644
+--- a/src/basic/string-util.c
++++ b/src/basic/string-util.c
+@@ -895,7 +895,8 @@ char *strrep(const char *s, unsigned n) {
+ }
+ 
+ int split_pair(const char *s, const char *sep, char **l, char **r) {
+-        char *x, *a, *b;
++        const char *x;
++        char *a, *b;
+ 
+         assert(s);
+         assert(sep);
+diff --git a/src/basic/string-util.h b/src/basic/string-util.h
+index 60e8048..f3e58ef 100644
+--- a/src/basic/string-util.h
++++ b/src/basic/string-util.h
+@@ -26,7 +26,7 @@
+ static inline char* strstr_ptr(const char *haystack, const char *needle) {
+         if (!haystack || !needle)
+                 return NULL;
+-        return strstr(haystack, needle);
++        return (char*) strstr(haystack, needle);
+ }
+ 
+ static inline const char* strempty(const char *s) {
+diff --git a/src/basic/time-util.c b/src/basic/time-util.c
+index 0ad8de4..4e5c743 100644
+--- a/src/basic/time-util.c
++++ b/src/basic/time-util.c
+@@ -898,7 +898,7 @@ typedef struct ParseTimestampResult {
+ } ParseTimestampResult;
+ 
+ int parse_timestamp(const char *t, usec_t *usec) {
+-        char *last_space, *tz = NULL;
++        const char *last_space, *tz = NULL;
+         ParseTimestampResult *shared, tmp;
+         int r;
+ 
+diff --git a/src/basic/unit-name.c b/src/basic/unit-name.c
+index 3b739c7..551c93a 100644
+--- a/src/basic/unit-name.c
++++ b/src/basic/unit-name.c
+@@ -218,7 +218,7 @@ UnitType unit_name_to_type(const char *n) {
+ int unit_name_change_suffix(const char *n, const char *suffix, char **ret) {
+         _cleanup_free_ char *s = NULL;
+         size_t a, b;
+-        char *e;
++        const char *e;
+ 
+         assert(n);
+         assert(suffix);
+@@ -516,7 +516,7 @@ int unit_name_template(const char *f, char **ret) {
+ }
+ 
+ bool unit_name_is_hashed(const char *name) {
+-        char *s;
++        const char *s;
+ 
+         if (!unit_name_is_valid(name, UNIT_NAME_PLAIN))
+                 return false;
+@@ -539,7 +539,7 @@ bool unit_name_is_hashed(const char *name) {
+ 
+ int unit_name_hash_long(const char *name, char **ret) {
+         _cleanup_free_ char *n = NULL, *hash = NULL;
+-        char *suffix;
++        const char *suffix;
+         le64_t h;
+         size_t len;
+ 
+diff --git a/src/libsystemd/sd-bus/sd-bus.c b/src/libsystemd/sd-bus/sd-bus.c
+index a918936..8d15219 100644
+--- a/src/libsystemd/sd-bus/sd-bus.c
++++ b/src/libsystemd/sd-bus/sd-bus.c
+@@ -1394,7 +1394,7 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
+ 
+ int bus_set_address_system_remote(sd_bus *b, const char *host) {
+         _cleanup_free_ char *e = NULL;
+-        char *m = NULL, *c = NULL, *a, *rbracket = NULL, *p = NULL;
++        const char *m = NULL, *c = NULL, *a, *rbracket = NULL, *p = NULL;
+ 
+         assert(b);
+         assert(host);
+@@ -1432,7 +1432,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
+         /* Let's see if a port was given */
+         m = strchr(rbracket ? rbracket + 1 : host, ':');
+         if (m) {
+-                char *t;
++                const char *t;
+                 bool got_forward_slash = false;
+ 
+                 p = m + 1;
+@@ -1473,13 +1473,13 @@ interpret_port_as_machine_old_syntax:
+                         return -ENOMEM;
+         }
+ 
+-        a = strjoin("unixexec:path=ssh,argv1=-xT", p ? ",argv2=-p,argv3=" : "", strempty(p),
++        char *address = strjoin("unixexec:path=ssh,argv1=-xT", p ? ",argv2=-p,argv3=" : "", strempty(p),
+                                 ",argv", p ? "4" : "2", "=--,argv", p ? "5" : "3", "=", e,
+                                 ",argv", p ? "6" : "4", "=systemd-stdio-bridge", c);
+-        if (!a)
++        if (!address)
+                 return -ENOMEM;
+ 
+-        return free_and_replace(b->address, a);
++        return free_and_replace(b->address, address);
+ }
+ 
+ _public_ int sd_bus_open_system_remote(sd_bus **ret, const char *host) {
+diff --git a/src/libsystemd/sd-hwdb/sd-hwdb.c b/src/libsystemd/sd-hwdb/sd-hwdb.c
+index 748cf26..a28c147 100644
+--- a/src/libsystemd/sd-hwdb/sd-hwdb.c
++++ b/src/libsystemd/sd-hwdb/sd-hwdb.c
+@@ -97,7 +97,7 @@ static int trie_children_cmp_f(const void *v1, const void *v2) {
+ }
+ 
+ static const struct trie_node_f *node_lookup_f(sd_hwdb *hwdb, const struct trie_node_f *node, uint8_t c) {
+-        struct trie_child_entry_f *child;
++        const struct trie_child_entry_f *child;
+         struct trie_child_entry_f search;
+ 
+         search.c = c;
+diff --git a/src/libsystemd/sd-journal/catalog.c b/src/libsystemd/sd-journal/catalog.c
+index b988ee3..eae56c1 100644
+--- a/src/libsystemd/sd-journal/catalog.c
++++ b/src/libsystemd/sd-journal/catalog.c
+@@ -546,7 +546,8 @@ static int open_mmap(const char *database, int *_fd, struct stat *_st, void **_p
+ }
+ 
+ static const char *find_id(void *p, sd_id128_t id) {
+-        CatalogItem *f = NULL, key = { .id = id };
++        CatalogItem key = { .id = id };
++        const CatalogItem *f = NULL;
+         const CatalogHeader *h = p;
+         const char *loc;
+ 
+diff --git a/src/shared/pager.c b/src/shared/pager.c
+index 1a93deb..53ed318 100644
+--- a/src/shared/pager.c
++++ b/src/shared/pager.c
+@@ -297,7 +297,7 @@ bool pager_have(void) {
+ 
+ int show_man_page(const char *desc, bool null_stdio) {
+         const char *args[4] = { "man", NULL, NULL, NULL };
+-        char *e = NULL;
++        const char *e = NULL;
+         pid_t pid;
+         size_t k;
+         int r;
+diff --git a/src/shared/socket-netlink.c b/src/shared/socket-netlink.c
+index 494047a..975ae34 100644
+--- a/src/shared/socket-netlink.c
++++ b/src/shared/socket-netlink.c
+@@ -18,7 +18,7 @@
+ 
+ int socket_address_parse(SocketAddress *a, const char *s) {
+         _cleanup_free_ char *n = NULL;
+-        char *e;
++        const char *e;
+         int r;
+ 
+         assert(a);
+-- 
+2.51.0

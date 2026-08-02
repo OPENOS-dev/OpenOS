@@ -1,0 +1,37 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_pkg//pkg:mappings.bzl", "pkg_filegroup", "pkg_files", "strip_prefix")
+load("//dist:defs.bzl", "FILE_ATTRIBUTES")
+
+pkg_filegroup(
+    name = "dist_files",
+    srcs = [
+        ":cras-config_files",
+        ":for_all_boards_files",
+    ],
+    visibility = ["//dist:__pkg__"],
+)
+
+pkg_files(
+    name = "cras-config_files",
+    srcs = [
+        "processor_override.txtpb",
+    ],
+    attributes = FILE_ATTRIBUTES,
+    prefix = "etc/cras",
+)
+
+pkg_files(
+    name = "for_all_boards_files",
+    srcs = glob(["for_all_boards/**"]),
+    attributes = FILE_ATTRIBUTES,
+    prefix = "etc/cras",
+    strip_prefix = strip_prefix.from_pkg("for_all_boards"),
+)
+
+exports_files(
+    ["dsp.ini.sample"],
+    visibility = ["//cras/server/ini:__pkg__"],
+)

@@ -1,0 +1,44 @@
+From 11a47849e1361041928bae84c5e120f85773d93d Mon Sep 17 00:00:00 2001
+From: Raul E Rangel <rrangel@chromium.org>
+Date: Tue, 4 Apr 2023 16:13:57 -0600
+Subject: [PATCH 2/2] Fix noisy find command
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+We weren't using nullglob, so the wildcard parameter was incorrectly
+getting passed to `find`.
+
++ pushd /build/arm64-generic//usr/share/sgml/docbook
++ mapfile -d '' DTDS
+++ find xml-dtd-4.3/ xml-dtd-4.5/ -name docbookx.dtd -print0
++ mapfile -d '' SIMPLE_DTDS
+++ find 'xml-simple-dtd-*/' -name sdocbook.dtd -print0
+find: ‘xml-simple-dtd-*/’: No such file or directory
++ popd
+
+Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+---
+ build-docbook-catalog | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/build-docbook-catalog b/build-docbook-catalog
+index 2275703..f5995da 100755
+--- a/build-docbook-catalog
++++ b/build-docbook-catalog
+@@ -137,8 +137,10 @@ set_dtds() {
+ 	local d=${ROOT}${DOCBOOKDIR}
+ 	if [[ -d ${d} ]] ; then
+ 		pushd "${d}" >/dev/null || return 1
+-		mapfile -d $'\0' DTDS < <(find xml-dtd-*/ -name docbookx.dtd -print0)
+-		mapfile -d $'\0' SIMPLE_DTDS < <(find xml-simple-dtd-*/ -name sdocbook.dtd -print0)
++		shopt -s nullglob
++		DTDS=( xml-dtd-*/docbookx.dtd )
++		SIMPLE_DTDS=( xml-simple-dtd-*/sdocbook.dtd )
++		shopt -u nullglob
+ 		popd >/dev/null || return 1
+ 	fi
+ 
+-- 
+2.40.0.348.gf938b09366-goog
+

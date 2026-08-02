@@ -1,0 +1,10 @@
+DEFINED_PHASES=configure install
+DESCRIPTION=Hardware identification and configuration data
+EAPI=7
+HOMEPAGE=https://github.com/vcrhonek/hwdata
+IUSE=+net +pci +usb
+KEYWORDS=*
+LICENSE=GPL-2+
+SLOT=0
+SRC_URI=https://github.com/vcrhonek/hwdata/archive/refs/tags/v0.391.tar.gz -> hwdata-0.391.tar.gz
+_md5_=52c5a3c49b44f2b345f2d253a00ed3bc

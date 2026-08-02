@@ -1,0 +1,33 @@
+# Lint as: python3
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This class can be called to run bluetooth_AVLDriver.driver_support_test
+#
+# This test contains these subtests:
+#     test_usb_driver()
+#     test_serial_driver()
+#
+#
+# Purpose: Tests the driver suppport of bluetooth AVL requirements
+
+# Deprecated variables:
+#     TIME = 'SHORT'
+#     TEST_CATEGORY = 'Functional'
+
+NAME = 'bluetooth_AVLDriver.driver_support_test'
+METADATA = {
+    'contacts': ['chromeos-bt-team@google.com'],
+    # ChromeOS > Platform > Connectivity > Bluetooth
+    'bug_component': 'b:167317',
+    'criteria': 'all subtests passed',
+    'hw_agnostic': False,
+    'requirements': ['bt-drv-0001-v01', 'bt-drv-0002-v01', 'bt-phy-0001-v01']
+}
+
+ATTRIBUTES = 'suite:bluetooth_sa2, suite:bluetooth_fw, group:release-health, release-health_bt'
+TEST_TYPE = 'client'
+
+
+job.run_test('bluetooth_AVLDriver', test_name=NAME.split('.')[1], tag='.'.join(NAME.split('.')[1:]))

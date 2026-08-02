@@ -1,0 +1,16 @@
+BDEPEND=dev-util/gdbus-codegen >=sys-devel/gettext-0.18.3 virtual/pkgconfig test? ( media-fonts/dejavu ) virtual/pkgconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=compile configure install postinst prepare test
+DEPEND=!postscript? ( >=app-text/poppler-0.32:=[cxx,jpeg?,lcms,tiff?,utils] ) >=app-text/qpdf-10.0.1:= chromeos-base/foomatic_shell dev-libs/glib:2 media-libs/fontconfig media-libs/freetype:2 media-libs/lcms:2 >=net-print/cups-1.7.3 !<=net-print/cups-1.5.9999 sys-devel/bc sys-libs/zlib dbus? ( sys-apps/dbus ) foomatic? ( !net-print/foomatic-filters ) jpeg? ( virtual/jpeg:0 ) ldap? ( net-nds/openldap ) pdf? ( app-text/mupdf ) perl? ( dev-lang/perl:= ) png? ( media-libs/libpng:0= ) postscript? ( >=app-text/ghostscript-gpl-9.09[cups] ) tiff? ( media-libs/tiff:0 ) zeroconf? ( net-dns/avahi[dbus] )
+DESCRIPTION=Cups filters
+EAPI=7
+HOMEPAGE=https://wiki.linuxfoundation.org/openprinting/cups-filters
+IUSE=dbus +foomatic ipp_autosetup jpeg ldap pclm pdf perl png +postscript static-libs test tiff zeroconf asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=MIT GPL-2
+RDEPEND=!postscript? ( >=app-text/poppler-0.32:=[cxx,jpeg?,lcms,tiff?,utils] ) >=app-text/qpdf-10.0.1:= chromeos-base/foomatic_shell dev-libs/glib:2 media-libs/fontconfig media-libs/freetype:2 media-libs/lcms:2 >=net-print/cups-1.7.3 !<=net-print/cups-1.5.9999 sys-devel/bc sys-libs/zlib dbus? ( sys-apps/dbus ) foomatic? ( !net-print/foomatic-filters ) jpeg? ( virtual/jpeg:0 ) ldap? ( net-nds/openldap ) pdf? ( app-text/mupdf ) perl? ( dev-lang/perl:= ) png? ( media-libs/libpng:0= ) postscript? ( >=app-text/ghostscript-gpl-9.09[cups] ) tiff? ( media-libs/tiff:0 ) zeroconf? ( net-dns/avahi[dbus] )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=http://www.openprinting.org/download/cups-filters/cups-filters-1.28.17.tar.xz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=74c06b7dce0442f21392b57607de65dc

@@ -1,0 +1,18 @@
+#!/bin/sh
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -ex
+
+echo ALERT: job starting
+finish() {
+    echo ALERT: job terminated
+}
+trap finish EXIT
+
+while /bot
+do
+    echo ---
+    sleep 60
+done

@@ -1,0 +1,41 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.client.common_lib import utils
+
+MAX_RESULT_SIZE_KB = 512000
+
+NAME = "telemetry_AFDOGenerate"
+METADATA = {
+    "contacts": ["c-compiler-chrome@google.com"],
+    "bug_component": "b:1038090",
+    "criteria": "Collect AFDO profiles from Chrome telemetry benchmarks",
+}
+ATTRIBUTES = "suite:AFDO_record"
+DEPENDENCIES = 'label-bot_size:BOT_SIZE_LARGE'
+TEST_TYPE = "server"
+
+DOC = """
+Run a pre-defined set of benchmarks on the DUT and create a sampled profile
+of the chrome execution. The profile is generated in AFDO format.
+See go/crostc and search for AFDO for more information about AFDO.
+For now, this test can only run on devices that support LBR PMU events (Intel)
+or CoreSight/ETM (Arm) and that have at least 2GB of space in /tmp
+(autotest limitation).
+
+Example invocation:
+/usr/bin/test_that --debug --board=chell <DUT IP>
+  --args="ignore_failures=True local=True gs_test_location=True"
+  telemetry_AFDOGenerate
+"""
+
+args_dict = utils.args_to_dict(args)
+
+
+def run_telemetry_AFDOGenerate(machine):
+    run_host = hosts.create_host(machine)
+    job.run_test('telemetry_AFDOGenerate', host=run_host, args=args_dict)
+
+
+job.parallel_simple(run_telemetry_AFDOGenerate, machines)

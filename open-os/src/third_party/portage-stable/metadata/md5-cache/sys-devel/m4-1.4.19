@@ -1,0 +1,14 @@
+BDEPEND=app-arch/xz-utils nls? ( sys-devel/gettext ) verify-sig? ( sec-keys/openpgp-keys-m4 ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install prepare test unpack
+DEPEND=virtual/libiconv nls? ( sys-devel/gettext virtual/libintl )
+DESCRIPTION=GNU macro processor
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/m4/m4.html
+IUSE=examples nls verify-sig
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=virtual/libiconv nls? ( sys-devel/gettext virtual/libintl )
+SLOT=0
+SRC_URI=mirror://gnu/m4/m4-1.4.19.tar.xz https://dev.gentoo.org/~floppym/dist/m4-1.4.19-test-198-sysval-r1.patch.gz verify-sig? ( mirror://gnu/m4/m4-1.4.19.tar.xz.sig )
+_eclasses_=verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=53669cfc0b07565f1e2356f87fb979da

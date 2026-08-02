@@ -1,0 +1,31 @@
+From 6d398bda19ab45f7c073104794244bebad820b8f Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Wed, 5 Nov 2025 09:24:46 -0700
+Subject: [PATCH] UPSTREAM: Pass Bus::Options by value with std::move
+
+For CrOS floss: in crrev.com/c/7056670, the dbus::Bus ctor was updated
+to accept the Option parameter by value instead of const ref.  Make a
+simlar update here so libchrome can drop a patch.
+
+Bug: 454152943
+Tag: #floss
+Test: m Bluetooth
+Flag: EXEMPT PURE_REFACTOR
+Change-Id: Ibd17a284980801e833fe055624b242b080bf0d59
+---
+ floss/mmc/codec_client/codec_client.cc | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/floss/mmc/codec_client/codec_client.cc b/floss/mmc/codec_client/codec_client.cc
+index 24b39e24550..22e6ee8a216 100644
+--- a/floss/mmc/codec_client/codec_client.cc
++++ b/floss/mmc/codec_client/codec_client.cc
+@@ -30,2 +30,3 @@
+ #include <cstring>
++#include <utility>
+ 
+@@ -71,3 +72,3 @@ CodecClient::CodecClient() {
+   options.bus_type = dbus::Bus::SYSTEM;
+-  bus_ = new dbus::Bus(options);
++  bus_ = new dbus::Bus(std::move(options));
+ 

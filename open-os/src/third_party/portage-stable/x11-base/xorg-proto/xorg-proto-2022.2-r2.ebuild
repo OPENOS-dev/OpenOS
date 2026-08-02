@@ -1,0 +1,1 @@
+xorg-proto-2022.2.ebuild

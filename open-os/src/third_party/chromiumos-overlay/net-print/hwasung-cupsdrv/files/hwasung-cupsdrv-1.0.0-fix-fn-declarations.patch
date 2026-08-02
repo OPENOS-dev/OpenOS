@@ -1,0 +1,51 @@
+diff --git a/rastertohwasung.c b/rastertohwasung.c
+index bfd4fc7..b75a037 100644
+--- a/rastertohwasung.c
++++ b/rastertohwasung.c
+@@ -284,6 +284,23 @@ int				numOptions;
+ 
+ }
+ 
++void formFeed(struct settings_ settings)
++{
++	outputCommand(FormFeedCommand[settings.formfeedType]);	
++}
++void prtSpeed(struct settings_ settings)
++{
++	outputCommand(SpeedCommand[settings.printSpeed]);	
++}
++void density(struct settings_ settings)
++{
++	outputCommand(DensityCommand[settings.printDensity]);	
++}
++void buzzeronoff(struct settings_ settings)
++{
++	outputCommand(BuzzerCommand[settings.buzzerOption]);	
++}
++
+ void jobSetup(struct settings_ settings){
+ unsigned char	pw;
+ 	outputCommand(printerInitializeCommand);
+@@ -319,22 +336,6 @@ void cutPage(struct settings_ settings)
+ 		break;
+ 	}
+ }
+-void formFeed(struct settings_ settings)
+-{
+-	outputCommand(FormFeedCommand[settings.formfeedType]);	
+-}
+-void prtSpeed(struct settings_ settings)
+-{
+-	outputCommand(SpeedCommand[settings.printSpeed]);	
+-}
+-void density(struct settings_ settings)
+-{
+-	outputCommand(DensityCommand[settings.printDensity]);	
+-}
+-void buzzeronoff(struct settings_ settings)
+-{
+-	outputCommand(BuzzerCommand[settings.buzzerOption]);	
+-}
+ void cutJob(struct settings_ settings)
+ {
+ 	switch(settings.cutterMode){

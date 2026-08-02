@@ -1,0 +1,109 @@
+From 795be2e2e61a98ac5f48de291095e9325f1ff9a4 Mon Sep 17 00:00:00 2001
+From: Luigi Semenzato <semenzato@google.com>
+Date: Wed, 14 May 2025 16:37:02 -0700
+Subject: [PATCH] BACKPORT: linux-headers: backport epoll_pwait2
+
+Needed for a seccomp filter.  See b/417456095.
+---
+ arch/arm/tools/syscall.tbl             | 1 +
+ arch/arm64/include/asm/unistd.h        | 2 +-
+ arch/arm64/include/asm/unistd32.h      | 2 ++
+ arch/x86/entry/syscalls/syscall_32.tbl | 1 +
+ arch/x86/entry/syscalls/syscall_64.tbl | 1 +
+ include/linux/syscalls.h               | 6 +++++-
+ include/uapi/asm-generic/unistd.h      | 4 +++-
+ 7 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
+index 6b460afb281c..d9da51e67d36 100644
+--- a/arch/arm/tools/syscall.tbl
++++ b/arch/arm/tools/syscall.tbl
+@@ -451,3 +451,4 @@
+ 435	common	clone3				sys_clone3
+ 436	common	close_range		sys_close_range
+ 439	common	faccessat2			sys_faccessat2
++441	common	epoll_pwait2			sys_epoll_pwait2
+diff --git a/arch/arm64/include/asm/unistd.h b/arch/arm64/include/asm/unistd.h
+index 75f04a1023be..bc0f923e0e04 100644
+--- a/arch/arm64/include/asm/unistd.h
++++ b/arch/arm64/include/asm/unistd.h
+@@ -38,7 +38,7 @@
+ #define __ARM_NR_compat_set_tls		(__ARM_NR_COMPAT_BASE + 5)
+ #define __ARM_NR_COMPAT_END		(__ARM_NR_COMPAT_BASE + 0x800)
+ 
+-#define __NR_compat_syscalls		440
++#define __NR_compat_syscalls		441
+ #endif
+ 
+ #define __ARCH_WANT_SYS_CLONE
+diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
+index 724d4eba8af9..229f1f04b8d6 100644
+--- a/arch/arm64/include/asm/unistd32.h
++++ b/arch/arm64/include/asm/unistd32.h
+@@ -883,6 +883,8 @@ __SYSCALL(__NR_clone3, sys_clone3)
+ __SYSCALL(__NR_close_range, sys_close_range)
+ #define __NR_faccessat2 439
+ __SYSCALL(__NR_faccessat2, sys_faccessat2)
+++#define __NR_epoll_pwait2 441
++__SYSCALL(__NR_epoll_pwait2, compat_sys_epoll_pwait2)
+ 
+ /*
+  * Please add new compat syscalls above this comment and update
+diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
+index bd6a43f6a728..b0aac817b6f1 100644
+--- a/arch/x86/entry/syscalls/syscall_32.tbl
++++ b/arch/x86/entry/syscalls/syscall_32.tbl
+@@ -442,3 +442,4 @@
+ 435	i386	clone3			sys_clone3			__ia32_sys_clone3
+ 436	i386	close_range		sys_close_range
+ 439	i386	faccessat2		sys_faccessat2
++441	i386	epoll_pwait2		sys_epoll_pwait2		compat_sys_epoll_pwait2
+diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
+index edc763304756..ec88050bbd2f 100644
+--- a/arch/x86/entry/syscalls/syscall_64.tbl
++++ b/arch/x86/entry/syscalls/syscall_64.tbl
+@@ -359,6 +359,7 @@
+ 435	common	clone3			__x64_sys_clone3/ptregs
+ 436	common	close_range		sys_close_range
+ 439	common	faccessat2		sys_faccessat2
++441	common	epoll_pwait2		__x64_sys_epoll_pwait2
+ 
+ #
+ # x32-specific system call numbers start at 512 to avoid cache impact
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index 6e0b16093920..98821f2e9b65 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -363,7 +363,11 @@ asmlinkage long sys_epoll_pwait(int epfd, struct epoll_event __user *events,
+ 				int maxevents, int timeout,
+ 				const sigset_t __user *sigmask,
+ 				size_t sigsetsize);
+-
++asmlinkage long sys_epoll_pwait2(int epfd, struct epoll_event __user *events,
++				 int maxevents,
++				 const struct __kernel_timespec __user *timeout,
++				 const sigset_t __user *sigmask,
++				 size_t sigsetsize);
+ /* fs/fcntl.c */
+ asmlinkage long sys_dup(unsigned int fildes);
+ asmlinkage long sys_dup3(unsigned int oldfd, unsigned int newfd, int flags);
+diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
+index 3e792d4836e6..d899e8a2a130 100644
+--- a/include/uapi/asm-generic/unistd.h
++++ b/include/uapi/asm-generic/unistd.h
+@@ -855,9 +855,11 @@ __SYSCALL(__NR_clone3, sys_clone3)
+ __SYSCALL(__NR_close_range, sys_close_range)
+ #define __NR_faccessat2 439
+ __SYSCALL(__NR_faccessat2, sys_faccessat2)
++#define __NR_epoll_pwait2 441
++__SYSCALL(__NR_epoll_pwait2, sys_epoll_pwait2)
+ 
+ #undef __NR_syscalls
+-#define __NR_syscalls 440
++#define __NR_syscalls 441
+ 
+ /*
+  * 32 bit systems traditionally used different
+-- 
+2.49.0.1045.g170613ef41-goog
+

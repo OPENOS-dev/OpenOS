@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual to select between different tmpfiles.d handlers
+EAPI=7
+KEYWORDS=*
+RDEPEND=!prefix-guest? ( || ( sys-apps/systemd-utils[tmpfiles] sys-apps/systemd-tmpfiles sys-apps/systemd ) )
+SLOT=0
+_md5_=0ced928f14bd55e60fdbeb71641ffd37

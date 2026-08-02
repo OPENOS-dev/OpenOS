@@ -1,0 +1,133 @@
+BlueZ Chromium Plugin API description
+***********************************
+
+Service		org.bluez
+Interface	org.chromium.Bluetooth
+Object path	[variable prefix]/{hci0,hci1,...}
+
+Chromium Bluetooth Interface
+============================
+
+Properties	boolean SupportsLEServices [readonly]
+
+			Whether or not LE is supported in this version of BlueZ and kernel. Should
+			now be true for all supported kernel versions.
+
+		boolean SupportsConnInfo [readonly]
+
+			Whether or not the GetConnInfo() API is supported in this version of BlueZ
+			and kernel. Should now be true for all supported kernel versions.
+
+Chromium Debug Interface
+========================
+
+Service		org.bluez
+Interface	org.chromium.Bluetooth.Debug
+Object path	/org/chromium/Bluetooth
+
+Methods		void SetLevels(byte bluezLevel, byte kernelLevel)
+
+			This method sets the verbosity levels of BlueZ and
+			kernel debug logs.
+
+			Possible errors: org.bluez.Error.Failed
+
+		void SetQuality(byte action)
+
+			This method enables or disables Bluetooth Quality
+			Report per the action parameter.
+
+			Possible errors: org.bluez.Error.Failed
+					 org.bluez.Error.InvalidArguments
+					 org.bluez.Error.NoSuchAdapter
+
+		void SetQualityDebug(boolean quality_debug)
+
+			This method enables or disables the quality debug flag
+			per the quality_debug parameter. When the flag is true,
+			it will print the Bluetooth quality report events to
+			the log on receiving the events from the kernel.
+
+			Possible errors: org.bluez.Error.Failed
+					 org.bluez.Error.InvalidArguments
+					 org.bluez.Error.NoSuchAdapter
+
+Properties	byte BluezLevel
+
+			Get the Bluez debug Level
+
+		byte KernelLevel
+
+			Get the kernel debug Level
+
+Chromium Metrics Interface
+========================
+
+Service		org.bluez
+Interface	org.chromium.Bluetooth.Metrics
+Object path	/org/chromium/Bluetooth
+
+Methods		void ReportHfpStatus(boolean isStart, uint16_t scoHandle)
+
+			This method is called to signal the state of HFP
+			transmission to BlueZ. The scoHandle parameter is
+			needed to work around some quirks in the AOSP BQR
+			implementation of some controllers. This shall be used
+			only for metrics purposes.
+
+			Possible errors: org.bluez.Error.Failed
+
+Chromium BluetoothDevice Interface
+==================================
+
+Service		org.bluez
+Interface	org.chromium.BluetoothDevice
+Object path	[variable prefix]/{hci0,hci1,...}/dev_XX_XX_XX_XX_XX_XX
+
+Methods		(uint16_t, uint16_t, uint16_t) GetConnInfo()
+
+			This method returns the RSSI, TX Power, and maximum TX Power readings for
+			the device if it is connected.
+
+			The return value is a tuple of
+					rssi: uint16
+							The RSSI of the remote device.
+
+					tx_power: uint16
+							The transmit power of the local adapter.
+
+					max_tx_power: uint16
+							The maximum transmit power of the local adapter.
+
+			An invalid value of -127 will be returned if a field cannot be read.
+
+			Possible errors: org.bluez.Error.NotReady
+					org.bluez.Error.Failed
+					org.bluez.Error.NotConnected
+					org.bluez.Error.DoesNotExist
+					org.bluez.Error.NotSupported
+
+		SetLEConnectionParameters(dict parameters)
+
+			This method sets the parameters to request when creating a LE connection
+			to the device. This call will fail if the device is already connected.
+
+			Parameters that may be set in the parameters dictionary include the
+			following:
+				MinimumConnectionInterval: uint16
+						The minimum connection interval. Must be a value between (0x0006 and
+						0x0C80). Note that to get the time in milliseconds, you must
+						multiply this value by 1.25ms.
+
+				MaximumConnectionInterval: uint16
+						The maximum connection interval. Must be a value between (0x0006 and
+						0x0C80) and greater than MinimumConnectionInterval. Note that to get
+						the time in milliseconds, you must multiply this value by 1.25ms.
+
+			Possible errors:
+					org.bluez.Error.NotReady
+					org.bluez.Error.AlreadyConnected
+					org.bluez.Error.Failed
+					org.bluez.Error.DoesNotExist
+					org.bluez.Error.NotSupported
+					org.bluez.Error.InvalidArguments

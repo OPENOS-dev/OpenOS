@@ -1,0 +1,87 @@
+From cdb887f2006ca9efae13bc83cfa5d4f373b85448 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Sergio=20G=C3=B3mez?= <sergio.g.delreal@gmail.com>
+Date: Mon, 25 Nov 2024 14:11:06 -0500
+Subject: [PATCH] pdftopdf: Introduce 'pagesize_requested' field in the
+ ProcessingParameters struct
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This commit backports from the master branch the implementation of the
+'pagesize_requested' field in the parameters for pdftopdf processing.
+
+Signed-off-by: Sergio Gómez <sergio.g.delreal@gmail.com>
+---
+ filter/pdftopdf/pdftopdf.cc           | 8 ++++++++
+ filter/pdftopdf/pdftopdf_processor.cc | 8 +++++++-
+ filter/pdftopdf/pdftopdf_processor.h  | 2 ++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/filter/pdftopdf/pdftopdf.cc b/filter/pdftopdf/pdftopdf.cc
+index 7a684a260..792202bd5 100644
+--- a/filter/pdftopdf/pdftopdf.cc
++++ b/filter/pdftopdf/pdftopdf.cc
+@@ -362,6 +362,14 @@ void getParameters(ppd_file_t *ppd,int num_options,cups_option_t *options,Proces
+     param.autoprint = true;
+   }
+ 
++  // Certain features require a given page size for the page to be
++  // printed or all pages of the document being the same size. Here we
++  // set param.pagesize_requested so that the default page size is used
++  // when no size got specified by the user.
++  if (param.fitplot || param.fillprint || param.autoprint || param.autofit ||
++      param.booklet != BOOKLET_OFF || param.nup.nupX > 1 || param.nup.nupY > 1)
++    param.pagesize_requested = true;
++
+   if (ppd && (ppd->landscape < 0)) { // direction the printer rotates landscape (90 or -90)
+     param.normal_landscape=ROT_270;
+   } else {
+diff --git a/filter/pdftopdf/pdftopdf_processor.cc b/filter/pdftopdf/pdftopdf_processor.cc
+index 9edb7fa08..c6c171d73 100644
+--- a/filter/pdftopdf/pdftopdf_processor.cc
++++ b/filter/pdftopdf/pdftopdf_processor.cc
+@@ -255,7 +255,8 @@ bool processPDFTOPDF(PDFTOPDF_Processor &proc,ProcessingParameters &param) // {{
+     param.page.top = param.page.height;
+   }
+ 
+-  if(param.fillprint||param.cropfit){
++  if (param.pagesize_requested && (param.fillprint || param.cropfit))
++  {
+     for(int i=0;i<(int)pages.size();i++)
+     {
+       std::shared_ptr<PDFTOPDF_PageHandle> page = pages[i];
+@@ -330,6 +331,11 @@ bool processPDFTOPDF(PDFTOPDF_Processor &proc,ProcessingParameters &param) // {{
+     PageRect rect;
+     rect = page->getRect();
+     //rect.dump();
++    if (!param.pagesize_requested)
++    {
++      param.page.width = param.page.right = rect.width;
++      param.page.height = param.page.top = rect.height;
++    }
+ 
+     bool newPage=nupstate.nextPage(rect.width,rect.height,pgedit);
+     if (newPage) {
+diff --git a/filter/pdftopdf/pdftopdf_processor.h b/filter/pdftopdf/pdftopdf_processor.h
+index 3d64d1a4e..597425e3c 100644
+--- a/filter/pdftopdf/pdftopdf_processor.h
++++ b/filter/pdftopdf/pdftopdf_processor.h
+@@ -13,6 +13,7 @@ struct ProcessingParameters {
+ ProcessingParameters()
+ : jobId(0),numCopies(1),
+     user(0),title(0),
++    pagesize_requested(false),
+     fitplot(false),
+     fillprint(false),  //print-scaling = fill
+     cropfit(false),
+@@ -59,6 +60,7 @@ ProcessingParameters()
+ 
+   int jobId, numCopies;
+   const char *user, *title; // will stay around
++  bool pagesize_requested;
+   bool fitplot;
+   bool fillprint;   //print-scaling = fill
+   bool cropfit;     // -o crop-to-fit
+-- 
+2.45.2
+

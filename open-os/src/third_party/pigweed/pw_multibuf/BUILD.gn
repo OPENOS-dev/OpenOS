@@ -1,0 +1,151 @@
+# Copyright 2023 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_build/facade.gni")
+import("$dir_pw_build/module_config.gni")
+import("$dir_pw_build/target_types.gni")
+import("$dir_pw_multibuf/backend.gni")
+import("$dir_pw_unit_test/test.gni")
+
+# LINT.IfChange
+pw_facade("pw_multibuf") {
+  backend = pw_multibuf_BACKEND
+  public_configs = [ ":public_include_path" ]
+  public = [
+    "public/pw_multibuf/allocator.h",
+    "public/pw_multibuf/chunk.h",
+    "public/pw_multibuf/from_span.h",
+    "public/pw_multibuf/header_chunk_region_tracker.h",
+    "public/pw_multibuf/multibuf.h",
+    "public/pw_multibuf/observer.h",
+    "public/pw_multibuf/simple_allocator.h",
+    "public/pw_multibuf/single_chunk_region_tracker.h",
+  ]
+  public_deps = [ ":config" ]
+}
+
+# allocator_async is kept as a separate facade to keep its dep on pw_thread via
+# pw_async2 from propagating to incompatible target platforms, e.g. fuchsia,
+# stm32xx, etc.
+pw_facade("allocator_async") {
+  backend = pw_multibuf_allocator_async_BACKEND
+  public_configs = [ ":public_include_path" ]
+  public = [ "public/pw_multibuf/allocator_async.h" ]
+  public_deps = [
+    ":allocator",
+    ":config",
+  ]
+}
+
+# LINT.ThenChange(BUILD.bazel, CMakeLists.txt)
+
+### Module configuration
+
+config("public_include_path") {
+  include_dirs = [ "public" ]
+  visibility = [ ":*" ]
+}
+
+config("private_include_path") {
+  include_dirs = [ "private" ]
+  visibility = [ ":*" ]
+}
+
+declare_args() {
+  # The build target that overrides the default configuration options for this
+  # module. This should point to a source set that provides defines through a
+  # public config (which may -include a file or add defines directly).
+  pw_multibuf_CONFIG = pw_build_DEFAULT_MODULE_CONFIG
+}
+
+# LINT.IfChange
+pw_source_set("config") {
+  public = [ "public/pw_multibuf/config.h" ]
+  public_configs = [ ":public_include_path" ]
+  public_deps = [ pw_multibuf_CONFIG ]
+  visibility = [ "./*" ]
+}
+
+# LINT.ThenChange(BUILD.bazel, CMakeLists.txt)
+
+### V1 Libraries
+
+group("allocator") {
+  public_deps = [ ":pw_multibuf" ]
+}
+
+group("chunk") {
+  public_deps = [ ":pw_multibuf" ]
+}
+
+group("from_span") {
+  public_deps = [ ":pw_multibuf" ]
+}
+
+group("header_chunk_region_tracker") {
+  public_deps = [ ":pw_multibuf" ]
+}
+
+group("simple_allocator") {
+  public_deps = [ ":pw_multibuf" ]
+}
+
+group("single_chunk_region_tracker") {
+  public_deps = [ ":pw_multibuf" ]
+}
+
+# LINT.IfChange
+
+pw_source_set("testing") {
+  testonly = pw_unit_test_TESTONLY
+  public = [ "public/pw_multibuf/simple_allocator_for_test.h" ]
+  public_configs = [ ":public_include_path" ]
+  public_deps = [
+    ":config",
+    ":simple_allocator",
+    "$dir_pw_allocator:synchronized_allocator",
+    "$dir_pw_allocator:testing",
+    "$dir_pw_assert:assert",
+    "$dir_pw_sync:mutex",
+  ]
+}
+
+pw_source_set("chunk_testing") {
+  testonly = pw_unit_test_TESTONLY
+  public = [ "private/pw_multibuf_private/chunk_test_base.h" ]
+  public_configs = [ ":private_include_path" ]
+  visibility = [ "$dir_pw_multibuf/*" ]
+  deps = [ dir_pw_unit_test ]
+}
+
+pw_source_set("test_utils") {
+  testonly = pw_unit_test_TESTONLY
+  public = [ "private/pw_multibuf_private/test_utils.h" ]
+  public_configs = [ ":private_include_path" ]
+  visibility = [ "$dir_pw_multibuf/*" ]
+}
+
+# LINT.ThenChange(BUILD.bazel, CMakeLists.txt)
+
+## Test group
+
+pw_test_group("tests") {
+  group_deps = [
+    "v1:tests",
+    "v1_adapter:tests",
+    "v2:tests",
+  ]
+}

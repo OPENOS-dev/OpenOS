@@ -1,0 +1,79 @@
+diff --git a/symbols/srvr_ctrl b/symbols/srvr_ctrl
+index 902c51c..f01200c 100644
+--- a/symbols/srvr_ctrl
++++ b/symbols/srvr_ctrl
+@@ -11,62 +11,62 @@ xkb_symbols "fkey2vt" {
+ 
+     key <FK01> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F1, F1, F1, F1, XF86_Switch_VT_1 ]
++	symbols[Group1]= [ F1, F1, F1, F1, F1 ]
+     };
+ 
+     key <FK02> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F2, F2, F2, F2, XF86_Switch_VT_2 ]
++	symbols[Group1]= [ F2, F2, F2, F2, F2 ]
+     };
+ 
+     key <FK03> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F3, F3, F3, F3, XF86_Switch_VT_3 ]
++	symbols[Group1]= [ F3, F3, F3, F3, F3 ]
+     };
+ 
+     key <FK04> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F4, F4, F4, F4, XF86_Switch_VT_4 ]
++	symbols[Group1]= [ F4, F4, F4, F4, F4 ]
+     };
+ 
+     key <FK05> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F5, F5, F5, F5, XF86_Switch_VT_5 ]
++	symbols[Group1]= [ F5, F5, F5, F5, F5 ]
+     };
+ 
+     key <FK06> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F6, F6, F6, F6, XF86_Switch_VT_6 ]
++	symbols[Group1]= [ F6, F6, F6, F6, F6 ]
+     };
+ 
+     key <FK07> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F7, F7, F7, F7, XF86_Switch_VT_7 ]
++	symbols[Group1]= [ F7, F7, F7, F7, F7 ]
+     };
+ 
+     key <FK08> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F8, F8, F8, F8, XF86_Switch_VT_8 ]
++	symbols[Group1]= [ F8, F8, F8, F8, F8 ]
+     };
+ 
+     key <FK09> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F9, F9, F9, F9, XF86_Switch_VT_9 ]
++	symbols[Group1]= [ F9, F9, F9, F9, F9 ]
+     };
+ 
+     key <FK10> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F10, F10, F10, F10, XF86_Switch_VT_10 ]
++	symbols[Group1]= [ F10, F10, F10, F10, F10 ]
+     };
+ 
+     key <FK11> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F11, F11, F11, F11, XF86_Switch_VT_11 ]
++	symbols[Group1]= [ F11, F11, F11, F11, F11 ]
+     };
+ 
+     key <FK12> {
+ 	type="CTRL+ALT",
+-	symbols[Group1]= [ F12, F12, F12, F12, XF86_Switch_VT_12 ]
++	symbols[Group1]= [ F12, F12, F12, F12, F12 ]
+     };
+ };
+ 

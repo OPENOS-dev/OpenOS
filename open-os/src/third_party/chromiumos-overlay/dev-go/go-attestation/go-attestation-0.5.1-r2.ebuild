@@ -1,0 +1,1 @@
+go-attestation-0.5.1.ebuild

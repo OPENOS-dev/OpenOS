@@ -1,0 +1,222 @@
+# Copyright 2009 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+app-accessibility/brltty	-beeper -contracted-braille -doc -fm -gpm -java -learn-mode -midi -ncurses -ocaml -pcm -speech -tcl -X
+app-admin/logrotate	-cron
+app-admin/rsyslog	-gcrypt -gnutls -openssl -ssl -zlib
+app-alternatives/awk	-gawk mawk
+app-benchmarks/i7z	-X
+app-editors/nano	-unicode
+app-editors/qemacs	-X
+app-editors/vim		-crypt -X minimal
+app-editors/vim-core    minimal
+
+# We do not use the tpm with gnupg
+app-crypt/gnupg -tpm
+
+# We don't use network functionality in bash, and since we ship it in a release
+# image, we'd prefer that attack surface simply not exist.
+app-shells/bash		-net
+# Drop this once we audit code to make sure we aren't using `echo -n` or `echo -e`.
+app-shells/dash	vanilla
+app-text/ghostscript-gpl	-dbus
+app-text/poppler	cairo
+app-text/tessdata_fast  osd
+app-text/tesseract      -doc jpeg -opencl -openmp png -static-libs tiff -training -webp
+dev-cpp/glog		gflags
+dev-cpp/msgpack-cxx	-boost
+dev-db/sqlite		-extensions
+# Disable Segger J-Link for building openocd-0.10.0. We currently
+# don't use J-Link. It requires upgrading libjaylink, which is not yet
+# supported by official Gentoo portage repository.
+dev-embedded/openocd	-jlink
+dev-lang/perl		gdbm
+dev-lang/python		gdbm -sqlite
+dev-libs/elfutils	-utils
+dev-libs/expat		-unicode
+dev-libs/glib		-dbus -doc
+dev-libs/libjcat        pkcs7
+dev-libs/libp11         -bindist
+# Readline is used by pcretest which we don't use.
+# zlib/bzip2 are only used by pcregrep which we don't use.
+dev-libs/libpcre	-bzip2 -readline -zlib
+# JIT uses mmap(..., PROT_WRITE | PROT_EXEC, ...)
+dev-libs/libpcre2	-bzip2 -jit -readline -zlib
+dev-libs/leveldb	-tcmalloc
+dev-libs/nss		-utils
+dev-libs/opencryptoki	tpmtok
+dev-libs/opensc	-pcsc-lite ctapi
+dev-libs/openssl	pkcs11 -tls-heartbeat
+dev-libs/protobuf	system-protoc
+dev-python/pygobject	-cairo
+dev-util/dialog		-unicode minimal
+dev-util/perf		-audit -doc -demangle -tui -ncurses -perl -python -slang -unwind
+chromeos-base/chromeos-chrome   build_tests
+chromeos-base/debugd    cfi thinlto
+chromeos-base/libbrillo	dbus
+chromeos-base/libchrome	dbus
+chromeos-base/nsswitch	zeroconf
+chromeos-base/oobe_config	dbus
+media-gfx/imagemagick	jpeg png svg tiff xml
+# Disable all SANE backends that don't support USB,
+# plus additional backends that metrics indicate have no users.
+# sane-backends and sane-backends-extras CAN NOT have the same backend enabled in both
+media-gfx/sane-backends sane_backends_epson2 sane_backends_epsonds sane_backends_fujitsu sane_backends_pixma sane_backends_test
+media-gfx/sane-backends-extras sane_backends_canon_dr sane_backends_genesys sane_backends_hp sane_backends_hp3900 sane_backends_hp5590 sane_backends_kodakaio sane_backends_lexmark sane_backends_pnm sane_backends_ricoh2 sane_backends_snapscan sane_backends_xerox_mfp
+# TODO(rishabhagr):b/268700936 Remove this once this package has been renamed
+media-gfx/sane-backends-extras-dlc sane_backends_canon_dr sane_backends_genesys sane_backends_hp sane_backends_hp3900 sane_backends_hp5590 sane_backends_kodakaio sane_backends_lexmark sane_backends_pnm sane_backends_ricoh2 sane_backends_snapscan sane_backends_xerox_mfp
+media-gfx/zbar		-dbus -gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
+media-libs/freeimage	jpeg png
+# TODO(derat): Unset glib for harfbuzz if/when pango is no longer needed:
+# http://crbug.com/691477
+media-libs/harfbuzz	-cairo -introspection
+media-libs/leptonica    zlib -gif jpeg  -jpeg2k png -static-libs -test tiff -utils -webp
+media-libs/libdvdread	-css
+media-libs/libsndfile	minimal
+# disabled in profiles/default/linux/package.use
+media-libs/mesa		gallium classic shared-glapi gles2 egl -gbm
+media-libs/opencv	-gtk python png jpeg -tiff v4l
+media-libs/openh264	utils
+media-libs/waffle	gbm
+media-plugins/live      -ssl
+media-sound/sox		alsa ogg
+# Libvpx is required for video recording using the vnc2video go module.
+# Libdrm is required for go/chrome-os-capture-ffmpeg.
+# Shared libs are used in release for go/a2dp-codecs-design-doc.
+# Avoid GPL and non-free components.
+media-video/ffmpeg vpx libdrm -gpl -openssl
+media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -dvd -dvdnav -enca -faac -faad -live -quicktime -mp3 -rar -real -speex -schroedinger -theora -tremor -toolame -twolame -vorbis -xscreensaver -x264 -xv -xvid
+net-analyzer/tcpdump	-chroot
+# bazel lrzsz builds require gettext which is behind the upstream nls use flag
+net-dialup/lrzsz nls
+net-dns/avahi-daemon	zeroconf
+net-dns/dnsmasq		-dbus script
+net-firewall/iptables	conntrack
+net-fs/samba		ads acl gnutls ldap winbind -addc -addns -ceph -cluster -gpg -pam -perl -python -test
+# C++ library of gnutls uses exceptions, which breaks with -fno-exceptions flag.
+# Clients don't need the C++ library anyway, so disabling it...
+net-libs/gnutls	-cxx
+net-libs/glib-networking -gnome -libproxy
+# We want HTTPS support in web server based on libmicrohttpd.
+# Also |messages| is for enabling POST processor in the library.
+net-libs/libmicrohttpd	ssl messages
+net-libs/libpcap	-dbus
+net-libs/libsoup	-ssl
+# Some required crypto algorithm is missing in OpenSSL, so ensure Libgcrypt is
+# used as the crypto backend (b/205061175).
+net-libs/libvncserver	-ssl gcrypt
+# Disable boost.asio in net-libs/nghttp2 (b/172893124).
+net-libs/nghttp2	-cxx
+net-misc/curl		adns -ftp -imap kerberos -pop3 -progress-meter -smtp -tftp
+net-misc/dhcpcd		crash dbus
+net-misc/dhcpcd-legacy	dbus
+net-misc/iperf		threads
+# arping is used by some wifi autotests.
+# tracepath is exposed to the user via crosh.
+net-misc/iputils	arping tracepath
+net-misc/ntp		caps
+net-misc/openssh	-hpn -X
+net-misc/tlsdate	dbus
+net-vpn/openvpn		pkcs11
+net-vpn/strongswan	cisco nat-transport -strongswan_plugins_unity pkcs11 eap -pam curl
+net-vpn/wireguard-tools	-wg-quick
+net-nds/openldap	minimal -cxx
+net-print/cups		-dbus zeroconf upstart
+net-print/cups-filters	-dbus -pclm -pdf -zeroconf
+net-print/hplip		minimal
+# squid requires gnutls 3.1.5 for ssl, default it to off until newer gnutls is available
+net-proxy/squid		-ssl
+net-proxy/tsocks	tordns
+# No support for bluetooth printing.
+net-wireless/bluez	-cups
+net-wireless/hostap-test	-dbus
+net-wireless/wpa_supplicant-cros	dbus debug -readline smartcard
+sys-apps/busybox	-pam -selinux
+sys-apps/baselayout	-auto_seed_etc_files
+sys-apps/coreutils	multicall
+sys-apps/dbus		-X
+sys-apps/fwupd		-gpg -man pkcs7 synaptics thunderbolt
+sys-apps/hwdata		-net -usb
+sys-apps/mawk		forced-sandbox
+sys-apps/sed		forced-sandbox
+sys-apps/smartmontools	minimal -daemon -update-drivedb
+sys-apps/systemd-tmpfiles selinux
+sys-apps/systemd-utils -boot selinux -udev
+sys-apps/usbguard	-dbus
+# pam is used by login, chsh, runuser, and su. shadow provides login & chsh so
+# they're disabled in util-linux. We disable su & runuser because we don't want
+# anyone using them.
+sys-apps/util-linux     -unicode -udev -pam
+# pam_unix: empty password is not OK
+sys-auth/pambase	-nullok
+sys-block/fio		aio
+sys-devel/bc		forced-sandbox
+sys-devel/gdb		python
+sys-devel/llvm		-multitarget -ncurses
+sys-fs/cryptsetup	-argon2
+sys-fs/lvm2		-lvm1 -readline -static thin lvm
+sys-fs/mtools		-X
+sys-fs/ntfs3g		-crypt external-fuse ntfsprogs -suid
+sys-fs/squashfs-tools	lzo lz4 lzma zstd
+sys-fs/udev		-devfs-compat -rule_generator hwdb acl
+sys-kernel/linux-firmware	linux_firmware_keyspan_usb
+
+# We use the chromeos-base/nsswitch package to provide nsswitch.conf.
+sys-libs/glibc -nsswitch
+
+# We disable berkdb in general, but we need gdbm to provide the API.
+sys-libs/gdbm		berkdb
+sys-libs/ldb		ldap -python -lmdb
+sys-libs/libnih		dbus
+# Use pcre2 rather than pcre as everything else has moved.
+sys-libs/libselinux	pcre2
+sys-libs/ncurses	-cxx -unicode tinfo
+# Readline requires the unicode flag to match sys-libs/ncurses.
+sys-libs/readline	-unicode
+sys-libs/talloc		-python
+sys-libs/timezone-data	zic-slim
+sys-libs/tdb		-python
+sys-libs/tevent		-python
+sys-libs/zlib		static-libs
+sys-power/powertop	-unicode
+sys-process/htop	-unicode
+sys-process/procps	-unicode
+x11-apps/igt-gpu-tools	tests
+x11-apps/xinit		minimal
+x11-base/xorg-server	-suid
+x11-libs/libdrm		libkms
+x11-libs/libdrm-tests	libkms
+x11-libs/cairo		-opengl
+x11-libs/libva		egl
+# Need png for color font support. bzip2 is not used. It's only for X11 *pcf.bz2
+# that we don't have.
+media-libs/freetype	png -bzip2
+
+# We don't need Python in these packages, so save some space.
+dev-libs/boost -python
+sys-apps/flashmap -python
+
+# We do not need udev rules in this package.
+dev-util/android-tools -udev
+
+# Lapack support in Numpy requires a FORTRAN toolchain.
+dev-python/numpy -lapack
+
+# Begin rolling out Python 3.11.
+dev-lang/python-exec python_targets_python3_11
+virtual/target-chromium-os-dev python_targets_python3_11
+virtual/target-chromium-os-test python_targets_python3_11
+
+# Set Python 3.11 as /usr/bin/python{,3}
+dev-lang/python-exec-conf -python_targets_python3_8
+
+# We do not need orc or opengl support in gstreamer
+media-libs/gstreamer		-orc
+media-libs/gst-plugins-base	-orc -opengl
+media-libs/gst-plugins-good	-orc
+media-libs/gst-plugins-bad	-orc -opengl
+
+# Wireshark is used by some tests (as tshark). Disable other binaries.
+net-analyzer/wireshark -capinfos -captype -dftest -dumpcap -editcap -gui
+net-analyzer/wireshark -mergecap -minizip -pcap -plugins -randpkt -randpktdump
+net-analyzer/wireshark -reordercap -sharkd -ssl -udpdump -text2pcap -zlib -zstd

@@ -1,0 +1,14 @@
+BDEPEND=>=app-eselect/eselect-iptables-20200508 app-eselect/eselect-iptables virtual/pkgconfig nftables? ( sys-devel/flex virtual/yacc ) virtual/pkgconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=compile configure install postinst prepare prerm
+DEPEND=conntrack? ( >=net-libs/libnetfilter_conntrack-1.0.6 ) netlink? ( net-libs/libnfnetlink ) nftables? ( >=net-libs/libmnl-1.0:0= >=net-libs/libnftnl-1.1.6:0= ) pcap? ( net-libs/libpcap ) virtual/os-headers >=sys-kernel/linux-headers-4.4:0
+DESCRIPTION=Linux kernel (2.4+) firewall, NAT and packet mangling tools
+EAPI=7
+HOMEPAGE=https://www.netfilter.org/projects/iptables/
+IUSE=conntrack ipv6 netlink nftables pcap static-libs split-usr
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=conntrack? ( >=net-libs/libnetfilter_conntrack-1.0.6 ) netlink? ( net-libs/libnfnetlink ) nftables? ( >=net-libs/libmnl-1.0:0= >=net-libs/libnftnl-1.1.6:0= ) pcap? ( net-libs/libpcap ) >=app-eselect/eselect-iptables-20200508 nftables? ( net-misc/ethertypes ) !<net-firewall/ebtables-2.0.11-r1 !<net-firewall/arptables-0.0.5-r1
+SLOT=0/1.8.3
+SRC_URI=https://www.netfilter.org/projects/iptables/files/iptables-1.8.5.tar.bz2
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	usr-ldscript	766f0a506b45f02361ad1b8ca205b7e1
+_md5_=85e950a818b48e5b17a2a8d35d51e89e

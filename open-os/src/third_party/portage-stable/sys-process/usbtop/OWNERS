@@ -1,0 +1,5 @@
+# The camera team first imported the ebuild
+include chromiumos/owners:v1:/camera/OWNERS.all
+
+# Allow everyone for now, since this tool is not camera specific
+*

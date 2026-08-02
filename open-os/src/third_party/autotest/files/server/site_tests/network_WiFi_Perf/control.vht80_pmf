@@ -1,0 +1,55 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'network_WiFi_Perf.vht80_pmf'
+METADATA = {
+    'contacts': ['chromeos-wifi-champs@google.com'],
+    'requirements': ['wifi-gen-0006-v01', 'wifi-tput-0016-v01', 'wifi-tput-0017-v01', 'wifi-tput-0018-v01', 'wifi-tput-0045-v01', 'wifi-tput-0046-v01', 'wifi-tput-0047-v01', 'wifi-proc-0009-v01', 'wifi-proc-0012-v01', 'wifi-proc-0013-v01', 'wifi-proc-0016-v01', 'wifi-proc-0020-v01'],
+    # ChromeOS > Platform > Connectivity > WiFi
+    'bug_component': 'b:893827',
+    # iperf and netperf are used to measure the throughput.
+    # Network: WPA2/WPA3 mixed and PMF enabled VHT80 802.11ac
+    'criteria': 'Measure and verify the maximal receiving and transmitting throughput on a DUT',
+    'hw_agnostic': False,
+}
+ATTRIBUTES = ''
+TIME = 'SHORT'
+MAX_RESULT_SIZE_KB = 512000
+TEST_TYPE = 'Server'
+DEPENDENCIES = 'wificell, peripheral_wifi_state:WORKING'
+
+
+from autotest_lib.client.common_lib.cros.network import xmlrpc_datatypes
+from autotest_lib.client.common_lib.cros.network import xmlrpc_security_types
+from autotest_lib.server.cros.network import hostap_config
+
+def run(machine):
+    n_caps = [hostap_config.HostapConfig.N_CAPABILITY_HT40_PLUS]
+    ac_caps = [hostap_config.HostapConfig.AC_CAPABILITY_SHORT_GI_80,
+               hostap_config.HostapConfig.AC_CAPABILITY_MAX_A_MPDU_LEN_EXP7]
+    ac_mode = hostap_config.HostapConfig.MODE_11AC_MIXED
+    channel_width_80_mhz = hostap_config.HostapConfig.VHT_CHANNEL_WIDTH_80
+    wpa_config = xmlrpc_security_types.WPAConfig(
+            psk='chromeos',
+            wpa_mode=xmlrpc_security_types.WPAConfig.MODE_MIXED_WPA3,
+            wpa_ciphers=[xmlrpc_security_types.WPAConfig.CIPHER_CCMP])
+
+    configs = [hostap_config.HostapConfig(
+                    channel=channel,
+                    mode=ac_mode,
+                    n_capabilities=n_caps,
+                    vht_channel_width=channel_width_80_mhz,
+                    vht_center_channel=vht_center_channel,
+                    pmf_support=hostap_config.HostapConfig.PMF_SUPPORT_ENABLED,
+                    ac_capabilities=ac_caps,
+                    security_config=wpa_config)
+               for channel, vht_center_channel in [(44, 42), (157, 155)]]
+    host = hosts.create_host(machine)
+    use_iperf = True
+    job.run_test('network_WiFi_Perf', tag=NAME.split('.')[1],
+                 host=host, raw_cmdline_args=args,
+                 additional_params=(configs, use_iperf))
+
+
+parallel_simple(run, machines)

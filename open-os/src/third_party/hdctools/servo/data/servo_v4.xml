@@ -1,0 +1,577 @@
+<?xml version="1.0"?>
+<root>
+  <include>
+    <name>common.xml</name>
+  </include>
+  <include>
+    <name>power_tools.xml</name>
+  </include>
+  <include>
+    <name>servo_v4_inas.xml</name>
+  </include>
+  <include>
+    <name>usb_image_management.xml</name>
+  </include>
+  <include>
+    <name>servo_adc_enabled_noop.xml</name>
+  </include>
+  <map>
+    <name>onoff_pwrsrc_sel</name>
+    <doc>Source DUT Type-C power from input Type-C or host USB.
+    Default is typec</doc>
+    <params host="0" typec="1"></params>
+  </map>
+  <map>
+    <name>onoff_sbu_uart_sel</name>
+    <doc>Select between CCD or UART on SBU. Default is CCD</doc>
+    <params ccd="0" uart="1"></params>
+  </map>
+  <map>
+    <name>onoff_fastboot_duthub_sel</name>
+    <doc>Select between DUT as host or device. Default is
+    host</doc>
+    <params device="0" host="1"></params>
+  </map>
+  <map>
+    <name>onoff_sd_usb_sel</name>
+    <doc>Select between sd and usb. Default is sd</doc>
+    <params usb="0" sd="1"></params>
+  </map>
+  <map>
+    <name>onoff_uservo_fastboot_sel</name>
+    <doc>Select between uservo and fastboot passthrough. Default is
+    uservo</doc>
+    <params uservo="0" fastboot="1"></params>
+  </map>
+  <map>
+    <name>usbkey</name>
+    <doc>Determines whether DUT or host sees USB port</doc>
+    <params servo_sees_usbkey="0" dut_sees_usbkey="1"></params>
+  </map>
+  <map>
+    <name>servo_v4_cc_map</name>
+    <doc>Enable CC and power config for various CCD modes</doc>
+    <params usbsnk="0" ccd="1" rpusb="2" rpchg="3" disconnect="4"
+     usbchg="5"></params>
+  </map>
+  <map>
+    <name>servo_v4_reinit_dut_usb3_en</name>
+    <doc>USB3 to DUT: enabled, disabled, or use automatic selection logic due to http://b/160426972</doc>
+    <params disabled="0" enabled="1" automatic="2"></params>
+  </map>
+  <map>
+    <name>servo_v4_type_map</name>
+    <doc>Identify type-A and type-C servos</doc>
+    <params type-a="0" type-c="1"></params>
+  </map>
+
+  <!-- GPIO on chip settings -->
+  <control>
+    <name>fastboot_duthub_mux_sel</name>
+    <alias>dut_is_host_or_device</alias>
+    <doc>FASTBOOT_DUTHUB_MUX_SEL: Select DUT USB routed as device
+    to host, or as host to duthub</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="FASTBOOT_DUTHUB_MUX_SEL" map="onoff_fastboot_duthub_sel"
+     init="host"></params>
+  </control>
+  <control>
+    <name>sbu_mux_enable</name>
+    <doc>SBU_MUX_EN: enable DUT's SBU routing</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="SBU_MUX_EN" map="onoff"></params>
+  </control>
+  <control>
+    <name>dut_usb_mux_enable</name>
+    <doc>FASTBOOT_DUTHUB_MUX_EN_L: enable DUT's USB interface</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="FASTBOOT_DUTHUB_MUX_EN_L" map="onoff_i" init="on"></params>
+  </control>
+  <control>
+    <name>dut_hub_usb_reset</name>
+    <alias>dut_hub1_rst1</alias>
+    <doc>DUT_HUB_USB_RESET_L: reset dut's usb hub</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="DUT_HUB_USB_RESET_L" map="onoff_i" init="off"></params>
+  </control>
+  <control>
+    <name>at_hwb</name>
+    <doc>ATMEL_HWB_L: enable DFU programming of atmega</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="ATMEL_HWB_L" map="onoff_i" init="off"></params>
+  </control>
+  <control>
+    <name>sd_en</name>
+    <doc>EMMC_MUX_EN_L: enable sd mux connection</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="EMMC_MUX_EN_L" map="onoff_i" init="off"></params>
+  </control>
+  <control>
+    <name>sd_pwr_en</name>
+    <doc>EMMC_PWR_EN</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="EMMC_PWR_EN" map="onoff" init="off"></params>
+  </control>
+  <control>
+    <name>uservo_pwr_fault</name>
+    <doc>USERVO_FAULT_L</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="USERVO_FAULT_L" map="onoff_i"></params>
+  </control>
+  <control>
+    <name>usb3_pwr_fault</name>
+    <doc>USB_FAULT_L</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="USB_FAULT_L" map="onoff_i"></params>
+  </control>
+  <control>
+    <name>servo_v4_type</name>
+    <alias>dut_connection_type</alias>
+    <doc>DONGLE_DET</doc>
+    <params interface="26" drv="ec3po_gpio" subtype="single"
+     name="DONGLE_DET" map="servo_v4_type_map"></params>
+  </control>
+
+  <!-- GPIO on expander settings -->
+  <control>
+    <name>sbu_uart_sel</name>
+    <doc>SBU_UART_SEL: Select between CCD or UART on SBU</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="0" map="onoff_sbu_uart_sel" init="ccd"></params>
+  </control>
+  <control>
+    <name>atmega_rst</name>
+    <doc>ATMEL_RESET_L: reset atmega</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="1" map="onoff_i" init="off"></params>
+  </control>
+  <control>
+    <name>sbu_flip_sel</name>
+    <doc>SBU_FLIP_SEL: Flip SBU lines based on cable
+    rotation.</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="2" map="onoff"></params>
+  </control>
+  <control>
+    <name>usb3_mux_sel</name>
+    <alias>usb_mux_sel1,image_usbkey_mux</alias>
+    <doc>USB3.0_TYPEA_MUX_SEL</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="3" map="usbkey" init="dut_sees_usbkey"></params>
+  </control>
+  <control>
+    <name>usb3_mux_en</name>
+    <alias>usb_mux_oe1</alias>
+    <doc>USB3.0_TYPEA_MUX_EN_L</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="4" map="onoff_i" init="on"></params>
+  </control>
+  <control>
+    <name>usb3_pwr_en</name>
+    <alias>prtctl4_pwren,image_usbkey_pwr</alias>
+    <doc>USB3.0_TYPE_A_PWR_EN</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="5" map="onoff" init="on"></params>
+  </control>
+  <control>
+    <name>host_sd_usb_mux_sel</name>
+    <doc>TYPEA_EMMC_MUX_SEL</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="6" map="onoff_sd_usb_sel" init="usb"></params>
+  </control>
+  <control>
+    <name>uservo_pwr_en</name>
+    <doc>USERVO_POWER_EN</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="0"
+    offset="7" map="onoff" init="on"></params>
+  </control>
+  <control>
+    <name>uservo_fastboot_mux_sel</name>
+    <doc>USERVO_FASTBOOT_MUX_SEL</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="1"
+    offset="0" map="onoff_uservo_fastboot_sel" init="uservo">
+    </params>
+  </control>
+  <control>
+    <name>host_sd_usb_mux_en</name>
+    <doc>TYPEA_EMMC_MUX_EN_L</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="1"
+    offset="1" map="onoff_i" init="on"></params>
+  </control>
+  <control>
+    <name>sd_mux_sel</name>
+    <doc>EMMC_MUX_SEL</doc>
+    <params interface="23" drv="tca6416" child="0x20" port="1"
+    offset="2" map="usbkey" init="servo_sees_usbkey"></params>
+  </control>
+
+  <control>
+    <name>image_usbkey_dev</name>
+    <doc>Get USB dev attached to this servo</doc>
+    <params subtype="image_usbkey_dev" interface="servo" drv="usb_image_manager"
+      hub_ports="4" usb_power_off_delay="2" hub_on_port="True"
+      error_amendment="Make sure you are using the usb port next to the
+      ethernet adapter."></params>
+  </control>
+
+  <control>
+    <!--
+      Most human and automation uses should use reinit_dut_usb3_en instead of
+      this low-level control.
+    -->
+    <name>dut_usb3_en</name>
+    <alias>servo_v4_dut_usb3_en</alias>
+    <doc>Enable Parade USB3 mux on DUT type-c</doc>
+    <params interface="23" drv="ps8742" child="0x10" port="1"
+    subtype="usb3" map="enabled"></params>
+  </control>
+
+  <control>
+    <!--
+      When patching this control to change init= from a board overlay, please
+      use (include) dut_usb3_disabled.xml or dut_usb3_enabled.xml if applicable,
+      rather than hardcoding this control name or its allowed values directly in
+      the board overlay.
+    -->
+    <name>reinit_dut_usb3_en</name>
+    <alias>servo_v4_reinit_dut_usb3_en</alias>
+    <doc>Reinitialize DUT-facing USB3 mux. This is a wrapper around dut_usb3_en.
+    When this results in a change in dut_usb3_en value, and dut_hub_usb_reset is
+    off, this will toggle on dut_hub_usb_reset briefly to force DUT USB
+    reinitialization.  When this is set to special value automatic, then
+    dut_usb3_en:on or dut_usb3_en:off is selected based on
+    Servo v4 serial number.  See:
+    https://issuetracker.google.com/160426972
+    https://issuetracker.google.com/163418494</doc>
+    <params interface="servo" drv="servo_v4" subtype="reinit_dut_usb3_en"
+    map="servo_v4_reinit_dut_usb3_en" automatic_default="disabled"
+    init="automatic" usb_reset_ms="500"></params>
+  </control>
+
+  <control>
+    <name>servo_v4_dut_cc1_mv</name>
+    <alias>servo_dut_cc1_mv</alias>
+    <doc>DUT CC1 voltage level</doc>
+    <params cmd="get" uart_cmd="adc" regex="DUT_CC1_PD = (\d+)" interface="26"
+      drv="simple_ec" group="1"></params>
+  </control>
+
+  <control>
+    <name>servo_v4_dut_cc2_mv</name>
+    <alias>servo_dut_cc2_mv</alias>
+    <doc>DUT CC2 voltage level</doc>
+    <params cmd="get" uart_cmd="adc" regex="DUT_CC2_PD = (\d+)" interface="26"
+      drv="simple_ec" group="1"></params>
+  </control>
+
+  <control>
+    <name>servo_v4_chg_cc1_mv</name>
+    <alias>servo_chg_cc1_mv</alias>
+    <doc>Charge port CC1 voltage level</doc>
+    <params cmd="get" uart_cmd="adc" regex="CHG_CC1_PD = (\d+)" interface="26"
+      drv="simple_ec" group="1"></params>
+  </control>
+
+  <control>
+    <name>servo_v4_chg_cc2_mv</name>
+    <alias>servo_chg_cc2_mv</alias>
+    <doc>Charge port CC2 voltage level</doc>
+    <params cmd="get" uart_cmd="adc" regex="CHG_CC2_PD = (\d+)" interface="26"
+      drv="simple_ec" group="1"></params>
+  </control>
+
+  <control>
+    <name>servo_v4_dut_sbu1_mv</name>
+    <alias>servo_dut_sbu1_mv</alias>
+    <doc>SBU1 voltage level</doc>
+    <params cmd="get" uart_cmd="adc" regex="SBU1_DET = (\d+)" interface="26"
+      drv="simple_ec" group="1"></params>
+  </control>
+
+  <control>
+    <name>servo_v4_dut_sbu2_mv</name>
+    <alias>servo_dut_sbu2_mv</alias>
+    <doc>SBU2 voltage level</doc>
+    <params cmd="get" uart_cmd="adc" regex="SBU2_DET = (\d+)" interface="26"
+      drv="simple_ec" group="1"></params>
+  </control>
+  <control>
+    <name>macaddr</name>
+    <doc>cached mac address for NIC on servo v4</doc>
+    <params cmd="get" interface="26" drv="simple_ec" uart_cmd="macaddr"
+            regex="([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})|Uninitialized"
+            group="0"/>
+    <params cmd="set" interface="26" drv="simple_ec" uart_cmd="macaddr set"
+            input_type="str" choices="^([0-9A-Fa-f]{2}[:]){5}[0-9A-Fa-f]{2}$"/>
+  </control>
+  <!-- firmware version introspection controls -->
+  <control>
+    <name>servo_v4_version</name>
+    <alias>servo_fw_version</alias>
+    <doc>current fw version</doc>
+    <params cmd="get" interface="26" drv="simple_ec" uart_cmd="version"
+      regex="RO:\s+(\S*_v?[\d.\w\+-]+)[\n\r]" group="1" formatting="strip"
+      tags="servo_fw_version"/>
+  </control>
+  <control>
+    <name>servo_v4_latest_stable_version</name>
+    <alias>servo_v4_latest_version,servo_latest_fw_version</alias>
+    <doc>servo-firmware available fw version</doc>
+    <params cmd="get" interface="servo" drv="servo_updater_reader"
+      board="servo_v4" channel="stable"/>
+  </control>
+  <control>
+    <name>servo_v4_firmware_channel</name>
+    <alias>servo_firmware_channel</alias>
+    <doc>which channel the current servo v4 firmware is from</doc>
+    <params cmd="get" interface="servo" drv="servo_updater_channel_parser"
+      board="servo_v4"/>
+  </control>
+  <control>
+    <name>servo_v4_firmware_uptodate</name>
+    <alias>servo_firmware_uptodate</alias>
+    <doc>whether servo v4 firmware is to update</doc>
+    <params cmd="get" interface="servo" drv="servo_firmware_checker"
+      board="servo_v4" map="yesno"/>
+    <params cmd="set" interface="servo" drv="servo_firmware_checker"
+      board="servo_v4" map="check" init="check"/>
+  </control>
+  <!-- dut interaction controls -->
+  <control>
+    <name>active_v4_device</name>
+    <alias>active_dut_controller</alias>
+    <doc>shows the active servo device servo_micro, ccd_cr50, or c2d2</doc>
+    <params drv="active_v4_device" interface="servo" input_type="str"
+      subtype="device"></params>
+  </control>
+  <control>
+    <name>init_usb_keyboard</name>
+    <doc>initialize usb keyboard handler</doc>
+    <params map="onoff" init="off" drv="kb_handler_init" interface="servo"
+      subtype="init_usb_keyboard"></params>
+  </control>
+
+  <!-- UART and CONSOLE settings -->
+  <control>
+    <name>raw_servo_v4_uart_pty</name>
+    <alias>raw_servo_uart_pty</alias>
+    <doc>Servo V4's stm32 console.</doc>
+    <params cmd="get" subtype="pty" interface="22" drv="uart">
+    </params>
+  </control>
+  <control>
+    <name>dut_pty</name>
+    <doc>UART routed to DUT's SBU lines.</doc>
+    <params cmd="get" subtype="pty" interface="24" drv="uart">
+    </params>
+  </control>
+  <control>
+    <name>atmega_pty</name>
+    <doc>UART routed to atmega mcu for keyboard emulator.</doc>
+    <params cmd="get" subtype="pty" interface="25" drv="uart">
+    </params>
+  </control>
+  <!-- EC-3PO console interpreter linkup -->
+  <control>
+    <name>ec3po_servo_v4_uart</name>
+    <alias>servo_v4_uart_pty,servo_uart_pty,ec3po_servo_uart</alias>
+    <doc>Servo v4 console provided via EC-3PO console
+    interpreter.</doc>
+    <params cmd="get" subtype="pty" interface="26" drv="uart">
+    </params>
+  </control>
+  <control>
+    <name>servo_v4_ec3po_interp_connect</name>
+    <alias>servo_ec3po_interp_connect</alias>
+    <doc>State indicating if interpreter is listening to the servo
+    console.</doc>
+    <params interface="26" drv="ec3po_driver" map="onoff" init="on"
+    subtype="interp_connect"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_raw_debug</name>
+    <alias>servo_uart_raw_debug</alias>
+    <doc>Turn on per-message-received logs to the servo v4 console
+      messages.</doc>
+    <params interface="26" drv="ec3po_driver" map="onoff" init="off"
+    subtype="raw_debug"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_timestamp</name>
+    <alias>servo_uart_timestamp</alias>
+    <doc>Add timestamps to the servo v4 console messages</doc>
+    <params interface="26" drv="ec3po_driver" map="onoff" init="on"
+    subtype="timestamp"></params>
+  </control>
+  <control>
+    <name>servo_v4_loglevel</name>
+    <alias>servo_loglevel</alias>
+    <doc>servo v4 console loglevel</doc>
+    <params interface="26" drv="ec3po_driver" input_type="str"
+    subtype="loglevel"></params>
+  </control>
+  <!-- Fault detection controls to help debug/recover issues.-->
+  <control>
+    <name>dut_controller_missing_fault</name>
+    <doc>Whether a main dut-controller is missing.</doc>
+    <params interface="servo" drv="sflag" map="onoff" tags="fault_flag">
+    </params>
+  </control>
+  <control>
+    <name>dut_sbu_voltage_float_fault</name>
+    <doc>Whether the ccd sbu voltage was floating between high and low (i.e.
+      over 300mV and under 2500mV.</doc>
+    <params interface="servo" drv="sflag" map="onoff" tags="fault_flag">
+    </params>
+  </control>
+  <!-- Servo V4 Console Automation Controls -->
+  <control>
+    <name>servo_v4_uart_cmd</name>
+    <alias>servo_uart_cmd</alias>
+    <doc>Set to send command to the servo v4 console. Get to obtain the
+    matched results with the regular expression of
+    servo_v4_uart_regexp.</doc>
+    <params subtype="uart_cmd" interface="26" drv="uart" input_type="str"
+    tags="servo_cmd_ctrl"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_timeout</name>
+    <alias>servo_uart_timeout</alias>
+    <doc>Timeout value for waiting servo v4 console response of issuing
+    an EC command.</doc>
+    <params subtype="uart_timeout" interface="26" drv="uart"
+    input_type="float"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_multicmd</name>
+    <alias>servo_uart_multicmd</alias>
+    <doc>Set to send multiple commands to the servo v4 console.</doc>
+    <params interface="26" drv="na" cmd="get"></params>
+    <params subtype="uart_multicmd" interface="26" drv="uart" input_type="str"
+    cmd="set"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_regexp</name>
+    <alias>servo_uart_regexp</alias>
+    <doc>List of regular expressions to match the response of
+    servo_v4_uart_cmd.</doc>
+    <params subtype="uart_regexp" interface="26" drv="uart"
+    input_type="str"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_capture</name>
+    <alias>servo_uart_capture</alias>
+    <doc>enable servo v4 console capture</doc>
+    <params subtype="uart_capture" interface="26" drv="uart"
+    map="onoff"></params>
+  </control>
+  <control>
+    <name>servo_v4_uart_stream</name>
+    <alias>servo_uart_stream</alias>
+    <doc>servo v4 console stream collected while servo_v4_uart_capture on</doc>
+    <params cmd="get" subtype="uart_stream" interface="26" drv="uart"></params>
+  </control>
+  <!-- DTS mode control -->
+  <control>
+    <name>servo_v4_dts_mode</name>
+    <alias>servo_dts_mode</alias>
+    <doc>Enable/disable DTS mode on servo_v4</doc>
+    <params subtype="servo_v4_dts_mode" interface="26" drv="ec3po_servo_v4"
+    input_type="str" init="on"></params>
+  </control>
+  <control>
+    <name>ada_srccaps</name>
+    <doc>SrcCap of the adapter connected to servo_v4</doc>
+    <params subtype="ada_srccaps" interface="26" drv="ec3po_servo_v4"
+    input_type="str" cmd="get"></params>
+  </control>
+  <control>
+    <name>servo_v4_role</name>
+    <alias>servo_pd_role</alias>
+    <doc>Power role for DUT port on servo_v4</doc>
+    <params subtype="servo_v4_power_role" interface="26" drv="ec3po_servo_v4"
+    input_type="str"></params>
+  </control>
+  <control>
+    <name>servo_v4_pd_comm</name>
+    <alias>servo_pd_comm</alias>
+    <doc>PD communication for DUT port on servo_v4</doc>
+    <params subtype="servo_v4_pd_comm" interface="26" drv="ec3po_servo_v4"
+    input_type="str"></params>
+  </control>
+  <map>
+    <name>pdrole</name>
+    <doc>map for USB-PD port role (will be deprecated by pdpr)</doc>
+    <params sink="0" src5v="1" src12v="2" src20v="3"></params>
+  </map>
+  <map>
+    <name>pdpr</name>
+    <doc>map for USB-PD port power role</doc>
+    <params sink="0" src5v="5" src9v="9" src10v="10" src12v="12" src15v="15"
+    src20v="20"></params>
+  </map>
+  <map>
+    <name>polarity</name>
+    <doc>map for USB-C polarity</doc>
+    <params cc1="0" cc2="1"></params>
+  </map>
+  <control>
+    <name>usbc_role</name>
+    <doc>USB-PD port role (will be deprecated by usbc_pr)</doc>
+    <params interface="26" drv="ec3po_servo_v4" subtype="usbc_role"
+    map="pdrole"></params>
+  </control>
+  <control>
+    <name>usbc_pr</name>
+    <doc>USB-PD port power role</doc>
+    <params interface="26" drv="ec3po_servo_v4" subtype="usbc_pr"
+    map="pdpr"></params>
+  </control>
+  <control>
+    <name>usbc_polarity</name>
+    <doc>USB-C polarity</doc>
+    <params interface="26" drv="ec3po_servo_v4" subtype="usbc_polarity"
+    map="polarity"></params>
+  </control>
+  <control>
+    <name>usbc_prswap</name>
+    <doc>USB-PD power role</doc>
+    <params cmd="get" uart_cmd="usbc_action prswap"
+    regex="allow_pr_swap = \d" group="0" interface="26" drv="ec3po_servo"/>
+    <params cmd="set" uart_cmd="usbc_action prswap"
+    interface="26" drv="ec3po_servo" input_type="str" choices="^(0|1)$"/>
+  </control>
+  <control>
+    <name>usbc_drswap</name>
+    <doc>USB-PD data role</doc>
+    <params cmd="get" uart_cmd="usbc_action drswap"
+    regex="allow_dr_swap = \d" group="0" interface="26" drv="ec3po_servo"/>
+    <params cmd="set" uart_cmd="usbc_action drswap"
+    interface="26" drv="ec3po_servo" input_type="str" choices="^(0|1)$"/>
+  </control>
+  <!-- Debug helper controls -->
+  <control>
+    <name>servo_v4_panicinfo</name>
+    <alias>servo_panicinfo</alias>
+    <doc>Get panicinfo output for servo v4.</doc>
+    <params interface="26" drv="simple_ec"
+      uart_cmd="panicinfo" regex="panicinfo(.*)>" group="1"
+      tags="servo_mcu_panicinfo" formatting="strip"/>
+  </control>
+  <!-- Controls used by PD FAFT -->
+  <control>
+    <name>ppdut5_mv</name>
+    <alias>vbus_voltage</alias>
+    <params clobber_ok="patch"></params>
+  </control>
+  <control>
+    <name>ppdut5_ma</name>
+    <alias>vbus_current</alias>
+    <params clobber_ok="patch"></params>
+  </control>
+  <control>
+    <name>ppdut5_mw</name>
+    <alias>vbus_power</alias>
+    <params clobber_ok="patch"></params>
+  </control>
+</root>

@@ -1,0 +1,26 @@
+Rust 1.78 has alignment checks for std::ptr functions (e.g., write_volatile). As
+written, this test did not write to a correctly-aligned pointer.
+
+Upgrading data_model to crosvm's HEAD seems like a difficult task; fix the test
+to unblock Rust 1.78.
+
+diff --git a/volatile_memory.rs b/volatile_memory.rs
+index 94ff230..d045d04 100644
+--- a/src/volatile_memory.rs
++++ b/src/volatile_memory.rs
+@@ -464,9 +464,13 @@ mod tests {
+ 
+     #[test]
+     fn ref_to_slice() {
+-        let mut a = [1u8; 5];
++        // We're storing a u32 here, so this slice needs to be suitably aligned.
++        #[repr(align(4))]
++        struct Slice([u8; 8]);
++        let mut slice = Slice([1u8; 8]);
++        let a = &mut slice.0;
+         let a_ref = VolatileSlice::new(&mut a[..]);
+-        let v_ref = a_ref.get_ref(1).unwrap();
++        let v_ref = a_ref.get_ref(4).unwrap();
+         v_ref.store(0x12345678u32);
+         let ref_slice = v_ref.to_slice();
+         assert_eq!(v_ref.as_mut_ptr() as usize, ref_slice.as_mut_ptr() as usize);

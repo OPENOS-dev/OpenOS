@@ -1,0 +1,39 @@
+From 23ab88a9fdbbf4d99254d1d79f84af9e3e1e43a9 Mon Sep 17 00:00:00 2001
+From: Yiwei Zhang <zzyiwei@chromium.org>
+Date: Thu, 29 Feb 2024 08:46:32 +0000
+Subject: [PATCH] CHROMIUM: disable timeline semaphore for QC platforms for
+ ARC-R
+
+Will carry this till ARC-T uprev for those platforms.
+
+BUG=b:327313728
+TEST=timeline semaphore cts passing as skipped
+
+Change-Id: Idb735458219530b8670dbd9a59675df4dd5c85f9
+---
+ src/virtio/vulkan/vn_physical_device.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/virtio/vulkan/vn_physical_device.c b/src/virtio/vulkan/vn_physical_device.c
+index 1cdb4881ef9..7d7d3747ac7 100644
+--- a/src/virtio/vulkan/vn_physical_device.c
++++ b/src/virtio/vulkan/vn_physical_device.c
+@@ -1255,6 +1255,15 @@ vn_physical_device_init_supported_extensions(
+ #ifdef ANDROID
+       if (!vk_android_allowed_device_extensions.extensions[i])
+          continue;
++
++#if ANDROID_API_LEVEL < 33
++      static const struct vk_device_extension_table blocked = {
++         .KHR_timeline_semaphore = true,
++      };
++      if (blocked.extensions[i])
++         continue;
++#endif
++
+ #endif
+ 
+       if (native.extensions[i]) {
+-- 
+2.44.0.278.ge034bb2e1d-goog
+

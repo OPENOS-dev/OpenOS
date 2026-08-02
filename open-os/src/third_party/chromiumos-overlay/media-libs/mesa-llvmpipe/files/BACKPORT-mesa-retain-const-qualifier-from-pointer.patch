@@ -1,0 +1,100 @@
+From f4f64d7217958afbdc403746c49a016d62228473 Mon Sep 17 00:00:00 2001
+From: Rudi Heitbaum <rudi@heitbaum.com>
+Date: Fri, 24 Apr 2026 19:47:50 +0300
+Subject: [PATCH] mesa: retain const qualifier from pointer
+
+Since glibc-2.43:
+
+For ISO C23, the functions bsearch, memchr, strchr, strpbrk, strrchr, strstr, wcschr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers into their input arrays now have definitions as macros that return a pointer to a const-qualified type when the input argument is a pointer to a const-qualified type.
+
+https://lists.gnu.org/archive/html/info-gnu/2026-01/msg00005.html
+
+Resolves the following warnings:
+    src/mesa/glapi/glapi/gen/enums.c: In function '_mesa_enum_to_string':
+    src/mesa/glapi/glapi/gen/enums.c:7799:8: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+     7799 |    elt = bsearch(& nr, enum_string_table_offsets,
+          |        ^
+
+    ../src/egl/main/egldispatchstubs.c: In function 'FindProcIndex':
+    ../src/egl/main/egldispatchstubs.c:52:7: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+       52 |       bsearch(name, __EGL_DISPATCH_FUNC_NAMES, __EGL_DISPATCH_COUNT,
+          |       ^~~~~~~
+
+Signed-off-by: Rudi Heitbaum <rudi@heitbaum.com>
+(cherry picked from commit 1acc96b8cb0c503368a512661e3d70e3542662d9)
+
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/39828>
+
+Backported onto mesa 22.0.2 with two adjustments beyond the verbatim
+cherry-pick:
+
+  1. The upstream patch touches src/mesa/glapi/glapi/gen/gl_enums.py
+     (post-move path); in 22.0.2 the generator still lives at
+     src/mapi/glapi/gen/gl_enums.py, so the same hunk is applied there.
+
+  2. Additional local hunk (not in the upstream commit) for
+     src/gallium/targets/dri/megadriver_stub.c: the same C23/glibc
+     const-return rule also breaks "driver_name = strrchr(info.dli_fname,
+     '/')" here, since info.dli_fname is const char *. Upstream resolved
+     this by removing megadriver_stub.c entirely in commit d43e6a9a497
+     ("dri: Remove the megadriver compat stub") which is too invasive
+     for a stable 22.0.2 backport.
+
+[Backported to 22.0.2]
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+---
+ src/egl/main/egldispatchstubs.c           |  2 +-
+ src/gallium/targets/dri/megadriver_stub.c |  2 +-
+ src/mapi/glapi/gen/gl_enums.py            | 10 ++++------
+ 3 files changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/src/egl/main/egldispatchstubs.c b/src/egl/main/egldispatchstubs.c
+index ee9c8f5f68d..b58264ee639 100644
+--- a/src/egl/main/egldispatchstubs.c
++++ b/src/egl/main/egldispatchstubs.c
+@@ -46,7 +46,7 @@ static int Compare(const void *l, const void *r)
+ 
+ static int FindProcIndex(const char *name)
+ {
+-    const char **match = bsearch(name, __EGL_DISPATCH_FUNC_NAMES,
++    const char * const *match = bsearch(name, __EGL_DISPATCH_FUNC_NAMES,
+             __EGL_DISPATCH_COUNT, sizeof(const char *), Compare);
+ 
+     if (match == NULL)
+diff --git a/src/gallium/targets/dri/megadriver_stub.c b/src/gallium/targets/dri/megadriver_stub.c
+index 484c83548b1..5bbe91f4b5e 100644
+--- a/src/gallium/targets/dri/megadriver_stub.c
++++ b/src/gallium/targets/dri/megadriver_stub.c
+@@ -77,7 +77,7 @@ megadriver_stub_init(void)
+       return;
+ 
+    /* Search for the last '/' character in the path. */
+-   driver_name = strrchr(info.dli_fname, '/');
++   driver_name = (char *) strrchr(info.dli_fname, '/');
+    if (driver_name != NULL) {
+       /* Skip '/' character */
+       driver_name++;
+diff --git a/src/mapi/glapi/gen/gl_enums.py b/src/mapi/glapi/gen/gl_enums.py
+index 02cc2bf8a6b..36f72de237a 100644
+--- a/src/mapi/glapi/gen/gl_enums.py
++++ b/src/mapi/glapi/gen/gl_enums.py
+@@ -89,12 +89,10 @@ static char token_tmp[20];
+ const char *
+ _mesa_enum_to_string(int nr)
+ {
+-   enum_elt *elt;
+-
+-   elt = bsearch(& nr, enum_string_table_offsets,
+-                 ARRAY_SIZE(enum_string_table_offsets),
+-                 sizeof(enum_string_table_offsets[0]),
+-                 (cfunc) compar_nr);
++   const enum_elt *elt = bsearch(& nr, enum_string_table_offsets,
++                                 ARRAY_SIZE(enum_string_table_offsets),
++                                 sizeof(enum_string_table_offsets[0]),
++                                 (cfunc) compar_nr);
+ 
+    if (elt != NULL) {
+       return &enum_string_table[elt->offset];
+-- 
+2.53.0
+

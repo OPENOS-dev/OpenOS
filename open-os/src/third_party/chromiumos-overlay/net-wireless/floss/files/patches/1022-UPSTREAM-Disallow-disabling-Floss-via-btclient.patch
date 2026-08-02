@@ -1,0 +1,28 @@
+From 33972afd96c14519d52dc4af2293ca05172bec7a Mon Sep 17 00:00:00 2001
+From: Michael Sun <michaelfsun@google.com>
+Date: Thu, 18 Jun 2026 18:08:42 +0000
+Subject: [PATCH] floss: Disallow disabling Floss via btclient
+
+Disallow disabling Floss via btclient.
+- Modify btclient to return an error when `floss disable` is called.
+- Keep the D-Bus API SetFlossEnabled(false) working to support internal users (e.g. factory team) who still need to switch to BlueZ.
+
+Bug: 525110844
+Test: Verified on device that `btclient --restricted -c "floss disable"` fails, but `btclient -c "floss disable"` and D-Bus SetFlossEnabled(false) still work.
+Flag: EXEMPT HOST_MODE
+
+Change-Id: I6fe3b239a5b2bd3cf19758c268a400e7b9a1b41c
+---
+ floss/rust/linux/client/src/command_handler.rs | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/floss/rust/linux/client/src/command_handler.rs b/floss/rust/linux/client/src/command_handler.rs
+index aaed44ae35..27559b547a 100644
+--- a/floss/rust/linux/client/src/command_handler.rs
++++ b/floss/rust/linux/client/src/command_handler.rs
+@@ -1097,2 +1097,5 @@ impl CommandHandler {
+             "disable" => {
++                if self.lock_context().is_restricted {
++                    return Err("Disabling Floss is not allowed.".into());
++                }
+                 self.lock_context().manager_dbus.set_floss_enabled(false);

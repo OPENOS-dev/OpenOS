@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go nls? ( sys-devel/gettext ) verify-sig? ( app-crypt/openpgp-keys-linuxcontainers ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 virtual/pkgconfig verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 ) dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile configure install postinst preinst prepare setup test unpack
+DEPEND=app-arch/xz-utils >=app-containers/lxc-5.0.0:5[apparmor?,seccomp(+)] dev-db/sqlite dev-go/errors dev-go/httprouter dev-go/websocket dev-libs/libuv app-arch/lz4 dev-libs/lzo sys-libs/libcap:= net-dns/dnsmasq[dhcp,ipv6?] virtual/libudev sys-apps/baselayout
+DESCRIPTION=Fast, dense and secure container management
+EAPI=7
+HOMEPAGE=https://linuxcontainers.org/lxd/introduction/ https://github.com/lxc/lxd
+IUSE=apparmor ipv6 nls verify-sig kernel_linux verify-sig coverage cros_host
+KEYWORDS=*
+LICENSE=Apache-2.0 BSD BSD-2 LGPL-3 MIT MPL-2.0
+RDEPEND=app-arch/xz-utils >=app-containers/lxc-5.0.0:5[apparmor?,seccomp(+)] dev-db/sqlite dev-go/errors dev-go/httprouter dev-go/websocket dev-libs/libuv app-arch/lz4 dev-libs/lzo sys-libs/libcap:= net-dns/dnsmasq[dhcp,ipv6?] virtual/libudev net-firewall/ebtables net-firewall/iptables[ipv6?] net-misc/rsync[xattr] sys-apps/iproute2 sys-fs/fuse:0= sys-fs/lxcfs:5 sys-fs/squashfs-tools[lzma] virtual/acl !app-emulation/lxd sys-apps/baselayout
+RESTRICT=test
+SLOT=5
+SRC_URI=https://linuxcontainers.org/downloads/lxd/lxd-5.0.2.tar.gz verify-sig? ( https://linuxcontainers.org/downloads/lxd/lxd-5.0.2.tar.gz.asc )
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	bash-completion-r1	47a7402d95930413ce25ba8d857339bb	cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	linux-info	327865b9921771330775d971263dc234	multilib	2477ebe553d3e4d2c606191fe6c33602	optfeature	f4941a15f8b66955c45f7b0e7c4ae890	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	user	bb36bb02334dae8c5fd9efa0d8d2ec70	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=f4984e61a4761868dabe7d480d66a3fc

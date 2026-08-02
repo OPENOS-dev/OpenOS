@@ -1,0 +1,4 @@
+# openldap dependencies are generally gated by the ldap use flag. Global config
+# is USE=-ldap, but samba gets build with ldap enabled, so samba OWNERS
+# maintain the openldap package as well.
+include chromiumos/overlays/chromiumos-overlay:/net-fs/samba/OWNERS

@@ -1,0 +1,79 @@
+From 76d743b19d88a3f3bfd27461e75b92325ea3ea88 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Mon, 9 Feb 2026 15:28:11 +0800
+Subject: [PATCH] BACKPORT: Remove report_eir_uuids quirk and use the new UUID
+ properties
+
+The EIR / Adv UUIDs are now officially supported by Android, thus
+removing the quirk.
+
+BACKPORT notes: 25Q4 is still using the unsafe BtPropertyType conversion
+                from integer.
+
+Bug: 445332302
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: USE="cros-debug floss_upstream" emerge-zork floss-upstream
+Test: Before removing report_eir_uuids quirk, print both old and new
+      properties and verified the EIR/Adv UUIDs are not missing
+Test: bluetooth_AdapterQuickHealth.AVL.all_floss
+Flag: NONE Floss only change
+Change-Id: Idd24a3f3703c388d08787310008c47399350486e
+---
+ floss/rust/topshim/src/btif.rs |  9 ++++++++-
+ system/btif/src/btif_dm.cc     | 24 ------------------------
+ 2 files changed, 8 insertions(+), 25 deletions(-)
+
+diff --git a/floss/rust/topshim/src/btif.rs b/floss/rust/topshim/src/btif.rs
+index eb90a2b3946..90fa34fad70 100644
+--- a/floss/rust/topshim/src/btif.rs
++++ b/floss/rust/topshim/src/btif.rs
+@@ -176,2 +176,6 @@ pub enum BtPropertyType {
+     UuidsLe = 0x1C,
++    // Unimplemented:
++    // BT_PROPERTY_DISCOVERY_RESULT_TYPE,
++    UuidsFromExtendedInquiryResponse = 0x1E,
++    UuidsFromLeAdvertisingData = 0x1F,
+ 
+@@ -834,3 +838,6 @@ impl From<bindings::bt_property_t> for BluetoothProperty {
+             }
+-            BtPropertyType::Uuids | BtPropertyType::UuidsLe => {
++            BtPropertyType::Uuids
++            | BtPropertyType::UuidsLe
++            | BtPropertyType::UuidsFromExtendedInquiryResponse
++            | BtPropertyType::UuidsFromLeAdvertisingData => {
+                 let count = len / mem::size_of::<Uuid>();
+diff --git a/system/btif/src/btif_dm.cc b/system/btif/src/btif_dm.cc
+index 18afc662032..38f92979e64 100644
+--- a/system/btif/src/btif_dm.cc
++++ b/system/btif/src/btif_dm.cc
+@@ -1514,14 +1514,2 @@ static void btif_dm_search_devices_evt(tBTA_DM_SEARCH_EVT event, tBTA_DM_SEARCH*
+ 
+-        // Floss expects that EIR uuids are immediately reported when the
+-        // device is found and doesn't wait for the pairing intent.
+-        //
+-        // If a subsequent SDP is completed, the new UUIDs should replace
+-        // the existing UUIDs.
+-#if TARGET_FLOSS
+-        bool report_eir_uuids = true;
+-#else
+-        bool report_eir_uuids = false;
+-#endif
+-        // Scope needs to persist until `invoke_device_found_cb` below.
+-        std::vector<uint8_t> property_value;
+         /* Cache EIR queried services */
+@@ -1540,14 +1528,2 @@ static void btif_dm_search_devices_evt(tBTA_DM_SEARCH_EVT event, tBTA_DM_SEARCH*
+           }
+-
+-          if (report_eir_uuids) {
+-            for (auto uuid : uuid_iter->second) {
+-              auto uuid_128bit = uuid.To128BitBE();
+-              property_value.insert(property_value.end(), uuid_128bit.begin(), uuid_128bit.end());
+-            }
+-
+-            bt_properties.push_back(
+-                    bt_property_t{BT_PROPERTY_UUIDS,
+-                                  static_cast<int>(uuid_iter->second.size() * Uuid::kNumBytes128),
+-                                  (void*)property_value.data()});
+-          }
+         }

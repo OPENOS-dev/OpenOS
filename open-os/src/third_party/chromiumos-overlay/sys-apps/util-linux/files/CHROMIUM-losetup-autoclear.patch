@@ -1,0 +1,180 @@
+From fb150bd9468a3636eb7d4d7ec4f740b3f3b5b2bf Mon Sep 17 00:00:00 2001
+From: Jae Hoon Kim <kimjae@google.com>
+Date: Wed, 14 Aug 2024 00:13:47 +0000
+Subject: [PATCH] losetup autoclear
+
+.. remember for users, the autoclear flag set during creation calls will
+still be ignored, so please invoke it directly against your loopback
+device to take advantage of the autoclear.
+
+BUG=b:358629433
+TEST=cros deploy + losetup w/ --autoclear=on against existing/creating
+TEST=.. of loopback devices
+---
+ include/loopdev.h   |  1 +
+ lib/loopdev.c       | 27 +++++++++++++++++++++++++++
+ sys-utils/losetup.c | 30 +++++++++++++++++++++++++++---
+ 3 files changed, 55 insertions(+), 3 deletions(-)
+
+diff --git a/include/loopdev.h b/include/loopdev.h
+index e5ec1c98a..98efa40b2 100644
+--- a/include/loopdev.h
++++ b/include/loopdev.h
+@@ -191,6 +191,7 @@ extern int loopcxt_delete_device(struct loopdev_cxt *lc);
+ extern int loopcxt_ioctl_status(struct loopdev_cxt *lc);
+ extern int loopcxt_ioctl_capacity(struct loopdev_cxt *lc);
+ extern int loopcxt_ioctl_dio(struct loopdev_cxt *lc, unsigned long use_dio);
++extern int loopcxt_ioctl_autoclear(struct loopdev_cxt *lc, unsigned long use_autoclear);
+ extern int loopcxt_ioctl_blocksize(struct loopdev_cxt *lc, uint64_t blocksize);
+ 
+ int loopcxt_set_offset(struct loopdev_cxt *lc, uint64_t offset);
+diff --git a/lib/loopdev.c b/lib/loopdev.c
+index 2359bf781..310d7b71d 100644
+--- a/lib/loopdev.c
++++ b/lib/loopdev.c
+@@ -1596,6 +1596,33 @@ int loopcxt_ioctl_dio(struct loopdev_cxt *lc, unsigned long use_dio)
+ 	return 0;
+ }
+ 
++int loopcxt_ioctl_autoclear(struct loopdev_cxt *lc, unsigned long use_autoclear)
++{
++	int fd = loopcxt_get_fd(lc);
++
++	if (fd < 0)
++		return -EINVAL;
++
++	struct loop_info64 loop_info;
++	if (ioctl(fd, LOOP_GET_STATUS64, &loop_info) < 0) {
++		int rc = -errno;
++		DBG(CXT, ul_debugobj(lc, "Error getting status for autoclear: %m"));
++		return rc;
++	}
++
++	/* Kernels prior to v2.6.25 don't support this ioctl */
++	loop_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
++
++	if (ioctl(fd, LOOP_SET_STATUS64, &loop_info) < 0) {
++		int rc = -errno;
++		DBG(CXT, ul_debugobj(lc, "Error setting status with autoclear: %m"));
++		return rc;
++	}
++
++	DBG(CXT, ul_debugobj(lc, "autoclear set"));
++	return 0;
++}
++
+ /*
+  * Kernel uses "unsigned long" as ioctl arg, but we use u64 for all sizes to
+  * keep loopdev internal API simple.
+diff --git a/sys-utils/losetup.c b/sys-utils/losetup.c
+index 97efa9747..252c53849 100644
+--- a/sys-utils/losetup.c
++++ b/sys-utils/losetup.c
+@@ -46,6 +46,7 @@ enum {
+ 	A_SET_CAPACITY,		/* set device capacity */
+ 	A_SET_DIRECT_IO,	/* set accessing backing file by direct io */
+ 	A_SET_BLOCKSIZE,	/* set logical block size of the loop device */
++	A_SET_AUTOCLEAR,	/* set autodestruct on last close */
+ };
+ 
+ enum {
+@@ -488,6 +489,7 @@ static void __attribute__((__noreturn__)) usage(void)
+ 	fputs(_(" -P, --partscan                create a partitioned loop device\n"), out);
+ 	fputs(_(" -r, --read-only               set up a read-only loop device\n"), out);
+ 	fputs(_("     --direct-io[=<on|off>]    open backing file with O_DIRECT\n"), out);
++	fputs(_("     --autoclear[=<on|off>]    autodestruct the loop device on last close\n"), out);
+ 	fputs(_("     --loop-ref <string>       loop device reference\n"), out);
+ 	fputs(_("     --show                    print device name after setup (with -f)\n"), out);
+ 	fputs(_(" -v, --verbose                 verbose mode\n"), out);
+@@ -686,6 +688,7 @@ int main(int argc, char **argv)
+ 	char *outarg = NULL;
+ 	int list = 0;
+ 	unsigned long use_dio = 0, set_dio = 0, set_blocksize = 0;
++	unsigned long use_autoclear = 0, set_autoclear = 0;
+ 
+ 	enum {
+ 		OPT_SIZELIMIT = CHAR_MAX + 1,
+@@ -693,6 +696,7 @@ int main(int argc, char **argv)
+ 		OPT_RAW,
+ 		OPT_REF,
+ 		OPT_DIO,
++		OPT_AUTOCLEAR,
+ 		OPT_OUTPUT_ALL
+ 	};
+ 	static const struct option longopts[] = {
+@@ -715,6 +719,7 @@ int main(int argc, char **argv)
+ 		{ "partscan",     no_argument,       NULL, 'P'           },
+ 		{ "read-only",    no_argument,       NULL, 'r'           },
+ 		{ "direct-io",    optional_argument, NULL, OPT_DIO       },
++		{ "autoclear",    optional_argument, NULL, OPT_AUTOCLEAR },
+ 		{ "raw",          no_argument,       NULL, OPT_RAW       },
+ 		{ "loop-ref",     required_argument, NULL, OPT_REF,      },
+ 		{ "show",         no_argument,       NULL, OPT_SHOW      },
+@@ -822,6 +827,12 @@ int main(int argc, char **argv)
+ 			if (use_dio)
+ 				lo_flags |= LO_FLAGS_DIRECT_IO;
+ 			break;
++		case OPT_AUTOCLEAR:
++			use_autoclear = set_autoclear = 1;
++			if (optarg)
++				use_autoclear = ul_parse_switch(optarg, _("argument error"), "on", "off", NULL);
++			// DO NOT set LO_FLAGS_AUTOCLEAR here.
++			break;
+ 		case 'v':
+ 			break;
+ 		case OPT_SIZELIMIT:			/* --sizelimit */
+@@ -885,14 +896,18 @@ int main(int argc, char **argv)
+ 		/*
+ 		 * losetup [--list] <device>
+ 		 * OR
+-		 * losetup {--direct-io[=off]|--logical-blocksize=size}... <device>
++		 * losetup {--autoclear[=off]|--direct-io[=off]|--logical-blocksize=size}... <device>
+ 		 */
+ 		if (set_dio) {
+ 			act = A_SET_DIRECT_IO;
+ 			lo_flags &= ~LO_FLAGS_DIRECT_IO;
+-		} else if (set_blocksize)
++		} else if (set_blocksize) {
+ 			act = A_SET_BLOCKSIZE;
+-		else
++		} else if (set_autoclear) { // Higher precedence to other
++                                            // options.
++			act = A_SET_AUTOCLEAR;
++			lo_flags &= ~LO_FLAGS_AUTOCLEAR;
++		} else
+ 			act = A_SHOW_ONE;
+ 
+ 		if (loopcxt_set_device(&lc, argv[optind]))
+@@ -935,6 +950,8 @@ int main(int argc, char **argv)
+ 
+ 	switch (act) {
+ 	case A_CREATE:
++		if (use_autoclear)
++			warn(_("ignoring autoclear during device creation"));
+ 		res = create_loop(&lc, no_overlap, lo_flags, flags, file, refname,
+ 				  offset, sizelimit, blocksize);
+ 		if (res == 0) {
+@@ -957,6 +974,7 @@ int main(int argc, char **argv)
+ 		res = delete_all_loops(&lc);
+ 		break;
+ 	case A_FIND_FREE:
++		printf("FINDING FREE!!!\n");
+ 		res = find_unused(&lc);
+ 		if (!res)
+ 			printf("%s%s\n", loopcxt_get_device(&lc),
+@@ -994,6 +1012,12 @@ int main(int argc, char **argv)
+ 			warn(_("%s: set logical block size failed"),
+ 			        loopcxt_get_device(&lc));
+ 		break;
++	case A_SET_AUTOCLEAR:
++		res = loopcxt_ioctl_autoclear(&lc, use_autoclear);
++		if (res)
++			warn(_("%s: set autoclear failed"),
++			        loopcxt_get_device(&lc));
++		break;
+ 	default:
+ 		warnx(_("bad usage"));
+ 		errtryhelp(EXIT_FAILURE);
+-- 
+2.47.3
+

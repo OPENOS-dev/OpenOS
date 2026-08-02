@@ -1,0 +1,16 @@
+BDEPEND=app-arch/zip sys-apps/which
+DEFINED_PHASES=compile install preinst prepare setup test
+DEPEND=app-arch/unzip =virtual/jdk-11:* >=dev-java/java-config-2.2.0-r3
+DESCRIPTION=Fast and correct automated build system
+EAPI=7
+HOMEPAGE=https://bazel.build/
+IUSE=examples tools prefix static-libs elibc_FreeBSD
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=>=virtual/jre-11:* !<=dev-util/bazel-5.3.0-r1 >=dev-java/java-config-2.2.0-r3
+REQUIRED_USE=prefix? ( static-libs )
+RESTRICT=strip test
+SLOT=6
+SRC_URI=https://github.com/bazelbuild/bazel/releases/download/6.5.0/bazel-6.5.0-dist.zip
+_eclasses_=bash-completion-r1	47a7402d95930413ce25ba8d857339bb	flag-o-matic	ad475baa777c9978fa035216c8264a10	java-pkg-2	c4e6af2574fd1dc79b43a6e27af4b5fb	java-utils-2	82402a1c36ab4bf38f3313a543f9e827	multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=9090ce9982d1d1456a8c08a3fc538f05

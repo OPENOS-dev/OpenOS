@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS Firmware virtual package
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=bootimage cros_ec zephyr_ec cros_ish zephyr_ish
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=!bootimage? ( chromeos-base/chromeos-firmware-null ) bootimage? ( sys-boot/chromeos-bootimage ) zephyr_ec? ( chromeos-base/chromeos-zephyr ) zephyr_ish? ( chromeos-base/chromeos-zephyr-ish ) cros_ish? ( chromeos-base/chromeos-ish )
+SLOT=0
+_md5_=b4d7e660ff5bced5358ba5444e7226d1

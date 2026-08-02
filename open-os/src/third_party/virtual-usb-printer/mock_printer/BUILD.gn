@@ -1,0 +1,174 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+source_set("implementation") {
+  public = [ "mock_printer.h" ]
+  sources = [ "mock_printer.cc" ]
+
+  # Needed to make the `../:smart_buffer` and `../:http_util` dependencies work.
+  configs += [ "//virtual-usb-printer/virtual_usb_device:target_defaults" ]
+
+  deps = [
+    ":libipp_helper",
+    ":proto_to_http",
+    ":proto_to_libipp",
+    ":test_case_holder",
+    ":wrapped_matcher",
+    "//virtual-usb-printer/common:http_util",
+    "//virtual-usb-printer/common:smart_buffer",
+  ]
+}
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+
+  executable("unit_tests") {
+    output_name = "mock-printer-testrunner"
+    sources = [
+      "cardinality_helper_test.cc",
+      "ipp_matching_test.cc",
+      "ipp_matching_validation_test.cc",
+      "libipp_helper_test.cc",
+      "proto_to_http_test.cc",
+      "proto_to_libipp_test.cc",
+      "wrapped_test_case_step_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      ":cardinality_helper",
+      ":ipp_matching",
+      ":ipp_matching_validation",
+      ":libipp_helper",
+      ":parse_textproto",
+      ":proto_to_http",
+      ":proto_to_libipp",
+      ":wrapped_test_case_step",
+      "//common-mk/testrunner",
+    ]
+    run_test = true
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libchrome",
+    "libipp",
+
+    # We're not performance-sensitive enough
+    # to want protobuf-lite at the moment.
+    "protobuf",
+  ]
+}
+
+proto_library("mocking_protos") {
+  proto_in_dir = "./proto"
+  proto_out_dir = "include/mock_printer/proto"
+  sources = [
+    "${proto_in_dir}/control_flow.proto",
+    "${proto_in_dir}/http.proto",
+    "${proto_in_dir}/ipp.proto",
+  ]
+}
+
+source_set("argument_variants") {
+  sources = [ "argument_variants.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "argument_variants.h" ]
+  public_deps = [ ":mocking_protos" ]
+}
+
+source_set("parse_textproto") {
+  sources = [ "parse_textproto.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "parse_textproto.h" ]
+  public_deps = [ ":mocking_protos" ]
+}
+
+source_set("ipp_matching_validation") {
+  sources = [ "ipp_matching_validation.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "ipp_matching_validation.h" ]
+  deps = [ ":mocking_protos" ]
+}
+
+source_set("ipp_matching") {
+  sources = [ "ipp_matching.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "ipp_matching.h" ]
+  deps = [ ":mocking_protos" ]
+}
+
+source_set("proto_to_http") {
+  sources = [ "proto_to_http.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "proto_to_http.h" ]
+  deps = [ ":mocking_protos" ]
+}
+
+source_set("proto_to_libipp") {
+  sources = [ "proto_to_libipp.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "proto_to_libipp.h" ]
+  deps = [
+    ":ipp_matching_validation",
+    ":mocking_protos",
+  ]
+}
+
+source_set("wrapped_matcher") {
+  sources = [ "wrapped_matcher.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "wrapped_matcher.h" ]
+  deps = [
+    ":argument_variants",
+    ":ipp_matching",
+    ":mocking_protos",
+  ]
+}
+
+source_set("cardinality_helper") {
+  sources = [ "cardinality_helper.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "cardinality_helper.h" ]
+  deps = [ ":mocking_protos" ]
+}
+
+source_set("wrapped_test_case_step") {
+  sources = [ "wrapped_test_case_step.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "wrapped_test_case_step.h" ]
+  deps = [
+    ":argument_variants",
+    ":cardinality_helper",
+    ":mocking_protos",
+    ":wrapped_matcher",
+  ]
+}
+
+source_set("libipp_helper") {
+  sources = [ "libipp_helper.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "libipp_helper.h" ]
+}
+
+source_set("test_case_holder") {
+  sources = [ "test_case_holder.cc" ]
+  configs += [ ":target_defaults" ]
+  public = [ "test_case_holder.h" ]
+  deps = [
+    ":argument_variants",
+    ":mocking_protos",
+    ":wrapped_matcher",
+    ":wrapped_test_case_step",
+  ]
+}

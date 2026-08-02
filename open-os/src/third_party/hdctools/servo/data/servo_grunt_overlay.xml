@@ -1,0 +1,49 @@
+<root>
+  <include>
+    <name>servoflex_v2_r0_p50.xml</name>
+  </include>
+  <include>
+    <name>x86_ec_common.xml</name>
+  </include>
+  <include>
+    <name>cr50.xml</name>
+  </include>
+
+  <!-- warm_reset is on pin 39, reconfigure -->
+  <include>
+    <name>warm_reset_reconf.xml</name>
+  </include>
+
+  <control>
+    <name>fw_wp_state</name>
+    <doc>Used to turn fw wp off and on</doc>
+    <params clobber_ok="patch" fw_wp_vref="pp1800"/>
+  </control>
+  <control>
+    <name>ec_chip</name>
+    <doc>EC chip name (read-only)</doc>
+    <params clobber_ok="" cmd="get" subtype="chip" interface="servo"
+    drv="cros_chip" chip="npcx_int_spi" chip_for_ccd_cr50="npcx_uut"/>
+  </control>
+  <control>
+    <name>power_state</name>
+    <doc>Used to turn the DUT off and on</doc>
+    <params clobber_ok="" cmd="set" drv="cros_ec_softrec_power"
+      ccd_pulse_cold_reset="yes"/>
+  </control>
+  <control>
+    <name>c0_ppc_pp1_en</name>
+    <doc>Used to turn on/off the pp1 on the c0 ppc on grunt (ccd port)</doc>
+    <params interface="EC_CONSOLE" bus="1" addr="0x40" offset="0x52" mask="0x1"
+      drv="ec_i2c_pin" map="onoff"/>
+  </control>
+  <control>
+    <name>cpu_fw_spi</name>
+    <params clobber_ok="full" interface="servo" drv="macro" map="onoff"
+      set_value_1="spi2_vref:pp1800 spi2_buf_en:on spi2_buf_on_flex_en:on
+                   cold_reset:on"
+      set_value_0="spi2_vref:off spi2_buf_en:off spi2_buf_on_flex_en:off
+                   cold_reset:off"
+      />
+  </control>
+</root>

@@ -1,0 +1,5 @@
+# Members of this group have access to /dev/ppp udev file, i.e. can create
+# ppp interfaces.
+group:ppp
+gid:424
+users:shill,vpn

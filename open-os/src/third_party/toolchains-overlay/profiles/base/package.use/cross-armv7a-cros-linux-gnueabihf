@@ -1,0 +1,11 @@
+cross-armv7a-cros-linux-gnueabihf/binutils -multilib
+cross-armv7a-cros-linux-gnueabihf/compiler-rt -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/gcc -selinux -boundschecking -d -gcj -gtk -libffi -mudflap -objc -objc++ -objc-gc -sanitize -multilib
+cross-armv7a-cros-linux-gnueabihf/gdb -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/glibc -selinux -libraries -multilib
+cross-armv7a-cros-linux-gnueabihf/go -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/libcxx -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/libxcrypt -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/linux-headers -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/llvm-libunwind -selinux -multilib
+cross-armv7a-cros-linux-gnueabihf/rust -selinux -multilib

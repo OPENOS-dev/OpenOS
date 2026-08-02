@@ -1,0 +1,27 @@
+From 8cb58e478ae3a1701e0d7c90bf1b8144b0d2e50f Mon Sep 17 00:00:00 2001
+From: Yiwei Zhang <zzyiwei@chromium.org>
+Date: Wed, 10 Jun 2026 21:27:41 -0700
+Subject: [PATCH] drm: validate blob_size against container shmem struct size
+
+Fixes: fe078e34 ("drm: Add DRM context helpers")
+Part-of: <https://gitlab.freedesktop.org/virgl/virglrenderer/-/merge_requests/1636>
+---
+ src/drm/drm_context.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/drm/drm_context.c b/src/drm/drm_context.c
+index d76fec74..9276b44a 100644
+--- a/src/drm/drm_context.c
++++ b/src/drm/drm_context.c
+@@ -362,7 +362,7 @@ drm_context_get_shmem_blob(struct drm_context *dctx,
+       return -EINVAL;
+    }
+ 
+-   if ((blob_size < sizeof(*dctx->shmem)) || (blob_size > UINT32_MAX)) {
++   if ((blob_size < shmem_size) || (blob_size > UINT32_MAX)) {
+       drm_err("invalid blob size 0x%" PRIx64, blob_size);
+       return -EINVAL;
+    }
+-- 
+2.54.0.1136.gdb2ca164c4-goog
+

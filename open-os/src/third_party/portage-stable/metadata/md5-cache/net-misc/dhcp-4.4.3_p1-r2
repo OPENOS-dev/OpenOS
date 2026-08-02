@@ -1,0 +1,14 @@
+BDEPEND=acct-group/dhcp acct-user/dhcp virtual/pkgconfig
+DEFINED_PHASES=compile configure install postinst preinst prepare unpack
+DEPEND=sys-libs/zlib:= client? ( kernel_linux? ( ipv6? ( sys-apps/iproute2 ) sys-apps/net-tools ) ) ldap? ( net-nds/openldap:= ssl? ( dev-libs/openssl:= ) )
+DESCRIPTION=ISC Dynamic Host Configuration Protocol (DHCP) client/server
+EAPI=7
+HOMEPAGE=https://www.isc.org/dhcp
+IUSE=+client ipv6 ldap selinux +server ssl vim-syntax
+KEYWORDS=*
+LICENSE=MPL-2.0 BSD SSLeay GPL-2
+RDEPEND=acct-group/dhcp acct-user/dhcp sys-libs/zlib:= client? ( kernel_linux? ( ipv6? ( sys-apps/iproute2 ) sys-apps/net-tools ) ) ldap? ( net-nds/openldap:= ssl? ( dev-libs/openssl:= ) ) selinux? ( sec-policy/selinux-dhcp ) vim-syntax? ( app-vim/dhcpd-syntax ) virtual/tmpfiles
+SLOT=0
+SRC_URI=ftp://ftp.isc.org/isc/dhcp/dhcp-4.4.3-P1.tar.gz ftp://ftp.isc.org/isc/dhcp/4.4.3-P1/dhcp-4.4.3-P1.tar.gz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	systemd	5f4bb0758df2e483babf68cd517078ca	tmpfiles	216aa76c3a6fcb5d893c23a0de86048f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=7a11cfde2c08a2249340b34c586a4ce9

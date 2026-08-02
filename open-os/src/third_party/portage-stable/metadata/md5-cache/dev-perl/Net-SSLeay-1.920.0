@@ -1,0 +1,14 @@
+BDEPEND=dev-libs/openssl:= virtual/perl-MIME-Base64 virtual/perl-ExtUtils-MakeMaker virtual/perl-File-Spec dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-libs/openssl:= virtual/perl-MIME-Base64 dev-lang/perl
+DESCRIPTION=Perl extension for using OpenSSL
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Net-SSLeay
+IUSE=minimal examples examples
+KEYWORDS=*
+LICENSE=Artistic-2
+RDEPEND=dev-libs/openssl:= virtual/perl-MIME-Base64 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/C/CH/CHRISN/Net-SSLeay-1.92.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=a745b169f4404dd3db14c381c04b062f

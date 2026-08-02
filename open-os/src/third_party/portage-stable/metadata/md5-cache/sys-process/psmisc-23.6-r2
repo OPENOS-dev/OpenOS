@@ -1,0 +1,15 @@
+BDEPEND=>=dev-build/libtool-2.2.6b nls? ( sys-devel/gettext ) test? ( dev-util/dejagnu )
+DEFINED_PHASES=configure install
+DEPEND=!=app-i18n/man-pages-l10n-4.0.0-r0 >=sys-libs/ncurses-5.7-r7:= apparmor? ( sys-libs/libapparmor ) nls? ( virtual/libintl ) selinux? ( sys-libs/libselinux )
+DESCRIPTION=A set of tools that use the proc filesystem
+EAPI=7
+HOMEPAGE=http://psmisc.sourceforge.net/
+IUSE=apparmor nls selinux test X
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!=app-i18n/man-pages-l10n-4.0.0-r0 >=sys-libs/ncurses-5.7-r7:= apparmor? ( sys-libs/libapparmor ) nls? ( virtual/libintl ) selinux? ( sys-libs/libselinux )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://sourceforge/psmisc/psmisc-23.6.tar.xz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=f0ff171e928c8fe94ad69995b244bd41

@@ -1,0 +1,16 @@
+* This driver requires an x86-based Macintosh computer with an Infineon TPM.
+
+* To compile this driver, you must have Apple's Xcode package installed. You
+  can either open the project in Xcode and use the GUI to build it, or you
+  can use the xcodebuild command-line program to do so. In a pinch:
+
+  $ cd /path/to/osxbook-tpm-driver-1.0.0/
+  $ xcodebuild -configuration Release
+  ...
+  $ cp -pr build/Release/OSXBookTPM.kext /tmp
+  $ sudo chown -R root:wheel /tmp/OSXBookTPM.kext
+  $ sudo kextload -v /tmp/OSXBookTPM.kext
+
+* See http://osxbook.com/book/bonus/chapter10/tpm/ for details.
+
+Amit Singh <http://osxbook.com>

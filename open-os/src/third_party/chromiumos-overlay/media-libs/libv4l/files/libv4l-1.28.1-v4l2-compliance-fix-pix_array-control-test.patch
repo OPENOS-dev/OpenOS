@@ -1,0 +1,45 @@
+From f2654f19a56abde5f8e127a993d1af569b380796 Mon Sep 17 00:00:00 2001
+From: Hans Verkuil <hverkuil@xs4all.nl>
+Date: Sun, 6 Jul 2025 15:34:09 +0200
+Subject: [PATCH] v4l2-compliance: fix pix_array control test
+
+The order of the dimensions was swapped (first height, then
+width), and replace roundup by DIV_ROUND_UP.
+
+Signed-off-by: Hans Verkuil <hverkuil@xs4all.nl>
+(cherry picked from commit 1cc84dfb41d88eee260827b3aca9d077ad153eb2
+ branch master)
+---
+ utils/v4l2-compliance/v4l2-test-input-output.cpp | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/utils/v4l2-compliance/v4l2-test-input-output.cpp b/utils/v4l2-compliance/v4l2-test-input-output.cpp
+index 50463c4b..93f07845 100644
+--- a/utils/v4l2-compliance/v4l2-test-input-output.cpp
++++ b/utils/v4l2-compliance/v4l2-test-input-output.cpp
+@@ -451,10 +451,7 @@ static int checkInput(struct node *node, const struct v4l2_input &descr, unsigne
+ 	return 0;
+ }
+ 
+-static unsigned roundup(unsigned v, unsigned mult)
+-{
+-	return mult * ((v + mult - 1) / mult);
+-}
++#define DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
+ 
+ static int checkVividPixelArray(struct node *node)
+ {
+@@ -466,8 +463,8 @@ static int checkVividPixelArray(struct node *node)
+ 	fail_on_test(node->query_ext_ctrl(qextctrl));
+ 	fail_on_test(node->g_fmt(fmt));
+ 	fail_on_test(qextctrl.nr_of_dims != 2);
+-	fail_on_test(qextctrl.dims[0] != roundup(fmt.g_width(), PIXEL_ARRAY_DIV));
+-	fail_on_test(qextctrl.dims[1] != roundup(fmt.g_height(), PIXEL_ARRAY_DIV));
++	fail_on_test(qextctrl.dims[0] != DIV_ROUND_UP(fmt.g_height(), PIXEL_ARRAY_DIV));
++	fail_on_test(qextctrl.dims[1] != DIV_ROUND_UP(fmt.g_width(), PIXEL_ARRAY_DIV));
+ 	fail_on_test(qextctrl.minimum == qextctrl.default_value);
+ 
+ 	struct v4l2_ext_control ctrl = {
+-- 
+2.52.0.223.gf5cc29aaa4-goog
+

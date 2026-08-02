@@ -1,0 +1,31 @@
+# Copyright 1999-2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+DIST_AUTHOR=RJBS
+DIST_VERSION=0.017
+DIST_EXAMPLES=("examples/*")
+inherit perl-module
+
+DESCRIPTION="Incredibly simple helpers for testing code with exceptions"
+
+SLOT="0"
+KEYWORDS="*"
+IUSE="test"
+
+RDEPEND="
+	virtual/perl-Carp
+	>=virtual/perl-Exporter-5.570.0
+	virtual/perl-Test-Simple
+	>=dev-perl/Try-Tiny-0.70.0
+"
+BDEPEND="
+	${RDEPEND}
+	>=virtual/perl-ExtUtils-MakeMaker-6.780.0
+	test? (
+		>=virtual/perl-CPAN-Meta-2.120.900
+		virtual/perl-File-Spec
+		>=virtual/perl-Test-Simple-0.960.0
+	)
+"

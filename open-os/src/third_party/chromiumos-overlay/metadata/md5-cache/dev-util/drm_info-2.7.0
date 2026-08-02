@@ -1,0 +1,14 @@
+BDEPEND=!cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array
+DEFINED_PHASES=compile configure install test
+DEPEND=>=dev-libs/json-c-0.14 >=x11-libs/libdrm-2.4.122 x86? ( sys-apps/pciutils ) amd64? ( sys-apps/pciutils ) !cros_host? ( dev-lang/python )
+DESCRIPTION=Small utility to dump info about DRM devices
+EAPI=7
+HOMEPAGE=https://gitlab.freedesktop.org/emersion/drm_info
+IUSE=cros_host test
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=>=dev-libs/json-c-0.14 >=x11-libs/libdrm-2.4.122 x86? ( sys-apps/pciutils ) amd64? ( sys-apps/pciutils )
+SLOT=0
+SRC_URI=https://gitlab.freedesktop.org/emersion/drm_info/-/archive/v2.7.0/drm_info-v2.7.0.tar.bz2
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	meson	0b48ece927e974cd82202dc49f391f82	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3bdef00135963ac504558663d7281579

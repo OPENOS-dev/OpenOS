@@ -1,0 +1,1 @@
+../../rust-host/files/chromeos-version.sh

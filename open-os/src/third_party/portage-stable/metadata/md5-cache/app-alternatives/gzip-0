@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DESCRIPTION=gzip symlinks
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Project:Base/Alternatives
+IUSE=split-usr +reference pigz
+KEYWORDS=*
+LICENSE=CC0-1.0
+RDEPEND=!<app-arch/gzip-1.12-r3 !app-arch/pigz[symlink(-)] reference? ( >=app-arch/gzip-1.12-r3 ) pigz? ( app-arch/pigz[-symlink(-)] )
+REQUIRED_USE=^^ ( reference pigz )
+SLOT=0
+_eclasses_=app-alternatives	0d485a9273e176378fd2c635a815950f
+_md5_=289f48e32cc04098def0c8b5e6a97d17

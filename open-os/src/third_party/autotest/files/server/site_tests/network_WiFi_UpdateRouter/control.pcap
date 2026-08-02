@@ -1,0 +1,23 @@
+# Copyright 2023 The ChromiumOS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'network_WiFi_UpdateRouter.pcap'
+METADATA = {
+    'contacts': ['chromeos-connectivity-engprod@google.com'],
+    'bug_component': 'b:978946',
+    'criteria': 'This test updates the packet capture in WiFi cell to the latest stable version.',
+    'hw_agnostic': False
+}
+TEST_TYPE = 'Server'
+DEPENDENCIES = 'wificell, peripheral_wifi_state:WORKING'
+ATTRIBUTES = ''
+
+def run(machine):
+    job.run_test('network_WiFi_UpdateRouter',
+                 host=hosts.create_host(machine),
+                 raw_cmdline_args=args,
+                 is_pcap=True,
+                 tag='pcap')
+
+parallel_simple(run, machines)

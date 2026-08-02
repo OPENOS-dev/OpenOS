@@ -1,0 +1,28 @@
+pipeline {
+  processors {
+    check_format {
+      channels: 1
+    }
+  }
+  processors {
+    resample {
+      output_frame_rate: 24000
+    }
+  }
+  processors {
+    peer {
+      processor {
+        wrap_chunk {
+          inner_block_size: 480
+          inner {
+            dlc_plugin {
+              dlc_id: "nc-ap-dlc"
+              path: "libeffects.so"
+              constructor: "plugin_processor_create_ast"
+            }
+          }
+        }
+      }
+    }
+  }
+}

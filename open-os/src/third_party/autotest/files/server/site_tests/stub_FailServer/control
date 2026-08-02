@@ -1,0 +1,18 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'stub_FailServer'
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': "b:1284375", # ChromeOS > Test > Harness > Tauto > Examples
+    'criteria': 'Test that always fails'
+}
+TEST_TYPE = 'server'
+
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('stub_FailServer', disable_sysinfo=False)
+
+job.parallel_simple(run, machines)

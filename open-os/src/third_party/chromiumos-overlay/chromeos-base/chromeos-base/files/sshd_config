@@ -1,0 +1,36 @@
+# Force protocol v2 only
+Protocol 2
+
+Include /etc/ssh/sshd_config.d/*
+
+# /etc is read-only.  Fetch keys from stateful partition
+# Not using v1, so no v1 key
+HostKey /mnt/stateful_partition/etc/ssh/ssh_host_rsa_key
+HostKey /mnt/stateful_partition/etc/ssh/ssh_host_ed25519_key
+
+PermitRootLogin yes
+PasswordAuthentication no
+UsePAM yes
+PrintMotd no
+PrintLastLog no
+UseDns no
+Subsystem sftp internal-sftp
+# Make DUT responsible to keep connection to server alive for at least half
+# a day, even if network is down. We don't care about leaking/ghost connections
+# as this is the config for the DUT which gets rebooted periodically.
+# Ping ssh client/autotest server once every 60 seconds.
+ClientAliveInterval 60
+# Do this 720 times for 12 hours.
+ClientAliveCountMax 720
+# Ignore temporary network outages.
+TCPKeepAlive no
+# Allow for many concurrent ssh sessions.
+MaxSessions 50
+
+# TODO(b/296125036) Support clients which require ssh-rsa.
+# Some ssh clients do not support stronger non-SHA1-based schemes, so we
+# have to allow ssh-rsa to avoid breaking some of the labs and testing
+# infrastructure. Once those are moved over to ssh clients that support
+# schemes like rsa-sha2-256 or stronger.
+HostKeyAlgorithms +ssh-rsa
+PubkeyAcceptedAlgorithms +ssh-rsa

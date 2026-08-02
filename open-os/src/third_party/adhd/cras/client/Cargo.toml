@@ -1,0 +1,27 @@
+[workspace]
+resolver = "2"
+members = [
+    "audio_diagnostics",
+    "cras_tests",
+    "cras-sys",
+    "libcras",
+]
+
+[profile.release]
+lto = true
+panic = 'abort'
+overflow-checks = true
+
+# To get rust-analyzer and cargo build working out of the chroot,
+# Run inside the chroot: emerge-amd64-generic -j --onlydeps cras-client
+[patch.crates-io]
+# System deps
+audio_streams = { path = "../../../../../out/build/amd64-generic/usr/lib/cros_rust_registry/registry/audio_streams-0.1.0/" } # ignored by ebuild
+chromeos-dbus-bindings = { path = "../../../../platform2/chromeos-dbus-bindings" } # ignored by ebuild
+data_model = { path = "../../../../../out/build/amd64-generic/usr/lib/cros_rust_registry/registry/data_model-0.1.50/" } # ignored by ebuild
+libchromeos = { path = "../../../../platform2/libchromeos-rs/" } # ignored by ebuild
+minijail = { path = "../../../../platform/minijail/rust/minijail" } # ignored by ebuild
+# adhd deps
+cras_common = { path = "../common" }
+cras-sys = { path = "cras-sys" }
+libcras = { path = "libcras" }

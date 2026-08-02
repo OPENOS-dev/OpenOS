@@ -1,0 +1,64 @@
+#!/usr/bin/env vpython3
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Pinned pylint version using vpython from Chromium's depot_tools."""
+
+# Note: We use tags here instead of refs because refs will always hit the
+# network to see if there are any updates.
+
+# [VPYTHON:BEGIN]
+# python_version: "3.11"
+#
+# # Third party dependencies.  These are only listed because pylint itself needs
+# # them.  Feel free to add/remove anything here.
+#
+# wheel: <
+#   name: "infra/python/wheels/dill-py3"
+#   version: "version:0.3.7"
+# >
+# wheel: <
+#   name: "infra/python/wheels/isort-py3"
+#   version: "version:5.10.1"
+# >
+# wheel: <
+#   name: "infra/python/wheels/mccabe-py3"
+#   version: "version:0.6.1"
+# >
+# wheel: <
+#   name: "infra/python/wheels/platformdirs-py3"
+#   version: "version:3.10.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/tomlkit-py3"
+#   version: "version:0.12.3"
+# >
+#
+# # Pylint dependencies.
+#
+# wheel: <
+#   name: "infra/python/wheels/astroid-py3"
+#   version: "version:3.2.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/pylint-py3"
+#   version: "version:3.2.7"
+# >
+#
+# # Random deps we use in the tree.
+#
+# wheel: <
+#   name: "infra/python/wheels/wcwidth-py3"
+#   version: "version:0.2.5"
+# >
+#
+# [VPYTHON:END]
+
+import sys
+
+# https://github.com/PyCQA/pylint/issues/7289
+# pylint: disable=no-name-in-module
+from pylint import lint
+
+lint.Run(sys.argv[1:])

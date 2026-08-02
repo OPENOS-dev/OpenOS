@@ -1,0 +1,24 @@
+# Ebuild/eclass experts!  These reviewers should be used with general packaging
+# questions.  Rarely should they be the main code reviewer as they usually do
+# not have domain expertise in random packages.  Basically think of this list as
+# good for advice, CR+1, and OWNERS coverage, but not for actual CR+2 review.
+
+# Prefer sending reviews to the alias, since it
+# allows the load to be spread around.
+ebuild-reviews@google.com
+
+# Individual reviewers if needed.
+# When adding/removing people here, remember to update the gwsq group:
+# http://g/ebuild-reviews
+allenwebb@google.com #{LAST_RESORT_SUGGESTION}
+bmgordon@chromium.org #{LAST_RESORT_SUGGESTION}
+
+include chromiumos/owners:v1:/infra/OWNERS.build
+
+# Toolchain members who have demonstrated broad knowledge of the ebuild/eclass
+# ecosystem in ChromeOS. Toolchain folks need this specifically because
+# toolchain work often involves broad changes across many arbitrary ebuilds.
+# Since they're not necessarily experts, they're expected to exercise judgment
+# when applying their ebuild-related OWNERS approval to CLs. When in doubt, they
+# should defer to ebuild-reviews@.
+gbiv@chromium.org #{LAST_RESORT_SUGGESTION}

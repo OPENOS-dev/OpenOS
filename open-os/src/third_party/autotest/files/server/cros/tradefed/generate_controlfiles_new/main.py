@@ -1,0 +1,551 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Entry point of the generate_controlfiles script."""
+
+import argparse
+import collections
+import copy
+import logging
+import os
+from typing import Any, Callable, Dict, Iterable, Optional
+
+import bundle_utils
+
+from .bundle import *
+from .combine import *
+from .common import *
+from .controlfile import *
+from .filters import *
+from .passes import *
+
+_source_type_to_gen_funcs = collections.defaultdict(list)
+
+
+def generate_from_source_type(
+        source_type: str
+) -> Callable[[Callable[[Bundle, Config], Iterable[ModuleGroup]]], None]:
+    """Decorator that associates a generator function with given source type.
+
+    A generator function must be of the following signature:
+    def gen(bundle: Bundle, config: Config) -> Iterable[ModuleGroup]
+
+    Args:
+        source_type: either of 'MOBLAB', 'LATEST', 'DEV'.
+    """
+    def inner(
+            gen_func: Callable[[Bundle, Config],
+                               Iterable[ModuleGroup]]) -> None:
+        _source_type_to_gen_funcs[source_type].append(gen_func)
+
+    return inner
+
+
+def generators_for_source_type(
+        source_type: str
+) -> Iterable[Callable[[Bundle, Config], Iterable[ModuleGroup]]]:
+    """Returns a list of generators associated with given source type.
+
+    Args:
+        source_type: either of 'MOBLAB', 'LATEST', 'DEV'.
+
+    Returns:
+        A list of generator functions.
+    """
+    return _source_type_to_gen_funcs[source_type]
+
+
+@generate_from_source_type('DEV')
+def gen_regression(bundle: Bundle, config: Config) -> Iterable[ModuleGroup]:
+    """Generates regression controlfiles."""
+    logging.info('Generating regression controlfiles')
+    groups = combine_modules_by_common_word(bundle.modules)
+
+    vm_config = config.get('VM_CONFIG', {})
+    split_config = config.get('SPLIT_SUITES', {})
+    shard_config = config.get('SHARD_COUNT', {})
+
+    # yapf: disable
+    passes = Concat([
+        # Camera tests are generated separately for camerabox.
+        # See gen_extra_camera()
+        IfNot(
+            has_modules(config.get_camera_modules()),
+            [
+                If(
+                    has_modules(config.get('SPLIT_BY_BITS_MODULES', [])),
+                    [
+                        If(bundle.abi is None, [SplitByAbi()]),
+                        SplitByBits(),
+                    ],
+                ),
+                Concat([
+                    If(
+                        has_modules([module]),
+                        [SplitByTFShards(shard_count)],
+                    )
+                    for module, shard_count in shard_config.items()
+                ]),
+
+                # Sets VM attributes including 'vm' (VM-eligible) and
+                # 'vm_stable' (HW-agnostic). Must run BEFORE applying
+                # AddSplitSuites.
+                If(
+                    vm_config,
+                    [SetVMAttrs(
+                        vm_config.get('MODULES_RULES'),
+                        vm_config.get('UNSTABLE_MODULES_RULES'),
+                    )],
+                ),
+                If(
+                    split_config,
+                    [
+                        If(
+                            lambda g: g.get('vm_stable'),
+                            [AddSplitSuites(
+                                split_config,
+                                split_config.get('DEV_VM_STABLE_SUITE_FORMAT'),
+                                split_config.get('DEV_VM_STABLE_SUITE_LONG'),
+                                bundle.abi,
+                            )],
+                        ),
+                        If(
+                            lambda g: not g.get('vm_stable'),
+                            [AddSplitSuites(
+                                split_config,
+                                split_config.get('DEV_SUITE_FORMAT'),
+                                split_config.get('DEV_SUITE_LONG'),
+                                bundle.abi,
+                            )],
+                        ),
+                    ],
+                ),
+
+                # These are not meant to be included in the full regression
+                # suites. Apply split AFTER AddSplitSuites to not interfere with
+                # split suite calculation.
+                If(
+                    has_modules(config.get('SPLIT_BY_VM_FORCE_MAX_RESOLUTION', [])),
+                    [SplitByAttr('vm_force_max_resolution', [False, True])],
+                ),
+                If(
+                    has_modules(config.get('SPLIT_BY_VM_TABLET_MODE', [])),
+                    [SplitByAttr('vm_tablet_mode', [False, True])],
+                ),
+
+                # Assign suites and handle special cases.
+                AddSuites(config['INTERNAL_SUITE_NAMES']),
+                If(
+                    filter_and(bundle.abi == 'arm', has_modules(config.get('PERBUILD_TESTS', []))),
+                    [AddSuites(['suite:bvt-arc'])],
+                ),
+                If(
+                    lambda g: g.get('vm_stable'),
+                    [
+                        AddSuites([vm_config.get('STABLE_SUITE_NAME')]),
+                        RemoveSuites(vm_config.get('STABLE_SKIP_SUITES')),
+                    ],
+                ),
+                If(
+                    lambda g: g.get('vm_force_max_resolution') or g.get('vm_tablet_mode'),
+                    [ClearSuites()],
+                ),
+                If(
+                    lambda g: vm_config.get('RUN_SINGLE_ABI', bundle.abi) == bundle.abi and g.get('vm'),
+                    [AddSuites([vm_config.get('SUITE_NAME')])],
+                ),
+                If(
+                    match_modules(config.get('MEDIA_SUITE_MODULES', [])),
+                    [AddSuites(['suite:arc-cts-media'])],
+                ),
+
+                # Apply extra attributes (suites).
+                Concat(
+                    If(
+                        has_modules([module]),
+                        [AddSuites(suites)],
+                    )
+                    for module, suites in config['EXTRA_ATTRIBUTES'].items()
+                ),
+            ],
+        ),
+    ])
+    # yapf: enable
+
+    return passes.process_all_groups(groups)
+
+
+@generate_from_source_type('DEV')
+def gen_extra_camera(bundle: Bundle, config: Config) -> Iterable[ModuleGroup]:
+    """Generates extra camera controlfiles."""
+    if not config.get('CONTROLFILE_WRITE_CAMERA'):
+        return []
+    logging.info('Generating extra camera controlfiles')
+    return [
+            ModuleGroup(basename='CtsCameraTestCases',
+                        modules=frozenset(['CtsCameraTestCases']),
+                        suites=frozenset(['suite:arc-cts-camera']),
+                        camera_facing=camera_facing)
+            for camera_facing in ('back', 'front', 'nocamera')
+    ]
+
+
+@generate_from_source_type('LATEST')
+def gen_qual(bundle: Bundle, config: Config) -> Iterable[ModuleGroup]:
+    """Generates qualification controlfiles."""
+    logging.info('Generating qualification controlfiles')
+    groups = combine_modules_by_common_word(bundle.modules)
+
+    vm_config = config.get('VM_CONFIG', {})
+    split_config = config.get('SPLIT_SUITES', {})
+    shard_config = config.get('SHARD_COUNT', {})
+
+    # yapf: disable
+    passes = Concat([
+        If(
+            has_modules(config.get('SPLIT_BY_BITS_MODULES', [])),
+            [
+                If(bundle.abi is None, [SplitByAbi()]),
+                SplitByBits(),
+            ],
+        ),
+        Concat([
+            If(
+                has_modules([module]),
+                [SplitByTFShards(shard_count)],
+            )
+            for module, shard_count in shard_config.items()
+        ]),
+
+        # Calculate split suites, and merge modules of the same suite into a
+        # single test.
+        MergeSplitSuites(
+            split_config,
+            split_config.get('QUAL_SUITE_FORMAT'),
+            split_config.get('QUAL_SUITE_LONG'),
+            bundle.abi,
+            config.get_camera_modules(),
+        ),
+
+        # Assign qual suite; for camera tests, replace qual suite with camera
+        # DUT suite.
+        AddSuites(config['QUAL_SUITE_NAMES']),
+        If(
+            has_modules(config.get_camera_modules()),
+            [
+                RemoveSuites(config['QUAL_SUITE_NAMES'] +
+                             [split_config['QUAL_SUITE_LONG']]),
+                AddSuites([config.get('CAMERA_DUT_SUITE_NAME')] or []),
+            ],
+        ),
+    ])
+    # yapf: enable
+
+    return passes.process_all_groups(groups)
+
+
+@generate_from_source_type('LATEST')
+def gen_internal_collect(bundle: Bundle,
+                         config: Config) -> Iterable[ModuleGroup]:
+    """Generates internal collect controlfiles."""
+    logging.info('Generating internal collect controlfiles')
+
+    COLLECT = 'tradefed-run-collect-tests-only-internal'
+    CTSHARDWARE_COLLECT = 'tradefed-run-collect-tests-only-hardware-internal'
+
+    for_hardware_suite = [False]
+    if 'HARDWARE_MODULES' in config:
+        for_hardware_suite.append(True)
+    suffices = ['']
+    if config.get('CONTROLFILE_WRITE_CAMERA'):
+        suffices.extend(['.camerabox.front', '.camerabox.back'])
+
+    groups = []
+    for hardware_suite in for_hardware_suite:
+        if hardware_suite:
+            suites = [config['HARDWARE_SUITE_NAME']]
+            # Generates hardware suite only for the ARM abi.
+            if bundle.abi != 'arm':
+                continue
+        else:
+            suites = (config['INTERNAL_SUITE_NAMES'] +
+                      config.get('QUAL_SUITE_NAMES', []))
+            if 'SPLIT_SUITES' in config:
+                suites.append(config['SPLIT_SUITES']['QUAL_SUITE_LONG'])
+        suites = frozenset(suites)
+
+        for suffix in suffices:
+            basename = CTSHARDWARE_COLLECT if hardware_suite else COLLECT
+            basename += suffix
+            subplan = 'cts-hardware' if hardware_suite and not suffix else None
+            groups.append(
+                    ModuleGroup(
+                            basename=basename,
+                            # TODO clean up the semantics of "modules"
+                            modules=set([basename]),
+                            suites=suites,
+                            hardware_suite=hardware_suite,
+                            subplan=subplan,
+                    ))
+    return groups
+
+
+@generate_from_source_type('LATEST')
+def gen_internal_hardwaresuite(bundle: Bundle,
+                               config: Config) -> Iterable[ModuleGroup]:
+    """Generates internal hardware suite controlfiles."""
+    # Generates hardware suite only for the ARM abi.
+    if bundle.abi != 'arm':
+        return []
+    modules = config.get('HARDWARE_MODULES', [])
+    extra_modules = config.get('HARDWAREONLY_EXTRA_MODULES', {})
+    if not modules and not extra_modules:
+        return []
+
+    logging.info('Generating internal hardware suite controlfiles')
+    groups = [
+            ModuleGroup(basename=module, modules=frozenset([module]))
+            for module in modules
+    ] + [
+            ModuleGroup(basename=submodule, modules=frozenset([submodule]))
+            for module in extra_modules for submodule in extra_modules[module]
+    ]
+
+    passes = Concat([
+            If(
+                    has_modules(config.get('SPLIT_BY_BITS_MODULES', [])),
+                    [
+                            If(bundle.abi is None, [SplitByAbi()]),
+                            SplitByBits(),
+                    ],
+            ),
+            AddSuites([config['HARDWARE_SUITE_NAME']]),
+            SetAttr('hardware_suite', True),
+    ])
+
+    return passes.process_all_groups(groups)
+
+
+@generate_from_source_type('LATEST')
+def gen_internal_extra(bundle: Bundle,
+                       config: Config) -> Iterable[ModuleGroup]:
+    """Generates internal extra controlfiles."""
+    if not config.get('CONTROLFILE_WRITE_EXTRA'):
+        return []
+    extra_modules = config['EXTRA_MODULES']
+    if not extra_modules:
+        return []
+
+    logging.info('Generating internal extra controlfiles')
+    return [
+            ModuleGroup(basename=submodule,
+                        modules=frozenset([submodule]),
+                        suites=frozenset(suites)) for module in extra_modules
+            for submodule, suites in extra_modules[module].items()
+    ]
+
+
+@generate_from_source_type('MOBLAB')
+def gen_moblab(bundle: Bundle, config: Config) -> Iterable[ModuleGroup]:
+    """Generates moblab controlfiles."""
+    logging.info('Generating moblab controlfiles')
+    groups = [
+            ModuleGroup(basename=module, modules=frozenset([module]))
+            for module in bundle.modules if '[' not in module
+    ]
+
+    shard_config = config.get('SHARD_COUNT', {})
+
+    passes = Concat([
+            If(
+                    has_modules(config.get('PUBLIC_SPLIT_BY_BITS_MODULES',
+                                           [])),
+                    [
+                            If(bundle.abi is None, [SplitByAbi()]),
+                            SplitByBits(),
+                    ],
+            ),
+            Concat([
+                    If(
+                            has_modules([module]),
+                            [SplitByTFShards(shard_count)],
+                    ) for module, shard_count in shard_config.items()
+            ]),
+            AddSuites([config['MOBLAB_SUITE_NAME']]),
+    ])
+
+    return passes.process_all_groups(groups)
+
+
+@generate_from_source_type('MOBLAB')
+def gen_moblab_collect(bundle: Bundle,
+                       config: Config) -> Iterable[ModuleGroup]:
+    """Generates moblab collect controlfiles."""
+    logging.info('Generating moblab collect controlfiles')
+
+    basename = 'tradefed-run-collect-tests-only'
+
+    return [
+            ModuleGroup(
+                    basename=basename,
+                    # TODO clean up the semantics of "modules"
+                    modules=set([basename]),
+                    suites=frozenset([config['MOBLAB_SUITE_NAME']]))
+    ]
+
+
+@generate_from_source_type('MOBLAB')
+def gen_moblab_extra(bundle: Bundle, config: Config) -> Iterable[ModuleGroup]:
+    """Generates moblab extra controlfiles."""
+    if not config.get('CONTROLFILE_WRITE_EXTRA'):
+        return []
+    extra_modules = config['PUBLIC_EXTRA_MODULES'].get(bundle.abi)
+    if not extra_modules:
+        return []
+
+    logging.info('Generating moblab extra controlfiles')
+
+    overrides = config['EXTRA_SUBMODULE_OVERRIDE'].get(bundle.abi)
+    if overrides:
+        extra_modules = copy.deepcopy(extra_modules)
+        for module in extra_modules:
+            for old, news in overrides.items():
+                if old in extra_modules[module].keys():
+                    suites = extra_modules[module][old]
+                    extra_modules[module].pop(old)
+                    for submodule in news:
+                        extra_modules[module][submodule] = suites
+
+    return [
+            ModuleGroup(basename=submodule,
+                        modules=frozenset([submodule]),
+                        suites=frozenset(suites)) for module in extra_modules
+            for submodule, suites in extra_modules[module].items()
+    ]
+
+
+def gen_controlfiles_for_source_type(source_type: str, config: Config,
+                                     cache_dir: Optional[str]) -> None:
+    """Generate controlfiles for given source type.
+
+    Args:
+        source_type: either of 'MOBLAB', 'LATEST', 'DEV'.
+        config: the config dictionary.
+        cache_dir: optional path to the bundle cache.
+    """
+    gen_funcs = generators_for_source_type(source_type)
+    if not gen_funcs:
+        logging.warn('No generators associated with source type %s',
+                     source_type)
+        return
+    logging.info('Generating controlfiles for source type %s', source_type)
+
+    config_path = config['BUNDLE_CONFIG_PATH']
+    url_config = bundle_utils.load_config(config_path)
+
+    for abi in bundle_utils.get_abis(url_config):
+        bundle = Bundle.download(config, url_config, source_type, abi,
+                                 cache_dir)
+        groups = []
+        for gen in gen_funcs:
+            groups += gen(bundle, config)
+
+        logging.info('Writing controlfiles for abi: %s', abi)
+        for group in groups:
+            filename = get_controlfile_name(group, config, bundle)
+            content = get_controlfile_content(group, config, bundle)
+            logging.debug('Writing file: %s', filename)
+            with open(filename, 'w') as f:
+                f.write(content)
+
+
+def remove_legacy_generated_controlfiles(is_all: bool, is_public: bool,
+                                         is_latest: bool) -> None:
+    """Remove previous generated controlfiles.
+
+    Args:
+        is_all: whether generate controlfiles for all source type.
+        is_public: whether generate controlfiles for public source type.
+        is_latest:  whether generate controlfiles for latest source type.
+    """
+
+    control_files_need_remove = []
+    tags_to_match = []
+    if is_public or is_all:
+        tags_to_match.append('MOBLAB')
+    if is_latest or is_all:
+        tags_to_match.append('LATEST')
+    if (not is_public and not is_latest) or is_all:
+        tags_to_match.append('DEV')
+
+    for file_name in os.listdir():
+        if not os.path.isfile(file_name):
+            continue
+        with open(file_name) as f:
+            for line in f:
+                if not '__GENERATED_BY_GENERATE_CONTROLFILES_PY__' in line:
+                    continue
+                tag = line.strip().split(':', 1)[1]
+                if tag in tags_to_match:
+                    control_files_need_remove.append(file_name)
+                break
+
+    for f in control_files_need_remove:
+        os.remove(f)
+
+
+def main(config: Dict[str, Any]) -> None:
+    """Entry point of the script.
+
+    Args:
+        config: the config dictionary.
+    """
+    parser = argparse.ArgumentParser(
+            description='Create control files for a CTS bundle on GS.',
+            formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument(
+            '--is_public',
+            dest='is_public',
+            default=False,
+            action='store_true',
+            help='Generate the public control files for CTS, default generate'
+            ' the internal control files')
+    parser.add_argument(
+            '--is_latest',
+            dest='is_latest',
+            default=False,
+            action='store_true',
+            help='Generate the control files for CTS from the latest CTS bundle'
+            ' stored in the internal storage')
+    parser.add_argument(
+            '--is_all',
+            dest='is_all',
+            default=False,
+            action='store_true',
+            help='Generate the public, latest, and dev control files')
+    parser.add_argument(
+            '--cache_dir',
+            dest='cache_dir',
+            default=None,
+            action='store',
+            help='Cache directory for downloaded bundle file. Uses the cached '
+            'bundle file if exists, or caches a downloaded file to this '
+            'directory if not.')
+    parser.add_argument('--log_level', default='INFO', help='Sets log level.')
+    args = parser.parse_args()
+
+    logging.basicConfig(level=args.log_level)
+    config = Config(config)
+
+    remove_legacy_generated_controlfiles(args.is_all, args.is_public,
+                                         args.is_latest)
+
+    if args.is_public or args.is_all:
+        gen_controlfiles_for_source_type('MOBLAB', config, args.cache_dir)
+
+    if args.is_latest or args.is_all:
+        gen_controlfiles_for_source_type('LATEST', config, args.cache_dir)
+        # TODO generate CTS-Instant controlfiles
+
+    if (not args.is_public and not args.is_latest) or args.is_all:
+        gen_controlfiles_for_source_type('DEV', config, args.cache_dir)

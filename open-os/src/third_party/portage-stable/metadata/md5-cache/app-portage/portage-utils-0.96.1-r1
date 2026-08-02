@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=configure prepare setup
+DEPEND=openmp? ( || ( sys-devel/gcc:*[openmp] sys-libs/libomp ) ) qmanifest? ( !static? ( app-crypt/gpgme:= app-crypt/libb2:= dev-libs/openssl:= sys-libs/zlib:= ) ) qtegrity? ( !static? ( dev-libs/openssl:= ) ) qmanifest? ( static? ( app-crypt/gpgme[static-libs] app-crypt/libb2[static-libs] dev-libs/openssl[static-libs] sys-libs/zlib[static-libs] ) ) qtegrity? ( static? ( dev-libs/openssl[static-libs] ) )
+DESCRIPTION=Small and fast Portage helper tools written in C
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Portage-utils
+IUSE=openmp +qmanifest +qtegrity static
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=openmp? ( || ( sys-devel/gcc:*[openmp] sys-libs/libomp ) ) qmanifest? ( !static? ( app-crypt/gpgme:= app-crypt/libb2:= dev-libs/openssl:= sys-libs/zlib:= ) ) qtegrity? ( !static? ( dev-libs/openssl:= ) )
+SLOT=0
+SRC_URI=https://dev.gentoo.org/~grobian/distfiles/portage-utils-0.96.1.tar.xz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3b4af001773822b70251ab956467198d

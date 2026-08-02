@@ -1,0 +1,268 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+workspace(name = "adhd")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# For building from ebuild, we need to download files from following http_archive urls,
+# upload those to chromeos-mirror by steps in
+# https://chromium.googlesource.com/chromiumos/docs/+/HEAD/archive_mirrors.md#updating-localmirror-localmirror_private
+# and add
+# "<url in http_archive> -> <archived file name in chromeos-mirror>"
+# into `bazel_external_uris` in cras-bench-9999.ebuild to make it works.
+
+http_archive(
+    name = "platforms",
+    sha256 = "218efe8ee736d26a3572663b374a253c012b716d8af0c07e842e82f238a0a7ee",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.10/platforms-0.0.10.tar.gz",
+        "https://github.com/bazelbuild/platforms/releases/download/0.0.10/platforms-0.0.10.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "b8a1527901774180afc798aeb28c4634bdccf19c4d98e7bdd1ce79d1fe9aaad7",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.4.1/bazel-skylib-1.4.1.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.4.1/bazel-skylib-1.4.1.tar.gz",
+    ],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+http_archive(
+    name = "aspect_bazel_lib",
+    sha256 = "c858cc637db5370f6fd752478d1153955b4b4cbec7ffe95eb4a47a48499a79c3",
+    strip_prefix = "bazel-lib-2.0.3",
+    url = "https://github.com/aspect-build/bazel-lib/releases/download/v2.0.3/bazel-lib-v2.0.3.tar.gz",
+)
+
+http_archive(
+    name = "com_github_google_benchmark",
+    sha256 = "6430e4092653380d9dc4ccb45a1e2dc9259d581f4866dc0759713126056bc1d7",
+    strip_prefix = "benchmark-1.7.1",
+    urls = [
+        "https://github.com/google/benchmark/archive/refs/tags/v1.7.1.tar.gz",
+        "https://storage.googleapis.com/chromeos-localmirror/distfiles/google-benchmark-v1.7.1.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "rules_cc",
+    sha256 = "3d9e271e2876ba42e114c9b9bc51454e379cbf0ec9ef9d40e2ae4cec61a31b40",
+    strip_prefix = "rules_cc-0.0.6",
+    urls = [
+        "https://github.com/bazelbuild/rules_cc/releases/download/0.0.6/rules_cc-0.0.6.tar.gz",
+        "https://storage.googleapis.com/chromeos-localmirror/distfiles/bazelbuild-rules_cc-0.0.6.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "com_google_absl",
+    sha256 = "36b5bd2aa3ab0b9de05851481585bb55db1aa0ffb386a00b2b12db2a76554b2b",
+    strip_prefix = "abseil-cpp-20240116.3",
+    urls = ["https://github.com/abseil/abseil-cpp/archive/refs/tags/20240116.3.zip"],
+)
+
+http_archive(
+    name = "iniparser",
+    build_file = "//:third_party/BUILD.iniparser.bazel",
+    sha256 = "960daa800dd31d70ba1bacf3ea2d22e8ddfc2906534bf328319495966443f3ae",
+    strip_prefix = "iniparser-4.1",
+    urls = [
+        "https://github.com/ndevilla/iniparser/archive/refs/tags/v4.1.tar.gz",
+        "https://storage.googleapis.com/chromeos-localmirror/distfiles/ndevilla-iniparser-v4.1.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "protobuf_mutator",
+    build_file = "//:third_party/BUILD.protobuf_mutator.bazel",
+    sha256 = "fd299fd72c5cf664259d9bd43a72cb74dc6a8b9604d107fe2d2e90885aeb7c16",
+    strip_prefix = "libprotobuf-mutator-1.1",
+    urls = [
+        "https://github.com/google/libprotobuf-mutator/archive/refs/tags/v1.1.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "cppcheck",
+    build_file = "//:third_party/BUILD.cppcheck.bazel",
+    integrity = "sha256-gimv4d3cPtiTJIuKcjtCjcIh6gFPvHbmKJhAhXwD1FA=",
+    patch_args = ["-p1"],
+    patches = ["@//:third_party/cppcheck.runfiles.patch"],
+    strip_prefix = "cppcheck-2.13.0",
+    urls = ["https://github.com/danmar/cppcheck/archive/refs/tags/2.13.0.tar.gz"],
+)
+
+http_archive(
+    name = "thesofproject_sof",
+    build_file = "//:third_party/BUILD.thesofproject_sof.bazel",
+    sha256 = "2753902fd47e0e4686d3df42f494bb25b595fd681b221ca0ff26e3c11501620a",
+    strip_prefix = "sof-2.5",
+    urls = [
+        "https://github.com/thesofproject/sof/archive/refs/tags/v2.5.tar.gz",
+        "https://storage.googleapis.com/chromeos-localmirror/distfiles/thesofproject-sof-v2.5.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "percetto",
+    build_file = "//:third_party/BUILD.percetto.bazel",
+    sha256 = "2c1e9bcd710eaeaa6750bf91f3a2a7e143141d7d182a3a2c46dd806c8616deef",
+    strip_prefix = "percetto-0.1.6",
+    urls = [
+        "https://github.com/olvaffe/percetto/archive/refs/tags/v0.1.6.zip",
+    ],
+)
+
+load(
+    "//repositories:pkg_config/pkg_config.bzl",
+    "pkg_config",
+)
+
+pkg_config(
+    name = "pkg_config",
+    libs = [
+        "gtest",
+        "gtest_main",
+        "gmock",
+        "alsa",
+        "speexdsp",
+        "dbus-1",
+        "libudev",
+        "openssl",
+        "sbc",
+        # optional deps
+        "absl",
+        "libmetrics",
+        "libstructuredmetrics",
+        "libselinux",
+        "libfeatures_c",
+        "tensorflowlite",
+        "libsegmentation",
+        "percetto",
+        # @webrtc_apm deps
+        "protobuf",
+        "libevent",
+    ],
+)
+
+http_archive(
+    name = "rules_pkg",
+    sha256 = "d250924a2ecc5176808fc4c25d5cf5e9e79e6346d79d5ab1c493e289e722d1d0",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/0.10.1/rules_pkg-0.10.1.tar.gz",
+        "https://github.com/bazelbuild/rules_pkg/releases/download/0.10.1/rules_pkg-0.10.1.tar.gz",
+    ],
+)
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
+
+local_repository(
+    name = "webrtc_apm",
+    path = "../webrtc-apm",
+)
+
+load("//repositories:fuzz_engine/fuzz_engine.bzl", "fuzz_engine_repository")
+
+fuzz_engine_repository(name = "fuzz_engine")
+
+load("//repositories/system_cras_rust:repo.bzl", "system_cras_rust_repository")
+
+system_cras_rust_repository(name = "system_cras_rust")
+
+#
+# Rust dependencies
+#
+
+RULES_RUST_VERSION, RULES_RUST_SHA256 = (
+    "0.42.1",
+    "24b378ed97006f1f7012be498a26f81ddb9901318b88380aee8522fdfbe8b735",
+)
+
+http_archive(
+    name = "rules_rust",
+    sha256 = RULES_RUST_SHA256,
+    urls = [
+        "https://github.com/bazelbuild/rules_rust/releases/download/{0}/rules_rust-v{0}.tar.gz".format(RULES_RUST_VERSION),
+        "https://storage.googleapis.com/chromeos-localmirror/distfiles/bazelbuild-rules_rust-v{0}.tar.gz".format(RULES_RUST_VERSION),
+    ],
+)
+
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
+
+rules_rust_dependencies()
+
+rust_register_toolchains(
+    edition = "2021",
+    versions = [
+        "1.77.1",
+    ],
+)
+
+load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
+
+crate_universe_dependencies()
+
+load("@rules_rust//crate_universe:defs.bzl", "crates_repository")
+
+crates_repository(
+    name = "crate_index",
+    cargo_lockfile = "//:Cargo.lock",
+    lockfile = "//:Cargo.Bazel.lock",
+    manifests = [
+        "//:Cargo.toml",
+        "//:rock/Cargo.toml",
+        "//:sof_helper/Cargo.toml",
+        "//cras/server/s2:Cargo.toml",
+        "//audio_processor:Cargo.toml",
+        "//cras/common:Cargo.toml",
+        "//cras/server/rate_estimator:Cargo.toml",
+        "//cras/server/feature_tier:Cargo.toml",
+        "//cras/server/ini:Cargo.toml",
+        "//cras/server/platform/dlc:Cargo.toml",
+        "//cras/server/platform/features:Cargo.toml",
+        "//cras/server/processor:Cargo.toml",
+        "//cras/server/tool:Cargo.toml",
+        "//cras/src/dsp/rust:Cargo.toml",
+        "//cras/src/server/rust/staticlib:Cargo.toml",
+        "//rules/cbindgen:Cargo.toml",
+    ],
+)
+
+load("@crate_index//:defs.bzl", "crate_repositories")
+
+crate_repositories()
+
+# Compilation database
+local_repository(
+    name = "compdb",
+    path = "repositories/compdb",
+)
+
+load("//repositories:deps.bzl", "file_deps")
+
+file_deps()
+
+load("//cras/src/dsp/tests:deps.bzl", "cras_dsp_file_deps")
+
+cras_dsp_file_deps()
+
+# Please keep this at the bottom of the WORKSPACE.
+# http_archive_deps_setup can only scan http_archives that are already declared.
+load("//repositories/http_archive_deps:repo.bzl", "http_archive_deps_setup")
+
+http_archive_deps_setup(bazel_external_uris_exclude = [
+    "cppcheck",
+    "com_google_absl",
+    "percetto",
+    "protobuf_mutator",  # TODO(b/273122913): Upload to chromeos-localmirror.
+])

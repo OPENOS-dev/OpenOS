@@ -1,0 +1,15 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+
+# Executables that link against libprotobuf.so also need to link against
+# the following static libraries, so we need to include them in the interface
+# layer that is generated for the package.
+interface_library_allowlist = [
+	"/usr/lib64/libutf8_range.a",
+	"/usr/lib64/libutf8_validity.a",
+]

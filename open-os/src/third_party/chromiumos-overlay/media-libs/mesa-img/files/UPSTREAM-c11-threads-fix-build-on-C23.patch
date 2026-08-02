@@ -1,0 +1,61 @@
+From fb435a85fbe69a1b88ad7b21eb005ab0d522b199 Mon Sep 17 00:00:00 2001
+From: Denys Fedoryshchenko <denys.f@collabora.com>
+Date: Tue, 16 Jun 2026 15:57:32 +0300
+Subject: [PATCH 4/5] UPSTREAM: c11/threads: fix build on C23
+
+C23/glibc is now including once_init in stdlib.h.
+This is a cherry-pick of Dave Airlie's upstream Mesa commit.
+
+Upstream Commit: 179e744f7577d98df7c79d7324c22acfb32a0154 (main branch)
+Stable/Staging Commit: 0ef221f4a45d50cc626a5da156a6ea678fcd8c25 (25.3 staging)
+Upstream MR: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/38432
+
+Reference for glibc change:
+https://patchwork.sourceware.org/project/glibc/patch/78061085-f04a-0c45-107b-5a8a15521083@redhat.com/
+
+Change-Id: Ic16a71b0ed796cde34e435c7eb9cb63c994fadc8
+---
+ include/c11/threads_posix.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/c11/threads_posix.h b/include/c11/threads_posix.h
+index 45cb6075e6e..5f22aca6f1e 100644
+--- a/include/c11/threads_posix.h
++++ b/include/c11/threads_posix.h
+@@ -51,7 +51,9 @@ Configuration macro:
+ #include <pthread.h>
+ 
+ /*---------------------------- macros ----------------------------*/
++#ifndef __once_flag_defined
+ #define ONCE_FLAG_INIT PTHREAD_ONCE_INIT
++#endif
+ #ifdef INIT_ONCE_STATIC_INIT
+ #define TSS_DTOR_ITERATIONS PTHREAD_DESTRUCTOR_ITERATIONS
+ #else
+@@ -66,7 +68,9 @@ typedef pthread_cond_t  cnd_t;
+ typedef pthread_t       thrd_t;
+ typedef pthread_key_t   tss_t;
+ typedef pthread_mutex_t mtx_t;
++#ifndef __once_flag_defined
+ typedef pthread_once_t  once_flag;
++#endif
+ 
+ 
+ /*
+@@ -90,11 +94,13 @@ impl_thrd_routine(void *p)
+ 
+ /*--------------- 7.25.2 Initialization functions ---------------*/
+ // 7.25.2.1
++#ifndef __once_flag_defined
+ static inline void
+ call_once(once_flag *flag, void (*func)(void))
+ {
+     pthread_once(flag, func);
+ }
++#endif
+ 
+ 
+ /*------------- 7.25.3 Condition variable functions -------------*/
+-- 
+2.51.0
+

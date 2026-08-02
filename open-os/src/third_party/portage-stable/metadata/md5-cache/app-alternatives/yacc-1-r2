@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DESCRIPTION=yacc symlinks
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Project:Base/Alternatives
+IUSE=+bison byacc reference
+KEYWORDS=*
+LICENSE=CC0-1.0
+RDEPEND=!<dev-util/yacc-1.9.1-r7 !<sys-devel/bison-3.8.2-r1 bison? ( >=sys-devel/bison-3.8.2-r1 ) byacc? ( dev-util/byacc ) reference? ( >=dev-util/yacc-1.9.1-r7 )
+REQUIRED_USE=^^ ( bison byacc reference )
+SLOT=0
+_eclasses_=app-alternatives	0d485a9273e176378fd2c635a815950f
+_md5_=839400d96b69abf19eb0188fc9a63dca

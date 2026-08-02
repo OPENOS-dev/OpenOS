@@ -1,0 +1,24 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'hardware_StorageTrim'
+METADATA = {
+    'contacts': ['chromeos-storage@google.com'],
+    'bug_component': 'b:974567',
+    'criteria': 'Measure write performance before and after trim. (for SSD)',
+    'hw_agnostic': False
+}
+AUTHOR = 'puthik'
+PURPOSE = 'Measure write performance before and after trim. (for SSD)'
+TIME = 'LENGTHY'
+TEST_CLASS = 'hardware'
+TEST_TYPE = 'client'
+PY_VERSION = 3
+
+DOC = """
+This test done the following. Fill the drive 2 times using random write.
+Measure write performance. Trim all the disk. Measure write performance.
+"""
+
+job.run_test('hardware_StorageTrim')

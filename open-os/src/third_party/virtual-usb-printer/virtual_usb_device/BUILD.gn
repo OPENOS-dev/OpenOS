@@ -1,0 +1,426 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("virtual-usb-device-all") {
+  deps = [ ":virtual-usbip-host" ]
+  deps += [ ":virtual-printer" ]
+  deps += [ ":virtual-rawprinter" ]
+  deps += [ ":install_scripts" ]
+
+  if (use.test) {
+    deps += [
+      "//virtual-usb-printer/common:http-util-testrunner",
+      "//virtual-usb-printer/common:smart-buffer-testrunner",
+      "//virtual-usb-printer/mock_printer:unit_tests",
+      "//virtual-usb-printer/virtual_usb_device:device-descriptors-tests",
+      "//virtual-usb-printer/virtual_usb_device:install_scripts",
+      "//virtual-usb-printer/virtual_usb_device:ipp-manager-testrunner",
+      "//virtual-usb-printer/virtual_usb_device:ipp-util-testrunner",
+      "//virtual-usb-printer/virtual_usb_device:load-config-testrunner",
+      "//virtual-usb-printer/virtual_usb_device:usb-util-tests",
+      "//virtual-usb-printer/virtual_usb_device:usbip-tests",
+      "//virtual-usb-printer/virtual_usb_device:virtual-usb-device-test",
+      "//virtual-usb-printer/virtual_usb_device:virtual-usbip-core-test",
+      "//virtual-usb-printer/virtual_usb_device:virtual-usbip-host-cmd-test",
+      "//virtual-usb-printer/virtual_usb_device:virtual-usbip-host-test",
+      "//virtual-usb-printer/virtual_usb_device/usb_device/scanner:escl-manager-testrunner",
+      "//virtual-usb-printer/virtual_usb_device/usb_device/scanner:jpeg-util-testrunner",
+    ]
+  }
+}
+
+install_config("install_scripts") {
+  sources = [ "../scripts/virtual-usb-printer.sh" ]
+  install_path = "/usr/local/bin"
+  options = "-m0755"
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libipp",
+  ]
+}
+
+executable("virtual-usbip-host") {
+  sources = [
+    "connection/socket_connection.cc",
+    "connection/socket_connection.h",
+    "device_descriptors.cc",
+    "device_descriptors.h",
+    "load_config.cc",
+    "load_config.h",
+    "op_commands.cc",
+    "op_commands.h",
+    "server.cc",
+    "server.h",
+    "usb_util.cc",
+    "usb_util.h",
+    "usbip.cc",
+    "usbip.h",
+    "usbip_host/device_proxy.cc",
+    "usbip_host/device_proxy.h",
+    "usbip_host/main.cc",
+    "usbip_host/usbip_core.cc",
+    "usbip_host/usbip_core.h",
+    "usbip_host/usbip_manager.cc",
+    "usbip_host/usbip_manager.h",
+    "usbip_host/usbip_server.cc",
+    "usbip_host/usbip_server.h",
+  ]
+  output_dir = "$root_out_dir/virtual-usb-device"
+  configs += [ ":target_defaults" ]
+  deps = [
+    "//virtual-usb-printer/common:http_util",
+    "//virtual-usb-printer/common:smart_buffer",
+    "//virtual-usb-printer/common:value_util",
+  ]
+  install_path = "/usr/local/bin"
+}
+
+source_set("ipp-manager") {
+  public = [ "ipp_manager.h" ]
+  sources = [ "ipp_manager.cc" ]
+  configs += [ ":target_defaults" ]
+}
+
+static_library("virtual-device") {
+  sources = [
+    "connection/socket_connection.cc",
+    "connection/socket_connection.h",
+    "cups_constants.cc",
+    "cups_constants.h",
+    "device_descriptors.cc",
+    "device_descriptors.h",
+    "ipp_util.cc",
+    "ipp_util.h",
+    "load_config.cc",
+    "load_config.h",
+    "op_commands.cc",
+    "op_commands.h",
+    "server.cc",
+    "server.h",
+    "usb_device/device_server.cc",
+    "usb_device/device_server.h",
+    "usb_device/usb_device.cc",
+    "usb_device/usb_device.h",
+    "usb_util.cc",
+    "usb_util.h",
+    "usbip.cc",
+    "usbip.h",
+  ]
+  output_dir = "$root_out_dir/virtual-usb-device"
+  configs += [ ":target_defaults" ]
+  deps = [
+    "//virtual-usb-printer/common:http_util",
+    "//virtual-usb-printer/common:smart_buffer",
+    "//virtual-usb-printer/common:value_util",
+    "//virtual-usb-printer/mock_printer:implementation",
+    "//virtual-usb-printer/mock_printer:mocking_protos",
+    "//virtual-usb-printer/mock_printer:parse_textproto",
+  ]
+}
+
+executable("virtual-printer") {
+  sources = [
+    "usb_device/printer/usb_printer.cc",
+    "usb_device/printer/usb_printer.h",
+  ]
+  output_dir = "$root_out_dir/virtual-usb-device"
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":ipp-manager",
+    ":virtual-device",
+    "//virtual-usb-printer/virtual_usb_device/usb_device/scanner:escl-scanner",
+  ]
+  install_path = "/usr/local/bin"
+}
+
+executable("virtual-rawprinter") {
+  sources = [
+    "usb_device/printer/raw_printer.cc",
+    "usb_device/printer/raw_printer.h",
+  ]
+  output_dir = "$root_out_dir/virtual-usb-device"
+  configs += [ ":target_defaults" ]
+  deps = [ ":virtual-device" ]
+  install_path = "/usr/local/bin"
+}
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+
+  executable("usbip-tests") {
+    sources = [
+      "usb_util.cc",
+      "usb_util.h",
+      "usbip.cc",
+      "usbip.h",
+      "usbip_test.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+    ]
+    run_test = true
+  }
+
+  executable("usb-util-tests") {
+    sources = [
+      "usb_util.cc",
+      "usb_util.h",
+      "usb_util_test.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+    ]
+    run_test = true
+  }
+
+  executable("device-descriptors-tests") {
+    sources = [
+      "device_descriptors.cc",
+      "device_descriptors.h",
+      "device_descriptors_test.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+    ]
+    run_test = true
+  }
+
+  executable("virtual-usb-device-test") {
+    sources = [
+      "connection/socket_connection.cc",
+      "connection/socket_connection.h",
+      "device_descriptors.cc",
+      "device_descriptors.h",
+      "load_config.cc",
+      "load_config.h",
+      "usb_device/usb_device.cc",
+      "usb_device/usb_device.h",
+      "usb_device/usb_device_test.cc",
+      "usb_util.cc",
+      "usb_util.h",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+      "//virtual-usb-printer/common:value_util",
+    ]
+    run_test = true
+  }
+
+  executable("virtual-usbip-host-test") {
+    sources = [
+      "connection/socket_connection.cc",
+      "connection/socket_connection.h",
+      "device_descriptors.cc",
+      "device_descriptors.h",
+      "load_config.cc",
+      "op_commands.cc",
+      "op_commands.h",
+      "server.cc",
+      "server.h",
+      "usb_device/usb_device.cc",
+      "usb_device/usb_device.h",
+      "usb_util.cc",
+      "usb_util.h",
+      "usbip.cc",
+      "usbip.h",
+      "usbip_host/device_proxy.cc",
+      "usbip_host/device_proxy.h",
+      "usbip_host/usbip_core.cc",
+      "usbip_host/usbip_core.h",
+      "usbip_host/usbip_manager.cc",
+      "usbip_host/usbip_manager.h",
+      "usbip_host/usbip_manager_test.cc",
+      "usbip_host/usbip_server.cc",
+      "usbip_host/usbip_server.h",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+      "//virtual-usb-printer/common:http_util",
+      "//virtual-usb-printer/common:value_util",
+    ]
+    run_test = true
+  }
+
+  executable("virtual-usbip-host-cmd-test") {
+    sources = [
+      "connection/socket_connection.cc",
+      "connection/socket_connection.h",
+      "device_descriptors.cc",
+      "device_descriptors.h",
+      "load_config.cc",
+      "op_commands.cc",
+      "op_commands.h",
+      "server.cc",
+      "server.h",
+      "usb_device/usb_device.cc",
+      "usb_device/usb_device.h",
+      "usb_util.cc",
+      "usb_util.h",
+      "usbip.cc",
+      "usbip.h",
+      "usbip_host/device_proxy.cc",
+      "usbip_host/device_proxy.h",
+      "usbip_host/usbip_core.cc",
+      "usbip_host/usbip_core.h",
+      "usbip_host/usbip_manager.cc",
+      "usbip_host/usbip_manager.h",
+      "usbip_host/usbip_manager_cmd_test.cc",
+      "usbip_host/usbip_server.cc",
+      "usbip_host/usbip_server.h",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+      "//virtual-usb-printer/common:http_util",
+      "//virtual-usb-printer/common:value_util",
+    ]
+    run_test = true
+  }
+
+  executable("virtual-usbip-core-test") {
+    sources = [
+      "connection/socket_connection.cc",
+      "connection/socket_connection.h",
+      "device_descriptors.cc",
+      "device_descriptors.h",
+      "load_config.cc",
+      "op_commands.cc",
+      "op_commands.h",
+      "usb_device/usb_device.cc",
+      "usb_device/usb_device.h",
+      "usb_util.cc",
+      "usb_util.h",
+      "usbip.cc",
+      "usbip.h",
+      "usbip_host/device_proxy.cc",
+      "usbip_host/device_proxy.h",
+      "usbip_host/usbip_core.cc",
+      "usbip_host/usbip_core.h",
+      "usbip_host/usbip_core_test.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer//common:smart_buffer",
+      "//virtual-usb-printer//common:value_util",
+      "//virtual-usb-printer/common:http_util",
+    ]
+    run_test = true
+  }
+
+  executable("ipp-manager-testrunner") {
+    sources = [
+      "ipp_manager.cc",
+      "ipp_manager_test.cc",
+      "ipp_util.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer/common:smart_buffer",
+    ]
+    run_test = true
+  }
+
+  executable("ipp-util-testrunner") {
+    sources = [
+      "cups_constants.cc",
+      "ipp_util.cc",
+      "ipp_util_test.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+
+    # TODO(oka); Remove //common-mk:test by making testrunner to public_config //common-mk:test
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer/common:http_util",
+      "//virtual-usb-printer/common:smart_buffer",
+      "//virtual-usb-printer/common:value_util",
+    ]
+    run_test = true
+  }
+
+  executable("load-config-testrunner") {
+    sources = [
+      "device_descriptors.cc",
+      "load_config.cc",
+      "load_config_test.cc",
+    ]
+    output_dir = "$root_out_dir/virtual-usb-device"
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      "//common-mk/testrunner",
+      "//virtual-usb-printer/common:value_util",
+    ]
+    run_test = true
+  }
+}

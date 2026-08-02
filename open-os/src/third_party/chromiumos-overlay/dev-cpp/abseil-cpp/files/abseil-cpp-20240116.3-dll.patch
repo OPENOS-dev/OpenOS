@@ -1,0 +1,460 @@
+Second iteration of abseil DLL backport
+
+This is a rebase of the 20230802 patch on to 20240116.3.
+Original backport specified in b/341182265.
+
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/absl/CMakeLists.txt /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/absl/CMakeLists.txt
+--- abseil-cpp-20240116.3/absl/CMakeLists.txt	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/absl/CMakeLists.txt	2024-12-02 21:25:09.212038810 +0000
+@@ -36,9 +36,9 @@
+ add_subdirectory(types)
+ add_subdirectory(utility)
+ 
+-if (${ABSL_BUILD_DLL})
++if (ABSL_BUILD_DLL)
+   absl_make_dll()
+-  if (${ABSL_BUILD_TEST_HELPERS})
++  if ((BUILD_TESTING AND ABSL_BUILD_TESTING) OR ABSL_BUILD_TEST_HELPERS)
+     absl_make_dll(TEST ON)
+   endif()
+ endif()
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/absl/copts/AbseilConfigureCopts.cmake /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/absl/copts/AbseilConfigureCopts.cmake
+--- abseil-cpp-20240116.3/absl/copts/AbseilConfigureCopts.cmake	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/absl/copts/AbseilConfigureCopts.cmake	2024-12-02 21:25:09.080025732 +0000
+@@ -3,7 +3,7 @@
+ 
+ set(ABSL_DEFAULT_LINKOPTS "")
+ 
+-if (BUILD_SHARED_LIBS AND MSVC)
++if (BUILD_SHARED_LIBS AND (MSVC OR ABSL_BUILD_MONOLITHIC_SHARED_LIBS))
+   set(ABSL_BUILD_DLL TRUE)
+   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+ else()
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/ci/linux_gcc_alpine_cmake.sh /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/linux_gcc_alpine_cmake.sh
+--- abseil-cpp-20240116.3/ci/linux_gcc_alpine_cmake.sh	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/linux_gcc_alpine_cmake.sh	2024-12-02 21:25:09.216039207 +0000
+@@ -34,32 +34,46 @@
+   ABSL_CMAKE_BUILD_SHARED="OFF ON"
+ fi
+ 
++if [[ -z ${ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS:-} ]]; then
++  ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS="OFF ON"
++fi
++
+ source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
+ readonly DOCKER_CONTAINER=${LINUX_ALPINE_CONTAINER}
+ 
+ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
+   for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
+     for build_shared in ${ABSL_CMAKE_BUILD_SHARED}; do
+-      time docker run \
+-        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
+-        --tmpfs=/buildfs:exec \
+-        --workdir=/buildfs \
+-        --cap-add=SYS_PTRACE \
+-        --rm \
+-        -e CFLAGS="-Werror" \
+-        -e CXXFLAGS="-Werror" \
+-        ${DOCKER_EXTRA_ARGS:-} \
+-        "${DOCKER_CONTAINER}" \
+-        /bin/sh -c "
+-          cmake /abseil-cpp \
+-            -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
+-            -DABSL_BUILD_TESTING=ON \
+-            -DCMAKE_BUILD_TYPE=${compilation_mode} \
+-            -DCMAKE_CXX_STANDARD=${std} \
+-            -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
+-          make -j$(nproc) && \
+-          TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo \
+-          ctest -j$(nproc) --output-on-failure"
++      if [[ $build_shared == "OFF" ]]; then
++        monolithic_shared_options="OFF"
++      else
++        monolithic_shared_options="$ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS"
++      fi
++
++      for monolithic_shared in $monolithic_shared_options; do
++        time docker run \
++          --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
++          --tmpfs=/buildfs:exec \
++          --workdir=/buildfs \
++          --cap-add=SYS_PTRACE \
++          --rm \
++          -e CFLAGS="-Werror" \
++          -e CXXFLAGS="-Werror" \
++          ${DOCKER_EXTRA_ARGS:-} \
++          "${DOCKER_CONTAINER}" \
++          /bin/sh -c "
++            cmake /abseil-cpp \
++              -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
++              -DBUILD_SHARED_LIBS=${build_shared} \
++              -DABSL_BUILD_TESTING=ON \
++              -DCMAKE_BUILD_TYPE=${compilation_mode} \
++              -DCMAKE_CXX_STANDARD=${std} \
++              -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=${monolithic_shared} \
++              -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
++            make -j$(nproc) && \
++            TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo \
++            ctest -j$(nproc) --output-on-failure"
++        done
+     done
+   done
+ done
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/ci/linux_gcc-latest_libstdcxx_cmake.sh /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/linux_gcc-latest_libstdcxx_cmake.sh
+--- abseil-cpp-20240116.3/ci/linux_gcc-latest_libstdcxx_cmake.sh	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/linux_gcc-latest_libstdcxx_cmake.sh	2024-12-02 21:25:09.216039207 +0000
+@@ -34,33 +34,46 @@
+   ABSL_CMAKE_BUILD_SHARED="OFF ON"
+ fi
+ 
++if [[ -z ${ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS:-} ]]; then
++  ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS="OFF ON"
++fi
++
+ source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
+ readonly DOCKER_CONTAINER=${LINUX_GCC_LATEST_CONTAINER}
+ 
+ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
+   for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
+     for build_shared in ${ABSL_CMAKE_BUILD_SHARED}; do
+-      time docker run \
+-        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
+-        --tmpfs=/buildfs:exec \
+-        --workdir=/buildfs \
+-        --cap-add=SYS_PTRACE \
+-        --rm \
+-        -e CFLAGS="-Werror" \
+-        -e CXXFLAGS="-Werror" \
+-        ${DOCKER_EXTRA_ARGS:-} \
+-        "${DOCKER_CONTAINER}" \
+-        /bin/bash -c "
+-          cmake /abseil-cpp \
+-            -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
+-            -DBUILD_SHARED_LIBS=${build_shared} \
+-            -DABSL_BUILD_TESTING=ON \
+-            -DCMAKE_BUILD_TYPE=${compilation_mode} \
+-            -DCMAKE_CXX_STANDARD=${std} \
+-            -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
+-          make -j$(nproc) && \
+-          TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo \
+-          ctest -j$(nproc) --output-on-failure"
++      if [[ $build_shared == "OFF" ]]; then
++        monolithic_shared_options="OFF"
++      else
++        monolithic_shared_options="$ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS"
++      fi
++
++      for monolithic_shared in $monolithic_shared_options; do
++        time docker run \
++          --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
++          --tmpfs=/buildfs:exec \
++          --workdir=/buildfs \
++          --cap-add=SYS_PTRACE \
++          --rm \
++          -e CFLAGS="-Werror" \
++          -e CXXFLAGS="-Werror" \
++          ${DOCKER_EXTRA_ARGS:-} \
++          "${DOCKER_CONTAINER}" \
++          /bin/bash -c "
++            cmake /abseil-cpp \
++              -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
++              -DBUILD_SHARED_LIBS=${build_shared} \
++              -DABSL_BUILD_TESTING=ON \
++              -DCMAKE_BUILD_TYPE=${compilation_mode} \
++              -DCMAKE_CXX_STANDARD=${std} \
++              -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=${monolithic_shared} \
++              -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
++            make -j$(nproc) && \
++            TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo \
++            ctest -j$(nproc) --output-on-failure"
++        done
+     done
+   done
+ done
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/ci/macos_xcode_cmake.sh /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/macos_xcode_cmake.sh
+--- abseil-cpp-20240116.3/ci/macos_xcode_cmake.sh	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/macos_xcode_cmake.sh	2024-12-02 21:25:09.216039207 +0000
+@@ -36,22 +36,35 @@
+   ABSL_CMAKE_BUILD_SHARED="OFF ON"
+ fi
+ 
++if [[ -z ${ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS:-} ]]; then
++  ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS="OFF ON"
++fi
++
+ for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
+   for build_shared in ${ABSL_CMAKE_BUILD_SHARED}; do
+-    BUILD_DIR=$(mktemp -d ${compilation_mode}.XXXXXXXX)
+-    cd ${BUILD_DIR}
++    if [[ $build_shared == "OFF" ]]; then
++      monolithic_shared_options="OFF"
++    else
++      monolithic_shared_options="$ABSL_CMAKE_BUILD_MONOLITHIC_SHARED_LIBS"
++    fi
++
++    for monolithic_shared in $monolithic_shared_options; do
++      BUILD_DIR=$(mktemp -d ${compilation_mode}.XXXXXXXX)
++      cd ${BUILD_DIR}
+ 
+-    # TODO(absl-team): Enable -Werror once all warnings are fixed.
+-    time cmake ${ABSEIL_ROOT} \
+-      -GXcode \
+-      -DBUILD_SHARED_LIBS=${build_shared} \
+-      -DABSL_BUILD_TESTING=ON \
+-      -DCMAKE_BUILD_TYPE=${compilation_mode} \
+-      -DCMAKE_CXX_STANDARD=14 \
+-      -DCMAKE_MODULE_LINKER_FLAGS="-Wl,--no-undefined" \
+-      -DABSL_GOOGLETEST_DOWNLOAD_URL="${ABSL_GOOGLETEST_DOWNLOAD_URL}"
+-    time cmake --build .
+-    time TZDIR=${ABSEIL_ROOT}/absl/time/internal/cctz/testdata/zoneinfo \
+-      ctest -C ${compilation_mode} --output-on-failure
++      # TODO(absl-team): Enable -Werror once all warnings are fixed.
++      time cmake ${ABSEIL_ROOT} \
++        -GXcode \
++        -DBUILD_SHARED_LIBS=${build_shared} \
++        -DABSL_BUILD_TESTING=ON \
++        -DCMAKE_BUILD_TYPE=${compilation_mode} \
++        -DCMAKE_CXX_STANDARD=14 \
++        -DCMAKE_MODULE_LINKER_FLAGS="-Wl,--no-undefined" \
++        -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=${monolithic_shared} \
++        -DABSL_GOOGLETEST_DOWNLOAD_URL="${ABSL_GOOGLETEST_DOWNLOAD_URL}"
++      time cmake --build .
++      time TZDIR=${ABSEIL_ROOT}/absl/time/internal/cctz/testdata/zoneinfo \
++        ctest -C ${compilation_mode} --output-on-failure
++    done
+   done
+ done
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/ci/windows_msvc_cmake.bat /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/windows_msvc_cmake.bat
+--- abseil-cpp-20240116.3/ci/windows_msvc_cmake.bat	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/ci/windows_msvc_cmake.bat	2024-12-02 21:25:09.216039207 +0000
+@@ -56,7 +56,6 @@
+ SET CXXFLAGS="/WX"
+ 
+ %CMAKE_BIN% ^
+-  -DABSL_BUILD_TEST_HELPERS=ON ^
+   -DABSL_BUILD_TESTING=ON ^
+   -DABSL_GOOGLETEST_DOWNLOAD_URL=%ABSL_GOOGLETEST_DOWNLOAD_URL% ^
+   -DBUILD_SHARED_LIBS=%ABSL_CMAKE_BUILD_SHARED% ^
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/CMake/AbseilDll.cmake /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/CMake/AbseilDll.cmake
+--- abseil-cpp-20240116.3/CMake/AbseilDll.cmake	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/CMake/AbseilDll.cmake	2024-12-02 21:25:09.056023354 +0000
+@@ -437,6 +437,43 @@
+   "debugging/leak_check.cc"
+ )
+ 
++if(NOT MSVC)
++  list(APPEND ABSL_INTERNAL_DLL_FILES
++    "flags/commandlineflag.cc"
++    "flags/commandlineflag.h"
++    "flags/config.h"
++    "flags/declare.h"
++    "flags/flag.h"
++    "flags/internal/commandlineflag.cc"
++    "flags/internal/commandlineflag.h"
++    "flags/internal/flag.cc"
++    "flags/internal/flag.h"
++    "flags/internal/parse.h"
++    "flags/internal/path_util.h"
++    "flags/internal/private_handle_accessor.cc"
++    "flags/internal/private_handle_accessor.h"
++    "flags/internal/program_name.cc"
++    "flags/internal/program_name.h"
++    "flags/internal/registry.h"
++    "flags/internal/sequence_lock.h"
++    "flags/internal/usage.cc"
++    "flags/internal/usage.h"
++    "flags/marshalling.cc"
++    "flags/marshalling.h"
++    "flags/parse.cc"
++    "flags/parse.h"
++    "flags/reflection.cc"
++    "flags/reflection.h"
++    "flags/usage.cc"
++    "flags/usage.h"
++    "flags/usage_config.cc"
++    "flags/usage_config.h"
++    "log/flags.cc"
++    "log/flags.h"
++    "log/internal/flags.h"
++  )
++endif()
++
+ set(ABSL_INTERNAL_DLL_TARGETS
+   "absl_check"
+   "absl_log"
+@@ -505,6 +543,7 @@
+   "log_internal_check_op"
+   "log_internal_conditions"
+   "log_internal_config"
++  "log_internal_fnmatch"
+   "log_internal_format"
+   "log_internal_globals"
+   "log_internal_log_impl"
+@@ -584,6 +623,7 @@
+   "strerror"
+   "strings"
+   "strings_internal"
++  "string_view"
+   "symbolize"
+   "synchronization"
+   "thread_pool"
+@@ -594,8 +634,29 @@
+   "type_traits"
+   "utility"
+   "variant"
++  "vlog_config_internal"
+ )
+ 
++if(NOT MSVC)
++  list(APPEND ABSL_INTERNAL_DLL_TARGETS
++    "flags"
++    "flags_commandlineflag"
++    "flags_commandlineflag_internal"
++    "flags_config"
++    "flags_internal"
++    "flags_marshalling"
++    "flags_parse"
++    "flags_path_util"
++    "flags_private_handle_accessor"
++    "flags_program_name"
++    "flags_reflection"
++    "flags_usage"
++    "flags_usage_internal"
++    "log_internal_flags"
++    "log_flags"
++  )
++endif()
++
+ set(ABSL_INTERNAL_TEST_DLL_FILES
+   "hash/hash_testing.h"
+   "log/scoped_mock_log.cc"
+@@ -668,12 +729,7 @@
+ 
+   STRING(REGEX REPLACE "^absl::" "" _target ${ABSL_INTERNAL_DLL_TARGET})
+ 
+-  list(FIND
+-    ABSL_INTERNAL_DLL_TARGETS
+-    "${_target}"
+-    _index)
+-
+-  if (${_index} GREATER -1)
++  if (_target IN_LIST ABSL_INTERNAL_DLL_TARGETS)
+     set(${ABSL_INTERNAL_DLL_OUTPUT} 1 PARENT_SCOPE)
+   else()
+     set(${ABSL_INTERNAL_DLL_OUTPUT} 0 PARENT_SCOPE)
+@@ -690,12 +746,7 @@
+ 
+   STRING(REGEX REPLACE "^absl::" "" _target ${ABSL_INTERNAL_TEST_DLL_TARGET})
+ 
+-  list(FIND
+-    ABSL_INTERNAL_TEST_DLL_TARGETS
+-    "${_target}"
+-    _index)
+-
+-  if (${_index} GREATER -1)
++  if (_target IN_LIST ABSL_INTERNAL_TEST_DLL_TARGETS)
+     set(${ABSL_INTERNAL_TEST_DLL_OUTPUT} 1 PARENT_SCOPE)
+   else()
+     set(${ABSL_INTERNAL_TEST_DLL_OUTPUT} 0 PARENT_SCOPE)
+@@ -747,7 +798,12 @@
+   else()
+     set(_dll "abseil_dll")
+     set(_dll_files ${ABSL_INTERNAL_DLL_FILES})
+-    set(_dll_libs "")
++    set(_dll_libs
++      Threads::Threads
++      # TODO(#1495): Use $<LINK_LIBRARY:FRAMEWORK,CoreFoundation> once our
++      # minimum CMake version >= 3.24
++      $<$<PLATFORM_ID:Darwin>:-Wl,-framework,CoreFoundation>
++    )
+     set(_dll_compile_definitions "")
+     set(_dll_includes "")
+     set(_dll_consume "ABSL_CONSUME_DLL")
+@@ -765,7 +821,10 @@
+       ${_dll_libs}
+       ${ABSL_DEFAULT_LINKOPTS}
+   )
+-  set_property(TARGET ${_dll} PROPERTY LINKER_LANGUAGE "CXX")
++  set_target_properties(${_dll} PROPERTIES
++    LINKER_LANGUAGE "CXX"
++    SOVERSION ${ABSL_SOVERSION}
++  )
+   target_include_directories(
+     ${_dll}
+     PUBLIC
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/CMake/AbseilHelpers.cmake /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/CMake/AbseilHelpers.cmake
+--- abseil-cpp-20240116.3/CMake/AbseilHelpers.cmake	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/CMake/AbseilHelpers.cmake	2024-12-02 21:28:35.072361573 +0000
+@@ -298,7 +298,7 @@
+     if(ABSL_ENABLE_INSTALL)
+       set_target_properties(${_NAME} PROPERTIES
+         OUTPUT_NAME "absl_${_NAME}"
+-        SOVERSION "2401.0.0"
++        SOVERSION "${ABSL_SOVERSION}"
+       )
+     endif()
+   else()
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/CMakeLists.txt /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/CMakeLists.txt
+--- abseil-cpp-20240116.3/CMakeLists.txt	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/CMakeLists.txt	2024-12-02 21:26:45.201531902 +0000
+@@ -59,6 +59,7 @@
+ endif (POLICY CMP0141)
+ 
+ project(absl LANGUAGES CXX VERSION 20240116)
++set(ABSL_SOVERSION "2401.0.0")
+ include(CTest)
+ 
+ # Output directory is correct by default for most build setups. However, when
+@@ -149,6 +150,14 @@
+   "If ABSL_USE_GOOGLETEST_HEAD is OFF and ABSL_GOOGLETEST_URL is not set, specifies the directory of a local GoogleTest checkout."
+   )
+ 
++option(ABSL_BUILD_MONOLITHIC_SHARED_LIBS
++  "Build Abseil as a single shared library (always enabled for Windows)"
++  OFF
++)
++if(NOT BUILD_SHARED_LIBS AND ABSL_BUILD_MONOLITHIC_SHARED_LIBS)
++  message(WARNING "Not building a shared library because BUILD_SHARED_LIBS is not set. Ignoring ABSL_BUILD_MONOLITHIC_SHARED_LIBS.")
++endif()
++
+ if((BUILD_TESTING AND ABSL_BUILD_TESTING) OR ABSL_BUILD_TEST_HELPERS)
+   if (ABSL_USE_EXTERNAL_GOOGLETEST)
+     if (ABSL_FIND_GOOGLETEST)
+diff '--color=auto' -NaruB abseil-cpp-20240116.3/create_lts.py /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/create_lts.py
+--- abseil-cpp-20240116.3/create_lts.py	2024-04-08 20:32:39.000000000 +0000
++++ /usr/local/google/home/ajordanr/tmp/abseil-cpp-20240116.3_new/create_lts.py	2024-12-02 21:25:09.216039207 +0000
+@@ -116,20 +116,21 @@
+                   datestamp)
+       })
+   ReplaceStringsInFile(
+-      'CMakeLists.txt', {
+-          'project(absl LANGUAGES CXX)':
++      'CMakeLists.txt',
++      {
++          'project(absl LANGUAGES CXX)': (
+               'project(absl LANGUAGES CXX VERSION {})'.format(datestamp)
+-      })
+-  # Set the SOVERSION to YYMM.0.0 - The first 0 means we only have ABI
+-  # compatible changes, and the second 0 means we can increment it to
+-  # mark changes as ABI-compatible, for patch releases.  Note that we
+-  # only use the last two digits of the year and the month because the
+-  # MacOS linker requires the first part of the SOVERSION to fit into
+-  # 16 bits.
+-  # https://www.sicpers.info/2013/03/how-to-version-a-mach-o-library/
+-  ReplaceStringsInFile(
+-      'CMake/AbseilHelpers.cmake',
+-      {'SOVERSION 0': 'SOVERSION "{}.0.0"'.format(datestamp[2:6])})
++          ),
++          # Set the SOVERSION to YYMM.0.0 - The first 0 means we only have ABI
++          # compatible changes, and the second 0 means we can increment it to
++          # mark changes as ABI-compatible, for patch releases.  Note that we
++          # only use the last two digits of the year and the month because the
++          # MacOS linker requires the first part of the SOVERSION to fit into
++          # 16 bits.
++          # https://www.sicpers.info/2013/03/how-to-version-a-mach-o-library/
++          'ABSL_SOVERSION 0': 'ABSL_SOVERSION "{}.0.0"'.format(datestamp[2:6]),
++      },
++  )
+   StripContentBetweenTags('CMakeLists.txt', '# absl:lts-remove-begin',
+                           '# absl:lts-remove-end')
+ 

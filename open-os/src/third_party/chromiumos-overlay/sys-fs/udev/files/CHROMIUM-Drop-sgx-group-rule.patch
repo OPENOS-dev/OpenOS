@@ -1,0 +1,31 @@
+From d4e01e31f9fe4750a34d64cc118c6eb1efa8828a Mon Sep 17 00:00:00 2001
+From: Stephen Boyd <swboyd@chromium.org>
+Date: Fri, 3 May 2024 16:58:13 -0700
+Subject: [PATCH] CHROMIUM: Drop 'sgx' group rule
+
+We don't have the sgx group because we don't use sgx. Drop this to avoid
+a warning line printed at boot.
+
+ udevd[249]: /lib/udev/rules.d/50-udev-default.rules:43 Unknown group 'sgx', ignoring
+
+BUG=b:338667420
+---
+ rules.d/50-udev-default.rules.in | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/rules.d/50-udev-default.rules.in b/rules.d/50-udev-default.rules.in
+index 20774f5cf652..013e095582b2 100644
+--- a/rules.d/50-udev-default.rules.in
++++ b/rules.d/50-udev-default.rules.in
+@@ -40,8 +40,6 @@ SUBSYSTEM=="cec", GROUP="video"
+ SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="video", MODE="{{GROUP_RENDER_MODE}}"
+ SUBSYSTEM=="kfd", GROUP="video", MODE="{{GROUP_RENDER_MODE}}"
+ 
+-SUBSYSTEM=="misc", KERNEL=="sgx_enclave", GROUP="sgx", MODE="0660"
+-
+ # When using static_node= with non-default permissions, also update
+ # tmpfiles.d/static-nodes-permissions.conf.in to keep permissions synchronized.
+ 
+-- 
+Sent by a computer, using git, on the internet
+

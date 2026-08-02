@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- OPENOS Logo — auto-adapts to light/dark mode via prefers-color-scheme -->
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 256 256"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg">
+
+  <style>
+    /* Light mode: black O */
+    .logo-o { fill: #000000; }
+    /* Dark mode: white O */
+    @media (prefers-color-scheme: dark) {
+      .logo-o { fill: #ffffff; }
+    }
+    .logo-bar { fill: #4aa26f; fill-opacity: 1; }
+  </style>
+
+  <path
+     class="logo-o"
+     d="M 40.000142,30.000236 V 205.99983 H 216.98986 V 30.000236 Z M 25,15 H 231 V 221 H 25 Z" />
+  <rect
+     class="logo-bar"
+     width="216"
+     height="10.004"
+     x="20"
+     y="235" />
+</svg>

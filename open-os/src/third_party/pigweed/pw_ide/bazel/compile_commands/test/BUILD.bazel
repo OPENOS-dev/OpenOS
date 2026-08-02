@@ -1,0 +1,557 @@
+# Copyright 2025 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("@com_google_protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_platform//platform_data:defs.bzl", "platform_data")
+load("//pw_ide/bazel/compile_commands:pw_cc_compile_commands_aspect.bzl", "pw_cc_compile_commands_fragments")
+load("//pw_ide/bazel/compile_commands:pw_compile_commands_generator.bzl", "pw_compile_commands_generator")
+load("//pw_protobuf_compiler:pw_proto_library.bzl", "pwpb_proto_library")
+load(":cpp_gen.bzl", "cpp_gen")
+
+package(
+    default_testonly = True,
+)
+
+# All the build targets in this directory are in service of the
+# compile_commands_test suite that ensures various edge cases are properly
+# captured in collected compile commands. For this reason, they're all tagged
+# as "manual" so they're only picked up when building the integration test.
+
+# Basic coverage of a library with virtual includes.
+cc_library(
+    name = "basic_library_virtual_includes",
+    srcs = ["basic_source_virt_test.cc"],
+    hdrs = ["public/virtual_included_header.h"],
+    # Virtual include path.
+    strip_include_prefix = "public",
+    tags = ["manual"],
+)
+
+# Basic coverage of a library with headers/cc files.
+cc_library(
+    name = "basic_library_direct_includes",
+    srcs = [
+        "basic_source_test.cc",
+        "private_header.h",
+    ],
+    hdrs = ["public/real_included_header.h"],
+    additional_compiler_inputs = ["uncompiled_cc_test.cc"],
+    includes = ["public"],
+    tags = ["manual"],
+)
+
+# Coverage of a library that has deps, but no headers/includes/srcs.
+cc_library(
+    name = "shim_library",
+    implementation_deps = [":basic_library_virtual_includes"],
+    tags = ["manual"],
+)
+
+# Coverage of a library that is header-only and at the end of a chain of header-only targets.
+cc_library(
+    name = "deep_header_only_leaf",
+    hdrs = ["public/deep_leaf.h"],
+    includes = ["public"],
+    tags = ["manual"],
+)
+
+# Coverage of a library that is header-only and sits in the middle of a chain.
+cc_library(
+    name = "deep_header_only_intermediate",
+    tags = ["manual"],
+    deps = [":deep_header_only_leaf"],
+)
+
+# Coverage of a binary that depends on a chain of header-only targets.
+cc_binary(
+    name = "deep_chain_binary",
+    srcs = ["basic_binary_test.cc"],
+    tags = ["manual"],
+    deps = [":deep_header_only_intermediate"],
+)
+
+# Coverage of a library with assembly files.
+cc_library(
+    name = "asm_library",
+    srcs = ["asm_src_test.S"],
+    hdrs = ["public/asm_hdr.S"],
+    strip_include_prefix = "public",
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "c_library_no_deps",
+    srcs = ["c_no_deps.c"],
+    hdrs = ["c_no_deps.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "cpp_library_no_deps",
+    srcs = ["cpp_no_deps.cc"],
+    hdrs = ["cpp_no_deps.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "cpp_library_no_deps_virtual_include",
+    srcs = ["cpp_no_deps_virtual_include.cc"],
+    hdrs = ["public/virtual_included_header.h"],
+    strip_include_prefix = "public",
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "multi_cpp_library_no_deps",
+    srcs = [
+        "multi_cpp_1_no_deps.cc",
+        "multi_cpp_2_no_deps.cc",
+    ],
+    hdrs = [
+        "multi_cpp_1_no_deps.h",
+        "multi_cpp_2_no_deps.h",
+    ],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "combined_library_no_deps",
+    srcs = [
+        "combined_c_no_deps.c",
+        "combined_cpp_no_deps.cc",
+    ],
+    hdrs = ["combined_no_deps.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "header_only_library_no_deps",
+    hdrs = ["header_only_no_deps.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "shim_library_dep_cpp_library",
+    tags = ["manual"],
+    deps = [":cpp_library_no_deps"],
+)
+
+cc_library(
+    name = "shim_library_dep_header_only_library",
+    tags = ["manual"],
+    deps = [":header_only_library_no_deps"],
+)
+
+cc_library(
+    name = "c_library_dep_c_library",
+    srcs = ["c_to_c.c"],
+    hdrs = ["c_to_c.h"],
+    tags = ["manual"],
+    deps = [":c_library_no_deps"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library",
+    srcs = ["cpp_to_cpp.cc"],
+    hdrs = ["cpp_to_cpp.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_no_deps"],
+)
+
+cc_library(
+    name = "cpp_library_dep_c_library",
+    srcs = ["cpp_to_c.cc"],
+    hdrs = ["cpp_to_c.h"],
+    tags = ["manual"],
+    deps = [":c_library_no_deps"],
+)
+
+cc_library(
+    name = "cpp_library_dep_multi_cpp_library",
+    srcs = ["cpp_to_multi.cc"],
+    hdrs = ["cpp_to_multi.h"],
+    tags = ["manual"],
+    deps = [":multi_cpp_library_no_deps"],
+)
+
+cc_library(
+    name = "cpp_library_dep_combined_library",
+    srcs = ["cpp_to_combined.cc"],
+    hdrs = ["cpp_to_combined.h"],
+    tags = ["manual"],
+    deps = [":combined_library_no_deps"],
+)
+
+cc_library(
+    name = "cpp_library_dep_header_only_library",
+    srcs = ["cpp_to_header_only.cc"],
+    hdrs = ["cpp_to_header_only.h"],
+    tags = ["manual"],
+    deps = [":header_only_library_no_deps"],
+)
+
+cc_library(
+    name = "header_only_library_dep_cpp_library",
+    hdrs = ["header_only_to_cpp.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_no_deps"],
+)
+
+cc_library(
+    name = "header_only_library_dep_header_only_library",
+    hdrs = ["header_only_to_header_only.h"],
+    tags = ["manual"],
+    deps = [":header_only_library_no_deps"],
+)
+
+cc_library(
+    name = "asm_library_no_deps",
+    srcs = ["asm_no_deps.S"],
+    hdrs = ["asm_no_deps.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "c_library_dep_asm_library",
+    srcs = ["c_to_asm.c"],
+    hdrs = ["c_to_asm.h"],
+    tags = ["manual"],
+    deps = [":asm_library_no_deps"],
+)
+
+cc_import(
+    name = "pretend_import",
+    hdrs = ["pretend_import.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "cpp_library_dep_import",
+    srcs = ["cpp_dep_import.cc"],
+    hdrs = ["cpp_dep_import.h"],
+    tags = ["manual"],
+    deps = [":pretend_import"],
+)
+
+cc_library(
+    name = "shim_library_dep_cpp_library_dep_cpp_library",
+    tags = ["manual"],
+    deps = [":cpp_library_dep_cpp_library"],
+)
+
+cc_library(
+    name = "c_library_dep_c_library_dep_c_library",
+    srcs = ["c_to_c_to_c.c"],
+    hdrs = ["c_to_c_to_c.h"],
+    tags = ["manual"],
+    deps = [":c_library_dep_c_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_shim_library_dep_cpp_library",
+    srcs = ["cpp_to_shim_to_cpp.cc"],
+    hdrs = ["cpp_to_shim_to_cpp.h"],
+    tags = ["manual"],
+    deps = [":shim_library_dep_cpp_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_shim_library_dep_header_only_library",
+    srcs = ["cpp_to_shim_to_header.cc"],
+    hdrs = ["cpp_to_shim_to_header.h"],
+    tags = ["manual"],
+    deps = [":shim_library_dep_header_only_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_c_library_dep_asm_library",
+    srcs = ["cpp_to_c_to_asm.cc"],
+    hdrs = ["cpp_to_c_to_asm.h"],
+    tags = ["manual"],
+    deps = [":c_library_dep_asm_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library_dep_c_library",
+    srcs = ["cpp_to_cpp_to_c.cc"],
+    hdrs = ["cpp_to_cpp_to_c.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_dep_c_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library_dep_cpp_library",
+    srcs = ["cpp_to_cpp_to_cpp.cc"],
+    hdrs = ["cpp_to_cpp_to_cpp.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_dep_cpp_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library_dep_multi_cpp_library",
+    srcs = ["cpp_to_cpp_to_multi.cc"],
+    hdrs = ["cpp_to_cpp_to_multi.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_dep_multi_cpp_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library_dep_combined_library",
+    srcs = ["cpp_to_cpp_to_combined.cc"],
+    hdrs = ["cpp_to_cpp_to_combined.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_dep_combined_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library_dep_header_only_library",
+    srcs = ["cpp_to_cpp_to_header.cc"],
+    hdrs = ["cpp_to_cpp_to_header.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_dep_header_only_library"],
+)
+
+cc_library(
+    name = "cpp_library_dep_cpp_library_dep_import",
+    srcs = ["cpp_to_cpp_to_import.cc"],
+    hdrs = ["cpp_to_cpp_to_import.h"],
+    tags = ["manual"],
+    deps = [":cpp_library_dep_import"],
+)
+
+cc_library(
+    name = "cpp_library_dep_header_only_library_dep_header_only_library",
+    srcs = ["cpp_to_header_to_header.cc"],
+    hdrs = ["cpp_to_header_to_header.h"],
+    tags = ["manual"],
+    deps = [":header_only_library_dep_header_only_library"],
+)
+
+cc_library(
+    name = "header_only_library_dep_shim_library_dep_header_only_library",
+    hdrs = ["header_to_shim_to_header.h"],
+    tags = ["manual"],
+    deps = [":shim_library_dep_header_only_library"],
+)
+
+cc_library(
+    name = "header_only_library_dep_header_only_library_dep_cpp_library",
+    hdrs = ["header_to_header_to_cpp.h"],
+    tags = ["manual"],
+    deps = [":header_only_library_dep_cpp_library"],
+)
+
+cc_library(
+    name = "header_only_library_dep_header_only_library_dep_header_only_library",
+    hdrs = ["header_to_header_to_header.h"],
+    tags = ["manual"],
+    deps = [":header_only_library_dep_header_only_library"],
+)
+
+# A library that depends on an external repository.
+cc_library(
+    name = "cpp_library_dep_external_library",
+    srcs = ["cpp_to_external.cc"],
+    tags = ["manual"],
+    deps = ["@pw_cc_compile_commands_test_external//:external_lib"],
+)
+
+cpp_gen(
+    name = "generated",
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "cpp_library_dep_generated",
+    srcs = [
+        "cpp_to_generated.cc",
+    ],
+    hdrs = [
+        "cpp_to_generated.h",
+    ],
+    tags = ["manual"],
+    deps = [
+        ":generated",
+    ],
+)
+
+cc_library(
+    name = "non_cpp_deps",
+    # This is nonsense, but shouldn't break anything.
+    data = [
+        "@pigweed_python_packages//sphinx",
+    ],
+    tags = ["manual"],
+)
+
+# Coverage of a binary's transitive dependencies.
+cc_binary(
+    name = "basic_binary",
+    srcs = ["basic_binary_test.cc"],
+    tags = ["manual"],
+    deps = [
+        ":asm_library",
+        ":cpp_library_no_deps_virtual_include",
+        # We should still get compile commands for the transitive dependencies.
+        ":shim_library_dep_cpp_library",
+    ],
+)
+
+# Coverage of platform_data.
+platform_data(
+    name = "mcu_transition",
+    platform = "//targets/rp2040",
+    tags = ["manual"],
+    target = ":basic_binary",
+)
+
+cc_library(
+    name = "replicated_error_library",
+    srcs = ["replicated_error_source.cc"],
+    tags = ["manual"],
+    deps = [
+        "//pw_assert:assert",
+    ],
+)
+
+cc_library(
+    name = "sysroot_test_library",
+    srcs = ["sysroot_test.cc"],
+    copts = ["--sysroot=external/fake_sysroot"],
+    tags = ["manual"],
+)
+
+_TEST_TARGETS = [
+    ":basic_library_direct_includes",
+    ":basic_library_virtual_includes",
+    ":cpp_library_dep_external_library",
+    ":cpp_library_dep_test_pwpb",
+    ":deep_chain_binary",
+    ":mcu_transition",
+    ":non_cpp_deps",
+    ":replicated_error_library",
+    ":sysroot_test_library",
+]
+
+pw_cc_compile_commands_fragments(
+    name = "test_compile_commands",
+    tags = ["manual"],
+    targets = _TEST_TARGETS,
+    visibility = ["//pw_ide/py:__subpackages__"],
+)
+
+pw_compile_commands_generator(
+    name = "test_compile_commands_generator",
+    tags = ["manual"],
+    visibility = ["//pw_ide/py:__subpackages__"],
+    deps = [
+        ":test_device_compile_commands",
+        ":test_host_compile_commands",
+    ],
+)
+
+pw_compile_commands_generator(
+    name = "test_host_compile_commands",
+    platform = "@bazel_tools//tools:host_platform",
+    tags = ["manual"],
+    target_patterns = [
+        "//pw_ide/bazel/compile_commands/test/...",
+    ] + [
+        "//pw_ide/bazel/compile_commands/test" + t
+        for t in _TEST_TARGETS
+    ],
+)
+
+pw_compile_commands_generator(
+    name = "test_device_compile_commands",
+    platform = "//targets/rp2040",
+    tags = ["manual"],
+    target_patterns = [
+        "//pw_ide/bazel/compile_commands/test/...",
+    ] + [
+        "//pw_ide/bazel/compile_commands/test" + t
+        for t in _TEST_TARGETS
+    ],
+)
+
+pw_compile_commands_generator(
+    name = "test_prefix_compile_commands_generator",
+    platform = "@bazel_tools//tools:host_platform",
+    symlink_prefix = "custom_out/",
+    tags = ["manual"],
+    target_patterns = [
+        "//pw_ide/bazel/compile_commands/test:basic_binary",
+    ],
+    visibility = ["//pw_ide/py:__subpackages__"],
+)
+
+pw_compile_commands_generator(
+    name = "test_conflict_1",
+    display_name = "Name 1",
+    platform = "@bazel_tools//tools:host_platform",
+    tags = ["manual"],
+)
+
+pw_compile_commands_generator(
+    name = "test_conflict_2",
+    display_name = "Name 2",
+    platform = "@bazel_tools//tools:host_platform",
+    tags = ["manual"],
+)
+
+pw_compile_commands_generator(
+    name = "test_conflict_generator_new",
+    tags = [
+        "cache_buster",
+        "manual",
+    ],
+    visibility = ["//pw_ide/py:__subpackages__"],
+    deps = [
+        ":test_conflict_1",
+        ":test_conflict_2",
+    ],
+)
+
+proto_library(
+    name = "test_proto",
+    srcs = ["test.proto"],
+    tags = ["manual"],
+)
+
+pwpb_proto_library(
+    name = "test_pwpb",
+    tags = ["manual"],
+    deps = [":test_proto"],
+)
+
+cc_library(
+    name = "cpp_library_dep_test_pwpb",
+    srcs = ["cpp_to_test_pwpb.cc"],
+    hdrs = ["cpp_to_test_pwpb.h"],
+    tags = ["manual"],
+    deps = [
+        ":test_pwpb",
+        "//pw_assert:assert",
+        "//pw_containers:vector",
+        "//pw_preprocessor",
+        "//pw_protobuf",
+        "//pw_result",
+        "//pw_span",
+        "//pw_status",
+        "//pw_string:string",
+    ],
+)

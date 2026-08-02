@@ -1,0 +1,17 @@
+Around the line of code this patches there is a long explanation of the rpath
+but the gist of it was that better handling of the rpath would be done in the
+future. For now, we just add the proper rpath.
+
+diff --git a/src/bootstrap/src/core/builder/cargo.rs b/src/bootstrap/src/core/builder/cargo.rs
+index 99044e2a2..90c3dff5f 100644
+--- a/src/bootstrap/src/core/builder/cargo.rs
++++ b/src/bootstrap/src/core/builder/cargo.rs
+@@ -252,7 +252,7 @@ impl Cargo {
+                 && !target.contains("xous")
+             {
+                 self.rustflags.arg("-Clink-args=-Wl,-z,origin");
+-                Some(format!("-Wl,-rpath,$ORIGIN/../{libdir}"))
++                Some(format!("-Wl,-rpath,$ORIGIN/../{libdir}:/usr/lib64/rust/rustlib/x86_64-unknown-linux-gnu/lib"))
+             } else {
+                 None
+             };

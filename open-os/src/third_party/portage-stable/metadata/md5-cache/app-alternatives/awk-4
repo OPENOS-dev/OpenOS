@@ -1,0 +1,12 @@
+DEFINED_PHASES=install postinst postrm preinst
+DESCRIPTION=/bin/awk and /usr/bin/awk symlinks
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Project:Base/Alternatives
+IUSE=split-usr +gawk busybox mawk nawk
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=!app-eselect/eselect-awk !<chromeos-base/chromeos-base-2 gawk? ( sys-apps/gawk ) busybox? ( sys-apps/busybox ) mawk? ( sys-apps/mawk ) nawk? ( sys-apps/nawk )
+REQUIRED_USE=^^ ( gawk busybox mawk nawk )
+SLOT=0
+_eclasses_=app-alternatives	0d485a9273e176378fd2c635a815950f
+_md5_=4856c3f799dcc99852cf1d1ee27dd2e7

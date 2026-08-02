@@ -1,0 +1,26 @@
+configure was regenerated after applying commit
+08313efb69e731d06eae9486eeed6b2ba14f4ed1 (btrfs-progs: build: conditionally
+detect x86_64 compiler flags) with fix for missing 'x' in comparison.
+diff --git a/configure b/configure
+index 0d9e2f7..6d88d70 100755
+--- a/configure
++++ b/configure
+@@ -5105,6 +5105,8 @@ printf "%s\n" "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
+  esac
+ 
+ 
++if test "x$target_cpu" == 'xx86_64'; then
++
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -msse2" >&5
+ printf %s "checking whether C compiler accepts -msse2... " >&6; }
+ if test ${ax_cv_check_cflags___msse2+y}
+@@ -5277,6 +5279,8 @@ fi
+ printf "%s\n" "#define HAVE_CFLAG_msha $HAVE_CFLAG_msha" >>confdefs.h
+ 
+ 
++fi
++
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -std=gnu11" >&5
+ printf %s "checking whether C compiler accepts -std=gnu11... " >&6; }
+ if test ${ax_cv_check_cflags___std_gnu11+y}
+

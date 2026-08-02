@@ -1,0 +1,15 @@
+BDEPEND=>=app-portage/elt-patches-20170815 virtual/pkgconfig
+DEFINED_PHASES=compile configure install postinst prepare setup
+DEPEND=lzma? ( app-arch/xz-utils ) zlib? ( sys-libs/zlib )
+DESCRIPTION=Load another kernel from the currently executing Linux kernel
+EAPI=7
+HOMEPAGE=https://kernel.org/pub/linux/utils/kernel/kexec/
+IUSE=booke lzma xen zlib kernel_linux
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=lzma? ( app-arch/xz-utils ) zlib? ( sys-libs/zlib )
+REQUIRED_USE=lzma? ( zlib )
+SLOT=0
+SRC_URI=https://www.kernel.org/pub/linux/utils/kernel/kexec/kexec-tools-2.0.24.tar.xz
+_eclasses_=libtool	f143db5a74ccd9ca28c1234deffede96	linux-info	327865b9921771330775d971263dc234	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=71e0f504dfae630376112c12549092cc

@@ -1,0 +1,14 @@
+BDEPEND=minizip? ( || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 ) verify-sig? ( sec-keys/openpgp-keys-madler ) >=app-portage/elt-patches-20170815 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install prepare test unpack
+DEPEND=!sys-libs/zlib-ng[compat]
+DESCRIPTION=Standard (de)compression library
+EAPI=7
+HOMEPAGE=https://zlib.net/
+IUSE=minizip static-libs abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64 verify-sig
+KEYWORDS=*
+LICENSE=ZLIB
+RDEPEND=!sys-libs/zlib-ng[compat]
+SLOT=0/1
+SRC_URI=https://zlib.net/zlib-1.3.1.tar.xz https://zlib.net/fossils/zlib-1.3.1.tar.xz https://zlib.net/current/beta/zlib-1.3.1.tar.xz https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.xz verify-sig? ( https://zlib.net/zlib-1.3.1.tar.xz.asc https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.xz.asc )
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	dot-a	b9b773c9064bf227063561f9c72db470	edo	c0eb9cbe6b0bd01fcb4918f12598a4d3	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=97c0eb3c0cfb2b000e564b39711e215f

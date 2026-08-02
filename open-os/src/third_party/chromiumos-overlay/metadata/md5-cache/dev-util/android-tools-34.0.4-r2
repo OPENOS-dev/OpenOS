@@ -1,0 +1,14 @@
+BDEPEND=dev-lang/go dev-lang/perl >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5 dev-libs/protobuf
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=app-arch/brotli:= app-arch/lz4:= app-arch/zstd:= dev-libs/libpcre2:= sys-libs/zlib:= virtual/libusb:1= dev-cpp/abseil-cpp:= dev-libs/protobuf:=
+DESCRIPTION=Android platform tools (adb, fastboot, and mkbootimg)
+EAPI=7
+HOMEPAGE=https://github.com/nmeum/android-tools/ https://developer.android.com/
+IUSE=-udev
+KEYWORDS=*
+LICENSE=Apache-2.0 BSD-2
+RDEPEND=app-arch/brotli:= app-arch/lz4:= app-arch/zstd:= dev-libs/libpcre2:= sys-libs/zlib:= virtual/libusb:1= udev? ( dev-util/android-udev-rules ) dev-cpp/abseil-cpp:= dev-libs/protobuf:=
+SLOT=0
+SRC_URI=https://github.com/nmeum/android-tools/releases/download/34.0.4/android-tools-34.0.4.tar.xz https://dev.gentoo.org/~zmedico/dist/android-tools-31.0.3-no-gtest.patch
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	cros-protobuf	0688bf4a334e3c7a71b2631e853db242	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=2930722fe3054414f8857b301e503154

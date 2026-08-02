@@ -1,0 +1,4 @@
+# Copyright 2026 OCS (Open Code Studio)
+# License: GPL-3.0
+
+ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sr[0-9]*", ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="710f", RUN+="/usr/bin/eject $tempnode"

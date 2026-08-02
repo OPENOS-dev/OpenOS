@@ -1,0 +1,28 @@
+# ── OpenOS Bazel Build Configuration ───────────────────────────
+# Applied to all builds from openos-overlay
+
+# Platform: default to OPENOS amd64
+build --platforms=//profiles/base:openos_amd64
+
+# C++ standard (matches ChromiumOS)
+build --cxxopt=-std=c++20
+build --host_cxxopt=-std=c++20
+
+# No Google branding by default  
+build --define=branding=openos
+
+# Compiler optimization
+build --compilation_mode=opt
+build --copt=-O2
+
+# Strip debug symbols
+build --strip=always
+
+# Parallel builds
+build --jobs=auto
+
+# Remote cache (ChromiumOS shared cache)
+# build --remote_cache=grpc://localhost:50051
+
+# Disable telemetry
+build --define=telemetry=false

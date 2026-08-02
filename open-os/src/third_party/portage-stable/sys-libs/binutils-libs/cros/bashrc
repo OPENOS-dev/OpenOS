@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# CrOS: We don't want the ./configure script to probe for ada support
+# since it invokes an unprefixed `gcc`
+export acx_cv_cc_gcc_supports_ada=no

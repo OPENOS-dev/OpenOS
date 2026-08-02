@@ -1,0 +1,40 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Install the experimental flatbuffers reflection schema.
+# TODO(b/211717735): Remove this after the upstream feature request finished.
+# https://github.com/google/flatbuffers/issues/7025
+cros_post_src_install_reflection() {
+	insinto /usr/include/flatbuffers
+	doins reflection/reflection.fbs
+}
+
+cros_pre_src_configure_flatc() {
+	# The flatbuffers compiler is only needed in the sdk or board broot.
+	if tc-is-cross-compiler; then
+		# Don't install flatbuffers compiler onto the device to save space.
+		MYCMAKEARGS+=( -DFLATBUFFERS_BUILD_FLATC=0 )
+	fi
+
+	export CPPFLAGS+=" -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE "
+
+	MYCMAKEARGS+=(
+		# ChromeOS uses C++20.
+		-DFLATBUFFERS_CPP_STD=20
+	)
+
+	# Allow using libraries and headers in sdk when building for board broot
+	# since we don't have glibc and standard C/C++ headers in broot.
+	if [[ $(basename "${SYSROOT:-/}") == broot ]]; then
+		# Make clang happy with /usr/include even if --sysroot is passed.
+		export CXXFLAGS+=" -Wno-poison-system-directories"
+
+		# We have to use the "after" variant here to ensure the header search paths
+		# contain C++ Standard Library before any C Standard Library.
+		export CXXFLAGS+=" --include-directory-after=/usr/include"
+
+		# Allow using glibc files from sdk.
+		export CXXFLAGS+=" -L/usr/lib64 -B/usr/lib64"
+	fi
+}

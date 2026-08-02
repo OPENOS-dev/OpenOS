@@ -1,0 +1,87 @@
+diff --git a/test_conformance/compiler/main.cpp b/test_conformance/compiler/main.cpp
+index 5d07159b..5ae517a9 100644
+--- a/test_conformance/compiler/main.cpp
++++ b/test_conformance/compiler/main.cpp
+@@ -19,6 +19,9 @@
+ #include "harness/testHarness.h"
+ #include "harness/stringHelpers.h"
+ 
++#include "testBase.h"
++struct temp_folder temp_folder;
++
+ std::string spvBinariesPath = "spirv_bin";
+ const std::string spvBinariesPathArg = "--spirv-binaries-path";
+ 
+diff --git a/test_conformance/compiler/testBase.h b/test_conformance/compiler/testBase.h
+index 9a9591b7..c75106a6 100644
+--- a/test_conformance/compiler/testBase.h
++++ b/test_conformance/compiler/testBase.h
+@@ -25,6 +25,42 @@
+ #include "harness/testHarness.h"
+ #include "harness/typeWrappers.h"
+ 
++#include <filesystem>
++#include <fstream>
++extern struct temp_folder temp_folder;
++struct temp_folder
++{
++    temp_folder()
++    {
++        m_path = (std::filesystem::temp_directory_path()
++                  / "OpenCL-CTS-test-compiler-XXXXXX")
++                     .string();
++        const char *path = mkdtemp(m_path.data());
++        assert(path != nullptr);
++        create_file_in_directory("includeTestDirectory", "testIncludeFile.h",
++                                 "#define HEADER_FOUND 12\n");
++        create_file_in_directory("secondIncludeTestDirectory",
++                                 "testIncludeFile.h",
++                                 "#define HEADER_FOUND 42\n");
++    }
++    ~temp_folder() { std::filesystem::remove_all(m_path.c_str()); }
++    const char *c_str() { return m_path.c_str(); }
++
++private:
++    void create_file_in_directory(const char *dirname, const char *filename,
++                                  const char *content)
++    {
++        std::filesystem::path path(m_path);
++        path /= dirname;
++        std::filesystem::create_directory(path);
++        path /= filename;
++        std::ofstream f(path);
++        assert(f);
++        f << content;
++    }
++    std::string m_path;
++};
++
+ // This is a macro rather than a function to be able to use and act like the
+ // existing test_error macro.
+ //
+diff --git a/test_conformance/compiler/test_build_options.cpp b/test_conformance/compiler/test_build_options.cpp
+index 15348e06..1d1e9c95 100644
+--- a/test_conformance/compiler/test_build_options.cpp
++++ b/test_conformance/compiler/test_build_options.cpp
+@@ -250,7 +250,7 @@ REGISTER_TEST(options_include_directory)
+     int error;
+ 
+     std::string sep  = dir_sep();
+-    std::string path = exe_dir();    // Directory where test executable is located.
++    std::string path = temp_folder.c_str();
+     std::string include_dir;
+ 
+     clProgramWrapper program;
+diff --git a/test_conformance/compiler/test_preprocessor.cpp b/test_conformance/compiler/test_preprocessor.cpp
+index 12891b2b..b4972d93 100644
+--- a/test_conformance/compiler/test_preprocessor.cpp
++++ b/test_conformance/compiler/test_preprocessor.cpp
+@@ -161,7 +161,7 @@ REGISTER_TEST(preprocessor_include)
+     char include_kernel[4096] = { 0 };
+ 
+     char const *sep = get_dir_sep();
+-    char const *path = get_exe_dir();
++    char const *path = strdup(temp_folder.c_str());
+ 
+     /* Build with the include directory defined */
+     sprintf(include_dir, "%s%sincludeTestDirectory%stestIncludeFile.h", path,

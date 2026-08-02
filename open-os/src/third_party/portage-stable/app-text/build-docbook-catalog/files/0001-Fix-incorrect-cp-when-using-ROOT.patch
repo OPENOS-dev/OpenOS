@@ -1,0 +1,41 @@
+From a31fbf8b8ce7bb49fa0c3168d9b6b764631d7aed Mon Sep 17 00:00:00 2001
+From: Raul E Rangel <rrangel@chromium.org>
+Date: Tue, 4 Apr 2023 15:57:13 -0600
+Subject: [PATCH 1/2] Fix incorrect cp when using ROOT
+
+We were missing the ROOT prefix on the cp operation:
++ [[ -r /build/arm64-generic//etc/xml/catalog ]]
++ xmllint /build/arm64-generic//etc/xml/catalog
++ [[ ! -r /build/arm64-generic//etc/xml/catalog ]]
++ verb 'Found XML Catalog root /etc/xml/catalog'
++ false
++ verb '  Cleaning existing /etc/xml/docbook delegates from /etc/xml/catalog'
++ false
++ cp /etc/xml/catalog /etc/xml/catalog.tmp
++ clean_catalog file:///etc/xml/docbook /etc/xml/catalog.tmp
++ local list f regex=file:///etc/xml/docbook catalog=/build/arm64-generic//etc/xml/catalog.tmp
+++ grep -E --only-matching file:///etc/xml/docbook /build/arm64-generic//etc/xml/catalog.tmp
+++ sort -u
+grep: /build/arm64-generic//etc/xml/catalog.tmp: No such file or directory
+
+Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+---
+ build-docbook-catalog | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build-docbook-catalog b/build-docbook-catalog
+index cee9af0..2275703 100755
+--- a/build-docbook-catalog
++++ b/build-docbook-catalog
+@@ -187,7 +187,7 @@ create_catalogs() {
+ 		verb "Found XML Catalog root ${ROOTCATALOG}"
+ 		# clean out existing entries
+ 		verb "  Cleaning existing ${CATALOG} delegates from ${ROOTCATALOG}"
+-		cp "${ROOTCATALOG}" "${ROOTCATALOG}.tmp"
++		cp "${ROOT}${ROOTCATALOG}" "${ROOT}${ROOTCATALOG}.tmp"
+ 		clean_catalog "file://${CATALOG}" "${ROOTCATALOG}.tmp"
+ 	fi
+ 
+-- 
+2.40.0.348.gf938b09366-goog
+

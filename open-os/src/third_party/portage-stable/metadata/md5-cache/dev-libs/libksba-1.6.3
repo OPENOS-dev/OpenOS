@@ -1,0 +1,14 @@
+BDEPEND=sys-devel/bison verify-sig? ( sec-keys/openpgp-keys-gnupg ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install unpack
+DEPEND=>=dev-libs/libgpg-error-1.8
+DESCRIPTION=X.509 and CMS (PKCS#7) library
+EAPI=7
+HOMEPAGE=https://www.gnupg.org/related_software/libksba
+IUSE=static-libs verify-sig
+KEYWORDS=*
+LICENSE=LGPL-3+ GPL-2+ GPL-3
+RDEPEND=>=dev-libs/libgpg-error-1.8
+SLOT=0
+SRC_URI=mirror://gnupg/libksba/libksba-1.6.3.tar.bz2 verify-sig? ( mirror://gnupg/libksba/libksba-1.6.3.tar.bz2.sig )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=c21dd78d8b9a3e5b49843520345be334

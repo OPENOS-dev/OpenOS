@@ -1,0 +1,197 @@
+/*
+ * Copyright 2016 Richard Hughes <richard@hughsie.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-logitech-hidpp-common.h"
+#include "fu-logitech-hidpp-runtime.h"
+#include "fu-logitech-hidpp-struct.h"
+
+typedef struct {
+	guint8 version_bl_major;
+} FuLogitechHidppRuntimePrivate;
+
+G_DEFINE_TYPE_WITH_PRIVATE(FuLogitechHidppRuntime, fu_logitech_hidpp_runtime, FU_TYPE_HIDRAW_DEVICE)
+
+#define GET_PRIVATE(o) (fu_logitech_hidpp_runtime_get_instance_private(o))
+
+guint8
+fu_logitech_hidpp_runtime_get_version_bl_major(FuLogitechHidppRuntime *self)
+{
+	FuLogitechHidppRuntimePrivate *priv;
+	g_return_val_if_fail(FU_IS_LOGITECH_HIDPP_RUNTIME(self), 0);
+	priv = GET_PRIVATE(self);
+	return priv->version_bl_major;
+}
+
+gboolean
+fu_logitech_hidpp_runtime_enable_notifications(FuLogitechHidppRuntime *self, GError **error)
+{
+	g_autoptr(FuStructLogitechHidppMsg) st_req = fu_struct_logitech_hidpp_msg_new();
+	g_autoptr(FuStructLogitechHidppMsg) st_rsp = NULL;
+	const guint8 buf[] = {
+	    0x00,
+	    0x05, /* wireless + softwarepresent */
+	    0x00,
+	};
+	fu_struct_logitech_hidpp_msg_set_report_id(st_req, FU_LOGITECH_HIDPP_REPORT_ID_SHORT);
+	fu_struct_logitech_hidpp_msg_set_device_id(st_req, FU_LOGITECH_HIDPP_DEVICE_IDX_RECEIVER);
+	fu_struct_logitech_hidpp_msg_set_sub_id(st_req, FU_LOGITECH_HIDPP_SUBID_SET_REGISTER);
+	fu_struct_logitech_hidpp_msg_set_function_id(
+	    st_req,
+	    FU_LOGITECH_HIDPP_REGISTER_HIDPP_NOTIFICATIONS);
+	if (!fu_struct_logitech_hidpp_msg_set_data(st_req, buf, sizeof(buf), error))
+		return FALSE;
+	st_rsp = fu_logitech_hidpp_transfer(FU_UDEV_DEVICE(self),
+					    st_req,
+					    FU_LOGITECH_HIDPP_VERSION_1,
+					    FU_LOGITECH_HIDPP_MSG_FLAG_NONE,
+					    error);
+	if (st_rsp == NULL) {
+		g_prefix_error_literal(error, "failed to enable notifications: ");
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static gboolean
+fu_logitech_hidpp_runtime_probe(FuDevice *device, GError **error)
+{
+	FuLogitechHidppRuntime *self = FU_LOGITECH_HIDPP_RUNTIME(device);
+	FuLogitechHidppRuntimePrivate *priv = GET_PRIVATE(self);
+	g_autoptr(FuDevice) device_usb = NULL;
+	g_autoptr(FuDevice) device_usb_iface = NULL;
+
+	/* FuHidrawDevice->probe */
+	if (!FU_DEVICE_CLASS(fu_logitech_hidpp_runtime_parent_class)->probe(device, error))
+		return FALSE;
+
+	/* generate bootloader-specific GUID */
+	device_usb = fu_device_get_backend_parent_with_subsystem(device, "usb:usb_device", NULL);
+	if (device_usb != NULL) {
+		g_autofree gchar *devid2 = NULL;
+		g_autofree gchar *prop_interface = NULL;
+
+		if (!fu_device_probe(device_usb, error))
+			return FALSE;
+		switch (fu_usb_device_get_release(FU_USB_DEVICE(device_usb)) & 0xFF00) {
+		case 0x1200:
+			/* nordic */
+			devid2 =
+			    g_strdup_printf("USB\\VID_%04X&PID_%04X",
+					    fu_device_get_vid(device),
+					    (guint)FU_LOGITECH_HIDPP_DEVICE_PID_BOOTLOADER_NORDIC);
+			fu_device_add_instance_id_full(device,
+						       devid2,
+						       FU_DEVICE_INSTANCE_FLAG_QUIRKS |
+							   FU_DEVICE_INSTANCE_FLAG_VISIBLE |
+							   FU_DEVICE_INSTANCE_FLAG_COUNTERPART);
+			priv->version_bl_major = 0x01;
+			break;
+		case 0x2400:
+			/* texas */
+			devid2 =
+			    g_strdup_printf("USB\\VID_%04X&PID_%04X",
+					    fu_device_get_vid(device),
+					    (guint)FU_LOGITECH_HIDPP_DEVICE_PID_BOOTLOADER_TEXAS);
+			fu_device_add_instance_id_full(device,
+						       devid2,
+						       FU_DEVICE_INSTANCE_FLAG_QUIRKS |
+							   FU_DEVICE_INSTANCE_FLAG_VISIBLE |
+							   FU_DEVICE_INSTANCE_FLAG_COUNTERPART);
+			priv->version_bl_major = 0x03;
+			break;
+		case 0x0500:
+			/* bolt */
+			device_usb_iface =
+			    fu_device_get_backend_parent_with_subsystem(device,
+									"usb:usb_interface",
+									error);
+			if (device_usb_iface == NULL)
+				return FALSE;
+			prop_interface =
+			    fu_udev_device_read_property(FU_UDEV_DEVICE(device_usb_iface),
+							 "INTERFACE",
+							 error);
+			if (prop_interface == NULL)
+				return FALSE;
+			if (g_strcmp0(prop_interface, "3/0/0") != 0) {
+				g_set_error_literal(error,
+						    FWUPD_ERROR,
+						    FWUPD_ERROR_NOT_SUPPORTED,
+						    "skipping hidraw device");
+				return FALSE;
+			}
+			devid2 =
+			    g_strdup_printf("USB\\VID_%04X&PID_%04X",
+					    fu_device_get_vid(device),
+					    (guint)FU_LOGITECH_HIDPP_DEVICE_PID_BOOTLOADER_BOLT);
+			fu_device_add_instance_id_full(device,
+						       devid2,
+						       FU_DEVICE_INSTANCE_FLAG_COUNTERPART);
+			priv->version_bl_major = 0x03;
+			break;
+		default:
+			g_warning("bootloader release 0x%04x invalid",
+				  (guint)fu_usb_device_get_release(FU_USB_DEVICE(device_usb)));
+			break;
+		}
+	}
+	return TRUE;
+}
+
+static void
+fu_logitech_hidpp_runtime_vid_pid_notify_cb(FuDevice *device, GParamSpec *pspec, gpointer user_data)
+{
+	if (fu_device_get_pid(device) == 0x0)
+		return;
+
+	/* this is a non-standard extension, but essentially API */
+	fu_device_add_instance_u16(device, "VID", fu_device_get_vid(device));
+	fu_device_add_instance_u16(device, "PID", fu_device_get_pid(device));
+	fu_device_build_instance_id(device, NULL, "UFY", "VID", "PID", NULL);
+
+	/* for vendor */
+	fu_device_build_instance_id_full(device,
+					 FU_DEVICE_INSTANCE_FLAG_QUIRKS,
+					 NULL,
+					 "USB",
+					 "VID",
+					 NULL);
+}
+
+static void
+fu_logitech_hidpp_runtime_class_init(FuLogitechHidppRuntimeClass *klass)
+{
+	FuDeviceClass *device_class = FU_DEVICE_CLASS(klass);
+	device_class->probe = fu_logitech_hidpp_runtime_probe;
+}
+
+static void
+fu_logitech_hidpp_runtime_init(FuLogitechHidppRuntime *self)
+{
+	fu_device_add_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_UPDATABLE);
+	fu_device_add_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_CAN_EMULATION_TAG);
+	fu_device_add_private_flag(FU_DEVICE(self), FU_DEVICE_PRIVATE_FLAG_REPLUG_MATCH_GUID);
+	fu_device_set_version_format(FU_DEVICE(self), FWUPD_VERSION_FORMAT_PLAIN);
+	fu_device_set_vid(FU_DEVICE(self), FU_LOGITECH_HIDPP_DEVICE_VID);
+	fu_device_add_icon(FU_DEVICE(self), FU_DEVICE_ICON_USB_RECEIVER);
+	fu_device_set_name(FU_DEVICE(self), "Unifying Receiver");
+	fu_device_set_summary(FU_DEVICE(self), "Miniaturised USB wireless receiver");
+	fu_device_set_remove_delay(FU_DEVICE(self), FU_DEVICE_REMOVE_DELAY_RE_ENUMERATE);
+	fu_device_set_poll_interval(FU_DEVICE(self),
+				    FU_LOGITECH_HIDPP_RECEIVER_RUNTIME_POLLING_INTERVAL);
+	fu_udev_device_add_open_flag(FU_UDEV_DEVICE(self), FU_IO_CHANNEL_OPEN_FLAG_READ);
+	fu_udev_device_add_open_flag(FU_UDEV_DEVICE(self), FU_IO_CHANNEL_OPEN_FLAG_WRITE);
+	g_signal_connect(FU_DEVICE(self),
+			 "notify::vid",
+			 G_CALLBACK(fu_logitech_hidpp_runtime_vid_pid_notify_cb),
+			 NULL);
+	g_signal_connect(FU_DEVICE(self),
+			 "notify::pid",
+			 G_CALLBACK(fu_logitech_hidpp_runtime_vid_pid_notify_cb),
+			 NULL);
+}

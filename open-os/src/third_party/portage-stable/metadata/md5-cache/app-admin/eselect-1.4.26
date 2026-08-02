@@ -1,0 +1,15 @@
+BDEPEND=doc? ( dev-python/docutils )
+DEFINED_PHASES=compile install postinst
+DEPEND=sys-apps/sed || ( sys-apps/coreutils app-misc/realpath )
+DESCRIPTION=Gentoo's multi-purpose configuration and management tool
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Project:Eselect
+IUSE=doc emacs vim-syntax
+KEYWORDS=*
+LICENSE=GPL-2+ || ( GPL-2+ CC-BY-SA-4.0 )
+PDEPEND=emacs? ( app-emacs/eselect-mode ) vim-syntax? ( app-vim/eselect-syntax )
+RDEPEND=sys-apps/sed || ( sys-apps/coreutils app-misc/realpath ) sys-apps/file sys-libs/ncurses:0
+SLOT=0
+SRC_URI=https://dev.gentoo.org/~ulm/eselect/eselect-1.4.26.tar.xz
+_eclasses_=bash-completion-r1	47a7402d95930413ce25ba8d857339bb	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=495ebafeb2ac1530433c00a7ca65aed0

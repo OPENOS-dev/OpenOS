@@ -1,0 +1,38 @@
+From ef5b6ae092a66981e1fcdee2e462da4dd88153a2 Mon Sep 17 00:00:00 2001
+From: Jordan R Abrahams-Whitehead <ajordanr@google.com>
+Date: Tue, 2 Apr 2024 20:22:36 +0000
+Subject: [PATCH] Allow stage0 builds like stage1 with local_rebuild
+
+Local patch so that we don't have to rebuild everything from
+the host bootstrap. This should save some build time.
+---
+ src/bootstrap/src/core/build_steps/compile.rs | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/bootstrap/src/core/build_steps/compile.rs b/src/bootstrap/src/core/build_steps/compile.rs
+index ddbe18ab838..7539f1e1f24 100644
+--- a/src/bootstrap/src/core/build_steps/compile.rs
++++ b/src/bootstrap/src/core/build_steps/compile.rs
+@@ -298,7 +298,9 @@ fn copy_third_party_objects(
+ ) -> Vec<(PathBuf, DependencyType)> {
+     let mut target_deps = vec![];
+ 
+-    if builder.config.needs_sanitizer_runtime_built(target) && compiler.stage != 0 {
++    if builder.config.needs_sanitizer_runtime_built(target)
++        && (compiler.stage != 0 || builder.config.local_rebuild)
++    {
+         // The sanitizers are only copied in stage1 or above,
+         // to avoid creating dependency on LLVM.
+         target_deps.extend(
+@@ -500,7 +502,7 @@ pub fn std_cargo(builder: &Builder<'_>, target: TargetSelection, stage: u32, car
+     //
+     // But we don't bother for the stage 0 compiler because it's never used
+     // with LTO.
+-    if stage >= 1 {
++    if stage >= 1 || builder.config.local_rebuild {
+         cargo.rustflag("-Cembed-bitcode=yes");
+     }
+     if builder.config.rust_lto == RustcLto::Off {
+-- 
+2.44.0.478.gd926399ef9-goog
+

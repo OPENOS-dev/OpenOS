@@ -1,0 +1,113 @@
+https://gitlab.freedesktop.org/anholt/deqp-runner/-/merge_requests/65
+
+From 1adddf3aa89f21b472d8046347ccdfa4612f141b Mon Sep 17 00:00:00 2001
+From: David Heidelberg <david.heidelberg@collabora.com>
+Date: Wed, 10 Jan 2024 23:12:19 +0100
+Subject: [PATCH] Support loading zstd compressed
+ caselist/baseline/skips/flakes
+
+Signed-off-by: David Heidelberg <david.heidelberg@collabora.com>
+---
+ .gitlab-ci.yml |  2 +-
+ Cargo.toml     |  1 +
+ src/lib.rs     | 31 ++++++++++++++++++++++++-------
+ 3 files changed, 26 insertions(+), 8 deletions(-)
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 21fd241..3321a1c 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -72,7 +72,7 @@ deb-armhf:
+ 
+ test-stable:
+   stage: build
+-  image: "rust:1.63.0-buster"
++  image: "rust:1.66.0-buster"
+   script:
+     # Integration tests require newer compiler features so we can only build.
+     - cargo build -j ${FDO_CI_CONCURRENT:-4}
+diff --git a/Cargo.toml b/Cargo.toml
+index a6c7153..1237886 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -110,3 +110,5 @@ version = "0.3"
+ [dependencies.toml]
+ version = "0.5"
+ 
++[dependencies.zstd]
++version = "0.13.0"
+diff --git a/Cargo.toml.orig b/Cargo.toml.orig
+index 938e665..d1a6b33 100644
+--- a/Cargo.toml.orig
++++ b/Cargo.toml.orig
+@@ -58,6 +58,7 @@ flate2 = "1.0.18"
+ toml = "0.5"
+ serde = { version = "1.0", features = ["derive"] }
+ serde-tuple-vec-map = "1.0.0"
++zstd = "0.13.0"
+ [dev-dependencies]
+ criterion = "0.3.0"
+ tempfile = "3.2"
+diff --git a/src/lib.rs b/src/lib.rs
+index 2c9ddfd..cd0ec79 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -60,6 +60,7 @@ use rayon::prelude::*;
+ use regex::RegexSet;
+ use serde::Deserialize;
+ use std::collections::HashMap;
++use std::ffi::OsStr;
+ use std::fs::File;
+ use std::io::prelude::*;
+ use std::io::BufReader;
+@@ -70,6 +71,7 @@ use std::time::Duration;
+ use std::time::Instant;
+ use structopt::StructOpt;
+ use timeout::{TimeoutChildExt, TimeoutChildStdout, Timer};
++use zstd::stream::read::Decoder;
+ 
+ fn parse_key_val<T, U>(s: &str) -> Result<(T, U), Box<dyn std::error::Error>>
+ where
+@@ -991,17 +993,32 @@ pub fn read_lines<I: IntoIterator<Item = impl AsRef<Path>>>(files: I) -> Result<
+     let mut lines: Vec<String> = Vec::new();
+ 
+     for path in files {
+-        let path = path.as_ref();
+-        for line in BufReader::new(
+-            File::open(path).with_context(|| format!("opening path: {}", path.display()))?,
+-        )
+-        .lines()
+-        {
++        let mut path: &Path = path.as_ref();
++        let mut path_compressed: PathBuf = path.to_path_buf();
++
++        // always try append zst extension (and keep existing one, e.g. .txt)
++        let ext = if let Some(file_ext) = path.extension().and_then(|ext| ext.to_str()) {
++            format!("{}.zst", file_ext)
++        } else {
++            (".zst").to_string()
++        };
++
++        path_compressed.set_extension(ext);
++        if path_compressed.exists() {
++            path = path_compressed.as_ref();
++        }
++        let file = File::open(path).with_context(|| format!("opening path: {}", path.display()))?;
++        let reader: Box<dyn Read> = match path.extension().and_then(OsStr::to_str) {
++            Some("zst") => Box::new(Decoder::new(file).unwrap()),
++            _ => Box::new(file),
++        };
++
++        for line in BufReader::new(reader).lines() {
+             let line = line.with_context(|| format!("reading line from {}", path.display()))?;
+             // In newer dEQP, vk-master.txt just contains a list of .txt
+             // caselist files relative to its current path, so recursively read
+             // thoseand append their contents.
+-            if line.ends_with(".txt") {
++            if line.ends_with(".txt") || line.ends_with(".txt.zst") {
+                 let sub_path = path.parent().context("Getting path parent dir")?.join(line);
+ 
+                 lines.extend_from_slice(
+-- 
+GitLab
+

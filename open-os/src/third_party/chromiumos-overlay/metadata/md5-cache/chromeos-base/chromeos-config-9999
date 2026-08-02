@@ -1,0 +1,15 @@
+BDEPEND=|| ( ( >=dev-lang/python-3.11.0_p2:3.11 dev-python/jsonschema[python_targets_python3_11(-)] dev-python/pyyaml[python_targets_python3_11(-)] ) ) chromeos-base/chromeos-config-host:= app-arch/zip dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install setup test unpack
+DEPEND=has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= )
+DESCRIPTION=Chromium OS-specific configuration
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/config/
+IUSE=unibuild has_chromeos_config_bsp has_chromeos_config_bsp_private has_chromeos_config_bsp_baseboard has_chromeos_config_bsp_baseboard_private cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=chromeos-base/crosid !<chromeos-base/chromeos-config-tools-0.0.5 has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= )
+REQUIRED_USE=unibuild
+SLOT=0/9999
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-unibuild	20e99cb053588c1793c4de8687bfba83	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=b58093a93e80de23c6d56b94776633a0

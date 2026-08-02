@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure install prepare
+DESCRIPTION=The network swiss army knife
+EAPI=7
+HOMEPAGE=https://nc110.sourceforge.io
+IUSE=ipv6 static
+KEYWORDS=*
+LICENSE=netcat
+SLOT=0
+SRC_URI=mirror://sourceforge/nc110/nc110.20180111.tar.xz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=114c4810ade51fcb3c9d1f886b84103b

@@ -1,0 +1,12 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=configure install
+DESCRIPTION=Op-Tee non-secure side client library and tee-supplicant
+EAPI=7
+HOMEPAGE=https://github.com/OP-TEE/optee_client
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=virtual/tmpfiles
+SLOT=0
+SRC_URI=https://github.com/OP-TEE/optee_client/archive/refs/tags/3.18.0.zip -> optee_client-3.18.0.zip
+_eclasses_=tmpfiles	216aa76c3a6fcb5d893c23a0de86048f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=c86d6a4a7cb4296fd2e0eee282aef0f0

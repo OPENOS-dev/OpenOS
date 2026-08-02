@@ -1,0 +1,1 @@
+opentelemetry-semantic-conventions-0.33_beta0.ebuild

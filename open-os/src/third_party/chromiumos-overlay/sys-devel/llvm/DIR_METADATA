@@ -1,0 +1,35 @@
+# Metadata information for this directory.
+#
+# For more information on DIR_METADATA files, see:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/README.md
+#
+# For the schema of this file, see Metadata message:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
+
+buganizer {
+  component_id: 1034879  # go/crostc-internal-bug
+}
+
+buganizer_public {
+  component_id: 1038090  # go/crostc-bug
+}
+
+team_email: "chromeos-toolchain@google.com"
+
+chromeos {
+  # N.B., these test plans are _additive to_ what's in parent directories.
+  cq {
+    # TODO(b/450010254): Temporarily opt out of fingerprint-cq while
+    # provisioning issues are looked into.
+    #
+    # Opt into fingerprint-cq testing, since that broke pretty loudly on a
+    # prior glibc uprev: b/445389865
+    #source_test_plans {
+    #  test_plan_starlark_files {
+    #    host: "chrome-internal.googlesource.com"
+    #    project: "chromeos/config-internal"
+    #    path: "test/plans/v2/ctpv1_compatible/fingerprint_cq.star"
+    #  }
+    #}
+  }
+}

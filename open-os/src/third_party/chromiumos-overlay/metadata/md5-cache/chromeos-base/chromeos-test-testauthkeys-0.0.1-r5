@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Install Chromium OS test public keys for ssh clients on test image
+EAPI=7
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-ssh-testkeys
+SLOT=0
+_md5_=a0c3a2c7817d6b0b040753ffba55d124

@@ -1,0 +1,10 @@
+DEFINED_PHASES=install
+DESCRIPTION=Ebuild to support the Chrome OS TI50 device.
+EAPI=7
+IUSE=cros_host
+KEYWORDS=*
+LICENSE=BSD-Google Apache-2.0 MIT
+RDEPEND=chromeos-base/chromeos-cr50-dev !cros_host? ( chromeos-base/chromeos-cr50-scripts chromeos-base/hwsec-utils )
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles//ti50.r0.0.62.w0.23.290.tar.xz gs://chromeos-localmirror/distfiles//ti50.r0.0.62.w0.24.290_FFFF_00000000_00000010.tar.xz gs://chromeos-localmirror/distfiles//ti50-nt.r2.0.119.w0.33.291.tar.xz gs://chromeos-localmirror/distfiles//ti50-nt.r2.0.119.w0.34.291_FFFF_00000000_00000010.tar.xz
+_md5_=6a90c4eae485a98a4893ab359ac53053

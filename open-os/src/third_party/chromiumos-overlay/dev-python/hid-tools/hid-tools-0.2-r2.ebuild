@@ -1,0 +1,1 @@
+hid-tools-0.2-r1.ebuild

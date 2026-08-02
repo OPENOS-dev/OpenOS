@@ -1,0 +1,43 @@
+From 431c6b53b14df9b350b75280eed468ad3642cebf Mon Sep 17 00:00:00 2001
+From: Archie Pusaka <apusaka@google.com>
+Date: Thu, 24 Aug 2023 16:47:04 +0800
+Subject: [PATCH] CHROMIUM: Don't reject IOCap request if bonding is temporary
+
+We reject IOCap request if we are previously bonded before. However,
+bonded in libbluetooth doesn't necessarily means long-term bond. In
+case of a temporary one, we should allow the other device to upgrade
+to a long term bond.
+
+This CL relax the restriction introduced in crrev/c/4576250 so now
+we allow processing IOCap request for bonded device, as long as it is
+a temporary bonding. Basically, this becomes a hybrid situation
+between the condition before and after crrev/c/4576250.
+
+BUG=b:296906801
+TEST=Re-test crrev/c/4576250
+TEST=Pass CTSV13 Secure Server Test
+
+Change-Id: I95362a59a7504e00de59de2ca708511ca988621f
+---
+ system/stack/btm/btm_sec.cc | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/system/stack/btm/btm_sec.cc b/system/stack/btm/btm_sec.cc
+index 353da801e20..ade7b67a876 100644
+--- a/system/stack/btm/btm_sec.cc
++++ b/system/stack/btm/btm_sec.cc
+@@ -2393,5 +2393,11 @@ void btm_io_capabilities_req(RawAddress p) {
+ 
+-    log::info("Incoming pairing request for bonded and encrypted device {}, rejecting", p);
+-    btsnd_hcic_io_cap_req_neg_reply(p, HCI_ERR_PAIRING_NOT_ALLOWED);
+-    return;
++    // For temporary pairing, allow upgrade to bonding, otherwise reject.
++    if (p_dev_rec->sec_rec.is_bond_type_temporary()) {
++      log::warn("Incoming bond request, but {} is temporarily paired (removing)", p);
++      bta_dm_process_remove_device(p);
++    } else {
++      log::info("Incoming pairing request for bonded and encrypted device {}, rejecting", p);
++      btsnd_hcic_io_cap_req_neg_reply(p, HCI_ERR_PAIRING_NOT_ALLOWED);
++      return;
++    }
+   }

@@ -1,0 +1,51 @@
+Necessary to bootstrap the ADA compiler when using gnat-gpl-2017-x86_64-linux
+as the old compiler version. If the dev-embedded/coreboot-sdk-bootstrap
+package gets updated with a newer gnat, then delete this patch.
+
+--- a/gcc/ada/adaint.c
++++ b/gcc/ada/adaint.c
+@@ -105,6 +105,7 @@
+ #endif
+
+ #if defined (__linux__)
++#define _GNU_SOURCE
+ #include <sched.h>
+ #endif
+
+ /* glibc versions earlier than 2.7 do not define the routines to handle
+--- a/gcc/ada/adaint.h
++++ b/gcc/ada/adaint.h
+@@ -52,12 +52,12 @@ extern "C" {
+    For now we just list the platforms we have manually tested. */
+
+ #if (defined (__GLIBC__) && !defined(STANDALONE)) || defined (__sun__) || defined (__QNX__)
+-#define GNAT_FOPEN fopen64
+-#define GNAT_OPEN open64
+-#define GNAT_STAT stat64
+-#define GNAT_FSTAT fstat64
+-#define GNAT_LSTAT lstat64
+-#define GNAT_STRUCT_STAT struct stat64
++#define GNAT_FOPEN fopen
++#define GNAT_OPEN open
++#define GNAT_STAT stat
++#define GNAT_FSTAT fstat
++#define GNAT_LSTAT lstat
++#define GNAT_STRUCT_STAT struct stat
+
+ #elif defined(_WIN32)
+ #define GNAT_FOPEN fopen64
+--- a/gcc/ada/init.c
++++ b/gcc/ada/init.c
+@@ -414,10 +414,8 @@ __gnat_install_handler (void)
+ /*********************/
+
+ #elif defined (__linux__)
+-
+-#include <signal.h>
+-
+ #define __USE_GNU 1 /* required to get REG_EIP/RIP from glibc's ucontext.h */
++#include <signal.h>
+ #include <sys/ucontext.h>
+
+ /* GNU/Linux, which uses glibc, does not define NULL in included
+

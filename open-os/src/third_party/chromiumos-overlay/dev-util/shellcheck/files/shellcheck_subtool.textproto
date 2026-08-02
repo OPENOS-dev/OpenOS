@@ -1,0 +1,15 @@
+# proto-file: chromiumos/build/api/subtools.proto
+# proto-message: chromiumos.build.api.SubtoolPackage
+name: "shellcheck"
+type: EXPORT_CIPD
+max_files: 1
+
+# The Build ID on shellcheck changes unnecessarily every build, so only upload
+# when the ebuild is revbumped. See b/307848404.
+upload_trigger: CHANGE_REVISION_ONLY
+
+paths: [
+  {
+    input: "/usr/bin/shellcheck"
+  }
+]

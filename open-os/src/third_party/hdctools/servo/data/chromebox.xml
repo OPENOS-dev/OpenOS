@@ -1,0 +1,22 @@
+<root>
+  <include>
+    <name>usb_kb_main_kb.xml</name>
+  </include>
+  <!-- ******** Controls ******** -->
+  <control>
+    <name>lid_open</name>
+    <doc>fake lid for products without one</doc>
+    <params interface="servo" drv="na" init="not_applicable"
+    clobber_ok="full"></params>
+  </control>
+  <control>
+    <name>rec_mode</name>
+    <params subtype="rec_mode" interface="GSC_CONSOLE" drv="cr50"
+    map="onoff_i" clobber_ok="never" init="off"></params>
+  </control>
+  <control>
+    <name>power_state</name>
+    <doc>Used to turn the DUT off and on</doc>
+    <params clobber_ok="patch" no_battery="yes"/>
+  </control>
+</root>

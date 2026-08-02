@@ -1,0 +1,202 @@
+# Copyright 2022 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_python//sphinxdocs:sphinx_docs_library.bzl", "sphinx_docs_library")
+load("//pw_build:compatibility.bzl", "incompatible_with_mcu")
+load(":default_test_toolchain.bzl", "pw_default_test_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+# One specific flavor of duct tape for now.
+string_flag(
+    name = "cortex-m_toolchain_kind",
+    build_setting_default = "gcc",
+    values = [
+        "clang",
+        "gcc",
+    ],
+)
+
+config_setting(
+    name = "use_clang_for_cortex-m",
+    flag_values = {":cortex-m_toolchain_kind": "clang"},
+)
+
+alias(
+    name = "cortex-m_cc_toolchain",
+    actual = select({
+        ":use_clang_for_cortex-m": "//pw_toolchain/arm_clang:arm_clang_toolchain_cortex-m",
+        "//conditions:default": "//pw_toolchain/arm_gcc:arm_gcc_toolchain_cortex-m",
+    }),
+)
+
+# Used by pw_default_test_toolchain when necessary.
+toolchain_type(name = "unused_toolchain_type")
+
+# This is an interim solution to allow flag-based toolchain selection.
+# Do not rely on this, as it is likely to change.
+toolchain(
+    name = "cc_toolchain_cortex-m0",
+    target_compatible_with = [
+        "//pw_build/constraints/arm:cortex-m0",
+    ],
+    toolchain = ":cortex-m_cc_toolchain",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "cc_toolchain_cortex-m0plus",
+    target_compatible_with = [
+        "//pw_build/constraints/arm:cortex-m0plus",
+    ],
+    toolchain = ":cortex-m_cc_toolchain",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "cc_toolchain_cortex-m33",
+    target_compatible_with = [
+        "//pw_build/constraints/arm:cortex-m33",
+    ],
+    toolchain = ":cortex-m_cc_toolchain",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "cc_toolchain_cortex-m55",
+    target_compatible_with = [
+        "//pw_build/constraints/arm:cortex-m55",
+    ],
+    toolchain = ":cortex-m_cc_toolchain",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "cc_toolchain_cortex-m3",
+    target_compatible_with = [
+        "//pw_build/constraints/arm:cortex-m3",
+    ],
+    toolchain = ":cortex-m_cc_toolchain",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "cc_toolchain_cortex-m4",
+    target_compatible_with = [
+        "//pw_build/constraints/arm:cortex-m4",
+    ],
+    toolchain = ":cortex-m_cc_toolchain",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+pw_default_test_toolchain(
+    name = "default_mcu_test_toolchain",
+    target_compatible_with = [
+        "@platforms//os:none",
+    ],
+    toolchain = "@bazel_tools//tools/test:empty_toolchain",
+    toolchain_type = "@bazel_tools//tools/test:default_test_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "constexpr_tag",
+    hdrs = ["public/pw_toolchain/constexpr_tag.h"],
+    strip_include_prefix = "public",
+)
+
+cc_library(
+    name = "no_destructor",
+    hdrs = ["public/pw_toolchain/no_destructor.h"],
+    deprecation = "Use //pw_memory:no_destructor instead",
+    strip_include_prefix = "public",
+    deps = ["//pw_memory:no_destructor"],
+)
+
+cc_library(
+    name = "globals",
+    hdrs = ["public/pw_toolchain/globals.h"],
+    deprecation = "Use //pw_memory:globals instead",
+    strip_include_prefix = "public",
+    deps = ["//pw_memory:globals"],
+)
+
+cc_library(
+    name = "busy_wait_forever",
+    hdrs = [
+        "public/pw_toolchain/busy_wait_forever.h",
+        "public/pw_toolchain/infinite_loop.h",
+    ],
+    deprecation = "Use //pw_memory:busy_wait_forever instead",
+    strip_include_prefix = "public",
+    deps = ["//pw_memory:busy_wait_forever"],
+)
+
+alias(
+    name = "infinite_loop",
+    actual = ":busy_wait_forever",
+    deprecation = ":infinite_loop has been renamed to :busy_wait_forever",
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "wrap_abort",
+    srcs = ["wrap_abort.cc"],
+    implementation_deps = ["//pw_assert:check"],
+    linkopts = ["-Wl,--wrap=abort"],
+    alwayslink = 1,
+)
+
+build_test(
+    name = "cpp_17_check",
+    tags = ["manual"],
+    target_compatible_with = select({
+        "//pw_toolchain/cc:c++17_enabled": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    targets = ["@rules_cc//:empty_lib"],
+)
+
+# This is a nop build test that only works when C++20 is enabled. This is useful
+# as a way to enforce the constraint is satisfied under a given configuration.
+build_test(
+    name = "cpp_20_check",
+    tags = ["manual"],
+    target_compatible_with = select({
+        "//pw_toolchain/cc:c++20_enabled": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    targets = ["@rules_cc//:empty_lib"],
+)
+
+filegroup(
+    name = "doxygen",
+    srcs = ["public/pw_toolchain/constexpr_tag.h"],
+)
+
+sphinx_docs_library(
+    name = "docs",
+    srcs = [
+        "bazel.rst",
+        "docs.rst",
+        "gn.rst",
+    ],
+    prefix = "pw_toolchain/",
+    target_compatible_with = incompatible_with_mcu(),
+)

@@ -1,0 +1,61 @@
+From d5786f2352545259e838599e73090934b7b44158 Mon Sep 17 00:00:00 2001
+From: Vinson Lee <vlee@freedesktop.org>
+Date: Fri, 19 Dec 2025 22:10:18 -0800
+Subject: [PATCH 1/5] UPSTREAM: util/blob: Fix const correctness warning in
+ blob_read_string
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fix compiler error:
+
+  ../src/util/blob.c:344:8: error: assigning to 'uint8_t *' from
+  'const void *' discards qualifiers
+  [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+
+glibc now provides C23-style type-generic string functions. memchr
+returns const void * when passed a const void * argument. Update nul
+declaration to const since it's only used to find the null terminator
+position and calculate a size.
+
+Fixes: 1c9877327ea ("glsl: Add blob.c---a simple interface for serializing data")
+Reviewed-by: Tapani Pälli <tapani.palli@intel.com>
+(cherry picked from commit b40850b24a09cd96c9de8c642fb8e4cd4ae587f6)
+
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/39462>
+
+Backport Notes:
+- resolve trivial .pick_status.json conflict
+
+BUG=b:491765858
+TEST=Local build on eve with glibc 2.43; CQ.
+
+Change-Id: Ief83fa12b1659b9e9c46a568b72c5bc20b01611a
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/mesa/+/7849838
+Tested-by: Adrian Ratiu <adrian.ratiu@collabora.corp-partner.google.com>
+Reviewed-by: George Burgess <gbiv@chromium.org>
+Reviewed-by: Yiwei Zhang <zzyiwei@google.com>
+Auto-Submit: Adrian Ratiu <adrian.ratiu@collabora.corp-partner.google.com>
+Reviewed-by: Sean Paul <sean@poorly.run>
+Commit-Queue: Adrian Ratiu <adrian.ratiu@collabora.corp-partner.google.com>
+(cherry picked from commit d3a5f8b48a510598d0581c3cfa1339a60bf3df49)
+---
+ src/util/blob.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/util/blob.c b/src/util/blob.c
+index db192146ac1..eb2303366fa 100644
+--- a/src/util/blob.c
++++ b/src/util/blob.c
+@@ -338,7 +338,7 @@ blob_read_string(struct blob_reader *blob)
+ {
+    int size;
+    char *ret;
+-   uint8_t *nul;
++   const uint8_t *nul;
+ 
+    /* If we're already at the end, then this is an overrun. */
+    if (blob->current >= blob->end) {
+-- 
+2.51.0
+

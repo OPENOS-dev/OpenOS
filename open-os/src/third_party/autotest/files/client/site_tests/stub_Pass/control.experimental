@@ -1,0 +1,18 @@
+# Copyright 2011 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Demonstrate success methods of autotests.
+NAME = "stub_Pass.experimental"
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': "b:1284375", # ChromeOS > Test > Harness > Tauto > Examples
+    'criteria': 'This test will always succeed'
+}
+ATTRIBUTES = "suite:stub, suite:stubclientretries, suite:something_else"
+TEST_TYPE = "client"
+
+
+job.run_test('stub_Pass', tag='experimental')
+
+

@@ -1,0 +1,29 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# Runs eight minutes of bare suspend/resume cycles without additional workload.
+# Follows this by a few short checks to make sure the system is still in a good
+# state (work in progress, feel free to add some more).
+# Put .bare in a loop and run for 2 days.  This test replaces suspend resume test.
+
+NAME = "power_SuspendStress.faft"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "dchan",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a stress test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("")
+TEST_TYPE = "client"
+
+# Suspend stress run per iteration in seconds.
+RUN_PER_ITER=480
+# 8 mintues + ~4 minutes added per iteration, target to run test for ~40 hours.
+for i in range(1,200):
+    job.run_test('power_SuspendStress', duration=RUN_PER_ITER, tag='faft%d'%i)
+    job.run_test('hardware_EC', tag='power_SuspendStress%d'%i)
+    job.run_test('login_LoginSuccess', tag='power_SuspendStress%d'%i)
+    job.run_test('hardware_TPMCheck', tag='power_SuspendStress%d'%i)

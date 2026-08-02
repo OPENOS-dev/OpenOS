@@ -1,0 +1,15 @@
+BDEPEND=dev-vcs/git app-misc/jq !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/rust:= ) arm64? ( cross-aarch64-cros-linux-gnu/rust:= ) amd64? ( cross-x86_64-cros-linux-gnu/rust:= ) ) dev-lang/rust-host:=
+DEFINED_PHASES=compile configure info install postinst preinst prepare prerm setup test unpack
+DEPEND=dev-rust/third-party-crates-src:= virtual/rust:1= virtual/rust-binaries:=
+DESCRIPTION=Procedural macro for automatically deriving PollToken.
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/libchromeos-rs/poll_token_derive
+IUSE=cros_host cros_workon_tree_eec7b1b9c2d4f494f6212dd4bfad7a372bd61bd0 cros-debug asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan asan rust-coverage cros_host fuzzer lsan +lto msan +panic-abort test tsan ubsan
+KEYWORDS=*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=dev-rust/third-party-crates-src:= virtual/rust-binaries:= !cros_host? ( !test? ( !asan? ( !lsan? ( !msan? ( !tsan? ( !fuzzer? ( dev-lang/rust-dylibs:= ) ) ) ) ) ) )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag ) ?? ( asan lsan msan tsan )
+SLOT=0/0.1.1-r4
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-debug	24f14e41660a7626765c7cf71ea9cdc7	cros-rust	4b01c887801e10f4f43b980027ba7dc7	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=edab171d7d3fdde52881601da6c2eaac

@@ -1,0 +1,13 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) ) dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install postinst prepare setup test unpack
+DEPEND=dev-go/gcp-pubsub dev-util/cros-publish dev-util/cros-test dev-util/hdctools dev-go/mock dev-go/protobuf chromeos-base/cros-config-api dev-go/gcp-storage dev-go/luci-go
+DESCRIPTION=High Performance Tracing implementation for CFT
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/dev-util/+/HEAD/src/go.chromium.org/chromiumos/test/hpt
+IUSE=coverage cros_host cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=BSD-Google
+PROPERTIES=live
+SLOT=0/9999
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=6e9dfbab6b4d86ec2a9282f1670b2ca8

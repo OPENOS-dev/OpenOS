@@ -1,0 +1,42 @@
+From 0d8dfd1dc3242802adb8fbe934d683fa5fcd1b0c Mon Sep 17 00:00:00 2001
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Tue, 10 Dec 2024 14:11:50 +0000
+Subject: [PATCH] v4l2-compliant: skip ROI
+
+Some devices require that the region is set at the same time as the
+bitmap, and we cannot model that easily. Skip for now.
+
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+---
+ utils/v4l2-compliance/v4l2-test-controls.cpp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/utils/v4l2-compliance/v4l2-test-controls.cpp b/utils/v4l2-compliance/v4l2-test-controls.cpp
+index 4cddd73f..e8b9a26d 100644
+--- a/utils/v4l2-compliance/v4l2-test-controls.cpp
++++ b/utils/v4l2-compliance/v4l2-test-controls.cpp
+@@ -445,6 +445,10 @@ int testSimpleControls(struct node *node)
+ 		if (is_vivid && V4L2_CTRL_ID2WHICH(qctrl.id) == V4L2_CTRL_CLASS_VIVID)
+ 			continue;
+ 
++		// UVC ROI is non compliant
++		if (qctrl.id == 0x009a1901 || qctrl.id == 0x009a1902 || qctrl.id == 0x009a1903)
++			continue;
++
+ 		info("checking control '%s' (0x%08x)\n", qctrl.name, qctrl.id);
+ 		ctrl.id = qctrl.id;
+ 		if (qctrl.type == V4L2_CTRL_TYPE_INTEGER64 ||
+@@ -885,6 +889,10 @@ int testExtendedControls(struct node *node)
+ 		if (is_vivid && V4L2_CTRL_ID2WHICH(qctrl.id) == V4L2_CTRL_CLASS_VIVID)
+ 			continue;
+ 
++		// UVC ROI is non compliant
++		if (qctrl.id == 0x009a1901 || qctrl.id == 0x009a1902 || qctrl.id == 0x009a1903)
++			continue;
++
+ 		info("checking extended control '%s' (0x%08x)\n", qctrl.name, qctrl.id);
+ 		ctrl.id = qctrl.id;
+ 		ctrl.size = 0;
+-- 
+2.47.0.338.g60cca15819-goog
+

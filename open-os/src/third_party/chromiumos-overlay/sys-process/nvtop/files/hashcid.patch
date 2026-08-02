@@ -1,0 +1,63 @@
+commit 84c9eeb4fdeea8d6e5be57822559d8db443a157e
+Author: Yifu Yu <root@jackyyf.com>
+Date:   Sat Oct 21 04:39:38 2023 +0800
+
+    Fix cache_entry for Intel and AMD GPU.
+    
+    Commit af1ff03b7b818973b5308dba4752a0d11eaab8d7 and
+    d9004a785fa66845b51c72f375ae379801d85069 has introduced the correct
+    uniqueness for Intel and AMD, but the HASH_FIND_CLIENT and
+    HASH_ADD_CLIENT are still using cid only. This commit fixed this, and
+    fully resolved #196.
+    
+    Fixes: #196
+
+diff --git a/src/extract_gpuinfo_amdgpu.c b/src/extract_gpuinfo_amdgpu.c
+index ef5b635..93095b9 100644
+--- a/src/extract_gpuinfo_amdgpu.c
++++ b/src/extract_gpuinfo_amdgpu.c
+@@ -80,9 +80,9 @@ static int last_libdrm_return_status = 0;
+ static char didnt_call_gpuinfo_init[] = "uninitialized";
+ static const char *local_error_string = didnt_call_gpuinfo_init;
+ 
+-#define HASH_FIND_CLIENT(head, key_ptr, out_ptr) HASH_FIND(hh, head, key_ptr, sizeof(unsigned), out_ptr)
++#define HASH_FIND_CLIENT(head, key_ptr, out_ptr) HASH_FIND(hh, head, key_ptr, sizeof(struct unique_cache_id), out_ptr)
+ 
+-#define HASH_ADD_CLIENT(head, in_ptr) HASH_ADD(hh, head, client_id, sizeof(unsigned), in_ptr)
++#define HASH_ADD_CLIENT(head, in_ptr) HASH_ADD(hh, head, client_id, sizeof(struct unique_cache_id), in_ptr)
+ 
+ #define SET_AMDGPU_CACHE(cachePtr, field, value) SET_VALUE(cachePtr, field, value, amdgpu_cache_)
+ #define RESET_AMDGPU_CACHE(cachePtr, field) INVALIDATE_VALUE(cachePtr, field, amdgpu_cache_)
+@@ -962,7 +962,7 @@ static bool parse_drm_fdinfo_amd(struct gpu_info *info, FILE *fdinfo_file, struc
+ #ifndef NDEBUG
+     // We should only process one fdinfo entry per client id per update
+     struct amdgpu_process_info_cache *cache_entry_check;
+-    HASH_FIND_CLIENT(gpu_info->current_update_process_cache, &cid, cache_entry_check);
++    HASH_FIND_CLIENT(gpu_info->current_update_process_cache, &cache_entry->client_id, cache_entry_check);
+     assert(!cache_entry_check && "We should not be processing a client id twice per update");
+ #endif
+ 
+diff --git a/src/extract_gpuinfo_intel.c b/src/extract_gpuinfo_intel.c
+index a57f9fb..f4dabc0 100644
+--- a/src/extract_gpuinfo_intel.c
++++ b/src/extract_gpuinfo_intel.c
+@@ -29,8 +29,8 @@
+ #include <string.h>
+ #include <uthash.h>
+ 
+-#define HASH_FIND_CLIENT(head, key_ptr, out_ptr) HASH_FIND(hh, head, key_ptr, sizeof(unsigned), out_ptr)
+-#define HASH_ADD_CLIENT(head, in_ptr) HASH_ADD(hh, head, client_id, sizeof(unsigned), in_ptr)
++#define HASH_FIND_CLIENT(head, key_ptr, out_ptr) HASH_FIND(hh, head, key_ptr, sizeof(struct unique_cache_id), out_ptr)
++#define HASH_ADD_CLIENT(head, in_ptr) HASH_ADD(hh, head, client_id, sizeof(struct unique_cache_id), in_ptr)
+ 
+ #define SET_INTEL_CACHE(cachePtr, field, value) SET_VALUE(cachePtr, field, value, intel_cache_)
+ #define RESET_INTEL_CACHE(cachePtr, field) INVALIDATE_VALUE(cachePtr, field, intel_cache_)
+@@ -226,7 +226,7 @@ static bool parse_drm_fdinfo_intel(struct gpu_info *info, FILE *fdinfo_file, str
+ #ifndef NDEBUG
+   // We should only process one fdinfo entry per client id per update
+   struct intel_process_info_cache *cache_entry_check;
+-  HASH_FIND_CLIENT(gpu_info->current_update_process_cache, &cid, cache_entry_check);
++  HASH_FIND_CLIENT(gpu_info->current_update_process_cache, &cache_entry->client_id, cache_entry_check);
+   assert(!cache_entry_check && "We should not be processing a client id twice per update");
+ #endif
+ 

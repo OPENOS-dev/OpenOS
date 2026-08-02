@@ -1,0 +1,11 @@
+DEFINED_PHASES=configure install
+DESCRIPTION=Convert a .rpm file to a .tar.gz archive
+EAPI=7
+HOMEPAGE=http://www.slackware.com/config/packages.php
+KEYWORDS=*
+LICENSE=BSD-1
+RDEPEND=app-arch/cpio
+SLOT=0
+SRC_URI=mirror://gentoo/rpm2targz-2021.03.16.tar.xz https://dev.gentoo.org/~vapier/dist/rpm2targz-2021.03.16.tar.xz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=5bcce2c9555ff73726906a262d01edbc

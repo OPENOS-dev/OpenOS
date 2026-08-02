@@ -1,0 +1,66 @@
+# Copyright 2009 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+# The following are here because we override the ebuilds from the
+# portage tree for a reason other than adding an ebuild from upstream
+# that wasn't yet in our portage tree. We want to keep using our
+# version of these packages even if a newer stable version becomes
+# available in portage:
+
+# The toolchain's LLVM takes slot 8; graphics-specific LLVM versions take other slots.
+# Mask the toolchain's so we don't try to install a full cross-compiler suite on boards.
+sys-devel/llvm:8
+
+# Prevent compilers from ending up on the OS image. They should be listed
+# as a BDEPEND in your ebuilds.
+dev-lang/go
+sys-devel/gcc
+
+# These are packages listed in package.provided. These are generally supposed
+# to be BDEPENDs, but the packages that haven't updated to EAPI7 have them
+# listed as DEPEND. We list the packages here in addition to the
+# package.provided because package.provided only matches using the full version
+# number vs package.mask which doesn't need a version number. By listing the
+# package here, we can cause analysis failures if a package is upreved and
+# the package.provided wasn't updated.
+sys-devel/automake
+
+# edk2-ovmf-bin has an unpatched CVE (http://b/320569474), which should be fine
+# as long as it is not installed to the board. Prevent that by using a mask.
+sys-firmware/edk2-ovmf-bin
+
+# ============================================================
+# Open-OS: 屏蔽 Google 专有服务包
+# ============================================================
+# Google Chrome 浏览器 -> 使用 Chromium
+>=chromeos-base/chromeos-chrome-9999
+>=chromeos-base/chrome-icu-9999
+# Google 账号 / OAuth
+>=chromeos-base/chromeos-login-9999
+# Google Cloud Print
+>=chromeos-base/google-cloud-print-9999
+# Google Drive 文件系统
+>=chromeos-base/drivefs-9999
+# Google Assistant
+>=chromeos-base/assistant-9999
+>=media-sound/google-assistant-9999
+# Google Play Services (用 AnOpenDroid 替代)
+>=chromeos-base/arc-google-play-services-9999
+# Google Now / Feed
+>=chromeos-base/google-feed-9999
+# Google VR
+>=chromeos-base/arc-daydream-9999
+# Google 遥测 / 崩溃上报
+>=chromeos-base/metrics-9999
+>=chromeos-base/crash-reporter-9999
+# Google 更新引擎 (用 OpenOS updater 替代)
+>=chromeos-base/update_engine-9999
+# Google Smart Lock
+>=chromeos-base/easy-unlock-9999
+>=chromeos-base/tethering-9999
+# Google Nearby Share
+>=chromeos-base/nearby-9999
+# Google Family Link
+>=chromeos-base/family-link-9999
+# ChromeOS Demo 模式
+>=chromeos-base/demo-mode-app-9999

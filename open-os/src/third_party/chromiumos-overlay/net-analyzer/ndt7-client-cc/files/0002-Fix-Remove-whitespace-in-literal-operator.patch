@@ -1,0 +1,60 @@
+From a84ab953a238f7bd40b4bdea040f979e4fa6e757 Mon Sep 17 00:00:00 2001
+From: Byron Lee <byronlee@chromium.org>
+Date: Mon, 16 Jun 2025 03:30:13 +0000
+Subject: [PATCH] Fix: Remove whitespace in literal operators
+
+Removes the whitespace between `operator""` and the literal suffix for
+`_json` and `_json_pointer` user-defined literals, resolving
+`Wdeprecated-literal-operator` warnings.
+---
+ single_include/libndt7.hpp                    | 4 ++--
+ third_party/github.com/nlohmann/json/json.hpp | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/single_include/libndt7.hpp b/single_include/libndt7.hpp
+index 1604054..c1c15c0 100644
+--- a/single_include/libndt7.hpp
++++ b/single_include/libndt7.hpp
+@@ -20800,7 +20800,7 @@ if no parse error occurred.
+
+ @since version 1.0.0
+ */
+-inline nlohmann::json operator "" _json(const char* s, std::size_t n)
++inline nlohmann::json operator""_json(const char* s, std::size_t n)
+ {
+     return nlohmann::json::parse(s, s + n);
+ }
+@@ -20818,7 +20818,7 @@ object if no parse error occurred.
+
+ @since version 2.0.0
+ */
+-inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std::size_t n)
++inline nlohmann::json::json_pointer operator""_json_pointer(const char* s, std::size_t n)
+ {
+     return nlohmann::json::json_pointer(std::string(s, n));
+ }
+diff --git a/third_party/github.com/nlohmann/json/json.hpp b/third_party/github.com/nlohmann/json/json.hpp
+index 5003a4f..03fd827 100644
+--- a/third_party/github.com/nlohmann/json/json.hpp
++++ b/third_party/github.com/nlohmann/json/json.hpp
+@@ -20790,7 +20790,7 @@ if no parse error occurred.
+
+ @since version 1.0.0
+ */
+-inline nlohmann::json operator "" _json(const char* s, std::size_t n)
++inline nlohmann::json operator""_json(const char* s, std::size_t n)
+ {
+     return nlohmann::json::parse(s, s + n);
+ }
+@@ -20808,7 +20808,7 @@ object if no parse error occurred.
+
+ @since version 2.0.0
+ */
+-inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std::size_t n)
++inline nlohmann::json::json_pointer operator""_json_pointer(const char* s, std::size_t n)
+ {
+     return nlohmann::json::json_pointer(std::string(s, n));
+ }
+--
+2.50.0.rc2.692.g299adb8693-goog
+

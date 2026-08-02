@@ -1,0 +1,13 @@
+BDEPEND=virtual/perl-Carp virtual/perl-Exporter virtual/perl-File-Spec virtual/perl-File-Temp dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Check for the presence of a compiler
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/ExtUtils-HasCompiler
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Carp virtual/perl-Exporter virtual/perl-File-Spec virtual/perl-File-Temp dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/L/LE/LEONT/ExtUtils-HasCompiler-0.023.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=593de870ef7675c0b9f4c9f698a78703

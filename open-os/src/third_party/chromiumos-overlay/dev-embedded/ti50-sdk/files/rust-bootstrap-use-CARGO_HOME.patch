@@ -1,0 +1,24 @@
+See these links for attempts to get something like this change upstream,
+but it's not entirely clear that this is the right general solution.
+
+https://github.com/rust-lang/rust/pull/106017
+
+https://github.com/rust-lang/rust/issues/106019
+
+diff --git a/src/bootstrap/bootstrap.py b/src/bootstrap/bootstrap.py
+index a953c7d..7fe3bb5 100644
+--- a/src/bootstrap/bootstrap.py
++++ b/src/bootstrap/bootstrap.py
+@@ -1197,7 +1197,11 @@ class RustBuild(object):
+                 eprint("      and so in order to preserve your $HOME this will now")
+                 eprint("      use vendored sources by default.")
+ 
+-        cargo_dir = os.path.join(self.rust_root, ".cargo")
++        use_cargo_home_env = 'CARGO_HOME' in os.environ
++        if use_cargo_home_env:
++            cargo_dir = os.environ['CARGO_HOME']
++        else:
++            cargo_dir = os.path.join(self.rust_root, ".cargo")
+         commit = self.get_latest_commit()
+         url = f"https://ci-artifacts.rust-lang.org/rustc-builds/{commit}/rustc-nightly-src.tar.xz"
+         if self.use_vendored_sources:

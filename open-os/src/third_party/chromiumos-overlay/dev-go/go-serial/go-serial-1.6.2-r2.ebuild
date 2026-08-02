@@ -1,0 +1,1 @@
+go-serial-1.6.2.ebuild

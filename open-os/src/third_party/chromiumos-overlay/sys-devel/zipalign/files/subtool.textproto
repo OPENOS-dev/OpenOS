@@ -1,0 +1,11 @@
+# proto-file: chromiumos/build/api/subtools.proto
+# proto-message: chromiumos.build.api.SubtoolPackage
+# https://chrome-infra-packages.appspot.com/p/chromiumos/infra/tools/zipalign
+name: "zipalign"
+type: EXPORT_CIPD
+max_files: 10
+paths: [
+  {
+    input: "/usr/bin/zipalign"
+  }
+]

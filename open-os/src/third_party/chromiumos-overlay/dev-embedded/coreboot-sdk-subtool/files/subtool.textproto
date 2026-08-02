@@ -1,0 +1,23 @@
+# proto-file: chromiumos/build/api/subtools.proto
+# proto-message: chromiumos.build.api.SubtoolPackage
+
+# Note: this file is a template, and sed is used to substitute:
+#   %NAME%: The package name.
+#   %EBUILD%: The portage package this sources from.
+
+name: "%NAME%"
+type: EXPORT_GCS
+gcs_export_options: {
+  bucket: "chromiumos-sdk"
+  prefix: "toolchains"
+  archive_format: ARCHIVE_FORMAT_TAR_ZST
+}
+max_files: 1000
+paths: [
+  {
+    input: "/opt/coreboot-sdk/**"
+    dest: "/"
+    strip_prefix_regex: "^/opt/coreboot-sdk/"
+    ebuild_filter: "%EBUILD%"
+  }
+]

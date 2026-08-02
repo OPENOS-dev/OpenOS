@@ -1,0 +1,76 @@
+Use backwards-compatible MERGE_SAMPLE
+
+Define a macro depending on clang major version
+which decides the compatible LLVM mergeSampleProfErrors/MergeResult
+correctly for the given LLVM version.
+
+We need this instead of switching over so that it's compatible during
+the transition phase.
+
+--- autofdo-3dafe34db0eb53af146cf782124f788ceaf6a9aa/llvm_profile_writer.cc	2024-09-06 17:21:21.000000000 +0000
++++ autofdo-3dafe34db0eb53af146cf782124f788ceaf6a9aa_new/llvm_profile_writer.cc	2024-12-05 00:48:28.723286184 +0000
+@@ -31,6 +31,13 @@
+ 
+ namespace devtools_crosstool_autofdo {
+ 
++// ChromeOS 20.0 upgrade hack (b/380093598)
++#if __clang_major__ >= 20
++#  define MERGE_SAMPLE llvm::mergeSampleProfErrors
++#else
++#  define MERGE_SAMPLE llvm::MergeResult
++#endif
++
+ bool LLVMProfileBuilder::Write(
+     const std::string &output_filename,
+     llvm::sampleprof::SampleProfileFormat format, const SymbolMap &symbol_map,
+@@ -80,11 +87,11 @@
+   llvm::StringRef name_ref = GetNameRef(name);
+   llvm::sampleprof::FunctionSamples &profile = profiles_[name_ref];
+   if (std::error_code EC =
+-          llvm::MergeResult(result_, profile.addHeadSamples(node->head_count)))
++          MERGE_SAMPLE(result_, profile.addHeadSamples(node->head_count)))
+     LOG(FATAL) << "Error updating head samples for '" << name
+                << "': " << EC.message();
+ 
+-  if (std::error_code EC = llvm::MergeResult(
++  if (std::error_code EC = MERGE_SAMPLE(
+           result_, profile.addTotalSamples(node->total_count)))
+     LOG(FATAL) << "Error updating total samples for '" << name
+                << "': " << EC.message();
+@@ -118,7 +125,7 @@
+ 
+   if (level_ > 1) {
+     // If this is a nested inline call, update its total count.
+-    if (std::error_code EC = llvm::MergeResult(
++    if (std::error_code EC = MERGE_SAMPLE(
+             result_, profile.addTotalSamples(node->total_count)))
+       LOG(FATAL) << "Error updating total samples for '" << node->info.func_name
+                  << "': " << EC.message();
+@@ -130,7 +137,7 @@
+     uint32_t line = SourceInfo::GetLineNumberFromOffset(offset);
+     uint32_t discriminator = SourceInfo::GetDiscriminatorFromOffset(offset);
+     const auto &num_samples = pos_count.second.count;
+-    if (std::error_code EC = llvm::MergeResult(
++    if (std::error_code EC = MERGE_SAMPLE(
+             result_, profile.addBodySamples(line, discriminator, num_samples)))
+       LOG(FATAL) << "Error updating body samples for '" << node->info.func_name
+                  << "': " << EC.message();
+@@ -141,7 +148,7 @@
+     // or more functions.
+     const auto &target_map = pos_count.second.target_map;
+     for (const auto &target_count : target_map) {
+-      if (std::error_code EC = llvm::MergeResult(
++      if (std::error_code EC = MERGE_SAMPLE(
+               result_,
+               profile.addCalledTargetSamples(
+                   line, discriminator,
+@@ -201,6 +208,9 @@
+                                    name_table, sample_prof_writer_.get());
+ }
+ 
++// ChromeOS Hack
++#undef MERGE_SAMPLE
++
+ }  // namespace devtools_crosstool_autofdo
+ 
+ #endif  // HAVE_LLVM

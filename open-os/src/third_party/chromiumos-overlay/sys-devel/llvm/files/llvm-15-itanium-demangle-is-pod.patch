@@ -1,0 +1,21 @@
+--- a/include/llvm/Demangle/ItaniumDemangle.h
++++ b/include/llvm/Demangle/ItaniumDemangle.h
+@@ -26,13 +26,16 @@
+ #include <cstdlib>
+ #include <cstring>
+ #include <limits>
++#include <type_traits>
+ #include <utility>
+ 
+ DEMANGLE_NAMESPACE_BEGIN
+ 
+ template <class T, size_t N> class PODSmallVector {
+-  static_assert(std::is_pod<T>::value,
+-                "T is required to be a plain old data type");
++  static_assert(std::is_trivially_copyable<T>::value,
++                "T is required to be a trivially copyable type");
++  static_assert(std::is_trivially_default_constructible<T>::value,
++                "T is required to be trivially default constructible");
+ 
+   T *First = nullptr;
+   T *Last = nullptr;

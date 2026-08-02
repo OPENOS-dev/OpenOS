@@ -1,0 +1,39 @@
+From eb6f420d17a7998fcb7163f30045e484f5688bc3 Mon Sep 17 00:00:00 2001
+From: Gwendal Grignou <gwendal@chromium.org>
+Date: Wed, 17 Jul 2024 15:56:31 -0700
+Subject: [PATCH] tune2fs.c (main): do not set dirty when default is not
+ changed
+
+If the default group is not modified, don't set the superblock
+dirty bit.
+
+Similar to commit 2eb3b20e80, it speeds up `tunefs -g` command when
+the group argument is identical.
+---
+ misc/tune2fs.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/misc/tune2fs.c b/misc/tune2fs.c
+index 8ae13705..facc8dc9 100644
+--- a/misc/tune2fs.c
++++ b/misc/tune2fs.c
+@@ -3382,9 +3382,13 @@ _("Warning: The journal is dirty. You may wish to replay the journal like:\n\n"
+ 		printf(_("Setting error behavior to %d\n"), errors);
+ 	}
+ 	if (g_flag) {
+-		sb->s_def_resgid = resgid;
+-		ext2fs_mark_super_dirty(fs);
+-		printf(_("Setting reserved blocks gid to %lu\n"), resgid);
++		if (sb->s_def_resgid != resgid) {
++			sb->s_def_resgid = resgid;
++			ext2fs_mark_super_dirty(fs);
++			printf(_("Setting reserved blocks gid to %lu\n"), resgid);
++		} else {
++			printf(_("Reserved blocks gid already set to %lu\n"), resgid);
++		}
+ 	}
+ 	if (i_flag) {
+ 		if ((unsigned long long)interval >= (1ULL << 32)) {
+-- 
+2.45.2.1089.g2a221341d9-goog
+

@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Camera support library for Linux virtual package
+EAPI=7
+IUSE=libcamera-mtkisp7 libcamera-intelipu7 libcamera-reven
+KEYWORDS=*
+LICENSE=LGPL-2.1+
+RDEPEND=libcamera-mtkisp7? ( media-libs/libcamera-mtkisp7 ) libcamera-intelipu7? ( media-libs/libcamera-intelipu7 ) libcamera-reven? ( media-libs/libcamera-reven ) !libcamera-mtkisp7? ( !libcamera-intelipu7? ( !libcamera-reven? ( media-libs/libcamera-upstream ) ) )
+SLOT=0
+_md5_=f30d7b75a8949705a36abf9d3d199790

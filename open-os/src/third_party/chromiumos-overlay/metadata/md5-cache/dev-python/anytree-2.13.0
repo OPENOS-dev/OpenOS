@@ -1,0 +1,16 @@
+BDEPEND=doc? ( || ( ( >=dev-lang/python-3.11.0_p2:3.11 >=dev-python/sphinx-5.3.0[python_targets_python3_11(-)] ) ( dev-lang/python:3.12 >=dev-python/sphinx-5.3.0[python_targets_python3_12(-)] ) ( dev-lang/python:3.13 >=dev-python/sphinx-5.3.0[python_targets_python3_13(-)] ) ) ) test? ( dot? ( media-gfx/graphviz ) >=dev-python/pytest-7.1.3[python_targets_python3_13(-)?,python_targets_python3_12(-)?,python_targets_python3_11(-)?] ) python_targets_python3_13? ( dev-lang/python:3.13 ) python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) >=dev-python/gpep517-9[python_targets_python3_13(-)?,python_targets_python3_12(-)?,python_targets_python3_11(-)?] >=dev-python/pdm-backend-2.4.3[python_targets_python3_13(-)?,python_targets_python3_12(-)?,python_targets_python3_11(-)?]
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dot? ( media-gfx/graphviz ) test? ( python_targets_python3_13? ( dev-python/six[python_targets_python3_13(-)?,python_targets_python3_12(-)?,python_targets_python3_11(-)?] ) python_targets_python3_12? ( dev-python/six[python_targets_python3_13(-)?,python_targets_python3_12(-)?,python_targets_python3_11(-)?] ) python_targets_python3_11? ( dev-python/six[python_targets_python3_13(-)?,python_targets_python3_12(-)?,python_targets_python3_11(-)?] ) )
+DESCRIPTION=Powerful and Lightweight Python Tree Data Structure with various plugins
+EAPI=7
+HOMEPAGE=https://anytree.readthedocs.io/
+IUSE=dot doc test python_targets_python3_13 python_targets_python3_12 python_targets_python3_11
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=dot? ( media-gfx/graphviz ) python_targets_python3_13? ( dev-lang/python:3.13 ) python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 )
+REQUIRED_USE=|| ( python_targets_python3_13 python_targets_python3_12 python_targets_python3_11 )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/c0fec0de/anytree/archive/refs/tags/2.13.0.tar.gz -> anytree-2.13.0.gh.tar.gz
+_eclasses_=distutils-r1	fc8d51ffaf532da88283691b0ed10932	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=b8acf7cb80a74ff45cfb76588e00a50d

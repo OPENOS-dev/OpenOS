@@ -1,0 +1,26 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+steps:
+
+- name: 'gcr.io/kaniko-project/executor:latest'
+  id: 'build'
+  args:
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/servod/servod:latest
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/servod/servod:$_COMMIT_SHA
+  - --cache=true
+  - --cache-ttl=24h
+  - --reproducible=true
+  - --build-arg=BUILDER_BASE_IMG=us-docker.pkg.dev/$PROJECT_ID/servod/servod-builder-base:latest
+  - --build-arg=BASE_IMG=us-docker.pkg.dev/$PROJECT_ID/servod/servod-base:latest
+  - -f=/workspace/dockerfiles/Dockerfile
+
+options:
+  env:
+    - "DOCKER_BUILDKIT=1"
+  # Use higher CPU machines so the caching and build steps are faster.
+  pool:
+    name: 'projects/chromeos-hw-tools-dev/locations/us-central1/workerPools/proto-servo-pool'
+
+timeout: 3600s

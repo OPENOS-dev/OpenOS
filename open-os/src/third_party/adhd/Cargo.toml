@@ -1,0 +1,108 @@
+[workspace]
+resolver = "2"
+members = [
+    "audio_processor",
+    "cras/common",
+    "cras/server/feature_tier",
+    "cras/server/ini",
+    "cras/server/platform/dlc",
+    "cras/server/platform/features",
+    "cras/server/processor",
+    "cras/server/rate_estimator",
+    "cras/server/s2",
+    "cras/server/tool",
+    "cras/src/dsp/rust",
+    "cras/src/server/rust/staticlib",
+    "rock",
+    "rules/cbindgen",
+    "sof_helper",
+]
+
+[profile.release]
+lto = true
+panic = "abort"
+overflow-checks = true
+
+[workspace.dependencies]
+# Local crates.
+audio_processor = { path = "audio_processor" }
+cras_common = { path = "cras/common" }
+cras_dlc = { path = "cras/server/platform/dlc" }
+cras_features_backend = { path = "cras/server/platform/features" }
+cras_feature_tier = { path = "cras/server/feature_tier" }
+cras_ini = { path = "cras/server/ini" }
+cras_processor = { path = "cras/server/processor" }
+cras_rate_estimator = { path = "cras/server/rate_estimator" }
+cras_s2 = { path = "cras/server/s2" }
+dsp_rust = { path = "cras/src/dsp/rust" }
+
+# crates.io crates.
+alsa-sys = "0.2.0"
+anyhow = "1.0.75"
+assert_matches = "1.5.0"
+async-trait = "0.1.36"
+bindgen = "0.72.1"
+bitflags = { version = "2.4.0", features = ["serde"] }
+cbindgen = "0.27.0"
+cc = "1.0.73"
+cfg-if = "1.0.0"
+clap = { version = "4.5.4", features = ["derive"] }
+command-fds = "0.3.0"
+configparser = { version = "3.1.0", features = ["indexmap"] }
+dasp_sample = "0.11.0"
+dbus = { version = "0.9.0", features = ["futures"] }
+dbus-tokio = "0.7.6"
+either = "1.9.0"
+env_logger = "0.9.3"
+fixedbitset = "0.4.2"
+float-cmp = "0.9.0"
+futures = "0.3.28"
+getopts = "0.2.0"
+getrandom = "0.2.7"
+glob = "0.3.0"
+hound = "3.5.0"
+indexmap = "2.1.0"
+itertools = "0.11.0"
+libc = "0.2.124"
+log = "0.4.17"
+nix = { version = "0.28.0", features = ["socket", "signal", "process", "fs", "resource", "uio"] }
+num-traits = "0.2.15"
+once_cell = "1.17.0"
+openssl = "0.10.48"
+proc-macro2 = "1.0.0"
+protobuf = "3.2.0"
+protobuf-codegen = "3.2.0"
+protobuf-parse = "3.2.0"
+quote = "1.0.0"
+regex = "1.10.4"
+remain = "0.2.1"
+rustfft = "6.1.0"
+serde = { version = "1.0.125", features = ["derive"] }
+serde_json = "1.0.96"
+serde_yaml = "0.8.11"
+static_assertions = "1.1.0"
+syn = "1.0.0"
+syslog = "6.0.1"
+tempfile = "3.4.0"
+thiserror = "1.0.30"
+tokio = { version = "1.19.2", features = ["rt-multi-thread", "net", "time", "rt"] }
+zerocopy = "0.7.32"
+
+# ChromiumOS crates
+system_api = "*"  # provided by ebuild
+featured = "*"  # provided by ebuild
+libchromeos = "*"  # provided by ebuild
+
+[patch.crates-io]
+# When building out of ChromiumOS, we do not actually use system_api.
+# Stub it to avoid downloading the platform2 repository.
+# See also: https://github.com/rust-lang/cargo/issues/4544
+system_api = { path = "repositories/system_api_stub" } # ignored by ebuild
+# Replace the above with the below when testing with ChromiumOS features.
+# For out of chroot using TOT platform2:
+# system_api = { git = "https://chromium.googlesource.com/chromiumos/platform2", version = ">=0.24.53" } # ignored by ebuild
+# For testing in-repo changes in chroot:
+# system_api = { path = "../../platform2/system_api" } # ignored by ebuild
+
+featured = { path = "repositories/featured_stub" } # ignored by ebuild
+libchromeos = { path = "repositories/libchromeos_stub" } # ignored by ebuild

@@ -1,0 +1,20 @@
+// RUN: clspv %target  %s -o %t.spv
+// RUN: spirv-dis -o %t2.spvasm %t.spv
+// RUN: FileCheck %s < %t2.spvasm
+// RUN: spirv-val --target-env vulkan1.0 %t.spv
+
+// CHECK-DAG: %[[uint:[0-9a-zA-Z_]+]] = OpTypeInt 32 0
+// CHECK-DAG: %[[uint_0:[0-9a-zA-Z_]+]] = OpConstant %[[uint]] 0
+// CHECK-DAG: %[[uint_1:[0-9a-zA-Z_]+]] = OpConstant %[[uint]] 1
+// CHECK-DAG: %[[uint_72:[0-9a-zA-Z_]+]] = OpConstant %[[uint]] 72
+// CHECK-DAG: %[[uint_66:[0-9a-zA-Z_]+]] = OpConstant %[[uint]] 66
+// CHECK-DAG: %[[uint_31:[0-9a-zA-Z_]+]] = OpConstant %[[uint]] 31
+// CHECK-DAG: %[[uint_42:[0-9a-zA-Z_]+]] = OpConstant %[[uint]] 42
+// CHECK:     OpAtomicCompareExchange %[[uint]] {{.*}} %[[uint_1]] %[[uint_72]] %[[uint_66]] %[[uint_31]] %[[uint_42]]
+
+
+kernel void __attribute__((reqd_work_group_size(1, 1, 1))) foo(global uint* a, global uint* b)
+{
+    *a = atom_cmpxchg(b, 42, 31);
+}
+

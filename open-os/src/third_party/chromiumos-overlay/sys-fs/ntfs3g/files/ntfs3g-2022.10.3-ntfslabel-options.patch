@@ -1,0 +1,68 @@
+From 83c6335607aa1ca410a6617194d7bda3239573b8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fran=C3=A7ois=20Degros?= <fdegros@chromium.org>
+Date: Wed, 11 Mar 2026 15:26:41 +1100
+Subject: [PATCH] ntfslabel: Fix command line option parsing
+
+Now, ntfslabel correctly understands the double hyphen `--` POSIX
+delimiter. Any arguments following `--` are treated as operands (e.g. a
+new volume name), even if they start with a hyphen `-`. This prevents a
+volume name like `-M-` from being interpreted as an option in the
+following commands:
+
+```
+ntfslabel -- /dev/sda -M-
+ntfslabel /dev/sda -- -M-
+```
+
+Bug: https://github.com/tuxera/ntfs-3g/issues/177
+---
+ ntfsprogs/ntfslabel.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/ntfsprogs/ntfslabel.c b/ntfsprogs/ntfslabel.c
+index 9ddf46f1..a256c572 100644
+--- a/ntfsprogs/ntfslabel.c
++++ b/ntfsprogs/ntfslabel.c
+@@ -120,7 +120,7 @@ static void usage(void)
+  */
+ static int parse_options(int argc, char *argv[])
+ {
+-	static const char *sopt = "-fh?IinqvV";
++	static const char *sopt = "fh?IinqvV";
+ 	static const struct option lopt[] = {
+ 		{ "force",	 no_argument,		NULL, 'f' },
+ 		{ "help",	 no_argument,		NULL, 'h' },
+@@ -144,14 +144,6 @@ static int parse_options(int argc, char *argv[])
+ 
+ 	while ((c = getopt_long(argc, argv, sopt, lopt, NULL)) != -1) {
+ 		switch (c) {
+-		case 1:	/* A non-option argument */
+-			if (!err && !opts.device)
+-				opts.device = argv[optind-1];
+-			else if (!err && !opts.label)
+-				opts.label = argv[optind-1];
+-			else
+-				err++;
+-			break;
+ 		case 'f':
+ 			opts.force++;
+ 			break;
+@@ -203,6 +195,15 @@ static int parse_options(int argc, char *argv[])
+ 		}
+ 	}
+ 
++	if (optind < argc)
++		opts.device = argv[optind++];
++
++	if (optind < argc)
++		opts.label = argv[optind++];
++
++	if (optind < argc)
++		err++;
++
+ 	/* Make sure we're in sync with the log levels */
+ 	levels = ntfs_log_get_levels();
+ 	if (levels & NTFS_LOG_LEVEL_VERBOSE)
+-- 
+2.53.0.473.g4a7958ca14-goog
+

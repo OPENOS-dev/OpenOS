@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install
+DEPEND=sys-libs/zlib:= app-arch/zstd:= virtual/libelf:= caps? ( sys-libs/libcap:= ) sys-kernel/linux-headers:= sys-devel/llvm:=
+DESCRIPTION=Tool for inspection and simple manipulation of eBPF programs and maps
+EAPI=7
+HOMEPAGE=https://github.com/libbpf/bpftool
+IUSE=caps
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-libs/zlib:= app-arch/zstd:= virtual/libelf:= caps? ( sys-libs/libcap:= )
+SLOT=0
+SRC_URI=https://github.com/libbpf/bpftool/archive/bpftool-libbpf-v7.4.0-sources.tar.xz
+_eclasses_=cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=70113e9204485f4b58f46eef8e92182d

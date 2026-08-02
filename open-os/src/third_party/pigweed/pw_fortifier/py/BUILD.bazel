@@ -1,0 +1,149 @@
+# Copyright 2026 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("//pw_build:python.bzl", "pw_py_binary", "pw_py_library", "pw_py_test")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+pw_py_library(
+    name = "pw_fortifier",
+    srcs = [
+        "pw_fortifier/__init__.py",
+        "pw_fortifier/bazel_cipd_scanner.py",
+        "pw_fortifier/bazel_dep_scanner.py",
+        "pw_fortifier/bazel_maven_scanner.py",
+        "pw_fortifier/bazel_repo_scanner.py",
+        "pw_fortifier/bazel_scanner.py",
+        "pw_fortifier/cargo_scanner.py",
+        "pw_fortifier/cipd_scanner.py",
+        "pw_fortifier/cipd_setup_scanner.py",
+        "pw_fortifier/copybara_scanner.py",
+        "pw_fortifier/find_core_owners.py",
+        "pw_fortifier/freshness_scan.py",
+        "pw_fortifier/git_repo_scanner.py",
+        "pw_fortifier/go_mod_scanner.py",
+        "pw_fortifier/npm_scanner.py",
+        "pw_fortifier/package_scanner.py",
+        "pw_fortifier/pip_scanner.py",
+    ],
+    imports = ["."],
+    deps = [
+        "@pigweed_python_packages//packaging",
+        "@pigweed_python_packages//requests",
+    ],
+)
+
+pw_py_test(
+    name = "find_core_owners_test",
+    size = "small",
+    srcs = [
+        "find_core_owners_test.py",
+    ],
+    deps = [
+        ":pw_fortifier",
+    ],
+)
+
+pw_py_binary(
+    name = "freshness_scan",
+    srcs = ["pw_fortifier/freshness_scan.py"],
+    tags = ["nomypy"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "package_scanner_test",
+    size = "small",
+    srcs = ["package_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "freshness_scan_test",
+    size = "small",
+    srcs = ["freshness_scan_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "cargo_scanner_test",
+    size = "small",
+    srcs = ["cargo_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "go_mod_scanner_test",
+    size = "small",
+    srcs = ["go_mod_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "npm_scanner_test",
+    size = "small",
+    srcs = ["npm_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "pip_scanner_test",
+    size = "small",
+    srcs = ["pip_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "bazel_maven_scanner_test",
+    size = "small",
+    srcs = ["bazel_maven_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "bazel_dep_scanner_test",
+    size = "small",
+    srcs = ["bazel_dep_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "copybara_scanner_test",
+    size = "small",
+    srcs = ["copybara_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "cipd_scanner_test",
+    size = "small",
+    srcs = ["cipd_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "bazel_cipd_scanner_test",
+    size = "small",
+    srcs = ["bazel_cipd_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)
+
+pw_py_test(
+    name = "cipd_setup_scanner_test",
+    size = "small",
+    srcs = ["cipd_setup_scanner_test.py"],
+    deps = [":pw_fortifier"],
+)

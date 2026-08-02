@@ -1,0 +1,37 @@
+From 9a66b6c89c4f63aeb015e53109a26f57c060c8b6 Mon Sep 17 00:00:00 2001
+From: howardchung <howardchung@google.com>
+Date: Tue, 13 Jan 2026 10:08:59 +0000
+Subject: [PATCH] UPSTREAM: Add check_set_event_mask_p2_support_before_writing
+ flag
+
+Some controllers might not support the command Set event mask page 2.
+Check the local capabilities before sending.
+
+Bug: 475438075
+Bug: 472712972
+Test: m -j
+Test: verify Set Event Mask Page 2 is issued after Read Local Supported
+Commands in btsnoop log.
+Flag: com.android.bluetooth.flags.check_set_event_mask_p2_support_before_writing
+
+Change-Id: I9f9273c6b5dba13bc82cb3f7fac6466598c84aa0
+---
+ flags/adapter.aconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/flags/adapter.aconfig b/flags/adapter.aconfig
+index 6bb45edf70a..67b0889c0f4 100644
+--- a/flags/adapter.aconfig
++++ b/flags/adapter.aconfig
+@@ -124 +124,11 @@ flag {
+ }
++
++flag {
++  name: "check_set_event_mask_p2_support_before_writing"
++  namespace: "bluetooth"
++  description: "Some controllers might not support the command Set event mask page 2. Check the local capabilities before sending."
++  bug: "475438075"
++  metadata {
++        purpose: PURPOSE_BUGFIX
++  }
++}

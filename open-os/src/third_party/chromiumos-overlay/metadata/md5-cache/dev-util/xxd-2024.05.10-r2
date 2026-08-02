@@ -1,0 +1,10 @@
+DEFINED_PHASES=configure install prepare unpack
+DESCRIPTION=make a hexdump or do the reverse
+EAPI=7
+HOMEPAGE=https://github.com/vim/vim/tree/master/src/xxd
+KEYWORDS=*
+LICENSE=GPL-2
+SLOT=0
+SRC_URI=https://raw.githubusercontent.com/vim/vim/v9.1.0608/src/xxd/xxd.c -> xxd-2024-05-10.c
+_eclasses_=cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=f7e0d8b9912e8629b2672af9f5311170

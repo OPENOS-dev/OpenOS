@@ -1,0 +1,11 @@
+1:cd source
+2:chmod 777 1_run_first.sh
+3:./1_run_first.sh
+4:sudo ./2_install_libs.sh
+5:./3_chromeos_sane.sh
+6:deb package wiil be in ./chromeos_sane/deb/"product name"
+
+OS:
+ubuntu 18 LTS or later
+Required:
+apt command is available.

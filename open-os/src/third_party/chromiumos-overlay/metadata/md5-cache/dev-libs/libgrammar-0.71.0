@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DESCRIPTION=Google grammar check library for Chrome OS
+EAPI=7
+HOMEPAGE=https://www.chromium.org/chromium-os
+IUSE=ondevice_grammar march_x86-64 march_x86-64-v2 march_x86-64-v3 march_x86-64-v4 march_bdver4 march_znver1 march_znver2 march_znver3 march_znver4 march_silvermont march_goldmont march_goldmont-plus march_tremont march_alderlake march_meteorlake march_skylake march_armv7-a march_armv8-a
+KEYWORDS=*
+LICENSE=BSD-Google
+REQUIRED_USE=^^ ( march_x86-64 march_x86-64-v2 march_x86-64-v3 march_x86-64-v4 march_bdver4 march_znver1 march_znver2 march_znver3 march_znver4 march_silvermont march_goldmont march_goldmont-plus march_tremont march_alderlake march_meteorlake march_skylake march_armv7-a march_armv8-a )
+SLOT=0
+SRC_URI=amd64? ( march_x86-64? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_x86-64-v2? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_x86-64-v3? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_x86-64-v4? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_bdver4? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_znver1? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_znver2? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_znver3? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_znver4? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_silvermont? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_goldmont? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_goldmont-plus? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_tremont? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_alderlake? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_meteorlake? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) march_skylake? ( gs://chromeos-localmirror/distfiles/libgrammar-amd64-0.71.0.tar.gz ) ) arm64? ( march_armv8-a? ( gs://chromeos-localmirror/distfiles/libgrammar-arm64-0.71.0.tar.gz ) ) arm? ( march_armv7-a? ( gs://chromeos-localmirror/distfiles/libgrammar-arm-0.71.0.tar.gz ) march_armv8-a? ( gs://chromeos-localmirror/distfiles/libgrammar-arm-0.71.0.tar.gz ) )
+_eclasses_=cros-binary	8d92a34eb534ad68084cd638fc329d74
+_md5_=3e378b6b8d797910b9838a644b211a0d

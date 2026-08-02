@@ -1,0 +1,36 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "yuanpengni, ChromiumOS"
+NAME = "autoupdate_MiniOS.only"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Test MiniOS update without CrOS or DLC."
+}
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+DEPENDENCIES = "servo_state:WORKING"
+HW_DEPS = ['minios']
+ATTRIBUTES = "suite:nbr-au"
+DOC = """
+This tests the MiniOS update without the platform (OS) or DLC update.
+Use the `running_at_desk` arg when testing locally.
+
+Example usage:
+test_that autoupdate_MiniOS.only <DUT> --board=<board> --args="running_at_desk=True"
+"""
+
+from autotest_lib.client.common_lib import utils
+args_dict = utils.args_to_dict(args)
+servo_args = hosts.CrosHost.get_servo_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, servo_args=servo_args)
+    job.run_test('autoupdate_MiniOS', host=host, full_payload=True,
+                 **args_dict)
+
+job.parallel_simple(run, machines)

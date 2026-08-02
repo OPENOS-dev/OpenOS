@@ -1,0 +1,15 @@
+BDEPEND=|| ( >=dev-lang/python-3.11.0_p2:3.11 ) dev-util/cmake dev-vcs/git sys-devel/llvm app-eselect/eselect-dotnet
+DEFINED_PHASES=compile install postinst postrm prepare pretend setup
+DEPEND=!!sys-devel/llvm:0
+DESCRIPTION=.NET is a free, cross-platform, open-source developer platform
+EAPI=7
+HOMEPAGE=https://dotnet.microsoft.com/ https://github.com/dotnet/dotnet/
+KEYWORDS=-* amd64
+LICENSE=MIT-dotnet
+PDEPEND=~dev-dotnet/dotnet-runtime-nugets-8.0.7
+RDEPEND=app-crypt/mit-krb5:0/0 dev-libs/icu dev-libs/openssl:= dev-util/lttng-ust:= sys-libs/zlib:0/1
+RESTRICT=splitdebug strip
+SLOT=8.0/8.0.7
+SRC_URI=amd64? ( elibc_glibc? ( https://dev.gentoo.org/~xgqt/distfiles/repackaged/dotnet-sdk-8.0.107-prepared-gentoo-amd64.tar.xz ) elibc_musl? ( https://dev.gentoo.org/~xgqt/distfiles/repackaged/dotnet-sdk-8.0.107-prepared-gentoo-musl-amd64.tar.xz ) )
+_eclasses_=check-reqs	74c98e9a7b34b32be3548357852e9ec3	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	llvm	8b7c4e5fc38650215226b5186859d0d4	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=b75734fcae72fbfdec27dd340ba85cce

@@ -1,0 +1,19 @@
+# Copyright 2017 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "detachablebase_TriggerHammerd"
+AUTHOR = "ChromeOS Team"
+METADATA = {
+        "criteria": "Check hammerd starts correctly on boot."
+}
+TIME = "SHORT"
+TEST_TYPE = "client"
+ATTRIBUTES = "suite:bvt-perbuild"
+DEPENDENCIES = "detachablebase"
+
+DOC = """
+The test checks hammerd upstart job is triggered on boot and exits normally.
+"""
+
+job.run_test('detachablebase_TriggerHammerd')

@@ -1,0 +1,27 @@
+From e9eb4b5b119b29b4f62f67d571c3b61fa3640d8d Mon Sep 17 00:00:00 2001
+From: howardchung <howardchung@google.com>
+Date: Thu, 13 Apr 2023 09:36:21 +0000
+Subject: [PATCH] CHROMIUM: Reject incoming bond if already bonded
+
+context: go/bt_lost_bond
+
+BUG=b:277801063
+TEST=simulate the scenario in the above bug via 2 chromebooks
+
+Change-Id: I5c9737dbc0828e8b760d290b7298b6c14feff6b0
+---
+ system/stack/btm/btm_sec.cc | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/system/stack/btm/btm_sec.cc b/system/stack/btm/btm_sec.cc
+index fc230aade13..353da801e20 100644
+--- a/system/stack/btm/btm_sec.cc
++++ b/system/stack/btm/btm_sec.cc
+@@ -2393,4 +2393,5 @@ void btm_io_capabilities_req(RawAddress p) {
+ 
+-    log::info("Incoming pairing request for bonded and encrypted device {}", p);
+-    bta_dm_process_remove_device(p);
++    log::info("Incoming pairing request for bonded and encrypted device {}, rejecting", p);
++    btsnd_hcic_io_cap_req_neg_reply(p, HCI_ERR_PAIRING_NOT_ALLOWED);
++    return;
+   }

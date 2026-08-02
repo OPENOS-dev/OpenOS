@@ -1,0 +1,32 @@
+# Copyright 2016 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.client.cros.audio import audio_test_data
+from autotest_lib.client.cros.chameleon import chameleon_audio_ids
+from autotest_lib.server import utils
+
+NAME = "audio_AudioVolume.speaker"
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "This test will fail if the recorded volume does not change.",
+    "doc" : "This test remotely tests speaker audio volume against DUT.",
+    'variant_category': '{"name": "Audio_SoC_Codec_Amp"}',
+}
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:audio_basic, group:release-health, release-health_audio"
+DEPENDENCIES = "audio_box, chameleon_state:WORKING"
+JOB_RETRIES = 1
+
+args_dict = utils.args_to_dict(args)
+chameleon_args = hosts.CrosHost.get_chameleon_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, chameleon_args=chameleon_args)
+    job.run_test("audio_AudioVolume", host=host, tag="speaker",
+                 source_id=chameleon_audio_ids.CrosIds.SPEAKER,
+                 ignore_frequencies=[17, 29, 42],
+                )
+
+parallel_simple(run, machines)

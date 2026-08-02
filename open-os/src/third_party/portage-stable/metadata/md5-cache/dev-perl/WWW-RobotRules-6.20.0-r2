@@ -1,0 +1,13 @@
+BDEPEND=!<dev-perl/libwww-perl-6 >=dev-perl/URI-1.10 dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Parse /robots.txt file
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/WWW-RobotRules
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=!<dev-perl/libwww-perl-6 >=dev-perl/URI-1.10 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/G/GA/GAAS/WWW-RobotRules-6.02.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=5c6a42b339207a5aa4140bf73dc69b24

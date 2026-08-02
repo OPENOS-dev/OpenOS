@@ -1,0 +1,57 @@
+# Copyright 2022 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_python//sphinxdocs:sphinx_docs_library.bzl", "sphinx_docs_library")
+load("//pw_build:compatibility.bzl", "incompatible_with_mcu")
+
+package(
+    default_visibility = ["//visibility:public"],
+    features = ["-layering_check"],
+)
+
+licenses(["notice"])
+
+cc_library(
+    name = "boot",
+    srcs = [
+        "boot.cc",
+    ],
+    features = ["-conversion_warnings"],
+    deps = [
+        "//pw_log",
+        "//pw_system:init",
+        "//pw_thread:sleep",
+    ],
+)
+
+platform(
+    name = "host_device_simulator",
+    flags = [
+        "--//pw_log:backend=//pw_log_string",
+        "--//pw_log:backend_impl=//pw_log_string:impl",
+        "--//pw_log_string:handler_backend=//pw_system:log_backend",
+        "--//pw_sys_io:backend=//pw_sys_io_stdio",
+        "--//pw_system:io_backend=//pw_system:socket_target_io",
+    ],
+    parents = ["@bazel_tools//tools:host_platform"],
+)
+
+sphinx_docs_library(
+    name = "docs",
+    srcs = [
+        "target_docs.rst",
+    ],
+    target_compatible_with = incompatible_with_mcu(),
+)

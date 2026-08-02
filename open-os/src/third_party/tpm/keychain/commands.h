@@ -1,0 +1,44 @@
+// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef _TPM_KEYCHAIN_COMMANDS_H_
+#define _TPM_KEYCHAIN_COMMANDS_H_
+
+enum {
+    CMDBIT_ADD,
+    CMDBIT_CHANGEAUTH,
+    CMDBIT_CREATE,
+    CMDBIT_DESTROY,
+    CMDBIT_DUMPBLOB,
+    CMDBIT_LIST,
+    CMDBIT_NEWPASSWORD,
+    CMDBIT_REMOVE,
+    CMDBIT_REMOVEAUTH,
+    CMDBIT_RESETLOCK,
+    CMDBIT_SSH,
+    CMDBIT_UUID,
+};
+
+#define CMD_BITMAP(cmd) (1ULL << cmd)
+
+enum {
+    CMD_ADD             = (CMD_BITMAP(CMDBIT_ADD)),
+    CMD_ADD_UUID        = (CMD_ADD | CMD_BITMAP(CMDBIT_UUID)),
+    CMD_CHANGEAUTH_UUID = (CMD_BITMAP(CMDBIT_CHANGEAUTH)  | \
+                           CMD_BITMAP(CMDBIT_NEWPASSWORD) | \
+                           CMD_BITMAP(CMDBIT_UUID)),
+    CMD_CREATE          = (CMD_BITMAP(CMDBIT_CREATE)),
+    CMD_DESTROY         = (CMD_BITMAP(CMDBIT_DESTROY)),
+    CMD_DUMPBLOB_UUID   = (CMD_BITMAP(CMDBIT_DUMPBLOB)    | \
+                           CMD_BITMAP(CMDBIT_UUID)),
+    CMD_LIST            = (CMD_BITMAP(CMDBIT_LIST)),
+    CMD_LIST_UUID       = (CMD_LIST | CMD_BITMAP(CMDBIT_UUID)),
+    CMD_REMOVE_UUID     = (CMD_BITMAP(CMDBIT_REMOVE) | CMD_BITMAP(CMDBIT_UUID)),
+    CMD_REMOVEAUTH_UUID = (CMD_BITMAP(CMDBIT_REMOVEAUTH) | \
+                           CMD_BITMAP(CMDBIT_UUID)),
+    CMD_RESETLOCK       = (CMD_BITMAP(CMDBIT_RESETLOCK)),
+    CMD_SSH_UUID        = (CMD_BITMAP(CMDBIT_SSH) | CMD_BITMAP(CMDBIT_UUID)),
+};
+
+#endif // _TPM_KEYCHAIN_COMMANDS_H_

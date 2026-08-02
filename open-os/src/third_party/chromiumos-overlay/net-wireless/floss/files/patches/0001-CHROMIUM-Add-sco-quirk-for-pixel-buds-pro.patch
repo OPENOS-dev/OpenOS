@@ -1,0 +1,135 @@
+From 343c438fc6b2b72ec04d3dce67581014e8e3d5cb Mon Sep 17 00:00:00 2001
+From: Yun-Hao Chung <howardchung@google.com>
+Date: Thu, 16 Nov 2023 11:46:13 +0000
+Subject: [PATCH] CHROMIUM: Add sco quirk for pixel buds pro
+
+It is found that pixel buds pro have a higher retransmission rate when
+using sco. This causes high input latency when using classic HID.
+
+This adds a quirk for pixel buds pro to force the retransmission effort
+to power consumption optimization instead of link quality optimization.
+In theory, after the patch the audio quality will decrease a bit. To
+minimize the number of impacted users, we only apply the quirk when
+there is a classic HID device bonded or connected.
+
+BUG=b:310031878
+TEST=tested with the following steps
+1. check no HID device is bonded
+2. connected to pixel buds pro and use HFP
+3. verify the retrans effort is 'optimize for link quality'
+4. during the hfp, bond with a classic mouse
+5. verify there is high latency in the mouse
+6. switch to a2dp and back to hfp
+7. verify the retrans effort is 'optimize for power' and the latency is
+   normal.
+
+Change-Id: Ie6406a4fe4710f2c6f22c1a20f831d89a2988d25
+---
+ system/bta/ag/bta_ag_sco.cc | 89 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+
+diff --git a/system/bta/ag/bta_ag_sco.cc b/system/bta/ag/bta_ag_sco.cc
+index d1f0f626783..fa7400381ca 100644
+--- a/system/bta/ag/bta_ag_sco.cc
++++ b/system/bta/ag/bta_ag_sco.cc
+@@ -41,2 +41,4 @@
+ #include "bta_sys.h"
++#include "btif/include/btif_storage.h"
++#include "btif/include/btif_config.h"
+ #include "btm_api_types.h"
+@@ -421,2 +423,65 @@ static void bta_ag_cback_sco(tBTA_AG_SCB* p_scb, tBTA_AG_EVT event) {
+ 
++/*******************************************************************************
++ *
++ * Function         (CHROMIUM ONLY) should_apply_sco_quirk
++ *
++ * Description      Check if we need to apply the sco quirk.
++ *                  It is found that pixel buds pro have a higher retransmission
++ *                  rate when using sco. This causes high input latency when
++ *                  using classic HID.
++ *                  To minimize the number of impacted users, we only apply the
++ *                  quirk when there is at least one classic HID device bonded.
++ *
++ * Returns          true if sco quirk is needed, false otherwise.
++ *
++ ******************************************************************************/
++static bool should_apply_sco_quirk(tBTA_AG_SCB* p_scb) {
++  bool found_cl_hid = false;
++  bt_property_t prop;
++  bt_status_t status;
++  bt_vendor_product_info_t dev_info;
++
++  BTIF_STORAGE_FILL_PROPERTY(&prop, BT_PROPERTY_VENDOR_PRODUCT_INFO,
++                              sizeof(dev_info), &dev_info);
++  status = btif_storage_get_remote_device_property(&p_scb->peer_addr, &prop);
++  if (status != BT_STATUS_SUCCESS) {
++    return false;
++  }
++
++  /* Apply the sco quirk to Pixel buds pro */
++  if (dev_info.vendor_id != 0x00e0 || dev_info.product_id != 0x3004) {
++    return false;
++  }
++
++  /* Only apply the quirk if there is a Classic HID bonded */
++  for (const auto& addr : btif_config_get_paired_devices()) {
++    uint32_t dev_type;
++    uint32_t dev_cod;
++
++    BTIF_STORAGE_FILL_PROPERTY(&prop, BT_PROPERTY_TYPE_OF_DEVICE,
++                               sizeof(dev_type), &dev_type);
++    status = btif_storage_get_remote_device_property(&addr, &prop);
++    if (status != BT_STATUS_SUCCESS) {
++      continue;
++    }
++
++    BTIF_STORAGE_FILL_PROPERTY(&prop, BT_PROPERTY_CLASS_OF_DEVICE,
++                               sizeof(dev_cod), &dev_cod);
++    status = btif_storage_get_remote_device_property(&addr, &prop);
++    if (status != BT_STATUS_SUCCESS) {
++      continue;
++    }
++
++    uint32_t dev_major_cod = (dev_cod & 0x001f00) >> 8;
++
++    if (dev_type == BT_DEVICE_TYPE_BREDR &&
++        dev_major_cod == 0x05 /* Peripheral */) {
++        found_cl_hid = true;
++        break;
++    }
++  }
++
++  return found_cl_hid;
++}
++
+ /*******************************************************************************
+@@ -532,2 +597,14 @@ void bta_ag_create_sco(tBTA_AG_SCB* p_scb, bool is_orig) {
+ 
++  /* CHROMIUM ONLY: Special quirk for pixel buds pro to mitigate the
++   * HID latency issue. Context: b/310031878
++   * TODO(b/311147120): Remove this quirk once pixel buds pro updated
++   * their firmware or we find other solutions.
++   */
++  if (should_apply_sco_quirk(p_scb) &&
++      params.retransmission_effort == ESCO_RETRANSMISSION_QUALITY) {
++      log::info("Pixel buds pro quirk scenario detected."
++               " Set retrans effort to 'Optimize for power'.");
++      params.retransmission_effort = ESCO_RETRANSMISSION_POWER;
++  }
++
+   /* Configure input/output data path based on HAL settings. */
+@@ -1645,2 +1722,14 @@ void bta_ag_sco_conn_rsp(tBTA_AG_SCB* p_scb, tBTM_ESCO_CONN_REQ_EVT_DATA* /*p_da
+ 
++  /* CHROMIUM ONLY: Special quirk for pixel buds pro to mitigate the
++   * HID latency issue. Context: b/310031878
++   * TODO(b/311147120): Remove this quirk once pixel buds pro updated
++   * their firmware or we find other solutions.
++   */
++  if (should_apply_sco_quirk(p_scb) &&
++      params.retransmission_effort == ESCO_RETRANSMISSION_QUALITY) {
++      log::info("Pixel buds pro quirk scenario detected."
++               " Set retrans effort to 'Optimize for power'.");
++      params.retransmission_effort = ESCO_RETRANSMISSION_POWER;
++  }
++
+   get_btm_client_interface().sco.BTM_EScoConnRsp(p_scb->sco_idx, HCI_SUCCESS, &params);

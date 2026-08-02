@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for operating system headers
+EAPI=7
+KEYWORDS=*
+RDEPEND=!prefix-guest? ( || ( kernel_linux? ( sys-kernel/linux-headers:0 ) kernel_Winnt? ( elibc_mingw? ( dev-util/mingw64-runtime ) ) ) ) prefix-guest? ( !sys-kernel/linux-headers )
+SLOT=0
+_md5_=e3df338214313720b66147e6091526c6

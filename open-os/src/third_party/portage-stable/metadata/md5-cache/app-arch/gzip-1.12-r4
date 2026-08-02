@@ -1,0 +1,14 @@
+BDEPEND=verify-sig? ( sec-keys/openpgp-keys-gzip ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install postinst unpack
+DESCRIPTION=Standard GNU compressor
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/gzip/
+IUSE=pic static verify-sig
+KEYWORDS=*
+LICENSE=GPL-3+
+PDEPEND=app-alternatives/gzip
+RDEPEND=!app-arch/pigz[symlink(-)]
+SLOT=0
+SRC_URI=mirror://gnu/gzip/gzip-1.12.tar.xz https://alpha.gnu.org/gnu/gzip/gzip-1.12.tar.xz verify-sig? ( mirror://gnu/gzip/gzip-1.12.tar.xz.sig https://alpha.gnu.org/gnu/gzip/gzip-1.12.tar.xz.sig )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=83431bb204741d483a28e8241501e3c5

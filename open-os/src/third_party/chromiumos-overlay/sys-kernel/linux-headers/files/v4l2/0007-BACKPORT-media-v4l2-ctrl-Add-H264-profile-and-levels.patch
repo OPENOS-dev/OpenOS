@@ -1,0 +1,40 @@
+From 1ca3cb46a992d83ebd093acc64241007b20c5033 Mon Sep 17 00:00:00 2001
+From: Maheshwar Ajja <majja@codeaurora.org>
+Date: Mon, 16 Mar 2020 23:42:30 +0100
+Subject: [PATCH] media: v4l2-ctrl: Add H264 profile and levels
+
+Add H264 profile "Contrained High" and H264 levels "5.2",
+"6.0", "6.1" and "6.2".
+
+Signed-off-by: Maheshwar Ajja <majja@codeaurora.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ include/uapi/linux/v4l2-controls.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index 361c7c55..f340a532 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -467,6 +467,10 @@ enum v4l2_mpeg_video_h264_level {
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_4_2	= 13,
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_5_0	= 14,
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_5_1	= 15,
++	V4L2_MPEG_VIDEO_H264_LEVEL_5_2	= 16,
++	V4L2_MPEG_VIDEO_H264_LEVEL_6_0	= 17,
++	V4L2_MPEG_VIDEO_H264_LEVEL_6_1	= 18,
++	V4L2_MPEG_VIDEO_H264_LEVEL_6_2	= 19,
+ };
+ #define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_ALPHA	(V4L2_CID_MPEG_BASE+360)
+ #define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_BETA	(V4L2_CID_MPEG_BASE+361)
+@@ -495,6 +499,7 @@ enum v4l2_mpeg_video_h264_profile {
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_SCALABLE_HIGH_INTRA	= 14,
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_STEREO_HIGH		= 15,
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_MULTIVIEW_HIGH		= 16,
++	V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH		= 17,
+ };
+ #define V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_HEIGHT	(V4L2_CID_MPEG_BASE+364)
+ #define V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_WIDTH	(V4L2_CID_MPEG_BASE+365)
+-- 
+2.45.2

@@ -1,0 +1,14 @@
+BDEPEND=python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) dev-libs/libxml2 >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 ppc-aix? ( >=dev-build/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) x86-winnt? ( >=dev-build/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) virtual/pkgconfig
+DEFINED_PHASES=compile configure install postinst postrm prepare unpack
+DESCRIPTION=X C-language Bindings protocol headers
+EAPI=7
+HOMEPAGE=https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/proto/xcbproto
+IUSE=python_targets_python3_12 python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 python_targets_python3_8 static-libs
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 )
+REQUIRED_USE=|| ( python_targets_python3_12 python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 python_targets_python3_8 )
+SLOT=0
+SRC_URI=https://www.x.org/releases/individual/proto/xcb-proto-1.16.0.tar.xz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xorg-3	508132aa798db8bebd0849a9a0b57d0e
+_md5_=b92c0ecef6c2438fea0243fc6471db51

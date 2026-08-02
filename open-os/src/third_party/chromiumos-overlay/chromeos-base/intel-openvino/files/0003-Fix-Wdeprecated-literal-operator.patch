@@ -1,0 +1,25 @@
+From 140c79210c32e4489afa5e1098952d6e20c504fb Mon Sep 17 00:00:00 2001
+From: Tommy Chiang <ototot@google.com>
+Date: Fri, 13 Jun 2025 01:50:27 +0000
+Subject: [PATCH] Fix Wdeprecated-literal-operator
+
+---
+ third_party/spdlog_headers/spdlog/fmt/bundled/format.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/spdlog_headers/spdlog/fmt/bundled/format.h b/third_party/spdlog_headers/spdlog/fmt/bundled/format.h
+index 7c607db..dd393be 100644
+--- a/third_party/spdlog_headers/spdlog/fmt/bundled/format.h
++++ b/third_party/spdlog_headers/spdlog/fmt/bundled/format.h
+@@ -4165,7 +4165,7 @@ template <detail_exported::fixed_string Str> constexpr auto operator""_a() {
+   return detail::udl_arg<char_t, sizeof(Str.data) / sizeof(char_t), Str>();
+ }
+ #  else
+-constexpr auto operator"" _a(const char* s, size_t) -> detail::udl_arg<char> {
++constexpr auto operator""_a(const char* s, size_t) -> detail::udl_arg<char> {
+   return {s};
+ }
+ #  endif
+-- 
+2.50.0.rc1.591.g9c95f17f64-goog
+

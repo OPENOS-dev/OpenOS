@@ -1,0 +1,14 @@
+BDEPEND=verify-sig? ( sec-keys/openpgp-keys-kamildudka ) virtual/pkgconfig verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install postinst prepare unpack
+DEPEND=>=dev-libs/popt-1.5 selinux? ( sys-libs/libselinux ) acl? ( virtual/acl )
+DESCRIPTION=Rotates, compresses, and mails system logs
+EAPI=7
+HOMEPAGE=https://github.com/logrotate/logrotate
+IUSE=acl +cron selinux verify-sig
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=>=dev-libs/popt-1.5 selinux? ( sys-libs/libselinux ) acl? ( virtual/acl ) selinux? ( sec-policy/selinux-logrotate ) cron? ( virtual/cron ) virtual/tmpfiles
+SLOT=0
+SRC_URI=https://github.com/logrotate/logrotate/releases/download/3.21.0/logrotate-3.21.0.tar.xz verify-sig? ( https://github.com/logrotate/logrotate/releases/download/3.21.0/logrotate-3.21.0.tar.xz.asc )
+_eclasses_=systemd	5f4bb0758df2e483babf68cd517078ca	tmpfiles	216aa76c3a6fcb5d893c23a0de86048f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=555e96dd8a32e2cfa4724c07b33e290e

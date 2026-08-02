@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual to select between different udev daemon providers
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( sys-apps/systemd-utils[udev] sys-fs/udev >=sys-fs/eudev-2.1.1 >=sys-apps/systemd-217 )
+SLOT=0
+_md5_=f39db1ce8630b47d0d093b4343ddc673

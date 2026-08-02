@@ -1,0 +1,58 @@
+--- a/src/tools/cargo/src/cargo/sources/path.rs
++++ b/src/tools/cargo/src/cargo/sources/path.rs
+@@ -652,12 +652,25 @@ fn discover_gix_repo(root: &Path) -> CargoResult<Option<gix::Repository>> {
+     let index = repo
+         .index_or_empty()
+         .with_context(|| format!("failed to open git index at {}", repo.path().display()))?;
+-    let repo_root = repo.workdir().ok_or_else(|| {
+-        anyhow::format_err!(
+-            "did not expect repo at {} to be bare",
+-            repo.path().display()
+-        )
+-    })?;
++    let repo_root = if let Some(root) = repo.work_dir() {
++        root
++    } else if !repo.is_bare() {
++        // Sparse-checkouts (and possibly other git
++        // configurations) make libgit2 confused but there's still
++        // an actual non-bare repo here.
++        if let Some(r) = repo.path().parent() {
++            r
++        } else {
++            return Err(anyhow::format_err!(
++                "repo path missing .git subfolder even when non-bare",
++            ));
++        }
++    } else {
++        return Err(anyhow::format_err!(
++             "did not expect repo at {} to be bare",
++             repo.path().display()
++        ));
++    };
+     let repo_relative_path = match paths::strip_prefix_canonical(root, repo_root) {
+         Ok(p) => p,
+         Err(e) => {
+@@ -701,9 +714,20 @@ fn list_files_gix(
+         .symlinks_to_directories_are_ignored_like_directories(true)
+         .emit_empty_directories(false);
+     let index = repo.index_or_empty()?;
+-    let root = repo
+-        .workdir()
+-        .ok_or_else(|| anyhow::format_err!("can't list files on a bare repository"))?;
++    let root = if let Some(root) = repo.work_dir() {
++        root
++    } else if !repo.is_bare() {
++        // Sparse-checkouts (and possibly other git
++        // configurations) make libgit2 confused but there's still
++        // an actual non-bare repo here.
++        if let Some(r) = repo.path().parent() {
++            r
++        } else {
++            return Err(anyhow::format_err!("malformed non-bare repository root",));
++        }
++    } else {
++        return Err(anyhow::format_err!("can't list files on a bare repository",));
++    };
+     assert!(
+         root.is_absolute(),
+         "BUG: paths used internally are absolute, and the repo inherits that"

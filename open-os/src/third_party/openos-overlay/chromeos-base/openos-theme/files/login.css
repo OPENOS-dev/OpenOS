@@ -1,0 +1,135 @@
+/* NOTHING UI v1.0 — Open-OS Login & OOBE Screen
+ * Login screen, Out-of-Box Experience, user authentication
+ */
+@import './tokens.css';
+
+/* ============================================================
+   Login Screen Container
+   ============================================================ */
+#login-screen,
+.login-container,
+#oobe,
+.oobe-container {
+  background: var(--nothing-surface-0) !important;
+  font-family: var(--nothing-font-ui) !important;
+}
+
+/* User pod / avatar list */
+.user-pod,
+.user-avatar-item,
+#user-list {
+  border-radius: var(--nothing-radius-sm) !important;
+  border: 1px solid var(--nothing-border-subtle) !important;
+  background: var(--nothing-surface-2) !important;
+}
+
+.user-pod:hover {
+  border-color: var(--nothing-accent) !important;
+  background: var(--nothing-surface-3) !important;
+}
+
+.user-pod.selected {
+  border-color: var(--nothing-accent) !important;
+  background: var(--nothing-accent-bg) !important;
+}
+
+.user-name {
+  color: var(--nothing-text-primary) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+.user-email {
+  color: var(--nothing-text-secondary) !important;
+  font-size: 12px !important;
+}
+
+/* Password input */
+#password-input,
+.login-password-field {
+  background: var(--nothing-surface-2) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  color: var(--nothing-text-primary) !important;
+  height: 32px !important;
+  padding: 0 var(--nothing-space-3) !important;
+  font-size: 13px !important;
+}
+
+#password-input:focus {
+  border-color: var(--nothing-accent) !important;
+  background: var(--nothing-surface-3) !important;
+}
+
+/* Submit / sign-in button */
+#sign-in-button,
+.login-button,
+.submit-button {
+  background: var(--nothing-accent) !important;
+  color: #000000 !important;
+  border: none !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  height: 32px !important;
+  padding: 0 var(--nothing-space-4) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+#sign-in-button:hover {
+  background: var(--nothing-accent-hover) !important;
+}
+
+/* ============================================================
+   OOBE / Setup Wizard
+   ============================================================ */
+.oobe-step {
+  background: var(--nothing-surface-1) !important;
+  border: 1px solid var(--nothing-border-subtle) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  padding: var(--nothing-space-6) !important;
+}
+
+.oobe-title {
+  color: var(--nothing-text-primary) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.oobe-description {
+  color: var(--nothing-text-secondary) !important;
+  font-size: 14px !important;
+}
+
+/* Next / Back buttons */
+.oobe-next,
+.oobe-back {
+  height: 32px !important;
+  padding: 0 var(--nothing-space-4) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.oobe-next {
+  background: var(--nothing-accent) !important;
+  color: #000000 !important;
+  border: none !important;
+}
+
+.oobe-back {
+  background: transparent !important;
+  color: var(--nothing-text-secondary) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+}
+
+/* ============================================================
+   Error / Warning states
+   ============================================================ */
+.login-error,
+.auth-error {
+  color: var(--nothing-color-error) !important;
+  font-size: 12px !important;
+  background: var(--nothing-color-error-bg) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  padding: var(--nothing-space-2) var(--nothing-space-3) !important;
+}

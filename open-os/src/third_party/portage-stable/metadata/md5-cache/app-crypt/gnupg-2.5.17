@@ -1,0 +1,17 @@
+BDEPEND=virtual/pkgconfig doc? ( sys-apps/texinfo ) nls? ( sys-devel/gettext ) verify-sig? ( sec-keys/openpgp-keys-gnupg ) virtual/pkgconfig verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install postinst prepare test unpack
+DEPEND=>=dev-libs/libassuan-3.0.0-r1:= >=dev-libs/libgcrypt-1.11.0:= >=dev-libs/libgpg-error-1.56 >=dev-libs/libksba-1.6.3 >=dev-libs/npth-1.2 sys-libs/zlib bzip2? ( app-arch/bzip2 ) ldap? ( net-nds/openldap:= ) readline? ( sys-libs/readline:0= ) smartcard? ( usb? ( virtual/libusb:1 ) ) tofu? ( >=dev-db/sqlite-3.27 ) tpm? ( >=app-crypt/tpm2-tss-2.4.0:= ) ssl? ( >=net-libs/gnutls-3.2:0= )
+DESCRIPTION=The GNU Privacy Guard, a GPL OpenPGP implementation
+EAPI=7
+HOMEPAGE=https://gnupg.org/
+IUSE=-alternatives bzip2 doc ldap nls readline selinux +smartcard ssl test +tofu tpm tools usb user-socket wks-server verify-sig
+KEYWORDS=*
+LICENSE=GPL-3+
+PDEPEND=app-crypt/pinentry
+RDEPEND=>=dev-libs/libassuan-3.0.0-r1:= >=dev-libs/libgcrypt-1.11.0:= >=dev-libs/libgpg-error-1.56 >=dev-libs/libksba-1.6.3 >=dev-libs/npth-1.2 sys-libs/zlib bzip2? ( app-arch/bzip2 ) ldap? ( net-nds/openldap:= ) readline? ( sys-libs/readline:0= ) smartcard? ( usb? ( virtual/libusb:1 ) ) tofu? ( >=dev-db/sqlite-3.27 ) tpm? ( >=app-crypt/tpm2-tss-2.4.0:= ) ssl? ( >=net-libs/gnutls-3.2:0= ) nls? ( virtual/libintl ) selinux? ( sec-policy/selinux-gpg ) wks-server? ( virtual/mta )
+REQUIRED_USE=test? ( tofu )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://gnupg/gnupg/gnupg-2.5.17.tar.bz2 verify-sig? ( mirror://gnupg/gnupg/gnupg-2.5.17.tar.bz2.sig )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	out-of-source	9779900d240517b0631874f05d190aae	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=1c7df35eb68ca167834a81e7702cebee

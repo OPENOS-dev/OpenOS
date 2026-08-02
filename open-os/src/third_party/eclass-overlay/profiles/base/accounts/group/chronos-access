@@ -1,0 +1,9 @@
+group:chronos-access
+gid:1001
+# Add a chronos-access group to provide non-chronos users,
+# mostly system daemons running as a non-chronos user, group permissions
+# to access files/directories owned by chronos.
+# This includes all users accessing opencryptoki database files.
+#
+# Processes running with chronos-access need enforcing SELinux domains.
+users:chronos,chronos-access,crash,cros-disks,dlp,image-burner,imageloaderd,seneschal,spaced,vpn

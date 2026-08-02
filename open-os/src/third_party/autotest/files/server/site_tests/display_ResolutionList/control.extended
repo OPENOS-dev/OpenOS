@@ -1,0 +1,29 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.server import utils
+
+NAME = "display_ResolutionList.extended"
+METADATA = {
+    "contacts": ["chromeos-gfx-display@google.com"],
+    "bug_component": "b:188154",
+    "criteria": "Fails if the captured display checksum mismatches."
+}
+ATTRIBUTES = "suite:chameleon_hdmi_unstable"
+TEST_TYPE = "server"
+DEPENDENCIES = "chameleon"
+
+'''
+This test remotely tests all display resolutions available from the display
+options dialog in extended mode.
+'''
+
+args_dict = utils.args_to_dict(args)
+chameleon_args = hosts.CrosHost.get_chameleon_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, chameleon_args=chameleon_args)
+    job.run_test("display_ResolutionList", host=host, tag="extended")
+
+parallel_simple(run, machines)

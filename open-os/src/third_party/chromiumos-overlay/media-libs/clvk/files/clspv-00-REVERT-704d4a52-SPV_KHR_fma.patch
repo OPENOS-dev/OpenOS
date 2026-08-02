@@ -1,0 +1,243 @@
+diff --git a/clspv/include/clspv/Option.h b/clspv/include/clspv/Option.h
+index 2faed9c0..417d74f1 100644
+--- a/clspv/include/clspv/Option.h
++++ b/clspv/include/clspv/Option.h
+@@ -160,9 +160,6 @@ bool ImageSupport();
+ // instruction) rather than using the builtin library implementation.
+ std::set<clspv::Builtins::BuiltinType> UseNativeBuiltins();
+ 
+-// Mark a builtin as native
+-void AddUseNativeBuiltins(clspv::Builtins::BuiltinType builtin);
+-
+ // Returns the source language.
+ enum class SourceLanguage {
+   Unknown,
+@@ -319,14 +316,6 @@ bool UntypedPointers();
+ // Returns true if untyped pointers are supported in aspace.
+ bool UntypedPointerAddressSpace(unsigned aspace);
+ 
+-enum class SpvKhrFma : uint32_t {
+-  fp16,
+-  fp32,
+-  fp64,
+-};
+-// Returns true if OpFmaKHR is supported for the type size.
+-bool SupportsFmaKHR(uint32_t scalarSizeInBits);
+-
+ } // namespace Option
+ } // namespace clspv
+ 
+diff --git a/clspv/lib/Compiler.cpp b/clspv/lib/Compiler.cpp
+index e7240698..16292dce 100644
+--- a/clspv/lib/Compiler.cpp
++++ b/clspv/lib/Compiler.cpp
+@@ -979,23 +979,6 @@ int ParseOptions(const int argc, const char *const argv[]) {
+     return -1;
+   }
+ 
+-  if (clspv::Option::SupportsFmaKHR(16) && !clspv::Option::FP16()) {
+-    llvm::errs()
+-        << "error: Cannot set SpvKhrFma for fp16 if fp16 is not supported\n";
+-    return -1;
+-  }
+-  if (clspv::Option::SupportsFmaKHR(64) && !clspv::Option::FP64()) {
+-    llvm::errs()
+-        << "error: Cannot set SpvKhrFma for fp64 if fp64 is not supported\n";
+-    return -1;
+-  }
+-
+-  if (clspv::Option::SupportsFmaKHR(32) &&
+-      (clspv::Option::SupportsFmaKHR(16) || !clspv::Option::FP16()) &&
+-      (clspv::Option::SupportsFmaKHR(64) || !clspv::Option::FP64())) {
+-    clspv::Option::AddUseNativeBuiltins(clspv::Builtins::BuiltinType::kFma);
+-  }
+-
+   return 0;
+ }
+ 
+diff --git a/clspv/lib/Option.cpp b/clspv/lib/Option.cpp
+index e95cf0bb..c7f58ba4 100644
+--- a/clspv/lib/Option.cpp
++++ b/clspv/lib/Option.cpp
+@@ -453,17 +453,6 @@ static llvm::cl::opt<bool>
+     untyped_pointers("untyped-pointers", llvm::cl::init(false),
+                      llvm::cl::desc("Enable SPV_KHR_untyped_pointers"));
+ 
+-static llvm::cl::list<clspv::Option::SpvKhrFma> spv_khr_fma(
+-    "spv-khr-fma",
+-    llvm::cl::desc("Enable SPV_KHR_fma for a floating point type"),
+-    llvm::cl::CommaSeparated, llvm::cl::ZeroOrMore,
+-    llvm::cl::values(clEnumValN(clspv::Option::SpvKhrFma::fp16, "16",
+-                                "Enable SPV_KHR_fma for fp16")),
+-    llvm::cl::values(clEnumValN(clspv::Option::SpvKhrFma::fp32, "32",
+-                                "Enable SPV_KHR_fma for fp32")),
+-    llvm::cl::values(clEnumValN(clspv::Option::SpvKhrFma::fp64, "64",
+-                                "Enable SPV_KHR_fma for fp64")));
+-
+ } // namespace
+ 
+ namespace clspv {
+@@ -559,9 +548,6 @@ bool NativeMath() { return cl_native_math; }
+ std::set<clspv::Builtins::BuiltinType> UseNativeBuiltins() {
+   return use_native_builtins;
+ }
+-void AddUseNativeBuiltins(clspv::Builtins::BuiltinType builtin) {
+-  use_native_builtins.insert(builtin);
+-}
+ 
+ bool FP16() { return fp16; }
+ bool FP64() { return fp64; }
+@@ -624,25 +610,5 @@ bool UntypedPointerAddressSpace(unsigned aspace) {
+   return false;
+ }
+ 
+-bool SupportsFmaKHR(uint32_t scalarSizeInBits) {
+-  SpvKhrFma fma;
+-  switch (scalarSizeInBits) {
+-  case 16:
+-    fma = clspv::Option::SpvKhrFma::fp16;
+-    break;
+-  case 32:
+-    fma = clspv::Option::SpvKhrFma::fp32;
+-    break;
+-  case 64:
+-    fma = clspv::Option::SpvKhrFma::fp64;
+-    break;
+-  default:
+-    return false;
+-  }
+-  auto begin = spv_khr_fma.begin();
+-  auto end = spv_khr_fma.end();
+-  return std::find(begin, end, fma) != end;
+-}
+-
+ } // namespace Option
+ } // namespace clspv
+diff --git a/clspv/lib/SPIRVProducerPass.cpp b/clspv/lib/SPIRVProducerPass.cpp
+index 0beb454b..4ea3246a 100644
+--- a/clspv/lib/SPIRVProducerPass.cpp
++++ b/clspv/lib/SPIRVProducerPass.cpp
+@@ -3437,10 +3437,6 @@ void SPIRVProducerPassImpl::GenerateModuleInfo() {
+     addSPIRVInst<kExtensions>(spv::OpExtension, "SPV_KHR_untyped_pointers");
+   }
+ 
+-  if (CapabilitySet.count(spv::CapabilityFMAKHR)) {
+-    addSPIRVInst<kExtensions>(spv::OpExtension, "SPV_KHR_fma");
+-  }
+-
+   //
+   // Generate OpMemoryModel
+   //
+@@ -5242,18 +5238,12 @@ SPIRVID SPIRVProducerPassImpl::GenerateInstructionFromCall(CallInst *Call) {
+   default: {
+     glsl::ExtInst EInst = Builtins::getDirectOrIndirectExtInstEnum(func_info);
+ 
++    // Do not replace functions with implementations.
+     if (EInst && EInst == glsl::ExtInst::ExtInstFma &&
+-        clspv::Option::SupportsFmaKHR(Call->getType()->getScalarSizeInBits())) {
+-      addCapability(spv::CapabilityFMAKHR);
+-      SPIRVOperandVec Ops;
+-      Ops << Call->getType() << Call->getOperand(0) << Call->getOperand(1)
+-          << Call->getOperand(2);
+-      RID = addSPIRVInst(spv::OpFmaKHR, Ops);
+-    } else if (EInst && EInst == glsl::ExtInst::ExtInstFma &&
+-               !clspv::Option::UnsafeMath() && !clspv::Option::ClMadEnable() &&
+-               clspv::Option::UseNativeBuiltins().count(
+-                   clspv::Builtins::BuiltinType::kFma) == 0 &&
+-               Call->getType()->getScalarType()->isHalfTy()) {
++        !clspv::Option::UnsafeMath() && !clspv::Option::ClMadEnable() &&
++        clspv::Option::UseNativeBuiltins().count(
++            clspv::Builtins::BuiltinType::kFma) == 0 &&
++        Call->getType()->getScalarType()->isHalfTy()) {
+       Type *FP16Ty = Call->getType();
+ 
+       Type *FP32Ty = Type::getFloatTy(Context);
+@@ -5284,7 +5274,6 @@ SPIRVID SPIRVProducerPassImpl::GenerateInstructionFromCall(CallInst *Call) {
+       Ops << FP16Ty << fma_f32;
+       RID = addSPIRVInst(spv::OpFConvert, Ops);
+ 
+-      // Do not replace functions with implementations.
+     } else if (EInst && Call->getCalledFunction()->isDeclaration()) {
+       SPIRVID ExtInstImportID = getOpExtInstImportID();
+ 
+@@ -7012,7 +7001,6 @@ void SPIRVProducerPassImpl::WriteSPIRVBinary(
+       }
+       break;
+     }
+-    case spv::OpFmaKHR:
+     case spv::OpFunction:
+     case spv::OpFunctionParameter:
+     case spv::OpAccessChain:
+diff --git a/clspv/test/FmaKHR/builtin.cl b/clspv/test/FmaKHR/builtin.cl
+deleted file mode 100644
+index c5b2cb44..00000000
+--- a/clspv/test/FmaKHR/builtin.cl
++++ /dev/null
+@@ -1,17 +0,0 @@
+-// RUN: clspv %s -o %t.spv -spv-khr-fma=64,32,16 --print-before=spirv-producer &> %t.ll
+-// RUN: spirv-dis %t.spv -o %t.spvasm
+-// RUN: spirv-val %t.spv --target-env spv1.0
+-// RUN: FileCheck %s < %t.spvasm
+-// RUN: FileCheck %s < %t.ll --check-prefixes=CHECK-LLVM-IR
+-
+-// CHECK-LLVM-IR: [[fma:%[^ ]+]] = tail call spir_func float @_Z3fmafff(float %a, float %b, float %c)
+-// CHECK-LLVM-IR-NEXT: store float [[fma]]
+-// CHECK-LLVM-IR-NEXT: ret void
+-
+-// CHECK-COUNT-1: OpCapability FMAKHR
+-// CHECK-COUNT-1: OpExtension "SPV_KHR_fma"
+-// CHECK: [[fma:%[^ ]+]] = OpFmaKHR
+-// CHECK-NEXT: OpStore {{.*}} [[fma]]
+-// CHECK-NEXT: OpReturn
+-
+-void kernel foo(float a, float b, float c, global float *o) { *o = fma(a, b, c); }
+diff --git a/clspv/test/FmaKHR/builtin_fp16.cl b/clspv/test/FmaKHR/builtin_fp16.cl
+deleted file mode 100644
+index a2f354d2..00000000
+--- a/clspv/test/FmaKHR/builtin_fp16.cl
++++ /dev/null
+@@ -1,21 +0,0 @@
+-// RUN: clspv %s -o %t.spv -spv-khr-fma=64,32,16
+-// RUN: spirv-dis %t.spv -o %t.spvasm
+-// RUN: spirv-val %t.spv --target-env spv1.0
+-// RUN: FileCheck %s < %t.spvasm --check-prefixes=CHECK-16
+-
+-// RUN: clspv %s -o %t-no16.spv -spv-khr-fma=64,32
+-// RUN: spirv-dis %t-no16.spv -o %t-no16.spvasm
+-// RUN: spirv-val %t-no16.spv --target-env spv1.0
+-// RUN: FileCheck %s < %t-no16.spvasm --check-prefixes=CHECK-NO-16
+-
+-// CHECK-16-COUNT-1: OpCapability FMAKHR
+-// CHECK-16-COUNT-1: OpExtension "SPV_KHR_fma"
+-// CHECK-16-COUNT-1: OpFmaKHR
+-
+-// CHECK-NO-16-NOT: OpCapability FMAKHR
+-// CHECK-NO-16-NOT: OpExtension "SPV_KHR_fma"
+-// CHECK-NO-16-NOT: OpFmaKHR
+-
+-#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+-
+-void kernel foo(half a, half b, half c, global half *o) { *o = fma(a, b, c); }
+diff --git a/clspv/test/FmaKHR/intrinsic.cl b/clspv/test/FmaKHR/intrinsic.cl
+deleted file mode 100644
+index 622f5b8b..00000000
+--- a/clspv/test/FmaKHR/intrinsic.cl
++++ /dev/null
+@@ -1,17 +0,0 @@
+-// RUN: clspv %s -o %t.spv -spv-khr-fma=32 --print-before=spirv-producer &> %t.ll
+-// RUN: spirv-dis %t.spv -o %t.spvasm
+-// RUN: spirv-val %t.spv --target-env spv1.0
+-// RUN: FileCheck %s < %t.spvasm
+-// RUN: FileCheck %s < %t.ll --check-prefixes=CHECK-LLVM-IR
+-
+-// CHECK-LLVM-IR: [[fma:%[^ ]+]] = tail call float @llvm.fmuladd.f32(float %a, float %b, float %c)
+-// CHECK-LLVM-IR-NEXT: store float [[fma]]
+-// CHECK-LLVM-IR-NEXT: ret void
+-
+-// CHECK-COUNT-1: OpCapability FMAKHR
+-// CHECK-COUNT-1: OpExtension "SPV_KHR_fma"
+-// CHECK: [[fma:%[^ ]+]] = OpFmaKHR
+-// CHECK-NEXT: OpStore {{.*}} [[fma]]
+-// CHECK-NEXT: OpReturn
+-
+-void kernel foo(float a, float b, float c, global float *o) { *o = a * b + c; }

@@ -1,0 +1,59 @@
+From a7153aaf862543a50220b21666cae8f108b29978 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sat, 22 Nov 2025 15:52:23 -0800
+Subject: [PATCH 2/5] glx: fix const qualifier warnings found with C23 glibc
+ support
+
+glibc master has been C23'fying the functions which is resulting errors
+
+Several functions assigned results of bsearch/strstr/strpbrk/memchr to
+non-const pointers, triggering -Wincompatible-pointer-types-discards-qualifiers
+under clang/gcc with -Werror. Cast bsearch return values where needed and
+propagate const correctness for strstr/strpbrk/memchr results.
+
+Removes build failures with strict warning flags without changing behavior.
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+
+[Eric: changed the glxglvnd.c hunk to add the missing `const` instead of casting it away]
+
+Cc: mesa-stable
+(cherry picked from commit 268e19378fc03c68e897c15b5f06c747bbc9387c)
+
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/39828>
+(cherry picked from commit bdfae9cc8be24712767e9252d37c79175b1dfc20)
+Change-Id: I7c109ac4a1f4aa85fd0ccaefc8f227cddcd312d0
+---
+ src/glx/clientinfo.c | 2 +-
+ src/glx/glxglvnd.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/glx/clientinfo.c b/src/glx/clientinfo.c
+index 9ea7cb2d868..70bbcb56210 100644
+--- a/src/glx/clientinfo.c
++++ b/src/glx/clientinfo.c
+@@ -128,7 +128,7 @@ __glX_send_client_info(struct glx_display *glx_dpy)
+ 
+       const char *haystack = src->serverGLXexts;
+       while (haystack != NULL) {
+-	 char *match = strstr(haystack, "GLX_ARB_create_context");
++	 const char *match = strstr(haystack, "GLX_ARB_create_context");
+ 
+ 	 if (match == NULL)
+ 	    break;
+diff --git a/src/glx/glxglvnd.c b/src/glx/glxglvnd.c
+index bf5c2a06b0c..7cb16444356 100644
+--- a/src/glx/glxglvnd.c
++++ b/src/glx/glxglvnd.c
+@@ -26,7 +26,7 @@ compare(const void *l, const void *r)
+ 
+ static unsigned FindGLXFunction(const GLubyte *name)
+ {
+-    const char **match;
++    const char * const *match;
+ 
+     match = bsearch(name, __glXDispatchTableStrings, DI_FUNCTION_COUNT,
+                     sizeof(const char *), compare);
+-- 
+2.51.0
+

@@ -1,0 +1,68 @@
+From 67ae7166fa8e4fa03a49583d7f970a04b187125b Mon Sep 17 00:00:00 2001
+From: Sam James <sam@gentoo.org>
+Date: Wed, 1 Dec 2021 14:58:40 +0000
+Subject: [PATCH 08/10] clone-internal.c: make clone3 syscall optional
+
+This patch was originally carried in Gentoo to make clone3
+optional to avoid breakage for CEF/steam/zoom, and others.
+
+Gentoo made clone3 mandatory but ChromeOS is not there yet,
+so we carry this trivial patch to allow us to keep clone3
+disabled for a while longer.
+
+See b:288928916 which is tracking the clone3 migration.
+
+Original commit message:
+
+We're disabling clone3 for now _CONDITIONALLY_ (not by default) to allow
+compatibility with applications using older Electron.
+
+Use -DGENTOO_USE_CLONE3 to enable clone3 for now. In future, we will
+revert back to always using clone3.
+
+This was impacting e.g. Discord and Skype. This patch stops glibc from using
+clone3 internally (which is the only real use of it) and falls back to the old
+behaviour.
+
+Specifically, we want https://github.com/electron/electron/pull/31091
+to work its way downstream to various Electron applications.
+
+https://bugs.gentoo.org/819045
+https://bugs.gentoo.org/827386
+
+https://git.launchpad.net/~ubuntu-core-dev/ubuntu/+source/glibc/plain/debian/patches/ubuntu/disable-clone3.patch
+
+This is the same as the patch that was considered but ultimately rejected
+for 2.34 because Docker got sorted out in time:
+https://patchwork.ozlabs.org/project/glibc/patch/87eebkf8ph.fsf@oldenburg.str.redhat.com/.
+
+Signed-off-by: Sam James <sam@gentoo.org>
+---
+ sysdeps/unix/sysv/linux/clone-internal.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/unix/sysv/linux/clone-internal.c b/sysdeps/unix/sysv/linux/clone-internal.c
+index 40ef30303f84..839a7d5f2f0f 100644
+--- a/sysdeps/unix/sysv/linux/clone-internal.c
++++ b/sysdeps/unix/sysv/linux/clone-internal.c
+@@ -72,7 +72,7 @@ int
+ __clone3_internal (struct clone_args *cl_args, int (*func) (void *args),
+ 		   void *arg)
+ {
+-#ifdef HAVE_CLONE3_WRAPPER
++#if defined(HAVE_CLONE3_WRAPPER) && defined(GENTOO_USE_CLONE3)
+ # if __ASSUME_CLONE3
+   return __clone3 (cl_args, sizeof (*cl_args), func, arg);
+ # else
+@@ -95,7 +95,7 @@ int
+ __clone_internal (struct clone_args *cl_args,
+ 		  int (*func) (void *arg), void *arg)
+ {
+-#ifdef HAVE_CLONE3_WRAPPER
++#if defined(HAVE_CLONE3_WRAPPER) && defined(GENTOO_USE_CLONE3)
+   int saved_errno = errno;
+   int ret = __clone3_internal (cl_args, func, arg);
+   if (ret != -1 || errno != ENOSYS)
+-- 
+2.41.0
+

@@ -1,0 +1,34 @@
+# Description
+# This test records power related statistics while displaying different static
+# pages using settings that usually utilize panel CABC algorithm under max
+# brightness.
+
+NAME = "power_Display.cabc_max_brightness"
+METADATA = {
+    "requirements": ['pwr-batLife-0009-v01', 'pwr-batLife-0009-v02'],
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark.",
+    "hw_agnostic": False
+}
+ATTRIBUTES = ""
+TEST_TYPE = "client"
+
+CABC_PAGES = ['white', 'black',
+              'white', 'grey10',
+              'white', 'grey20',
+              'white', 'grey30',
+              'white', 'grey40',
+              'white', 'grey50',
+              'white', 'checker1',
+              'white', 'checker90',
+              'white', 'checker80',
+              'white', 'checker70',
+              'white', 'checker60',
+              'white', 'checker50']
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_Display', brightness='max', tag=NAME.split('.')[1],
+             pages=CABC_PAGES, secs_per_page=20, seconds_period=1,
+             force_discharge='optional', pdash_note=pdash_note)

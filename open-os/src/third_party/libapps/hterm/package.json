@@ -1,0 +1,42 @@
+{
+  "name": "hterm",
+  "version": "1.92.1",
+  "description": "A reasonably correct & fast terminal emulator.",
+  "type": "module",
+  "main": "dist/js/hterm_all.js",
+  "unpkg": "dist/js/hterm_all.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://chromium.googlesource.com/apps/libapps.git"
+  },
+  "author": "ChromiumOS Authors",
+  "license": "BSD-3-Clause",
+  "files": [
+    "docs",
+    "html/hterm.html",
+    "dist/js/hterm_all.js",
+    "dist/js/hterm_all.min.js",
+    "dist/js/hterm_all.min.js.map",
+    "README.md"
+  ],
+  "bugs": {
+    "url": "https://hterm.org/x/newbug",
+    "email": "chromium-hterm@chromium.org"
+  },
+  "homepage": "https://chromium.googlesource.com/apps/libapps/+/HEAD/hterm",
+  "scripts": {
+    "prepare": "./bin/mkdist && cd dist/js && terser hterm_all.js --compress --mangle --output hterm_all.min.js --source-map url=hterm_all.min.js.map,includeSources",
+    "test": "./bin/load_tests"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "~15",
+    "chai": "~5",
+    "eslint": "~9",
+    "mocha": "~11",
+    "mocha-headless-chrome": "~4",
+    "terser": "~5"
+  },
+  "dependencies": {
+    "punycode": "~2"
+  }
+}

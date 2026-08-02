@@ -1,0 +1,12 @@
+Add missing <type_traits> include to ItaniumDemangle.h.
+This is needed when transitive includes are removed (e.g. with -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES=1).
+
+--- a/llvm/include/llvm/Demangle/ItaniumDemangle.h
++++ b/llvm/include/llvm/Demangle/ItaniumDemangle.h
+@@ -21,6 +21,7 @@
+ #include "Utility.h"
+ #include <algorithm>
+ #include <cassert>
++#include <type_traits>
+ #include <cctype>
+ #include <cstdio>

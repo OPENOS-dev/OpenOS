@@ -1,0 +1,35 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_pkg//pkg:mappings.bzl", "pkg_filegroup", "pkg_files", "strip_prefix")
+load("//dist:defs.bzl", "FILE_ATTRIBUTES")
+
+pkg_filegroup(
+    name = "dist_files",
+    srcs = [
+        ":ucm1_files",
+    ] + select({
+        "//:ucm2_files_build": [
+            ":ucm2_files",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//dist:__pkg__"],
+)
+
+pkg_files(
+    name = "ucm1_files",
+    srcs = glob(["for_all_boards/**"]),
+    attributes = FILE_ATTRIBUTES,
+    prefix = "/usr/share/alsa/ucm",
+    strip_prefix = strip_prefix.from_pkg("for_all_boards"),
+)
+
+pkg_files(
+    name = "ucm2_files",
+    srcs = glob(["for_all_boards_ucm2/**"]),
+    attributes = FILE_ATTRIBUTES,
+    prefix = "/usr/share/alsa/ucm2/conf.d",
+    strip_prefix = strip_prefix.from_pkg("for_all_boards_ucm2"),
+)

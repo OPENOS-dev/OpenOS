@@ -1,0 +1,35 @@
+From 6d05467f761b561650c83c3f89d14fcdb666fed4 Mon Sep 17 00:00:00 2001
+From: Jordan R Abrahams-Whitehead <ajordanr@google.com>
+Date: Tue, 4 Apr 2023 21:36:08 +0000
+Subject: [PATCH 2/2] crossdev: allow --ex-pkg to install stable
+
+At present, --ex-pkg flags always install the [latest] version.
+However, sometimes one may want to install [stable] if required.
+
+Closes: https://bugs.gentoo.org/949254
+Closes: https://github.com/gentoo/crossdev/pull/34
+Signed-off-by: Jordan R Abrahams-Whitehead <ajordanr@google.com>
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+Signed-off-by: Mike Gilbert <floppym@gentoo.org>
+---
+ crossdev | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/crossdev b/crossdev
+index 57c9bb0..ad1065c 100755
+--- a/crossdev
++++ b/crossdev
+@@ -1023,6 +1023,10 @@ case ${ACTION} in
+ uninstall) uninstall; exit 0;;
+ esac
+ 
++for _ in "${XPKGS[@]}"; do
++	XVERS+=( "${DEFAULT_VER}" )
++done
++
+ BVER=${BVER:-${DEFAULT_VER}}
+ GVER=${GVER:-${DEFAULT_VER}}
+ KVER=${KVER:-${DEFAULT_VER}}
+-- 
+2.30.2
+

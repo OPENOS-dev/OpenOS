@@ -1,0 +1,27 @@
+# Copyright 2015 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.server import utils
+
+NAME = "audio_AudioBasicInternalSpeaker"
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "This test will fail if the captured audio does not match original file.",
+    "doc" : "Tests internal speaker audio",
+    'variant_category': '{"name": "Audio_SoC_Codec_Amp"}',
+}
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:audio_essential, group:release-health, release-health_audio"
+DEPENDENCIES = "audio_box, chameleon_state:WORKING"
+JOB_RETRIES = 1
+
+args_dict = utils.args_to_dict(args)
+chameleon_args = hosts.CrosHost.get_chameleon_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, chameleon_args=chameleon_args)
+    job.run_test("audio_AudioBasicInternalSpeaker", host=host)
+
+parallel_simple(run, machines)

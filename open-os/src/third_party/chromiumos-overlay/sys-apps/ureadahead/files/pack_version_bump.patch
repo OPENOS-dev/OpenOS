@@ -1,0 +1,74 @@
+diff --git a/src/pack.c b/src/pack.c
+index c3b3eb6..7892726 100644
+--- a/src/pack.c
++++ b/src/pack.c
+@@ -59,7 +59,6 @@
+ #define IOPRIO_RT_HIGHEST  (0 | (IOPRIO_CLASS_RT << IOPRIO_CLASS_SHIFT))
+ #define IOPRIO_IDLE_LOWEST (7 | (IOPRIO_CLASS_IDLE << IOPRIO_CLASS_SHIFT))
+ 
+-
+ /**
+  * PATH_PACKDIR:
+  *
+@@ -67,6 +66,17 @@
+  **/
+ #define PATH_PACKDIR "/var/lib/ureadahead"
+ 
++/**
++ * PACK_VERSION:
++ *
++ * Current pack version that ureadahead expects and parses.
++ * Different pack version will be incompatible.
++ *
++ * This version should be bumped whenever a breaking change
++ * is introduced to a pack file.
++ **/
++const char PACK_VERSION = 3;
++
+ /**
+  * NUM_THREADS:
+  *
+@@ -83,7 +93,10 @@
+ #define READAHEAD_MAX_LENGTH (32 * 4096)
+ 
+ typedef enum pack_flags {
++	/* Pack file is generated in HDD device. */
+ 	PACK_ROTATIONAL = 0x01,
++	/* Pack file is generated in 64bit hardware. */
++	PACK_WORDSIZE_64BIT = 0x02,
+ } PackFlags;
+ 
+ 
+@@ -302,8 +315,17 @@ read_pack (const char *filename,
+ 		goto error;
+ 	}
+ 
+-	if (hdr[3] != 2) {
+-		log_debug ("Pack version error");
++	if (hdr[3] != PACK_VERSION) {
++		log_error ("Pack '%s' is incompatible: pack version %d != expects version %d",
++			   filename, hdr[3], PACK_VERSION);
++		goto error;
++	}
++
++	int pack_word_size = (hdr[4] & PACK_WORDSIZE_64BIT) ? 64 : 32;
++	int executable_word_size = sizeof(size_t) * 8;
++	if (pack_word_size != executable_word_size) {
++		log_error ("Pack '%s' is incompatible; pack word size is %d bit != expects %d bit",
++			   filename, pack_word_size, executable_word_size);
+ 		goto error;
+ 	}
+ 
+@@ -450,10 +472,11 @@ write_pack (const char *filename,
+ 	hdr[1] = 'r';
+ 	hdr[2] = 'a';
+ 
+-	hdr[3] = 2;
++	hdr[3] = PACK_VERSION;
+ 
+ 	hdr[4] = 0;
+ 	hdr[4] |= file->rotational ? PACK_ROTATIONAL : 0;
++	hdr[4] |= sizeof(size_t) == 8 ? PACK_WORDSIZE_64BIT : 0;
+ 
+ 	hdr[5] = hdr[6] = hdr[7] = 0;
+ 

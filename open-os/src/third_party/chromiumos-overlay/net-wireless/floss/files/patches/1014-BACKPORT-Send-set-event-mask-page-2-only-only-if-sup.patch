@@ -1,0 +1,44 @@
+From 987277b116ce1d1e404bc6b14d1a234cbda04d44 Mon Sep 17 00:00:00 2001
+From: howardchung <howardchung@google.com>
+Date: Tue, 13 Jan 2026 10:11:36 +0000
+Subject: [PATCH] BACKPORT: Send set event mask page 2 only only if supported
+
+Some controllers might not support the command Set event mask page 2.
+Check the local capabilities before sending.
+
+BACKPORT note: promise.set_value in CHROMIUM patch 0006
+                 system/gd/hci/controller_impl.cc
+
+Bug: 475438075
+Bug: 472712972
+Test: m -j
+Test: verify Set Event Mask Page 2 is issued after Read Local Supported
+Commands in btsnoop log.
+Flag: com.android.bluetooth.flags.check_set_event_mask_p2_support_before_writing
+
+Change-Id: I5ec28555a84bf12c0068ac84fd151229416a65d4
+---
+ system/gd/hci/controller_impl.cc | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/system/gd/hci/controller_impl.cc b/system/gd/hci/controller_impl.cc
+index 65d303e9818..8a0677cce6a 100644
+--- a/system/gd/hci/controller_impl.cc
++++ b/system/gd/hci/controller_impl.cc
+@@ -63,3 +63,6 @@ struct ControllerImpl::impl {
+     set_event_mask(kDefaultEventMask);
+-    set_event_mask_page_2(kDefaultEventMaskPage2);
++
++    if (!com::android::bluetooth::flags::check_set_event_mask_p2_support_before_writing()) {
++      set_event_mask_page_2(kDefaultEventMaskPage2);
++    }
+ 
+@@ -393,2 +396,8 @@ struct ControllerImpl::impl {
+     promise.set_value();
++
++    if (com::android::bluetooth::flags::check_set_event_mask_p2_support_before_writing()) {
++      if (is_supported(OpCode::SET_EVENT_MASK_PAGE_2)) {
++        set_event_mask_page_2(kDefaultEventMaskPage2);
++      }
++    }
+   }

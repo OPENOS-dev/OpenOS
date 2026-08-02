@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install
+DEPEND=sys-libs/zlib:=
+DESCRIPTION=Transforming bitmaps into vector graphics
+EAPI=7
+HOMEPAGE=http://potrace.sourceforge.net/
+IUSE=metric
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-libs/zlib:=
+SLOT=0
+SRC_URI=http://potrace.sourceforge.net/download/1.16/potrace-1.16.tar.gz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=a5ae966bcd0254d0574ff0ee3a9a71e7

@@ -1,0 +1,39 @@
+From de52bedb128ae995b69217f44614f6c13d904707 Mon Sep 17 00:00:00 2001
+From: Pin-Yen Lin <treapking@google.com>
+Date: Mon, 8 Sep 2025 16:35:15 +0800
+Subject: [PATCH] options: Fix buffer size for data path
+
+Current implementation doesn't consider the '\0' character at the end
+of a string.
+
+Also update the order of the calloc's as it's supposed to be
+calloc(num, size).
+---
+ options.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/options.c b/options.c
+index d2a6853..edeb9d8 100644
+--- a/options.c
++++ b/options.c
+@@ -813,7 +813,7 @@ static int verify_write(struct tool_options *options)
+ 			print_error("Input file path is too long");
+ 			goto out;
+ 		}
+-		options->data = (char *)calloc(1, len);
++		options->data = (char *)calloc(len+1, 1);
+ 		if (options->data == NULL)
+ 			goto out_mem_problem;
+ 		else
+@@ -874,7 +874,7 @@ static int verify_output_data(struct tool_options *options)
+ 		goto out;
+ 	}
+ 
+-	options->data = (char *)calloc(1, len);
++	options->data = (char *)calloc(len+1, 1);
+ 	if (!options->data) {
+ 		print_error("Memory Allocation problem");
+ 		goto out;
+-- 
+2.51.0.384.g4c02a37b29-goog
+

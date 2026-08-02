@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c3062e2..4d46331 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -231,6 +231,8 @@ if (SNAPPY_FUZZING_BUILD)
+   endif(NOT CMAKE_CXX_FLAGS MATCHES "-fsanitize=fuzzer-no-link")
+ endif (SNAPPY_FUZZING_BUILD)
+ 
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
++
+ configure_file(
+   "snappy-stubs-public.h.in"
+   "${PROJECT_BINARY_DIR}/snappy-stubs-public.h")

@@ -1,0 +1,14 @@
+BDEPEND=>=virtual/perl-ExtUtils-MakeMaker-6.310.0 test? ( dev-perl/Test-Fatal dev-perl/Test-Needs >=virtual/perl-Test-Simple-0.880.0 ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Faster and more correct implementation of the Package::Stash API
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Package-Stash-XS
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/E/ET/ETHER/Package-Stash-XS-0.30.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=30b12449d6b3967b6837d22a907ef125

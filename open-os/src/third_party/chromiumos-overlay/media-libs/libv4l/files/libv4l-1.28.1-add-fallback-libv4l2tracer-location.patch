@@ -1,0 +1,64 @@
+From 5c808a9556002f47f1c6b708ad028103cde9db96 Mon Sep 17 00:00:00 2001
+From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Date: Fri, 20 Dec 2024 14:27:38 +0100
+Subject: [PATCH] CHROMEOS v4l2-tracer: lookup lib under `<prefix>/local` as a
+ fallback
+
+In ChromeOS, this package is usually a dev/test package, but it could
+be installed in the rootfs depending on the board configuration. It is
+therefore built with `prefix=/usr` but can actually be installed under
+`/usr/local`. This case causes `v4l2-tracer` to fail looking
+`libv4l2tracer`.
+
+Upstream went into simplyfing the corresponding lookup logic in recent
+versions and wants to stick to the current implementation, only
+allowing overrides through the `LD_PRELOAD` or `V4L2_TRACER` env vars.
+
+Fix this by adding a fallback location under `<prefix>/local` whenever
+`prefix` is `/usr`.
+
+Signed-off-by: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+---
+ utils/v4l2-tracer/meson.build     | 10 ++++++++++
+ utils/v4l2-tracer/v4l2-tracer.cpp |  6 +++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/utils/v4l2-tracer/meson.build b/utils/v4l2-tracer/meson.build
+index d059eb6d..0c3b103f 100644
+--- a/utils/v4l2-tracer/meson.build
++++ b/utils/v4l2-tracer/meson.build
+@@ -54,6 +54,10 @@ v4l2_tracer_cpp_args = [
+     '-DLIBTRACER_PATH="@0@"'.format(get_option('prefix') / get_option('libdir')),
+ ]
+ 
++v4l2_tracer_cpp_args += [
++    '-DLIBTRACER_FALLBACK_PATH="@0@"'.format(get_option('prefix') / 'local' / get_option('libdir')),
++]
++
+ if have_visibility
+     v4l2_tracer_cpp_args += ['-fvisibility=hidden']
+ endif
+diff --git a/utils/v4l2-tracer/v4l2-tracer.cpp b/utils/v4l2-tracer/v4l2-tracer.cpp
+index d9e4561c..a22febe8 100644
+--- a/utils/v4l2-tracer/v4l2-tracer.cpp
++++ b/utils/v4l2-tracer/v4l2-tracer.cpp
+@@ -309,12 +309,16 @@ int tracer(int argc, char *argv[], bool retrace)
+ 	else
+ 		libv4l2tracer_path = std::string(LIBTRACER_PATH) + "/libv4l2tracer.so";
+ 
++	std::string libv4l2tracer_fallback_path = std::string(LIBTRACER_FALLBACK_PATH) + "/libv4l2tracer.so";
++
+ 	struct stat sb;
+ 	if (stat(libv4l2tracer_path.c_str(), &sb) == -1) {
+-		if (stat(libv4l2tracer_path.c_str(), &sb) == -1) {
++		if (stat(libv4l2tracer_fallback_path.c_str(), &sb) == -1) {
+ 			fprintf(stderr, "Exiting: can't find libv4l2tracer library in %s\n", libv4l2tracer_path.c_str());
+ 			fprintf(stderr, "If you are using a different location, try setting the env 'V4L2_TRACER'\n");
+ 			exit(EXIT_FAILURE);
++		} else {
++			libv4l2tracer_path = libv4l2tracer_fallback_path;
+ 		}
+ 	}
+ 
+--
+2.45.2

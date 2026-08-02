@@ -1,0 +1,14 @@
+BDEPEND=dev-lang/swig sys-apps/which sys-devel/bison sys-devel/flex virtual/pkgconfig
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-libs/openssl:=
+DESCRIPTION=utilities for working with Das U-Boot
+EAPI=7
+HOMEPAGE=https://www.denx.de/wiki/U-Boot/WebHome
+IUSE=envtools
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-libs/openssl:=
+SLOT=0
+SRC_URI=https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=21723f0a4be7bbb1d7b5ffe9acd5ff96

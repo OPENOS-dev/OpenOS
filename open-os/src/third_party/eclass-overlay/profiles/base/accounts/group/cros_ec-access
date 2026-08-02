@@ -1,0 +1,6 @@
+group:cros_ec-access
+gid:416
+# This group is to grant rw access of /dev/cros_ec to runtime_probe, healthd_ec,
+# typecd_ec, power, and rgbkbd because the binaries they run need access for
+# probing information w/o being root.
+users:ec_coredump,healthd_ec,power,rgbkbd,runtime_probe,typecd_ec

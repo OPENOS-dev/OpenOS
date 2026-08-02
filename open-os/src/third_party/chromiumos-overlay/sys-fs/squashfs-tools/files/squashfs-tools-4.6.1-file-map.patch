@@ -1,0 +1,173 @@
+From 64101a6c24075490c636dd1d2d28057f6514f699 Mon Sep 17 00:00:00 2001
+From: Amin Hassani <ahassani@google.com>
+Date: Fri, 11 Aug 2017 11:20:02 -0700
+Subject: [PATCH] Generate squashfs image file map using unsquashfs
+
+This CL modifies unsquashfs to generate a file map when given the flag
+-m or -map. The structure of the file map is a list of per-line of the
+following:
+
+path start compressed_block_size_1 ... compressed_block_size_N
+
+where:
+- 'path' is the full path to the file.
+- 'start' is the start byte address of the file.
+- 'compressed_block_size_i' is a the length of the i'th compressed block
+in bytes. If the block is uncompressed its 25th LSB is set.
+
+It also first prints the list of all fragments along with their address
+and block sizes at the beginning of the aforementioned list. The path
+for each fragment is '<fragment_i>' with 'i' be the i'th fragment.
+
+The usage:
+unsquashfs -m(ap) <path_to_file_map> <squashfs_image>
+---
+ squashfs-tools/unsquashfs.c | 66 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 61 insertions(+), 5 deletions(-)
+
+diff --git a/squashfs-tools/unsquashfs.c b/squashfs-tools/unsquashfs.c
+index 0ac6356..67644b8 100644
+--- a/squashfs-tools/unsquashfs.c
++++ b/squashfs-tools/unsquashfs.c
+@@ -110,6 +110,10 @@ int no_xattrs = XATTR_DEF;
+ regex_t *xattr_exclude_preg = NULL;
+ regex_t *xattr_include_preg = NULL;
+ 
++int lsfilemap = FALSE;
++char* file_map_path = NULL;
++FILE* file_map_file = NULL;
++
+ int lookup_type[] = {
+ 	0,
+ 	S_IFDIR,
+@@ -525,7 +529,6 @@ void dump_cache(struct cache *cache)
+ 	pthread_mutex_unlock(&cache->mutex);
+ }
+ 
+-
+ char *modestr(char *str, int mode)
+ {
+ 	int i;
+@@ -540,6 +543,15 @@ char *modestr(char *str, int mode)
+ 	return str;
+ }
+ 
++void print_file_map(char* pathname, long long start, int block_count,
++					unsigned int* block_list)
++{
++	fprintf(file_map_file, "%s %lld", pathname, start);
++	int i;
++	for(i = 0; i < block_count; i++)
++		fprintf(file_map_file, " %u", block_list[i]);
++	fprintf(file_map_file, "\n");
++}
+ 
+ #define TOTALCHARS  25
+ void print_filename(char *pathname, struct inode *inode)
+@@ -552,7 +564,21 @@ void print_filename(char *pathname, struct inode *inode)
+ 	struct tm *t;
+ 
+ 	if(short_ls) {
+-		printf("%s\n", pathname);
++		if(!lsfilemap)
++			printf("%s\n", pathname);
++		else if((SQUASHFS_FILE_TYPE == inode->type ||
++				SQUASHFS_LREG_TYPE == inode->type) &&
++				inode->fragment < 0) {
++			unsigned int* block_list =
++				malloc(inode->blocks * sizeof(unsigned int));
++			if(block_list == NULL)
++				EXIT_UNSQUASH("print_filename: unable to malloc block list\n");
++			s_ops->read_block_list(block_list, inode->block_start,
++						inode->block_offset, inode->blocks);
++			print_file_map(pathname, inode->start, inode->blocks,
++							   block_list);
++			free(block_list);
++		}
+ 		return;
+ 	}
+ 
+@@ -2149,7 +2175,7 @@ int dir_scan(char *parent_name, unsigned int start_block, unsigned int offset,
+ 	if(inumber_lookup(i->inode_number))
+ 		EXIT_UNSQUASH("File System corrupted: directory loop detected\n");
+ 
+-	if((lsonly || info) && (!concise || dir->dir_count ==0))
++	if(!lsfilemap && (lsonly || info) && (!concise || dir->dir_count ==0))
+ 		print_filename(parent_name, i);
+ 
+ 	if(!lsonly) {
+@@ -2210,6 +2236,8 @@ int dir_scan(char *parent_name, unsigned int start_block, unsigned int offset,
+ 			res = asprintf(&pathname, "%s/%s", parent_name, name);
+ 			if(res == -1)
+ 				MEM_ERROR();
++			if(lsfilemap || lsonly || info)
++				print_filename(pathname, i);
+ 
+ 			if(type == SQUASHFS_DIR_TYPE) {
+ 				res = dir_scan(pathname, start_block, offset,
+@@ -4024,6 +4052,7 @@ static void print_options(FILE *stream, char *name)
+ 	fprintf(stream, "\t-exc[f] <exclude file>\tsynonym for -exclude-file\n");
+ 	fprintf(stream, "\t-L\t\t\tsynonym for -follow-symlinks\n");
+ 	fprintf(stream, "\t-pseudo-file <file>\talternative name for -pf\n");
++	fprintf(stream, "\t-m[ap] <file>\tcreates file map, but doesn't unsquash\n");
+ 	fprintf(stream, "\nDecompressors available:\n");
+ 	display_compressors(stream, "", "");
+ 
+@@ -4425,7 +4454,17 @@ int parse_options(int argc, char *argv[])
+ 		} else if(strcmp(argv[i], "-full-precision") == 0 ||
+ 				strcmp(argv[i], "-full") == 0)
+ 			full_precision = TRUE;
+-		else {
++		else if(strcmp(argv[i], "-map") == 0 ||
++				strcmp(argv[i], "-m") == 0) {
++			if(++i == argc) {
++				ERROR("%s: -map missing filename\n",
++					argv[0]);
++				exit(1);
++			}
++			file_map_path = argv[i];
++			lsonly = TRUE;
++			lsfilemap = TRUE;
++		} else {
+ 			print_options(stderr, argv[0]);
+ 			exit(1);
+ 		}
+@@ -4622,10 +4661,24 @@ int main(int argc, char *argv[])
+ 			printf("%u inodes (%lld blocks) to write\n\n",
+ 				total_inodes, total_blocks);
+ 		}
+-
+ 		enable_progress_bar();
+ 	}
+ 
++	if(lsfilemap) {
++		int i, size;
++		long long start;
++		char tmp[22];
++		file_map_file = fopen(file_map_path, "w");
++		if(file_map_file == NULL)
++			EXIT_UNSQUASH("Failed to open file map \"%s\" because %s\n",
++				file_map_path, strerror(errno));
++		for(i = 0; i < sBlk.s.fragments; i++) {
++			s_ops->read_fragment(i, &start, &size);
++			snprintf(tmp, 22, "<fragment-%d>", i);
++			print_file_map(tmp, start, 1, (unsigned int*)&size);
++		}
++	}
++
+ 	res = dir_scan(dest, SQUASHFS_INODE_BLK(sBlk.s.root_inode),
+ 		SQUASHFS_INODE_OFFSET(sBlk.s.root_inode), extracts, excludes, 1);
+ 	if(res == FALSE && set_exit_code)
+@@ -4638,6 +4691,9 @@ int main(int argc, char *argv[])
+ 			exit_code = 2;
+ 	}
+ 
++	if(lsfilemap)
++		fclose(file_map_file);
++
+ 	disable_progress_bar();
+ 
+ 	if(!quiet) {
+-- 
+2.43.0.472.g3155946c3a-goog
+

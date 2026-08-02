@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<use>
+	<flag name='arcvm_gki'>Switch to GKI kernel for ARCVM</flag>
+	<flag name='borealis_host'></flag>
+	<flag name='cross_domain_context'>Enable crosvm's virtio-gpu "cross-domain" context type for ARCVM.</flag>
+	<flag name='cross_domain_context_borealis'>Enable crosvm's virtio-gpu "cross-domain" context type for Borealis.</flag>
+	<flag name='crosvm-fixed-blob-mapping'>Enable crosvm's virtio-gpu fixed-blob-mapping optimization.</flag>
+	<flag name='crosvm-virtio-video'>Enable the virtio video decoder. Enabled by default but disabled on betty which does not have hardware video decoder.</flag>
+	<flag name='crosvm-virtio-video-vd'>If the virtio video decoder is enabled, then use the VD host service instead of the default VDA host service. If the virtio video decoder is not enabled, then the flag has no effect.</flag>
+	<flag name='fuzzer'>Set up fuzzer</flag>
+	<flag name='iioservice'>Sets androidboot.iioservice_present flag.</flag>
+	<flag name='libglvnd'>Enable BigGL when libglvnd is available.</flag>
+	<flag name='vfio_gpu'>Enable GPU passthrough.</flag>
+	<flag name='virtgpu_native_context'>Enable crosvm's virtio-gpu "native context" context type.</flag>
+	<flag name='vulkan'>Enable crosvm's virtio-gpu "venus" (vulkan) context type.</flag>
+	<flag name='wilco'>Set up Wilco DTC</flag>
+</use>
+</pkgmetadata>

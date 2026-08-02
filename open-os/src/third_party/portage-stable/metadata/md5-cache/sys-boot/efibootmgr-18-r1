@@ -1,0 +1,13 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=compile configure prepare
+DEPEND=dev-libs/popt sys-apps/pciutils >=sys-libs/efivar-37:=
+DESCRIPTION=User-space application to modify the EFI boot manager
+EAPI=7
+HOMEPAGE=https://github.com/rhinstaller/efibootmgr
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-libs/popt sys-apps/pciutils >=sys-libs/efivar-37:=
+SLOT=0
+SRC_URI=https://github.com/rhboot/efibootmgr/archive/18.tar.gz -> efibootmgr-18.tar.gz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=9ac555d9aa16fb2c6797e7c9597e63d0

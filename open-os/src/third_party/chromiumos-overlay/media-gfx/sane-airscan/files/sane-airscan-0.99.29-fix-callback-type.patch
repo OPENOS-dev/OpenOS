@@ -1,0 +1,13 @@
+Correct the type of callback passed to libxml2. See b/332621602.
+
+--- a/airscan-xml.c
++++ b/airscan-xml.c
+@@ -103,7 +103,7 @@ xml_rd_node_switched (xml_rd *xml)
+  * the stderr
+  */
+ static void
+-xml_rd_error_callback (void *userdata, xmlErrorPtr error)
++xml_rd_error_callback (void *userdata, const xmlError *error)
+ {
+     (void) userdata;
+     (void) error;

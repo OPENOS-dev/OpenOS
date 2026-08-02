@@ -1,0 +1,73 @@
+/* NOTHING UI v1.0 — Core Design Tokens
+ * Applied to ChromiumOS/Open-OS Browser Shell
+ * Based on NOTHING-UI-1 by Open-code-Studio (GPL-3.0)
+ */
+
+:root {
+  /* ---- Surface Layers (Dark Mode default) ---- */
+  --nothing-surface-0: #0A0A0A;
+  --nothing-surface-1: #0E0E0E;
+  --nothing-surface-2: #131313;
+  --nothing-surface-3: #181818;
+  --nothing-surface-4: #1E1E1E;
+  --nothing-surface-5: #252525;
+
+  /* ---- Elevation (hard shadows, no blur) ---- */
+  --nothing-shadow-1: 0 1px 2px rgba(0,0,0,0.40);
+  --nothing-shadow-2: 0 1px 2px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.20);
+  --nothing-shadow-3: 0 2px 4px rgba(0,0,0,0.45), 0 4px 8px rgba(0,0,0,0.20);
+  --nothing-shadow-4: 0 2px 4px rgba(0,0,0,0.50), 0 8px 16px rgba(0,0,0,0.25);
+  --nothing-shadow-5: 0 4px 8px rgba(0,0,0,0.55), 0 12px 24px rgba(0,0,0,0.30);
+
+  /* ---- Shape ---- */
+  --nothing-radius-sm: 2px;
+  --nothing-radius-md: 4px;
+  --nothing-radius-full: 9999px;
+
+  /* ---- Accent (Cyan) ---- */
+  --nothing-accent: #00BCD4;
+  --nothing-accent-hover: #26C6DA;
+  --nothing-accent-active: #0097A7;
+  --nothing-accent-bg: rgba(0, 188, 212, 0.12);
+  --nothing-accent-bg-hover: rgba(0, 188, 212, 0.18);
+
+  /* ---- Text ---- */
+  --nothing-text-primary: #F5F5F5;
+  --nothing-text-secondary: #B0B0B0;
+  --nothing-text-tertiary: #707070;
+
+  /* ---- Status Colors ---- */
+  --nothing-color-success: #4AA26F;
+  --nothing-color-success-bg: rgba(74,162,111,0.12);
+  --nothing-color-warning: #FF9800;
+  --nothing-color-warning-bg: rgba(255,152,0,0.12);
+  --nothing-color-error: #F44336;
+  --nothing-color-error-bg: rgba(244,67,54,0.12);
+  --nothing-color-info: #2196F3;
+  --nothing-color-info-bg: rgba(33,150,243,0.12);
+
+  /* ---- Borders ---- */
+  --nothing-border-subtle: rgba(255,255,255,0.06);
+  --nothing-border-default: rgba(255,255,255,0.10);
+  --nothing-border-strong: rgba(255,255,255,0.16);
+
+  /* ---- Typography ---- */
+  --nothing-font-ui: "Inter", "SF Pro Text", "Segoe UI", "Roboto", "Noto Sans SC", sans-serif;
+  --nothing-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", monospace;
+
+  /* ---- Spacing (4px base grid) ---- */
+  --nothing-space-1: 4px;
+  --nothing-space-2: 8px;
+  --nothing-space-3: 12px;
+  --nothing-space-4: 16px;
+  --nothing-space-5: 20px;
+  --nothing-space-6: 24px;
+  --nothing-space-8: 32px;
+  --nothing-space-10: 40px;
+
+  /* ---- Motion ---- */
+  --nothing-ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --nothing-ease-emphasized: cubic-bezier(0.05, 0, 0, 1);
+  --nothing-ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --nothing-ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+}

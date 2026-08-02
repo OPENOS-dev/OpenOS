@@ -1,0 +1,29 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "gwendal"
+NAME = "hardware_StorageQualTrimStress.test"
+METADATA = {
+    'contacts': ['chromeos-storage@google.com'],
+    'bug_component': 'b:974567',
+    'criteria': 'Part of storage AVL qualification suite',
+    'hw_agnostic': False
+}
+TIME = "LONG"
+TEST_CATEGORY = "Stress"
+TEST_CLASS = "suite"
+TEST_TYPE = "server"
+PY_VERSION = 3
+FAST = False
+
+DOC = """
+Suite for testing the Storage Qual Trim test running from the fixed devices.
+This tests check trim support under stress.
+"""
+
+def run_server_tests(machine):
+    job.run_test('hardware_StorageQualTrimStress',
+                 client_ip=machine, duration=5100)
+
+parallel_simple(run_server_tests, machines)

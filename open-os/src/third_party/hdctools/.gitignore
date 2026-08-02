@@ -1,0 +1,43 @@
+#
+# NOTE! Please use 'git ls-files -i --exclude-standard'
+# command after changing this file, to see if there are
+# any tracked files which get ignored after the change.
+#
+
+# Standard ignores
+*.a
+*.la
+*.lo
+*.o
+*.pyc
+*.so
+*.swp
+*~
+build
+cscope.files
+cscope.in.out
+cscope.out
+cscope.po.out
+
+# Ignore tags for those using TAGS
+TAGS
+
+# build-time generated version file
+servo/sversion.py
+
+# Generated proto files
+servo/common/proto/*.py
+servo/common/proto/*.pyi
+!servo/common/proto/__init__.py
+servo/data/servo_*_inas.xml
+
+# checksum for script bootstrap
+scripts/checksum
+
+#banned words local cache
+blocked_terms.txt
+
+coverage/**
+
+# Ignore generated test reports
+report_*.md

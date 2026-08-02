@@ -1,0 +1,5 @@
+group:cups-proxy
+gid:20136
+# VMs run as crosvm user, also Plugin VM dispatcher needs to know list
+# of available printers to pass to the plugin.
+users:crosvm,cups-proxy,pluginvm

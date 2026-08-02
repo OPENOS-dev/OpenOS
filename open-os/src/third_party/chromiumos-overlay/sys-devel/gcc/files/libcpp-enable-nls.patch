@@ -1,0 +1,11 @@
+--- a/libcpp/configure   2025-02-24 15:02:54.336960603 -0800
++++ b/libcpp/configure     2025-02-24 15:03:46.356919927 -0800
+@@ -6533,7 +6533,7 @@
+
+ # If we haven't got the data from the intl directory,
+ # assume NLS is disabled.
+-USE_NLS=no
++USE_NLS=yes
+ LIBINTL=
+ LIBINTL_DEP=
+ INCINTL=

@@ -1,0 +1,16 @@
+# Avoid leaking file descriptors.
+# https://github.com/USBGuard/usbguard/issues/666
+# b/416249568 (Google only)
+
+diff --git a/src/Common/FDInputStream.hpp b/src/Common/FDInputStream.hpp
+index 8528e84..8dc0485 100644
+--- a/src/Common/FDInputStream.hpp
++++ b/src/Common/FDInputStream.hpp
+@@ -57,6 +57,7 @@ namespace usbguard
+   {
+   public:
+     FDStreamBuf(int fd) : fd_(fd) { }
++    ~FDStreamBuf() { close(fd_); }
+ 
+     std::streamsize xsgetn(char* s, std::streamsize n)
+     {

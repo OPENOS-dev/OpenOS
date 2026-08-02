@@ -1,0 +1,14 @@
+BDEPEND=dev-perl/Module-Build test? ( virtual/perl-Test-Simple ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-perl/Module-Build dev-lang/perl
+DESCRIPTION=Runtime module handling
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Module-Runtime
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/Z/ZE/ZEFRAM/Module-Runtime-0.016.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=dbc484999cb52f81eb547b7b0ddf2b53

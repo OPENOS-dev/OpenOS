@@ -1,0 +1,8 @@
+# For chromeos-4.19 and later we can build with clang and lld.
+sys-kernel/chromeos-kernel-5_4 buildtest -kernel_afdo
+sys-kernel/chromeos-kernel-5_10 buildtest -kernel_afdo
+sys-kernel/chromeos-kernel-5_15 buildtest -kernel_afdo
+sys-kernel/chromeos-kernel-6_1 buildtest -kernel_afdo
+sys-kernel/chromeos-kernel-6_6 buildtest -kernel_afdo
+sys-kernel/chromeos-kernel-6_10-enablement buildtest -kernel_afdo
+sys-kernel/chromeos-kernel-6_12 buildtest -kernel_afdo

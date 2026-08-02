@@ -1,0 +1,13 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# When the EC reports a panic, attempt to fetch an EC coredump.
+# Only the most recent coredump is stored in /var/spool/cros_ec/.
+# Crash reporter will compress and queue the coredump for upload during boot.
+# Also sync the filesystem since a hard reset by the EC is imminent.
+ACTION=="change", SUBSYSTEM=="platform", DRIVER=="cros_ec_lpcs", ENV{ERROR}=="PANIC", \
+    RUN+="/sbin/minijail0 -u ec_coredump -g ec_coredump -G --uts -e -l -p -N \
+          --fs-path-rw /var/spool/cros_ec  --fs-path-rw /dev/cros_ec \
+          -- /usr/sbin/ec_coredump /var/spool/cros_ec", \
+    RUN+="/bin/sync"

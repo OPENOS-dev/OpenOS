@@ -1,0 +1,15 @@
+[package]
+name = "vmc"
+version = "0.1.0"
+authors = ["The Chromium OS Authors"]
+build = "build.rs"
+edition = "2018"
+
+[dependencies]
+dbus = "0.8"
+getopts = "0.2"
+libc = "0.2.44"
+protobuf = "3.2"
+
+[build-dependencies]
+protobuf-codegen = "3.2"

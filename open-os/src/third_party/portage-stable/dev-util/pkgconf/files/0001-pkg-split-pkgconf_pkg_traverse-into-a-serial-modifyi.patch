@@ -1,0 +1,70 @@
+From 4216cef0762f8d7c1b1e3e523be4fc2294ad1c93 Mon Sep 17 00:00:00 2001
+From: Ariadne Conill <ariadne@dereferenced.org>
+Date: Sun, 26 Jun 2022 06:05:40 +0000
+Subject: [PATCH 1/2] pkg: split pkgconf_pkg_traverse into a serial-modifying
+ version
+
+---
+ libpkgconf/pkg.c | 25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/libpkgconf/pkg.c b/libpkgconf/pkg.c
+index f71f508..f700d5e 100644
+--- a/libpkgconf/pkg.c
++++ b/libpkgconf/pkg.c
+@@ -37,6 +37,14 @@
+ 
+ #define PKG_CONFIG_EXT ".pc"
+ 
++static unsigned int
++pkgconf_pkg_traverse_main(pkgconf_client_t *client,
++	pkgconf_pkg_t *root,
++	pkgconf_pkg_traverse_func_t func,
++	void *data,
++	int maxdepth,
++	unsigned int skip_flags);
++
+ static inline bool
+ str_has_suffix(const char *str, const char *suffix)
+ {
+@@ -1478,7 +1486,7 @@ pkgconf_pkg_walk_list(pkgconf_client_t *client,
+ 		pkgconf_audit_log_dependency(client, pkgdep, depnode);
+ 
+ 		pkgdep->flags |= PKGCONF_PKG_PROPF_SEEN;
+-		eflags |= pkgconf_pkg_traverse(client, pkgdep, func, data, depth - 1, skip_flags);
++		eflags |= pkgconf_pkg_traverse_main(client, pkgdep, func, data, depth - 1, skip_flags);
+ 		pkgdep->flags &= ~PKGCONF_PKG_PROPF_SEEN;
+ 		pkgconf_pkg_unref(client, pkgdep);
+ 	}
+@@ -1549,8 +1557,8 @@ pkgconf_pkg_walk_conflicts_list(pkgconf_client_t *client,
+  *    :return: ``PKGCONF_PKG_ERRF_OK`` on success, else an error code.
+  *    :rtype: unsigned int
+  */
+-unsigned int
+-pkgconf_pkg_traverse(pkgconf_client_t *client,
++static unsigned int
++pkgconf_pkg_traverse_main(pkgconf_client_t *client,
+ 	pkgconf_pkg_t *root,
+ 	pkgconf_pkg_traverse_func_t func,
+ 	void *data,
+@@ -1598,6 +1606,17 @@ pkgconf_pkg_traverse(pkgconf_client_t *client,
+ 	return eflags;
+ }
+ 
++unsigned int
++pkgconf_pkg_traverse(pkgconf_client_t *client,
++	pkgconf_pkg_t *root,
++	pkgconf_pkg_traverse_func_t func,
++	void *data,
++	int maxdepth,
++	unsigned int skip_flags)
++{
++	return pkgconf_pkg_traverse_main(client, root, func, data, maxdepth, skip_flags);
++}
++
+ static void
+ pkgconf_pkg_cflags_collect(pkgconf_client_t *client, pkgconf_pkg_t *pkg, void *data)
+ {
+-- 
+2.43.0.472.g3155946c3a-goog
+

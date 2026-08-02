@@ -1,0 +1,72 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+name: "CodeQL"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [main]
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+
+    permissions:
+      # required for all workflows
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Override automatic language detection by changing the below list
+        # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
+        language: ['cpp']
+        # Learn more...
+        # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+
+    - uses: bazelbuild/setup-bazelisk@v2
+
+    # Command-line programs to run using the OS shell.
+    # https://git.io/JvXDl
+
+    - name: Install cras deps
+      run: |
+        sudo apt-get install -y \
+          build-essential \
+          clang \
+          libasound-dev \
+          libdbus-1-dev \
+          libgmock-dev \
+          libgtest-dev \
+          libsbc-dev \
+          libspeexdsp-dev \
+          libudev-dev \
+          protobuf-compiler \
+          python3
+
+    - name: Build
+      # Build without the sandbox so the CodeQL library hooks work.
+      run: bazel build //... --action_env=LD_PRELOAD --config=local-clang --spawn_strategy=standalone
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2

@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<root>
+  <include>
+    <name>common.xml</name>
+  </include>
+  <include>
+    <name>power_tools.xml</name>
+  </include>
+  <include>
+    <name>keyboard.xml</name>
+  </include>
+  <include>
+    <name>uart_common.xml</name>
+  </include>
+  <include>
+    <name>cr50.xml</name>
+  </include>
+  <include>
+    <name>select_cold_reset.xml</name>
+  </include>
+  <include>
+    <name>gsc_lid_open.xml</name>
+  </include>
+  <!-- Maps -->
+  <map>
+    <name>onoff_vref_sel</name>
+    <doc>Determine VREF between pp3300, pp1800 and off. Default is off</doc>
+    <params off="0" pp1800="1800" pp3300="3300"></params>
+  </map>
+  <map>
+    <name>pressrelease_yesno</name>
+    <doc>map for press and release of buttons</doc>
+    <params press="yes" release="no"></params>
+  </map>
+  <map>
+    <name>i2c_ap_onoff</name>
+    <doc>Helpers to configure i2c on AP pins for servo ADCs</doc>
+    <params on="400" off="0"/>
+  </map>
+  <!-- C2D2 Console GPIO interface -->
+  <control>
+    <name>c2d2_ec_boot_mode_uut</name>
+    <alias>ec_boot_mode_uut,ec_boot_mode</alias>
+    <doc>UUT boot mode GPIO.</doc>
+    <params subtype="uut_boot_mode" interface="6" drv="ec3po_c2d2"
+    map="onoff" init="off" />
+  </control>
+  <control>
+    <name>cpu_uart_en</name>
+    <doc>Enable/disable AP UART output.</doc>
+    <params interface="servo" drv="na" init="not_applicable"></params>
+  </control>
+  <control>
+    <name>ec_uart_en</name>
+    <doc>Enable/disable EC UART output.</doc>
+    <params subtype="ec_uart_en" interface="6" drv="ec3po_c2d2"
+    map="onoff" init="on" />
+  </control>
+  <control>
+    <name>default_cold_reset</name>
+    <alias>cr50_reset_odl,gsc_reset</alias>
+    <doc>Hold DUT in reset via H1 reset</doc>
+    <params subtype="h1_reset" interface="6" drv="ec3po_c2d2"
+    map="onoff" init="off" />
+  </control>
+  <control>
+    <name>pwr_button</name>
+    <doc>Hold DUT power button</doc>
+    <params cmd="get" subtype="pwr_button" interface="6" drv="ec3po_c2d2"
+    map="pressrelease_yesno" />
+    <params cmd="set" subtype="pwr_button" interface="6" drv="ec3po_c2d2"
+    map="press_i" />
+  </control>
+  <control>
+    <name>h1_vref_present</name>
+    <doc>Hold DUT power button</doc>
+    <params cmd="get" subtype="h1_vref" interface="6" drv="ec3po_c2d2"
+    map="onoff" init="off" />
+  </control>
+  <!-- CR50 Console GPIO interface -->
+  <control>
+    <name>ap_flash_select</name>
+    <doc>AP_FLASH_SELECT GPIO pin.</doc>
+    <params subtype="ap_flash_select" interface="GSC_CONSOLE" drv="cr50"
+    map="onoff" init="off" />
+  </control>
+  <control>
+    <name>ec_flash_select</name>
+    <doc>EC_FLASH_SELECT GPIO pin.</doc>
+    <params subtype="ec_boot_mode" interface="GSC_CONSOLE" drv="cr50"
+    map="onoff" init="off" />
+  </control>
+  <!-- UART and CONSOLE settings -->
+  <control>
+    <name>uart3_pty</name>
+    <alias>raw_cr50_uart_pty</alias>
+    <doc>Raw H1 UART console. USART4: PA0/PA1</doc>
+    <params cmd="get" subtype="pty" interface="1" drv="uart">
+    </params>
+  </control>
+  <control>
+    <name>uart3_parity</name>
+    <alias>cr50_uart_parity</alias>
+    <doc>Parity for H1 uart console</doc>
+    <params drv="uart" subtype="props" line_prop="parity"
+    interface="1" map="uart_parity"></params>
+  </control>
+  <control>
+    <name>uart3_baudrate</name>
+    <alias>cr50_uart_baudrate</alias>
+    <doc>Baudrate for H1 uart console</doc>
+    <params drv="uart" subtype="props" line_prop="baudrate"
+    interface="1"></params>
+  </control>
+  <control>
+    <name>uart2_pty</name>
+    <alias>raw_cpu_uart_pty</alias>
+    <doc>Raw CPU UART console. USART3: PB10/PB11</doc>
+    <params cmd="get" subtype="pty" interface="RAW_AP_CONSOLE" drv="uart">
+    </params>
+  </control>
+  <control>
+    <name>uart2_parity</name>
+    <alias>cpu_uart_parity</alias>
+    <doc>Parity for CPU uart console</doc>
+    <params drv="uart" subtype="props" line_prop="parity"
+    interface="RAW_AP_CONSOLE" map="uart_parity"></params>
+  </control>
+  <control>
+    <name>uart2_baudrate</name>
+    <alias>cpu_uart_baudrate</alias>
+    <doc>Baudrate for CPU uart console</doc>
+    <params drv="uart" subtype="props" line_prop="baudrate"
+    interface="RAW_AP_CONSOLE"></params>
+  </control>
+  <control>
+    <name>uart1_pty</name>
+    <alias>raw_ec_uart_pty</alias>
+    <doc>Raw EC UART console. USART1: PB6/PB7</doc>
+    <params cmd="get" subtype="pty" interface="7" drv="uart">
+    </params>
+  </control>
+  <control>
+    <name>uart1_parity</name>
+    <alias>ec_uart_parity</alias>
+    <doc>Parity for EC uart console</doc>
+    <params drv="uart" subtype="props" line_prop="parity"
+    interface="7" map="uart_parity"></params>
+  </control>
+  <control>
+    <name>uart1_baudrate</name>
+    <alias>ec_uart_baudrate</alias>
+    <doc>Baudrate for EC uart console</doc>
+    <params drv="uart" subtype="props" line_prop="baudrate"
+    interface="7"></params>
+  </control>
+  <control>
+    <name>raw_c2d2_uart_pty</name>
+    <doc>C2D2's stm32 console.</doc>
+    <params cmd="get" subtype="pty" interface="3" drv="uart">
+    </params>
+  </control>
+  <!-- SPI controls -->
+  <control>
+    <name>spi2_vref</name>
+    <doc>VREF applied to SPI2 (AP SPI)</doc>
+    <params subtype="spi_vref" interface="6" drv="ec3po_c2d2"
+    map="onoff_vref_sel" init="off"></params>
+  </control>
+  <!-- EC-3PO console interpreter linkup -->
+  <control>
+    <name>ec3po_c2d2_uart</name>
+    <alias>c2d2_uart_pty</alias>
+    <doc>C2D2 console provided via EC-3PO console interpreter.</doc>
+    <params cmd="get" subtype="pty" interface="6" drv="uart"/>
+  </control>
+  <control>
+    <name>c2d2_uart_timestamp</name>
+    <doc>Add timestamps to the servo micro console messages</doc>
+    <params interface="6" drv="ec3po_driver" map="onoff" init="on"
+    subtype="timestamp"/>
+  </control>
+  <!-- C2D2 Console Automation Controls -->
+  <control>
+    <name>c2d2_uart_cmd</name>
+    <doc>Set to send command to the c2d2 console. Get to obtain the
+    matched results with the regular expression of c2d2_uart_regexp.</doc>
+    <params subtype="uart_cmd" interface="6" drv="uart" input_type="str"
+    tags="servo_cmd_ctrl"></params>
+  </control>
+  <control>
+    <name>c2d2_uart_timeout</name>
+    <doc>Timeout value for waiting c2d2 console response of issuing
+    an EC command.</doc>
+    <params subtype="uart_timeout" interface="6" drv="uart"
+    input_type="float"></params>
+  </control>
+  <control>
+    <name>c2d2_uart_multicmd</name>
+    <doc>Set to send multiple commands to the c2d2 console.</doc>
+    <params interface="6" drv="na" cmd="get"></params>
+    <params subtype="uart_multicmd" interface="6" drv="uart" input_type="str"
+    cmd="set"></params>
+  </control>
+  <control>
+    <name>c2d2_uart_regexp</name>
+    <doc>List of regular expressions to match the response of
+    c2d2_uart_cmd.</doc>
+    <params subtype="uart_regexp" interface="6" drv="uart"
+    input_type="str" cmd="set"></params>
+  </control>
+  <control>
+    <name>c2d2_uart_capture</name>
+    <doc>enable c2d2 console capture</doc>
+    <params subtype="uart_capture" interface="6" drv="uart"
+    map="onoff"></params>
+  </control>
+  <control>
+    <name>c2d2_uart_stream</name>
+    <doc>c2d2 stream collected while c2d2_uart_capture on</doc>
+    <params cmd="get" subtype="uart_stream" interface="6" drv="uart"></params>
+  </control>
+  <!-- firmware version introspection controls -->
+  <control>
+    <name>c2d2_version</name>
+    <doc>current fw version</doc>
+    <params cmd="get" interface="6" drv="simple_ec" uart_cmd="version"
+      regex="RO:\s+(\S*_v?[\d.\w\+-]+)[\n\r]" group="1" formatting="strip"
+      tags="servo_fw_version"/>
+  </control>
+  <control>
+    <name>c2d2_latest_stable_version</name>
+    <alias>c2d2_latest_version</alias>
+    <doc>servo-firmware available fw version</doc>
+    <params interface="servo" drv="servo_updater_reader" board="c2d2"
+      channel="stable"/>
+  </control>
+  <control>
+    <name>c2d2_firmware_channel</name>
+    <doc>which channel the current c2d2 firmware is from</doc>
+    <params cmd="get" interface="servo" drv="servo_updater_channel_parser"
+      board="c2d2"/>
+  </control>
+  <control>
+    <name>c2d2_firmware_uptodate</name>
+    <doc>whether c2d2 firmware is to update</doc>
+    <params cmd="get" interface="servo" drv="servo_firmware_checker"
+      board="c2d2" map="yesno"/>
+    <params cmd="set" interface="servo" drv="servo_firmware_checker"
+      board="c2d2" map="check" init="check"/>
+  </control>
+  <!-- ITE EC firmware flashing support -->
+  <control>
+    <name>enable_ite_dfu</name>
+    <doc>Enable direct firmware update (DFU) over I2C mode on ITE
+    IT8320 EC chip by sending special non-I2C waveforms over the I2C
+    bus wires.</doc>
+    <params cmd="get" subtype="enable_ite_dfu" interface="6"
+    drv="ec3po_c2d2" input_type="str"></params>
+  </control>
+  <control>
+    <name>get_ite_chipid</name>
+    <doc>Verify that ITE IT8320 EC chip direct firmware update (DFU)
+    mode is enabled by querying the EC over I2C for its CHIPID1 and
+    CHIPID2 registers. It will only respond over I2C when in DFU
+    mode.</doc>
+    <params cmd="get" subtype="get_ite_chipid" interface="6"
+    drv="ec3po_c2d2" input_type="str"></params>
+  </control>
+  <control>
+    <name>i2c_ec_bus_speed</name>
+    <doc>The I2C bus speed for the EC I2C pins</doc>
+    <params subtype="i2c_speed" interface="6" bus="ec" drv="ec3po_c2d2"
+    input_type="int"></params>
+  </control>
+  <!-- Controls overwritten by Cr50 -->
+  <control>
+    <name>warm_reset</name>
+    <doc>warm_reset (active low)</doc>
+    <params cmd="get" uart_cmd="sysrst"
+    regex="SYS_RST_L is (asserted|deasserted)" group="1"
+    interface="GSC_CONSOLE" drv="cr50" map="asserted_re"></params>
+    <params cmd="set" subtype="warm_reset" interface="GSC_CONSOLE" drv="cr50"
+    map="onoff_i"></params>
+  </control>
+  <control>
+    <name>rec_mode</name>
+    <params subtype="rec_mode" interface="GSC_CONSOLE" drv="cr50"
+    map="onoff_i" init="off"></params>
+  </control>
+  <control>
+    <name>fw_wp_state</name>
+    <doc>Used to turn fw wp off and on</doc>
+    <params interface="GSC_CONSOLE" drv="fw_wp_ccd" input_type="str"
+    init="force_off" gsc_only="yes" />
+  </control>
+  <control>
+    <name>ap_pin_mode</name>
+    <doc>Whether the AP pins are in UART or I2C mode.</doc>
+    <params drv="simple_ec" interface="6" uart_cmd="bus_status" group="1"
+      formatting="strip" regex="AP pins: (I2C|UART)"/>
+  </control>
+  <control>
+    <name>servo_adcs_enabled</name>
+    <doc>Configure the servod device to read ADCs.</doc>
+    <params subtype="i2c_speed" interface="6" bus="ap" drv="ec3po_c2d2"
+      input_type="int" map="i2c_ap_onoff"/>
+  </control>
+</root>

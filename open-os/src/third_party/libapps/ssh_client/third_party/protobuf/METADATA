@@ -1,0 +1,11 @@
+name: "protobuf"
+description: "Protocol Buffers - Google's data interchange format"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://github.com/protocolbuffers/protobuf"
+  }
+  version: "3.20.3"
+  last_upgrade_date { year: 2022 month: 9 day: 29 }
+}

@@ -1,0 +1,209 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+import("//common-mk/pkg_config.gni")
+import("//common-mk/flatbuffer.gni")
+
+group("all") {
+  deps = [
+    ":textclassifier",
+  ]
+}
+
+pkg_config("tclib_config") {
+  pkg_deps = [
+    "zlib",
+  ]
+}
+
+pkg_config("flatbuffers_config") {
+  pkg_deps = [
+    "flatbuffers",
+  ]
+}
+
+flatbuffer("flatbuffers") {
+  sources = [
+    "annotator/entity-data.fbs",
+    "annotator/experimental/experimental.fbs",
+    "annotator/model.fbs",
+    "annotator/person_name/person_name_model.fbs",
+    "lang_id/common/flatbuffers/embedding-network.fbs",
+    "lang_id/common/flatbuffers/model.fbs",
+    "utils/container/bit-vector.fbs",
+    "utils/flatbuffers/flatbuffers.fbs",
+    "utils/codepoint-range.fbs",
+    "utils/grammar/semantics/expression.fbs",
+    "utils/grammar/rules.fbs",
+    "utils/i18n/language-tag.fbs",
+    "utils/intents/intent-config.fbs",
+    "utils/normalization.fbs",
+    "utils/resources.fbs",
+    "utils/tflite/text_encoder_config.fbs",
+    "utils/tokenizer.fbs",
+    "utils/zlib/buffer.fbs",
+  ]
+
+  flatc_include_dirs = [ "." ]
+
+  flatc_args = [
+    "-c",
+    "--keep-prefix",
+    "--gen-object-api"
+  ]
+}
+
+static_library("textclassifier") {
+  all_dependent_configs = [ ":tclib_config" ]
+  sources = [
+    "annotator/annotator.cc",
+    "annotator/cached-features.cc",
+    "annotator/datetime/extractor.cc",
+    "annotator/datetime/regex-parser.cc",
+    "annotator/datetime/utils.cc",
+    "annotator/duration/duration.cc",
+    "annotator/feature-processor.cc",
+    "annotator/flatbuffer-utils.cc",
+    "annotator/grammar/grammar-annotator.cc",
+    "annotator/grammar/utils.cc",
+    "annotator/model-executor.cc",
+    "annotator/number/number.cc",
+    "annotator/quantization.cc",
+    "annotator/strip-unpaired-brackets.cc",
+    "annotator/translate/translate.cc",
+    "annotator/types.cc",
+    "annotator/vocab/vocab-annotator-impl.cc",
+    "annotator/vocab/vocab-level-table.cc",
+    "annotator/zlib-utils.cc",
+    "lang_id/common/embedding-feature-extractor.cc",
+    "lang_id/common/embedding-network-params.cc",
+    "lang_id/common/embedding-network.cc",
+    "lang_id/common/fel/feature-descriptors.cc",
+    "lang_id/common/fel/feature-extractor.cc",
+    "lang_id/common/fel/fel-parser.cc",
+    "lang_id/common/fel/task-context.cc",
+    "lang_id/common/fel/workspace.cc",
+    "lang_id/common/file/file-utils.cc",
+    "lang_id/common/file/mmap.cc",
+    "lang_id/common/flatbuffers/embedding-network-params-from-flatbuffer.cc",
+    "lang_id/common/flatbuffers/model-utils.cc",
+    "lang_id/common/lite_base/compact-logging-raw.cc",
+    "lang_id/common/lite_base/compact-logging.cc",
+    "lang_id/common/lite_strings/numbers.cc",
+    "lang_id/common/lite_strings/str-split.cc",
+    "lang_id/common/math/checksum.cc",
+    "lang_id/common/math/fastexp.cc",
+    "lang_id/common/math/hash.cc",
+    "lang_id/common/math/softmax.cc",
+    "lang_id/common/utf8.cc",
+    "lang_id/custom-tokenizer.cc",
+    "lang_id/fb_model/lang-id-from-fb.cc",
+    "lang_id/fb_model/model-provider-from-fb.cc",
+    "lang_id/features/char-ngram-feature.cc",
+    "lang_id/features/light-sentence-features.cc",
+    "lang_id/features/relevant-script-feature.cc",
+    "lang_id/lang-id-wrapper.cc",
+    "lang_id/lang-id.cc",
+    "lang_id/script/approx-script-data.cc",
+    "lang_id/script/approx-script.cc",
+    "lang_id/script/script-detector.cc",
+    "lang_id/script/tiny-script-detector.cc",
+    "utils/base/arena.cc",
+    "utils/base/logging.cc",
+    "utils/base/logging_raw.cc",
+    "utils/base/status.cc",
+    "utils/calendar/calendar-icu.cc",
+    "utils/checksum.cc",
+    "utils/codepoint-range.cc",
+    "utils/container/bit-vector.cc",
+    "utils/container/double-array-trie.cc",
+    "utils/container/sorted-strings-table.cc",
+    "utils/flatbuffers/mutable.cc",
+    "utils/flatbuffers/reflection.cc",
+    "utils/grammar/analyzer.cc",
+    "utils/grammar/parsing/derivation.cc",
+    "utils/grammar/parsing/lexer.cc",
+    "utils/grammar/parsing/matcher.cc",
+    "utils/grammar/parsing/parser.cc",
+    "utils/grammar/parsing/parse-tree.cc",
+    "utils/grammar/rules-utils.cc",
+    "utils/grammar/semantics/composer.cc",
+    "utils/grammar/semantics/evaluators/arithmetic-eval.cc",
+    "utils/grammar/semantics/evaluators/compose-eval.cc",
+    "utils/grammar/semantics/evaluators/merge-values-eval.cc",
+    "utils/grammar/utils/ir.cc",
+    "utils/grammar/utils/rules.cc",
+    "utils/hash/farmhash.cc",
+    "utils/i18n/locale.cc",
+    "utils/i18n/locale-list.cc",
+    "utils/math/fastexp.cc",
+    "utils/math/softmax.cc",
+    "utils/memory/mmap.cc",
+    "utils/normalization.cc",
+    "utils/regex-match.cc",
+    "utils/resources.cc",
+    "utils/sentencepiece/encoder.cc",
+    "utils/sentencepiece/normalizer.cc",
+    "utils/strings/append.cc",
+    "utils/strings/numbers.cc",
+    "utils/strings/split.cc",
+    "utils/strings/substitute.cc",
+    "utils/strings/utf8.cc",
+    "utils/tensor-view.cc",
+    "utils/tflite-model-executor.cc",
+    "utils/tflite/dist_diversification.cc",
+    "utils/tflite/encoder_common.cc",
+    "utils/tflite/text_encoder.cc",
+    "utils/tflite/token_encoder.cc",
+    "utils/token-feature-extractor.cc",
+    "utils/tokenizer.cc",
+    "utils/utf8/unicodetext.cc",
+    "utils/utf8/unilib-common.cc",
+    "utils/utf8/unilib-icu.cc",
+    "utils/variant.cc",
+    "utils/zlib/zlib.cc",
+    "utils/zlib/zlib_regex.cc",
+  ]
+
+  deps = [ ":flatbuffers" ]
+
+  defines = [
+    "SAFTM_COMPACT_LOGGING",
+    "TC3_CALENDAR_ICU",
+    "TC3_DISABLE_LUA",
+    "TC3_UNILIB_ICU",
+    "TC3_VOCAB_ANNOTATOR_IMPL",
+    "ZLIB_CONST",
+  ]
+
+  libs = [
+    "tensorflowlite",
+  ]
+
+  include_dirs = [
+    "${root_gen_dir}/libtextclassifier",
+    "${sysroot}/usr/include/icu-chrome/common/",
+    "${sysroot}/usr/include/icu-chrome/i18n/",
+    "${sysroot}/usr/include/marisa-aosp",
+    "${sysroot}/usr/include/tensorflow",
+    "//libtextclassifier",
+  ]
+
+  configs += [
+    "//common-mk:nouse_thin_archive",
+    ":flatbuffers_config",
+  ]
+  configs -= [ "//common-mk:use_thin_archive" ]
+}

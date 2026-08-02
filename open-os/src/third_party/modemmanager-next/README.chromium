@@ -1,0 +1,19 @@
+DESCRIPTION="Broadband modem support daemon"
+HOMEPAGE="https://modemmanager.org"
+UPSTREAM_REPO="git://anongit.freedesktop.org/ModemManager/ModemManager"
+LOCAL_GIT_REPO="https://chromium.googlesource.com/chromiumos/third_party/modemmanager-next.git"
+UPSTREAM_BUGSDB="https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/issues"
+LOCAL_BUGSDB="http://buganizer.corp.google.com"
+LICENSE="GPLv2"
+LICENSE_FILE="COPYING"
+
+Description:
+
+ModemManager provides a DBus interface to control broadband modem
+devices. The intended user is a network manager program, such as
+NetworkManager, flimflam, or shill.
+
+This repository mirrors the main branch of the upstream repository.
+
+Local changes should be minimal, but support for particular modems may
+make it here before they make it upstream.

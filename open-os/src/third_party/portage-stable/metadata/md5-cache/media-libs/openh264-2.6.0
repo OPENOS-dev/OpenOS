@@ -1,0 +1,13 @@
+BDEPEND=abi_x86_32? ( dev-lang/nasm ) abi_x86_64? ( dev-lang/nasm ) test? ( dev-cpp/gtest[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] )
+DEFINED_PHASES=compile configure install postinst prepare test
+DESCRIPTION=Cisco OpenH264 library and Gecko Media Plugin for Mozilla packages
+EAPI=7
+HOMEPAGE=https://www.openh264.org/ https://github.com/cisco/openh264
+IUSE=cpu_flags_arm_neon cpu_flags_x86_avx2 +plugin test utils abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64
+KEYWORDS=*
+LICENSE=BSD
+RESTRICT=bindist !test? ( test )
+SLOT=0/8
+SRC_URI=https://github.com/cisco/openh264/archive/refs/tags/v2.6.0.tar.gz -> openh264-2.6.0.tar.gz https://github.com/mozilla/gmp-api/archive/1f5a2f07a565a9465c14d3a8b12f3202f83c775e.tar.gz -> gmp-api-Firefox135-1f5a2f07a565a9465c14d3a8b12f3202f83c775e.tar.gz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=64183d9c3507ebc2f47d9cd7d3e1a33f

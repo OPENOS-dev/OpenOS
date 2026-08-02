@@ -1,0 +1,222 @@
+From f4bc4d234cd8b852a8121052aa366726635667d7 Mon Sep 17 00:00:00 2001
+From: Yunlian Jiang <yunlian@google.com>
+Date: Sat, 30 Sep 2017 00:00:00 +0000
+Subject: [PATCH] gdb: fix python chroot breakage
+
+This patch makes sure gdb compiled inside chroot works outside where python
+environment is different.
+
+It ported two changes sitting in android code base:
+https://android-review.googlesource.com/c/toolchain/gdb/+/202979
+https://android-review.googlesource.com/c/toolchain/gdb/+/515189
+
+BUG: crbug.com/1051736
+
+[Manoj: rebased on gdb 13.1]
+[Arnaud: rebased on gdb 15.1]
+[Sergio: rebased on gdb 16.2]
+---
+ gdb/defs.h                  |  4 +++
+ gdb/python/py-auto-load.c   |  2 ++
+ gdb/python/py-prettyprint.c |  2 +-
+ gdb/python/python.c         | 62 ++++++++++++++++++++++++++++++++++++-
+ gdb/varobj.c                |  8 ++---
+ 5 files changed, 72 insertions(+), 6 deletions(-)
+
+diff --git a/gdb/defs.h b/gdb/defs.h
+index 5d52e668f1d..f9a9d783d0c 100644
+--- a/gdb/defs.h
++++ b/gdb/defs.h
+@@ -407,4 +407,8 @@ DEF_ENUM_FLAGS_TYPE (enum user_selected_what_flag, user_selected_what);
+ 
+ #include "utils.h"
+ 
++#ifdef HAVE_PYTHON
++extern int python_available (void);
++#endif
++
+ #endif /* GDB_DEFS_H */
+diff --git a/gdb/python/py-auto-load.c b/gdb/python/py-auto-load.c
+index 7dc3a7b0e8f..4d317440342 100644
+--- a/gdb/python/py-auto-load.c
++++ b/gdb/python/py-auto-load.c
+@@ -44,6 +44,8 @@ show_auto_load_python_scripts (struct ui_file *file, int from_tty,
+ bool
+ gdbpy_auto_load_enabled (const struct extension_language_defn *extlang)
+ {
++  if (!python_available ())
++    return 0;
+   return auto_load_python_scripts;
+ }
+ 
+diff --git a/gdb/python/py-prettyprint.c b/gdb/python/py-prettyprint.c
+index e061ea1b361..adbe6280339 100644
+--- a/gdb/python/py-prettyprint.c
++++ b/gdb/python/py-prettyprint.c
+@@ -586,7 +586,7 @@ gdbpy_apply_val_pretty_printer (const struct extension_language_defn *extlang,
+   if (!value->bytes_available (0, type->length ()))
+     return EXT_LANG_RC_NOP;
+ 
+-  if (!gdb_python_initialized)
++  if (!python_available () || !gdb_python_initialized)
+     return EXT_LANG_RC_NOP;
+ 
+   gdbpy_enter enter_py (gdbarch, language);
+diff --git a/gdb/python/python.c b/gdb/python/python.c
+index acd80e5515c..4e3b8fdfa40 100644
+--- a/gdb/python/python.c
++++ b/gdb/python/python.c
+@@ -31,6 +31,12 @@
+ #include "python.h"
+ #include "extension-priv.h"
+ #include "cli/cli-utils.h"
++#ifdef HAVE_UNISTD_H
++#include <unistd.h>
++#endif
++
++#include <sys/types.h>
++#include <sys/wait.h>
+ #include <ctype.h>
+ #include "location.h"
+ #include "run-on-main-thread.h"
+@@ -2429,6 +2435,11 @@ py_initialize ()
+     = python_dont_write_bytecode_at_python_initialization;
+   Py_IgnoreEnvironmentFlag
+     = python_ignore_environment_at_python_initialization ? 1 : 0;
++  if (!python_available ())
++    {
++      py_isinitialized = true;
++      return true;
++    }
+   return py_initialize_catch_abort ();
+ #else
+   PyConfig config;
+@@ -2450,6 +2461,11 @@ py_initialize ()
+   if (PyStatus_Exception (status))
+     goto init_done;
+ 
++  if (!python_available ())
++    {
++      py_isinitialized = true;
++      return true;
++    }
+   status = Py_InitializeFromConfig (&config);
+ 
+ init_done:
+@@ -2487,6 +2503,9 @@ do_start_initialization ()
+   if (!py_initialize ())
+     return false;
+ 
++  if (!python_available ())
++    return true;
++
+ #if PY_VERSION_HEX < 0x03090000
+   /* PyEval_InitThreads became deprecated in Python 3.9 and will
+      be removed in Python 3.11.  Prior to Python 3.7, this call was
+@@ -2636,6 +2655,44 @@ test_python ()
+ cmd_list_element *python_cmd_element = nullptr;
+ 
+ void _initialize_python ();
++
++#ifdef HAVE_PYTHON
++/* Check whether python is available at runtime. */
++int
++python_available(void)
++{
++#ifndef HAVE_WORKING_FORK
++  return 1;
++#endif
++
++  static int python_status = -1;
++  int child_status = 0;
++
++  if (python_status != -1)
++    return python_status;
++
++  pid_t pid = fork ();
++
++  if (pid < 0)
++    perror_with_name (("fork"));
++
++  if (pid == 0)
++    {
++      freopen ("/dev/null", "w", stderr);
++      Py_Initialize ();
++      _exit(0);
++    }
++
++  wait (&child_status);
++  if (WIFEXITED (child_status) && WEXITSTATUS (child_status) == 0)
++    python_status = 1;
++  else
++    python_status = 0;
++
++  return python_status;
++}
++#endif /* HAVE_PYTHON */
++
+ void
+ _initialize_python ()
+ {
+@@ -2861,7 +2918,7 @@ gdbpy_initialize (const struct extension_language_defn *extlang)
+ {
+   if (!do_start_initialization ())
+     {
+-      if (py_isinitialized)
++      if (py_isinitialized && python_available ())
+ 	{
+ 	  if (PyErr_Occurred ())
+ 	    gdbpy_print_stack ();
+@@ -2877,6 +2934,9 @@ gdbpy_initialize (const struct extension_language_defn *extlang)
+       return;
+     }
+ 
++  if (!python_available ())
++    return;
++
+   gdbpy_enter enter_py;
+ 
+   if (!do_initialize (extlang))
+diff --git a/gdb/varobj.c b/gdb/varobj.c
+index dcadce1b97a..d34456c6216 100644
+--- a/gdb/varobj.c
++++ b/gdb/varobj.c
+@@ -506,7 +506,7 @@ varobj_get_display_hint (const struct varobj *var)
+   gdb::unique_xmalloc_ptr<char> result;
+ 
+ #if HAVE_PYTHON
+-  if (!gdb_python_initialized)
++  if (!python_available () || !gdb_python_initialized)
+     return NULL;
+ 
+   gdbpy_enter_varobj enter_py (var);
+@@ -1102,7 +1102,7 @@ install_new_value_visualizer (struct varobj *var)
+ #if HAVE_PYTHON
+   /* If the constructor is None, then we want the raw value.  If VAR
+      does not have a value, just skip this.  */
+-  if (!gdb_python_initialized)
++  if (!python_available () || !gdb_python_initialized)
+     return;
+ 
+   if (var->dynamic->constructor != Py_None && var->value != NULL)
+@@ -1367,7 +1367,7 @@ varobj_set_visualizer (struct varobj *var, const char *visualizer)
+ #if HAVE_PYTHON
+   PyObject *mainmod;
+ 
+-  if (!gdb_python_initialized)
++  if (!python_available () || !gdb_python_initialized)
+     return;
+ 
+   gdbpy_enter_varobj enter_py (var);
+@@ -2133,7 +2133,7 @@ varobj_value_get_print_value (struct value *value,
+   varobj_formatted_print_options (&opts, format);
+ 
+ #if HAVE_PYTHON
+-  if (gdb_python_initialized)
++  if (python_available () && gdb_python_initialized)
+     {
+       PyObject *value_formatter =  var->dynamic->pretty_printer;
+ 
+-- 
+2.47.2
+

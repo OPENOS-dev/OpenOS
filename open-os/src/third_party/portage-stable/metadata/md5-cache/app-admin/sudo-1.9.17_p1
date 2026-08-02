@@ -1,0 +1,15 @@
+BDEPEND=verify-sig? ( sec-keys/openpgp-keys-sudo ) app-alternatives/yacc virtual/pkgconfig >=app-portage/elt-patches-20170815 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install postinst prepare unpack
+DEPEND=sys-libs/zlib:= virtual/libcrypt:= gcrypt? ( dev-libs/libgcrypt:= ) ldap? ( >=net-nds/openldap-2.1.30-r1:= sasl? ( dev-libs/cyrus-sasl net-nds/openldap:=[sasl] ) ) pam? ( sys-libs/pam ) sasl? ( dev-libs/cyrus-sasl ) selinux? ( sys-libs/libselinux ) skey? ( >=sys-auth/skey-1.1.5-r1 ) ssl? ( dev-libs/openssl:= ) sssd? ( sys-auth/sssd[sudo(+)] )
+DESCRIPTION=Allows users or groups to run commands as other users
+EAPI=7
+HOMEPAGE=https://www.sudo.ws/
+IUSE=gcrypt ldap nls offensive pam sasl +secure-path selinux +sendmail skey ssl sssd verify-sig
+KEYWORDS=*
+LICENSE=ISC BSD
+RDEPEND=sys-libs/zlib:= virtual/libcrypt:= gcrypt? ( dev-libs/libgcrypt:= ) ldap? ( >=net-nds/openldap-2.1.30-r1:= sasl? ( dev-libs/cyrus-sasl net-nds/openldap:=[sasl] ) ) pam? ( sys-libs/pam ) sasl? ( dev-libs/cyrus-sasl ) selinux? ( sys-libs/libselinux ) skey? ( >=sys-auth/skey-1.1.5-r1 ) ssl? ( dev-libs/openssl:= ) sssd? ( sys-auth/sssd[sudo(+)] ) >=app-misc/editor-wrapper-3 virtual/editor ldap? ( dev-lang/perl ) pam? ( sys-auth/pambase ) selinux? ( sec-policy/selinux-sudo ) sendmail? ( virtual/mta ) virtual/tmpfiles
+REQUIRED_USE=?? ( pam skey ) ?? ( gcrypt ssl )
+SLOT=0
+SRC_URI=https://www.sudo.ws/sudo/dist/sudo-1.9.17p1.tar.gz verify-sig? ( https://www.sudo.ws/sudo/dist/sudo-1.9.17p1.tar.gz.sig )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	pam	3f746974e1cc47cabe3bd488c08cdc8e	tmpfiles	216aa76c3a6fcb5d893c23a0de86048f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=7bbf429b1f0d36ddab48f10971b9446a

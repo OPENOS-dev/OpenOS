@@ -1,0 +1,33 @@
+From ee2a63f804a7e9b0b7300a4df394601c308ba1c9 Mon Sep 17 00:00:00 2001
+From: goncalopp <goncalopp@noreply.github.com>
+Date: Fri, 16 Feb 2024 21:12:31 +0000
+Subject: [PATCH] python 3.11 support - EXT_SUFFIX / SO
+
+---
+ src/__init__.py | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/__init__.py b/src/__init__.py
+index d0255e4..0a27fde 100644
+--- a/src/__init__.py
++++ b/src/__init__.py
+@@ -87,7 +87,15 @@ def _error_handler(result, fn, args):
+ def fdopen():
+     return _libsuinput.suinput_open()
+ 
+-_libsuinput_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "_libsuinput" + sysconfig.get_config_var("SO")))
++def get_libsuinput_path():
++    repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
++    # python 2 / 3 compatibility ("SO" is now deprecated)
++    extension  = sysconfig.get_config_var("EXT_SUFFIX") or sysconfig.get_config_var("SO")
++    path = os.path.join(repo_dir, "_libsuinput" + extension)
++    return path
++
++
++_libsuinput_path = get_libsuinput_path()
+ _libsuinput = ctypes.CDLL(_libsuinput_path, use_errno=True)
+ _libsuinput.suinput_open.errcheck = _open_error_handler
+ _libsuinput.suinput_enable_event.errcheck = _error_handler
+-- 
+2.46.0.184.g6999bdac58-goog
+

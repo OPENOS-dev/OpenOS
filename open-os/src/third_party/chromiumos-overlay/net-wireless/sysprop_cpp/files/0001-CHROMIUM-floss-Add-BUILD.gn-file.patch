@@ -1,0 +1,57 @@
+From 246ddc7198e67862be2d81dc16e75799c2716594 Mon Sep 17 00:00:00 2001
+From: Katherine Lai <laikatherine@google.com>
+Date: Wed, 8 May 2024 19:29:10 +0000
+Subject: [PATCH] floss: Add BUILD.gn file
+
+BUG=b:337717021
+TEST=emerge-brya sysprop_cpp
+
+Change-Id: I00af36c0478cc62d8268c1412d66f6054c5981c5
+---
+ BUILD.gn | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 BUILD.gn
+
+diff --git a/BUILD.gn b/BUILD.gn
+new file mode 100644
+index 0000000..7a540ef
+--- /dev/null
++++ b/BUILD.gn
+@@ -0,0 +1,35 @@
++# Copyright 2024 The ChromiumOS Authors
++# Distributed under the terms of the GNU General Public License v2
++
++import("//common-mk/proto_library.gni")
++
++group("all") {
++  deps = [ ":sysprop_cpp" ]
++}
++
++proto_library("sysprop_proto") {
++  sources = ["sysprop.proto"]
++
++  proto_in_dir = "./"
++  proto_out_dir = "include"
++}
++
++executable("sysprop_cpp") {
++  sources = [
++    "CodeWriter.cpp",
++    "Common.cpp",
++    "CppGen.cpp",
++    "CppMain.cpp",
++    "libbase/file.cpp",
++    "libbase/strings.cpp",
++    "libbase/stringprintf.cpp",
++    "libbase/posix_strerror_r.cpp",
++  ]
++  include_dirs = [
++    "include",
++    "libbase/include",
++  ]
++  deps = [
++    ":sysprop_proto",
++  ]
++}
+--
+2.45.0.118.g7fe29c98d7-goog

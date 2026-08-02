@@ -1,0 +1,31 @@
+Include str_cat.h and layout.h from abseil
+
+These includes were missing and break when
+upgrading abseil to 20240116.
+
+See: b/380093598
+
+diff --git a/src/google/protobuf/arena.cc b/src/google/protobuf/arena.cc
+index 6577a3669..015a1667f 100644
+--- a/src/google/protobuf/arena.cc
++++ b/src/google/protobuf/arena.cc
+@@ -40,6 +40,7 @@
+ #include <vector>
+ 
+ #include "absl/base/attributes.h"
++#include "absl/container/internal/layout.h"
+ #include "absl/synchronization/mutex.h"
+ #include "google/protobuf/arena_allocation_policy.h"
+ #include "google/protobuf/arenaz_sampler.h"
+diff --git a/src/google/protobuf/io/printer.h b/src/google/protobuf/io/printer.h
+index 2e59ba05f..ea90f8ead 100644
+--- a/src/google/protobuf/io/printer.h
++++ b/src/google/protobuf/io/printer.h
+@@ -50,6 +50,7 @@
+ #include "absl/functional/function_ref.h"
+ #include "absl/log/absl_check.h"
+ #include "absl/meta/type_traits.h"
++#include "absl/strings/str_cat.h"
+ #include "absl/strings/str_format.h"
+ #include "absl/strings/string_view.h"
+ #include "absl/types/optional.h"

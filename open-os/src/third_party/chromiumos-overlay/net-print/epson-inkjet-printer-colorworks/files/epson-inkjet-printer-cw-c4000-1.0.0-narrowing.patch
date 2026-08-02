@@ -1,0 +1,16 @@
+Add explicit cast for intentional narrowing to avoid clang errors about
+implicit narrowing.
+
+--- a/src/echoapi/core/CESCLabel.cpp
++++ b/src/echoapi/core/CESCLabel.cpp
+@@ -366,8 +366,8 @@
+ 		lpcClipRect->bottom - lpcClipRect->top
+ 	};
+ 	SIZEL dstSizeInPixel = {
+-		m_pCurrentPage->GetWidth() - srcRectInPixel.left,
+-		m_pCurrentPage->GetHeight() - srcRectInPixel.top
++		static_cast<LONG>(m_pCurrentPage->GetWidth() - srcRectInPixel.left),
++		static_cast<LONG>(m_pCurrentPage->GetHeight() - srcRectInPixel.top)
+ 	};
+ 	SIZEL sizeInPixel = {
+ 		min(srcSizeInPixel.cx, dstSizeInPixel.cx),

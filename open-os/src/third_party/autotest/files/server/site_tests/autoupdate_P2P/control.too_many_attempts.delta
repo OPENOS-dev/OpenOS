@@ -1,0 +1,31 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, ChromiumOS"
+NAME = "autoupdate_P2P.too_many_attempts.delta"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Tests autoupdate via peer to peer(P2P)."
+}
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:au-p2p"
+DOC = """
+This tests autoupdate between two devices via peer to peer is disabled when
+they have tried more than 10 times.
+
+"""
+
+def run(machine):
+    host = hosts.create_host(machine)
+    companions = hosts.create_companion_hosts(companion_hosts)
+    job.run_test('autoupdate_P2P', host=host, companions=companions,
+                 too_many_attempts=True)
+
+job.parallel_simple(run, machines)
+

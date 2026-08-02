@@ -1,0 +1,14 @@
+DEFINED_PHASES=configure install test
+DEPEND=ssl? ( >=dev-libs/openssl-3:= ) readline? ( sys-libs/readline:= ) tcpd? ( sys-apps/tcp-wrappers )
+DESCRIPTION=Multipurpose relay (SOcket CAT)
+EAPI=7
+HOMEPAGE=http://www.dest-unreach.org/socat/ https://repo.or.cz/socat.git
+IUSE=ipv6 readline ssl tcpd
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=ssl? ( >=dev-libs/openssl-3:= ) readline? ( sys-libs/readline:= ) tcpd? ( sys-apps/tcp-wrappers )
+RESTRICT=test
+SLOT=0
+SRC_URI=http://www.dest-unreach.org/socat/download/socat-1.8.1.1.tar.bz2
+_eclasses_=edo	c0eb9cbe6b0bd01fcb4918f12598a4d3	flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=2a4a79856d9e7860db9de2a0e2d1a3a0

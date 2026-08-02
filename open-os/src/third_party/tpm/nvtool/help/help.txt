@@ -1,0 +1,101 @@
+tpm-nvtool
+Copyright (c) 2009,2010 The Chromium OS Authors. All rights reserved.
+
+tpm-nvtool is a command-line program for managing Trusted Platform Module 
+(TPM) Non-Volatile (NV) memory. It allows you to "define" (create) and
+"release" (destroy) stores in a TPM's NV memory component. It requires a
+TPM that complies with TPM Specification version 1.2.
+
+Usage:
+
+* Creating an NV store
+
+  --define --index INDEX --owner_password OWNER_PASSWORD --size SIZE \
+    [--pcr PCR] [--permissions PERMISSIONS] [--index_password INDEX_PASSWORD]
+
+  The parameters mean the following:
+
+  INDEX           A valid NV index
+  OWNER_PASSWORD  TPM owner password
+  SIZE            Requested NV store's size in bytes
+  PCR             A PCR whose value will be required to read or write to the
+                  NV store; multiple PCRs can be specified through multiple
+                  instances of this argument
+  PERMISSIONS     A comma-separated string consisting of zero or more of the
+                  following keywords:
+
+                    AUTHREAD      Reads authorized by INDEX_PASSWORD
+                    AUTHWRITE     Writes authorized by INDEX_PASSWORD
+                    OWNERREAD     Reads authorized by OWNER_PASSWORD
+                    OWNERWRITE    Writes authorized by OWNER_PASSWORD
+                    PPREAD        Reads authorized by Physical Presence
+                    PPWRITE       Writes authorized by Physical Presence
+                    READ_STCLEAR  Cannot be read after a zero-sized write;
+                                  will need a full TPM clear to unlock
+                    WRITE_STCLEAR Cannot be written after a zero-sized write
+                                  will need a full TPM clear to unlock
+                    WRITEALL      Data must be written all at once
+                      
+  INDEX_PASSWORD  Password for reading and/or writing to the NV store; required
+                  if PERMISSIONS has AUTHREAD or AUTHWRITE
+
+* Destroying an NV store
+
+  --release --index INDEX --owner_password OWNER_PASSWORD
+
+* Listing NV stores
+
+  --list [--index INDEX]
+
+  By default, all NV stores will be listed. If INDEX is specified, only that
+  index, if it exists, will be listed.
+
+* Reading from an NV store
+
+  --read --index INDEX [--size SIZE] [--offset OFFSET] [--hexdump] \
+    [--password PASSWORD]
+
+  The parameters mean the following:
+
+  INDEX           A valid, existing NV index
+  SIZE            Number of bytes to read; if specified, must be greater than
+                  zero and no larger than the NV store's size; if not specified,
+                  the entire NV store will be read
+  OFFSET          Offset in bytes to read from; if specified, it must be such
+                  that the requested data specified through OFFSET and SIZE
+                  lies within the NV store; if not specified, an offset of 0
+                  is implied
+  PASSWORD        The appropriate password needed for reading
+
+  By default, data read from the NV store will be dumped as is (raw) to the
+  standard output, which in turn can be redirected to a file. If --hexdump is
+  specified, data bytes will be printed in hexadecimal format instead.o
+
+* Writing to an NV store
+
+  --write --index INDEX --string STRING [--size SIZE] [--offset OFFSET] \
+    [--password PASSWORD]
+
+  The parameters mean the following:
+  
+  STRING          A null-terminated string that will be written to the NV store
+  SIZE            Number of bytes to write; if SIZE is not specified, the entire
+                  length of the string (not including the terminating null) is
+                  written, provided it fits in the NV store
+  OFFSET          Offset in the NV store to write to; if not specified, an
+                  offset of 0 is implied
+  PASSWORD        The appropriate password needed for reading
+
+  You can also specify a file instead of an inline string as the source of
+  data to write to the NV store:
+
+  --write --index INDEX --file PATH [--size SIZE] [--offset OFFSET] \
+    [--password PASSWORD]
+
+* Locking an NV store
+
+  --writezero --index INDEX [--password PASSWORD]
+
+  If the NV store's permission attributes contain READ_STCLEAR or WRITE_STCLEAR,
+  using --writezero will lock that store for reading or writing, respectively.
+

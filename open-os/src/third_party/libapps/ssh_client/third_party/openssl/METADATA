@@ -1,0 +1,14 @@
+name: "openssl"
+description: "general-purpose cryptography library"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://www.openssl.org/"
+  }
+  version: "1.1.1w"
+  last_upgrade_date { year: 2023 month: 9 day: 11 }
+
+  local_modifications:
+      "See the patches in this directory for more details."
+}

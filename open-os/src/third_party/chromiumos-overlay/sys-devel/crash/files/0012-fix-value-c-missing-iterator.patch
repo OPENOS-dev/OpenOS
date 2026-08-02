@@ -1,0 +1,35 @@
+Fix missing include. This becomes an error with
+_LIBCPP_REMOVE_TRANSITIVE_INCLUDES set. b/507952997
+
+This landed in gdb 13; crash 9 upgraded from gdb 10 to gdb 16.
+
+commit b0cf0a5b9df3a5896524b066f234b5cf5a382b22
+Author: Christopher Di Bella <cjdb@google.com>
+Date:   Wed Jul 20 06:01:20 2022 +0000
+
+    gdb/value.c: add several headers to the include list
+
+    Building GDB currently fails to build with libc++, because libc++ is
+    stricter about which headers "leak" entities they're not guaranteed
+    to support. The following headers have been added:
+
+    * `<iterator>`, to support `std::back_inserter`
+    * `<utility>`, to support `std::move` and `std::swap`
+    * `<vector>`, to support `std::vector`
+
+    Change-Id: Iaeb15057c5fbb43217df77ce34d4e54446dbcf3d
+
+diff --git a/gdb/value.c b/gdb/value.c
+index 022fca91a42..c9bec678d95 100644
+--- a/gdb-10.2/gdb/value.c
++++ b/gdb-10.2/gdb/value.c
+@@ -40,6 +40,9 @@
+ #include "cp-abi.h"
+ #include "user-regs.h"
+ #include <algorithm>
++#include <iterator>
++#include <utility>
++#include <vector>
+ #include "completer.h"
+ #include "gdbsupport/selftest.h"
+ #include "gdbsupport/array-view.h"

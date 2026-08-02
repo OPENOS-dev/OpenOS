@@ -1,0 +1,10 @@
+--- a/compat/cros/detail/thread.h
++++ b/compat/cros/detail/thread.h
+@@ -21,6 +21,6 @@
+  void Join() override { thread_.Join(); }
+
+-  pid_t tid() override { return thread_.tid(); }
++  pid_t tid() override { return thread_.tid().raw(); }
+
+ protected:
+  void Run() override = 0;

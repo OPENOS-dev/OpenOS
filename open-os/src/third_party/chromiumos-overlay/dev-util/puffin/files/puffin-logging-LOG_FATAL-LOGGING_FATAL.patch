@@ -1,0 +1,58 @@
+From 5e442dffe7c272c2f3e1cf87ff0318babd300983 Mon Sep 17 00:00:00 2001
+From: Ren-Pei Zeng <kamesan@google.com>
+Date: Fri, 19 Jan 2024 06:49:41 +0000
+Subject: [PATCH] puffin: logging::LOG_FATAL -> LOGGING_FATAL
+
+Old name logging::LOG_FATAL is deprecated in libchrome.
+
+Bug: 319987566
+Test: build in cros_sdk
+Change-Id: I3ec3c4f982d8b9491b670d8cd5a67736f00c12a5
+---
+ src/fuzzer_huff.cc      | 2 +-
+ src/fuzzer_puff.cc      | 2 +-
+ src/fuzzer_puffpatch.cc | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/fuzzer_huff.cc b/src/fuzzer_huff.cc
+index a8d6451..b1b4d38 100644
+--- a/src/fuzzer_huff.cc
++++ b/src/fuzzer_huff.cc
+@@ -29,7 +29,7 @@ class Environment {
+  public:
+   Environment() {
+     // To turn off the logging.
+-    logging::SetMinLogLevel(logging::LOG_FATAL);
++    logging::SetMinLogLevel(logging::LOGGING_FATAL);
+   }
+ };
+ 
+diff --git a/src/fuzzer_puff.cc b/src/fuzzer_puff.cc
+index 7ac2537..c68de30 100644
+--- a/src/fuzzer_puff.cc
++++ b/src/fuzzer_puff.cc
+@@ -33,7 +33,7 @@ class Environment {
+  public:
+   Environment() {
+     // To turn off the logging.
+-    logging::SetMinLogLevel(logging::LOG_FATAL);
++    logging::SetMinLogLevel(logging::LOGGING_FATAL);
+   }
+ };
+ 
+diff --git a/src/fuzzer_puffpatch.cc b/src/fuzzer_puffpatch.cc
+index 622d3b6..acad6ef 100644
+--- a/src/fuzzer_puffpatch.cc
++++ b/src/fuzzer_puffpatch.cc
+@@ -88,7 +88,7 @@ class Environment {
+  public:
+   Environment() {
+     // To turn off the logging.
+-    logging::SetMinLogLevel(logging::LOG_FATAL);
++    logging::SetMinLogLevel(logging::LOGGING_FATAL);
+ 
+     // To turn off logging for bsdiff library.
+     std::cerr.setstate(std::ios_base::failbit);
+-- 
+2.43.0.429.g432eaa2c6b-goog
+

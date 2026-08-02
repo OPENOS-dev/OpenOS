@@ -1,0 +1,388 @@
+diff -Naur old/README.experimental new/README.experimental
+--- old/README.experimental	1969-12-31 16:00:00.000000000 -0800
++++ new/README.experimental	2010-01-15 16:35:45.000000000 -0800
+@@ -0,0 +1,42 @@
++* Compilation for experimental use on Linux:
++
++$ /bin/sh ./bootstrap.sh
++...
++$ CFLAGS="-DDISABLE_SECURITY -w" ./configure --prefix=/usr/local --with-gui=openssl
++...
++$ make
++...
++$ sudo make install
++...
++
++
++* Compilation for experimental use on Mac OS X:
++
++$ /bin/sh ./bootstrap.sh
++...
++$ CFLAGS="-DDISABLE_SECURITY -w -arch i386" ./configure --prefix=/usr/local --with-gui=openssl
++...
++$ make
++...
++$ sudo make install
++...
++
++If the "/bin/sh ./bootstrap.sh" step fails, which is quite likely to happen
++on a Mac OS X installation, it's much easier to do that part on a recent Linux
++machine rather than wrestle with GNU autoconf/automake/libtool etc. Simply
++start off on a Linux machine, run bootstrap.sh, and assuming it goes well,
++tar up the resultant directory and bring it to Mac OS X. Then continue with
++the next steps.
++
++The first time you install TrouSerS, /usr/local/etc/tcsd.conf will be created.
++To make tcsd accept all operations from remote clients, edit the newly
++installed tcsd.conf to uncomment the section labeled `Remote DISABLED_SECURITY':
++
++...
++# Remote DISABLED_SECURITY
++# If you compiled TrouSerS with DISABLED_SECURITY defined, uncomment the
++# following block to run tcsd in DISABLED_SECURITY mode for remote clients.
++
++port = 30003
++remote_ops = seal,unseal,registerkey,unregisterkey,getregisteredkeybypublicinfo,getpubkey,loadkey,createkey,sign,random,getcapability,unbind,quote,readpubek,selftest
++...
+diff -Naur old/configure.in new/configure.in
+--- old/configure.in	2010-01-15 03:58:42.000000000 -0800
++++ new/configure.in	2010-01-15 16:21:01.000000000 -0800
+@@ -14,10 +14,10 @@
+ AM_INIT_AUTOMAKE([foreign 1.6])
+ 
+ # Debugging support
+-AC_ARG_ENABLE(debug,
+-		AC_HELP_STRING([--enable-debug], [turn on all trousers debugging flags [default is off]]),
+-		[enable_debug="yes"
+-		 AC_MSG_RESULT([*** Enabling debugging at user request ***])],)
++#AC_ARG_ENABLE(debug,
++		#AC_HELP_STRING([--enable-debug], [turn on all trousers debugging flags [default is off]]),
++		#[enable_debug="yes"
++		 #AC_MSG_RESULT([*** Enabling debugging at user request ***])],)
+ 
+ # If the user has not set CFLAGS, do something appropriate
+ test_CFLAGS=${CFLAGS+set}
+diff -Naur old/dist/Makefile.am new/dist/Makefile.am
+--- old/dist/Makefile.am	2006-09-27 15:13:06.000000000 -0700
++++ new/dist/Makefile.am	2010-01-15 16:21:01.000000000 -0800
+@@ -1,17 +1,15 @@
+ 
+ install: install-exec-hook
+ 	if test ! -e ${DESTDIR}/@sysconfdir@/tcsd.conf; then mkdir -p ${DESTDIR}/@sysconfdir@ && cp tcsd.conf ${DESTDIR}/@sysconfdir@; fi
+-	/bin/chown tss:tss ${DESTDIR}/@sysconfdir@/tcsd.conf
+-	/bin/chmod 0600 ${DESTDIR}/@sysconfdir@/tcsd.conf
++	chown tss:tss ${DESTDIR}/@sysconfdir@/tcsd.conf
++	chmod 0600 ${DESTDIR}/@sysconfdir@/tcsd.conf
+ 
+ install-exec-hook:
+-	/usr/sbin/groupadd tss || true
+-	/usr/sbin/useradd -r tss -g tss || true
+-	/bin/chown tss:tss ${DESTDIR}/@sbindir@/tcsd
++	/bin/sh ./platform_useradd || false
++	chown tss:tss ${DESTDIR}/@sbindir@/tcsd
+ 	/bin/sh -c 'if [ ! -e ${DESTDIR}/@localstatedir@/lib/tpm ];then mkdir -p ${DESTDIR}/@localstatedir@/lib/tpm; fi'
+-	/bin/chown tss:tss ${DESTDIR}/@localstatedir@/lib/tpm
+-	/bin/chmod 0700 ${DESTDIR}/@localstatedir@/lib/tpm
++	chown tss:tss ${DESTDIR}/@localstatedir@/lib/tpm
++	chmod 0700 ${DESTDIR}/@localstatedir@/lib/tpm
+ 
+ uninstall-hook:
+-	/usr/sbin/userdel tss
+-	/usr/sbin/groupdel tss
++	/bin/sh ./platform_userdel
+diff -Naur old/dist/platform_useradd new/dist/platform_useradd
+--- old/dist/platform_useradd	1969-12-31 16:00:00.000000000 -0800
++++ new/dist/platform_useradd	2010-01-15 16:21:01.000000000 -0800
+@@ -0,0 +1,42 @@
++#! /bin/bash
++
++PATH=/bin:/sbin:/usr/bin:/usr/sbin:
++
++OSNAME=`uname`
++if [ "$OSNAME" == "Darwin" ] 
++then
++
++    LAST_USED_UID=`sudo dscl . -list /Users UniqueID | sort -n  -k2 | tail -1 | awk '{print $2}'`
++    if [ "$?" != 0 ]
++    then
++        exit 1
++    fi
++    NEXT_UID=$[$LAST_USED_UID + 1000]
++
++    LAST_USED_GID=`sudo dscl . -list /Groups PrimaryGroupID | sort -n  -k2 | tail -1 | awk '{print $2}'`
++    if [ "$?" != 0 ]
++    then
++        exit 1
++    fi
++    NEXT_GID=$[$LAST_USED_GID + 1000]
++
++    sudo dscl . -create /Groups/tss PrimaryGroupID $NEXT_GID || exit 1
++
++    sudo dscl . -create /Users/tss UniqueID $NEXT_UID
++    if [ "$?" != 0 ]
++    then
++        sudo dscl . -delete /Groups/tss
++        exit 1
++    fi
++
++    sudo dscl . -append /Users/tss PrimaryGroupID $NEXT_GID
++    if [ "$?" != 0 ]
++    then
++        sudo dscl . -delete /Groups/tss
++        sudo dscl . -delete /Users/tss
++        exit 1
++    fi
++
++else
++    useradd -U -r tss || true # hope that failure means tss exists
++fi
+diff -Naur old/dist/platform_userdel new/dist/platform_userdel
+--- old/dist/platform_userdel	1969-12-31 16:00:00.000000000 -0800
++++ new/dist/platform_userdel	2010-01-15 16:21:01.000000000 -0800
+@@ -0,0 +1,13 @@
++#! /bin/bash
++
++PATH=/bin:/sbin:/usr/bin:/usr/sbin:
++
++OSNAME=`uname`
++if [ "$OSNAME" == "Darwin" ] 
++then
++    sudo dscl . -delete /Users/tss
++    sudo dscl . -delete /Groups/tss
++else
++    userdel tss
++    groupdel tss
++fi
+diff -Naur old/dist/tcsd.conf.in new/dist/tcsd.conf.in
+--- old/dist/tcsd.conf.in	2007-08-30 14:53:37.000000000 -0700
++++ new/dist/tcsd.conf.in	2010-01-15 16:35:02.000000000 -0800
+@@ -8,6 +8,14 @@
+ # Send questions to: trousers-users@lists.sourceforge.net
+ #
+ 
++# Remote DISABLED_SECURITY
++#
++# If you compiled TrouSerS with DISABLED_SECURITY defined, uncomment the
++# following block to run tcsd in DISABLED_SECURITY mode for remote clients.
++
++# port = 30003
++# remote_ops = seal,unseal,registerkey,unregisterkey,getregisteredkeybypublicinfo,getpubkey,loadkey,createkey,sign,random,getcapability,unbind,quote,readpubek,selftest
++
+ # Option: port
+ # Values: 1 - 65535
+ # Description: The port that the tcsd will listen on.
+diff -Naur old/src/include/tcsd.h new/src/include/tcsd.h
+--- old/src/include/tcsd.h	2007-11-19 12:05:11.000000000 -0800
++++ new/src/include/tcsd.h	2010-01-15 16:21:01.000000000 -0800
+@@ -155,8 +155,10 @@
+ void	   *tcsd_thread_run(void *);
+ void	   thread_signal_init();
+ 
++#ifndef __APPLE__
+ /* signal handling */
+ struct sigaction tcsd_sa_int;
+ struct sigaction tcsd_sa_chld;
++#endif
+ 
+ #endif
+diff -Naur old/src/include/trousers_types.h new/src/include/trousers_types.h
+--- old/src/include/trousers_types.h	2007-11-19 11:33:14.000000000 -0800
++++ new/src/include/trousers_types.h	2010-01-15 16:21:01.000000000 -0800
+@@ -122,6 +122,8 @@
+ #define BSD_CONST
+ #elif (defined (__OpenBSD__) || defined (__FreeBSD__))
+ #define BSD_CONST const
++#elif (defined (__APPLE__))
++#define BSD_CONST
+ #endif
+ 
+ 
+diff -Naur old/src/tcs/rpc/tcstp/rpc.c new/src/tcs/rpc/tcstp/rpc.c
+--- old/src/tcs/rpc/tcstp/rpc.c	2007-12-18 08:21:16.000000000 -0800
++++ new/src/tcs/rpc/tcstp/rpc.c	2010-01-15 16:21:01.000000000 -0800
+@@ -516,6 +516,9 @@
+ int
+ access_control(struct tcsd_thread_data *thread_data)
+ {
++#ifdef DISABLE_SECURITY
++	return 0;
++#else
+ 	int i = 0;
+ 	struct hostent *local_hostent = NULL;
+ 	static char *localhostname = NULL;
+@@ -560,6 +563,7 @@
+ 	}
+ 
+ 	return 1;
++#endif
+ }
+ 
+ TSS_RESULT
+diff -Naur old/src/tcsd/platform.c new/src/tcsd/platform.c
+--- old/src/tcsd/platform.c	2009-10-29 06:45:12.000000000 -0700
++++ new/src/tcsd/platform.c	2010-01-15 16:28:20.000000000 -0800
+@@ -32,6 +32,14 @@
+ #include "tcsps.h"
+ #include "tcslog.h"
+ 
++#if DISABLE_SECURITY
++
++char platform_get_runlevel()
++{
++	return 's';
++}
++
++#else
+ 
+ #if (defined (__linux) || defined (linux))
+ MUTEX_DECLARE_INIT(utmp_lock);
+@@ -131,4 +139,15 @@
+ 
+ 	return runlevel;
+ }
++
++#elif (defined (__APPLE__))
++
++char
++platform_get_runlevel()
++{
++	return '5'; // XXX TBD
++}
++
+ #endif
++
++#endif /* DISABLED_SECURITY */
+diff -Naur old/src/tcsd/svrside.c new/src/tcsd/svrside.c
+--- old/src/tcsd/svrside.c	2008-10-13 19:40:53.000000000 -0700
++++ new/src/tcsd/svrside.c	2010-01-15 16:21:01.000000000 -0800
+@@ -41,6 +41,14 @@
+ struct tcsd_config tcsd_options;
+ struct tpm_properties tpm_metrics;
+ 
++#ifdef __APPLE__
++/* signal handling */
++struct sigaction tcsd_sa_int;
++struct sigaction tcsd_sa_chld;
++
++#include <dlfcn.h>
++#endif
++
+ void
+ tcsd_shutdown()
+ {
+@@ -226,6 +234,10 @@
+ 		{"foreground", 0, NULL, 'f'},
+ 		{0, 0, 0, 0}
+ 	};
++#ifdef __APPLE__
++	typedef int (*daemon_funcptr_t)(int, int);
++	daemon_funcptr_t daemon_funcptr = dlsym(RTLD_DEFAULT, "daemon");
++#endif
+ 
+ 	while ((c = getopt_long(argc, argv, "fh", long_options, &option_index)) != -1) {
+ 		switch (c) {
+@@ -245,7 +257,11 @@
+ 		return (int)result;
+ 
+ 	if (getenv("TCSD_FOREGROUND") == NULL) {
++#ifdef __APPLE__
++		if (daemon_funcptr(0, 0) == -1) {
++#else
+ 		if (daemon(0, 0) == -1) {
++#endif
+ 			perror("daemon");
+ 			tcsd_shutdown();
+ 			return -1;
+@@ -281,6 +297,12 @@
+ 	}
+ 	client_len = (unsigned)sizeof(client_addr);
+ 	LogInfo("%s: TCSD up and running.", PACKAGE_STRING);
++#ifdef DISABLE_SECURITY
++	LogInfo("*** WARNING *** This experimental version of TCSD has critical caveats:");
++	LogInfo("\t- It NEVER requires single-user mode.");
++	LogInfo("\t- It allows ALL operations EVEN to remote clients.");
++	LogInfo("*** WARNING *** DO NOT use this code in production.");
++#endif
+ 	do {
+ 		newsd = accept(sd, (struct sockaddr *) &client_addr, &client_len);
+ 		LogDebug("accepted socket %i", newsd);
+diff -Naur old/src/tspi/ps/tspps.c new/src/tspi/ps/tspps.c
+--- old/src/tspi/ps/tspps.c	2009-07-20 11:49:35.000000000 -0700
++++ new/src/tspi/ps/tspps.c	2010-01-15 16:21:01.000000000 -0800
+@@ -30,7 +30,7 @@
+ 
+ static int user_ps_fd = -1;
+ static MUTEX_DECLARE_INIT(user_ps_lock);
+-#if (defined (__FreeBSD__) || defined (__OpenBSD__))
++#if (defined (__FreeBSD__) || defined (__OpenBSD__) || defined (__APPLE__))
+ static MUTEX_DECLARE_INIT(user_ps_path);
+ #endif
+ 
+@@ -56,7 +56,7 @@
+ 		*file = strdup(file_name);
+ 		return (*file) ? TSS_SUCCESS : TSPERR(TSS_E_OUTOFMEMORY);
+ 	}
+-#if (defined (__FreeBSD__) || defined (__OpenBSD__))
++#if (defined (__FreeBSD__) || defined (__OpenBSD__) || defined(__APPLE__))
+ 	MUTEX_LOCK(user_ps_path);
+ #endif
+ 
+@@ -72,8 +72,8 @@
+ 			endpwent();
+ 			return TSPERR(TSS_E_INTERNAL_ERROR);
+ 		}
+-
+-#elif (defined (__FreeBSD__) || defined (__OpenBSD__))
++ 
++#elif (defined (__FreeBSD__) || defined (__OpenBSD__) || defined(__APPLE__))
+ 		if ((pwp = getpwent()) == NULL) {
+ 			LogDebugFn("USER PS: Error getting path to home directory: getpwent: %s",
+                                    strerror(rc));
+diff -Naur old/src/tspi/tspi_context.c new/src/tspi/tspi_context.c
+--- old/src/tspi/tspi_context.c	2008-01-04 09:01:59.000000000 -0800
++++ new/src/tspi/tspi_context.c	2010-01-15 16:21:01.000000000 -0800
+@@ -70,7 +70,22 @@
+ 	BYTE *machine_name = NULL;
+ 	TSS_HOBJECT hTpm;
+ 	UINT32 string_len = 0;
++#ifdef DISABLE_SECURITY
++	char* tss_server = getenv("TSS_SERVER");
+ 
++	if ((wszDestination == NULL) && (tss_server != NULL)) {
++		size_t machineNameLen = strlen(tss_server);
++		machine_name = (BYTE*)malloc(machineNameLen + 1);
++		if (machine_name != NULL) {
++			(void)snprintf((char*)machine_name, machineNameLen + 1,
++					"%s", tss_server);
++			// XXX To ensure table is created.
++			void* junk = calloc_tspi(tspContext, 32);
++			free_tspi(tspContext, junk);
++			goto machine_name_ok;
++		}
++	}
++#endif
+ 
+ 	if (wszDestination == NULL) {
+ 		if ((result = obj_context_get_machine_name(tspContext,
+@@ -87,6 +102,9 @@
+ 			LogError("Error converting hostname to UTF-8");
+ 			return TSPERR(TSS_E_INTERNAL_ERROR);
+ 		}
++#ifdef DISABLE_SECURITY
++machine_name_ok:
++#endif
+ 
+ 		if ((result = RPC_OpenContext(tspContext, machine_name,
+ 					      CONNECTION_TYPE_TCP_PERSISTANT)))
+diff -Naur old/tools/ps_inspect.c new/tools/ps_inspect.c
+--- old/tools/ps_inspect.c	2009-07-27 05:57:33.000000000 -0700
++++ new/tools/ps_inspect.c	2010-01-15 16:21:01.000000000 -0800
+@@ -68,7 +68,7 @@
+ #define PRINTERR(...)	fprintf(stderr, ##__VA_ARGS__)
+ #define PRINT(...)	printf("PS " __VA_ARGS__)
+ 
+-#if (defined (__FreeBSD__) || defined (__OpenBSD__))
++#if (defined (__FreeBSD__) || defined (__OpenBSD__) || defined(__APPLE__))
+ #define OFF_T_PRINTF	"lld"
+ #else
+ #define OFF_T_PRINTF	"ld"

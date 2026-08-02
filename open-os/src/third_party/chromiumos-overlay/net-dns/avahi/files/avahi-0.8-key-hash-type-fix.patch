@@ -1,0 +1,66 @@
+Change function signatures so UBSAN and CFI don't blow up.
+
+b/316143422
+
+diff --git a/avahi-core/rr.c b/avahi-core/rr.c
+index 7fa0bee..655865b 100644
+--- a/avahi-core/rr.c
++++ b/avahi-core/rr.c
+@@ -83,8 +83,9 @@ AvahiKey *avahi_key_ref(AvahiKey *k) {
+     return k;
+ }
+ 
+-void avahi_key_unref(AvahiKey *k) {
+-    assert(k);
++void avahi_key_unref(void *v) {
++    assert(v);
++    AvahiKey *k = (AvahiKey *)v;
+     assert(k->ref >= 1);
+ 
+     if ((--k->ref) <= 0) {
+@@ -320,7 +321,9 @@ char *avahi_record_to_string(const AvahiRecord *r) {
+     return s;
+ }
+ 
+-int avahi_key_equal(const AvahiKey *a, const AvahiKey *b) {
++int avahi_key_equal(const void *u, const void *v) {
++    const AvahiKey *a = (const AvahiKey *)u;
++    const AvahiKey *b = (const AvahiKey *)v;
+     assert(a);
+     assert(b);
+ 
+@@ -354,8 +357,9 @@ int avahi_key_is_pattern(const AvahiKey *k) {
+         k->clazz == AVAHI_DNS_CLASS_ANY;
+ }
+ 
+-unsigned avahi_key_hash(const AvahiKey *k) {
+-    assert(k);
++unsigned avahi_key_hash(const void *v) {
++    assert(v);
++    const AvahiKey *k = (const AvahiKey *)v;
+ 
+     return
+         avahi_domain_hash(k->name) +
+diff --git a/avahi-core/rr.h b/avahi-core/rr.h
+index 794b83f..b6464c7 100644
+--- a/avahi-core/rr.h
++++ b/avahi-core/rr.h
+@@ -114,15 +114,15 @@ AvahiKey *avahi_key_new(const char *name, uint16_t clazz, uint16_t type);
+ AvahiKey *avahi_key_ref(AvahiKey *k);
+ 
+ /** Decrease the reference counter of an AvahiKey object by one */
+-void avahi_key_unref(AvahiKey *k);
++void avahi_key_unref(void *k);
+ 
+ /** Check whether two AvahiKey object contain the same
+  * data. AVAHI_DNS_CLASS_ANY/AVAHI_DNS_TYPE_ANY are treated like any
+  * other class/type. */
+-int avahi_key_equal(const AvahiKey *a, const AvahiKey *b);
++int avahi_key_equal(const void *a, const void *b);
+ 
+ /** Return a numeric hash value for a key for usage in hash tables. */
+-unsigned avahi_key_hash(const AvahiKey *k);
++unsigned avahi_key_hash(const void *k);
+ 
+ /** Create a new record object. Record data should be filled in right after creation. The reference counter is set to 1. */
+ AvahiRecord *avahi_record_new(AvahiKey *k, uint32_t ttl);

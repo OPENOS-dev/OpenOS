@@ -1,0 +1,16 @@
+[package]
+name = "cras-sys"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+exclude = ["*"]
+include = ["Cargo.toml", "build.rs", "src/lib.rs", "src/gen.rs"]
+
+[dependencies]
+audio_streams = "*"
+cras_common = "*"
+data_model = "*"
+serde = "1.0.125"
+
+[build-dependencies]
+bindgen = "0.63"

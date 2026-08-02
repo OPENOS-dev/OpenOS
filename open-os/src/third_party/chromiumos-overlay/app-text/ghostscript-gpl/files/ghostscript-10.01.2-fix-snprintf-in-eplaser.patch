@@ -1,0 +1,106 @@
+diff --git a/contrib/eplaser/gdevescv.c b/contrib/eplaser/gdevescv.c
+index d69f641..09048b6 100644
+--- a/contrib/eplaser/gdevescv.c
++++ b/contrib/eplaser/gdevescv.c
+@@ -1357,7 +1357,7 @@ escv_setfillcolor(gx_device_vector * vdev,
+ 
+   if( 0 == pdev->colormode ) { /* ESC/Page (Monochrome) */
+ 
+-    (void)gs_snprintf(obuf, sizeof(obuf), /*ESC_GS "1owE"*/ ESC_GS "0;0;100spE" ESC_GS "1;0;%ldccE" ,color);
++    (void)gs_snprintf(obuf, sizeof(obuf), /*ESC_GS "1owE"*/ ESC_GS "0;0;100spE" ESC_GS "1;0;%ldccE" ,(long)color);
+     lputs(s, obuf);
+ 
+     if (vdev->x_pixels_per_inch == 1200) {
+@@ -1372,9 +1372,9 @@ escv_setfillcolor(gx_device_vector * vdev,
+ 
+     /* パターンＯＮ指定／ソリッドパターン指定 */
+     (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;2;3;%d;%d;%dfpE",
+-                  (unsigned char)(color >> 16 & 0xff),
+-                  (unsigned char)(color >> 8 & 0xff),
+-                  (unsigned char)(color & 0xff));
++                  (int)(color >> 16 & 0xff),
++                  (int)(color >> 8 & 0xff),
++                  (int)(color & 0xff));
+     lputs(s, obuf);
+     lputs(s, ESC_GS "3;2;1;0;0cpE" ESC_GS "1;2;1;0;0cpE" ESC_GS "5;2;1;0;0cpE");
+ 
+@@ -1399,7 +1399,7 @@ escv_setstrokecolor(gx_device_vector * vdev,
+ 
+     pdev->current_color = color;
+ 
+-    (void)gs_snprintf(obuf, sizeof(obuf), /*ESC_GS "1owE"*/ ESC_GS "0;0;100spE" ESC_GS "1;1;%ldccE" , color);
++    (void)gs_snprintf(obuf, sizeof(obuf), /*ESC_GS "1owE"*/ ESC_GS "0;0;100spE" ESC_GS "1;1;%ldccE" , (long)color);
+     lputs(s, obuf);
+ 
+     if (vdev->x_pixels_per_inch == 1200) {
+@@ -1417,9 +1417,9 @@ escv_setstrokecolor(gx_device_vector * vdev,
+       pdev->current_color = color;
+       /* パターンＯＮ色指定／ソリッドパターン指定 */
+       (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;2;3;%d;%d;%dfpE" ESC_GS "2;2;1;0;0cpE",
+-                    (unsigned char)(color >> 16 & 0xff),
+-                    (unsigned char)(color >> 8 & 0xff),
+-                    (unsigned char)(color & 0xff));
++                    (int)(color >> 16 & 0xff),
++                    (int)(color >> 8 & 0xff),
++                    (int)(color & 0xff));
+       lputs(s, obuf);
+ 
+     }
+@@ -2071,7 +2071,7 @@ escv_copy_mono(gx_device * dev, const byte * data,
+       if( 0 == pdev->colormode ) { /* ESC/Page (Monochrome) */
+ 
+         /*	    lputs(s, ESC_GS "1owE");*/
+-        (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;1;%ldccE", c_color);
++        (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;1;%ldccE", (long)c_color);
+         lputs(s, obuf);
+ 
+         if (vdev->x_pixels_per_inch == 1200) {
+@@ -2157,9 +2157,9 @@ escv_copy_mono(gx_device * dev, const byte * data,
+ 
+     /* パターンＯＮ指定／ソリッドパターン指定 */
+     (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;2;3;%d;%d;%dfpE",
+-                  (unsigned char)(c_color >> 16 & 0xff),
+-                  (unsigned char)(c_color >> 8 & 0xff),
+-                  (unsigned char)(c_color & 0xff));
++                  (int)(c_color >> 16 & 0xff),
++                  (int)(c_color >> 8 & 0xff),
++                  (int)(c_color & 0xff));
+     lputs(s, obuf);
+ 
+     lputs(s, ESC_GS "5;2;1;0;0cpE");
+@@ -2276,7 +2276,7 @@ escv_fill_mask(gx_device * dev,
+     if (!gx_dc_is_pure(pdcolor)) return_error(gs_error_rangecheck);
+     pdev->current_color = color;
+ 
+-    (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "0;0;100spE" ESC_GS "1;1;%ldccE" ,color);
++    (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "0;0;100spE" ESC_GS "1;1;%ldccE" ,(long)color);
+     lputs(s, obuf);
+ 
+     if (vdev->x_pixels_per_inch == 1200) {
+@@ -2316,7 +2316,7 @@ escv_fill_mask(gx_device * dev,
+           memcpy(buf + i * width_bytes, data + (data_x >> 3) + i * raster, width_bytes);
+         }
+ 
+-        (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "%d;%d;%d;%d;0db{F", num_bytes, (int)(id & VCACHE), w, h);
++        (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "%d;%d;%d;%d;0db{F", (int)num_bytes, (int)(id & VCACHE), w, h);
+         lputs(s, obuf);
+         put_bytes(s, buf, num_bytes);
+ 
+@@ -2326,7 +2326,7 @@ escv_fill_mask(gx_device * dev,
+ 
+       (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "%dX" ESC_GS "%dY", x, y);
+       lputs(s, obuf);
+-      (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "%lddbF", id & VCACHE);
++      (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "%lddbF", (long)(id & VCACHE));
+       lputs(s, obuf);
+ 
+       return 0;
+@@ -2511,7 +2511,7 @@ fallback:
+         gx_color_index color = gx_dc_pure_color(pdcolor);
+ 
+         /*	    lputs(s, ESC_GS "1owE");*/
+-        (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;1;%ldccE", color);
++        (void)gs_snprintf(obuf, sizeof(obuf), ESC_GS "1;1;%ldccE", (long)color);
+         lputs(s, obuf);
+ 
+         if (vdev->x_pixels_per_inch == 1200) {

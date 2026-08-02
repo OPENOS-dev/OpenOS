@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for ExtUtils-Manifest
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* =dev-lang/perl-5.38* =dev-lang/perl-5.36* =dev-lang/perl-5.34* ~perl-core/ExtUtils-Manifest-1.730.0 ) !<perl-core/ExtUtils-Manifest-1.730.0 !>perl-core/ExtUtils-Manifest-1.730.0-r999
+SLOT=0
+_md5_=077a36ebc71d358efde6edc5bcffc316

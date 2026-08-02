@@ -1,0 +1,13 @@
+BDEPEND=amd64? ( media-libs/fontconfig:= ) net-misc/rsync !cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) )
+DEFINED_PHASES=compile install
+DEPEND=!cros_host? ( internal? ( chromeos-base/monotype-fonts:= >=chromeos-base/google-sans-fonts-3.0.0:= ) ) media-fonts/croscorefonts:= media-fonts/crosextrafonts:= media-fonts/crosextrafonts-carlito:= media-fonts/noto-cjk:= media-fonts/notofonts:= media-fonts/ko-nanumfonts:= media-fonts/lohitfonts-cros:= media-fonts/robotofonts:= media-fonts/tibt-jomolhari:= media-libs/fontconfig:= cros_host? ( sys-libs/glibc:= ) extra_japanese_fonts? ( media-fonts/ipaex media-fonts/morisawa-ud-fonts ) !cros_host? ( dev-lang/python )
+DESCRIPTION=Chrome OS Fonts (meta package)
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=cros_host extra_japanese_fonts internal cros_host test
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!cros_host? ( internal? ( chromeos-base/monotype-fonts:= >=chromeos-base/google-sans-fonts-3.0.0:= ) ) media-fonts/croscorefonts:= media-fonts/crosextrafonts:= media-fonts/crosextrafonts-carlito:= media-fonts/noto-cjk:= media-fonts/notofonts:= media-fonts/ko-nanumfonts:= media-fonts/lohitfonts-cros:= media-fonts/robotofonts:= media-fonts/tibt-jomolhari:= media-libs/fontconfig:= cros_host? ( sys-libs/glibc:= ) extra_japanese_fonts? ( media-fonts/ipaex media-fonts/morisawa-ud-fonts )
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	platform2-test	4fa59301b430c37fb33ee24042ca7ebe
+_md5_=923426df63c7c071e1072edadc54c5a8

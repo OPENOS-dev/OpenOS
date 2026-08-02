@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure install prepare
+DEPEND=net-libs/libqrtr:= virtual/udev:= net-misc/libdiagcfg:=
+DESCRIPTION=DIAG channel diagnostics communication tool
+EAPI=7
+HOMEPAGE=https://github.com/andersson/diag
+IUSE=asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=net-libs/libqrtr:= virtual/udev:=
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=https://github.com/andersson/diag/archive/d06e599d197790c9e84ac41a51bf124a69768c4f.tar.gz -> diag-0.1_p20210329.tar.gz
+_eclasses_=cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=03bc4ec4b182e90d3054fa7c13102028

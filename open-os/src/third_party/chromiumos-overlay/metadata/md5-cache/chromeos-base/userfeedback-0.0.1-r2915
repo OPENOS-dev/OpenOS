@@ -1,0 +1,13 @@
+BDEPEND=dev-vcs/git app-misc/jq virtual/pkgconfig
+DEFINED_PHASES=info install setup unpack
+DESCRIPTION=Log scripts used by userfeedback to report cros system information
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/userfeedback/
+IUSE=systemd cros_host cros_workon_tree_b929f26fa7aa79c29dec307cdadf0d8f3a68b861
+KEYWORDS=*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=chromeos-base/chromeos-init chromeos-base/crash-reporter chromeos-base/modem-utilities chromeos-base/vboot_reference media-libs/fontconfig media-sound/alsa-utils sys-apps/coreboot-utils sys-apps/net-tools sys-apps/pciutils sys-apps/usbutils
+SLOT=0/0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=d4552a946c8fb1f9d789b61568f91504

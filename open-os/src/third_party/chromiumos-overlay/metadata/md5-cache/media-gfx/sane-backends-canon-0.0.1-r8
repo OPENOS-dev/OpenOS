@@ -1,0 +1,14 @@
+BDEPEND=dev-vcs/git app-misc/jq virtual/pkgconfig
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=virtual/libusb:1 media-libs/libjpeg-turbo:= media-gfx/sane-backends:=
+DESCRIPTION=Canon SANE API Scanner Driver
+EAPI=7
+HOMEPAGE=https://www.canon.com
+IUSE=cros_host cros_workon_tree_eb9f40d3f632489098a61db4717e9ab33a0f44a9
+KEYWORDS=*
+LICENSE=Apache-2.0
+PROPERTIES=live
+RDEPEND=virtual/libusb:1 media-libs/libjpeg-turbo:= media-gfx/sane-backends:=
+SLOT=0/0.0.1-r8
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	dlc	768f1474a752d1b824c04c5695593433	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=829d082a944692decde452f0d6b683a1

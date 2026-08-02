@@ -1,0 +1,12 @@
+# This group controls the access to the Perfettto system tracing service daemon
+# "traced" as a producer. Users in this group are permitted to receive control
+# commands from the service daemon and send trace data to the daemon as a trace
+# data source. Users in this group:
+#  * chronos: for Chrome to send Chrome trace data to traced.
+#  * crosvm: for Crosvm to send VM trace data to traced.
+#  * traced: the user to run "traced" in.
+#  * traced-probes: for the system probes "traced_probes" to send kernel ftrace
+#      and other system trace data to traced.
+group:traced-producer
+gid:20162
+users:chronos,crosvm,traced,traced-probes

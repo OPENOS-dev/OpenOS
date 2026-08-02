@@ -1,0 +1,15 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "touch_MouseScroll"
+METADATA = {
+    "contacts": ["chromeos-tango@google.com"],
+    "bug_component": "b:167212",
+    "criteria": "External USB mouse scroll event occurs in expected direction.",
+    "hw_agnostic": False
+}
+ATTRIBUTES = "suite:touch, group:release-health, release-health_touch"
+TEST_TYPE = "client"
+
+job.run_test('touch_MouseScroll')

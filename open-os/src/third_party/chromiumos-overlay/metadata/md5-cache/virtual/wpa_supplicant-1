@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual to select between different wpa_supplicant revisions
+EAPI=7
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=net-wireless/wpa_supplicant-cros[dbus] !net-wireless/wpa_supplicant-2_9 !net-wireless/wpa_supplicant-2_8 !net-wireless/wpa_supplicant
+SLOT=0
+_md5_=ec2f7362b7fba8dae8dd894caabae98e

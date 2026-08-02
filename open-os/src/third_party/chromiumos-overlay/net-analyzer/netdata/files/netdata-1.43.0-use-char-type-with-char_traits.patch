@@ -1,0 +1,38 @@
+use char32_t as unicode character type instead of uint32_t
+
+Fix for b/343425479
+
+The C++ standard library provides specializations of char_traits for
+char, wchar_t, char16_t, char32_t, and, as of C++20, char8_t.
+
+libcxx used to provide char_traits for arbitrary types (e.g. unsigned
+int), but this is not required by the standard and was removed in
+https://reviews.llvm.org/D157058.
+
+This change makes netdata compile with that libcxx change.
+
+diff --git a/ml/dlib/dlib/serialize.h b/ml/dlib/dlib/serialize.h
+index f21bdaa..4a521f6 100644
+--- a/ml/dlib/dlib/serialize.h
++++ b/ml/dlib/dlib/serialize.h
+@@ -544,6 +544,7 @@ namespace dlib
+     USE_DEFAULT_BYTE_SERIALIZATION_FOR(char)
+     USE_DEFAULT_BYTE_SERIALIZATION_FOR(signed char)
+     USE_DEFAULT_BYTE_SERIALIZATION_FOR(unsigned char)
++    USE_DEFAULT_BYTE_SERIALIZATION_FOR(char32_t)
+ 
+     // Don't define serialization for wchar_t when using visual studio and
+     // _NATIVE_WCHAR_T_DEFINED isn't defined since if it isn't they improperly set
+diff --git a/ml/dlib/dlib/unicode/unicode.h b/ml/dlib/dlib/unicode/unicode.h
+index d7510e3..cdf7942 100644
+--- a/ml/dlib/dlib/unicode/unicode.h
++++ b/ml/dlib/dlib/unicode/unicode.h
+@@ -16,7 +16,7 @@ namespace dlib
+ 
+ // ----------------------------------------------------------------------------------------
+ 
+-    typedef uint32 unichar;
++    typedef char32_t unichar;
+ 
+ #if defined(__GNUC__) && __GNUC__ < 4 && __GNUC_MINOR__ < 4
+     struct unichar_traits 

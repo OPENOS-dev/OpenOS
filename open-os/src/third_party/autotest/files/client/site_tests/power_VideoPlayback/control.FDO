@@ -1,0 +1,22 @@
+# Description
+# This test records power related statistics while play back video file in
+# various format.
+#
+# "FDO" is short for "force discharge optional." Test will use EC command to
+# force DUT to discharge. If it fails, then use AC as the power source.
+
+NAME = "power_VideoPlayback.FDO"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+    "requirements": ["pwr-batLife-0010-v01", "pwr-batLife-0010-v02"]
+}
+# ATTRIBUTES = ("suite:power_weekly_video_playback")
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_VideoPlayback', tag=NAME.split('.')[1],
+             pdash_note=pdash_note, force_discharge='optional')

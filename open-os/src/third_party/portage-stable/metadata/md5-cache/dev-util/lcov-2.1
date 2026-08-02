@@ -1,0 +1,14 @@
+BDEPEND=test? ( dev-lang/perl dev-perl/Capture-Tiny dev-perl/DateTime || ( dev-perl/JSON-XS dev-perl/Cpanel-JSON-XS virtual/perl-JSON-PP dev-perl/JSON ) dev-perl/PerlIO-gzip dev-perl/GD || ( ( >=dev-lang/python-3.11.0_p2:3.11 dev-python/xlsxwriter[python_targets_python3_11(-)] ) ) )
+DEFINED_PHASES=compile install postinst prepare setup test
+DESCRIPTION=A graphical front-end for GCC's coverage testing tool gcov
+EAPI=7
+HOMEPAGE=https://github.com/linux-test-project/lcov
+IUSE=test
+KEYWORDS=*
+LICENSE=GPL-2+
+RDEPEND=dev-lang/perl dev-perl/Capture-Tiny dev-perl/DateTime || ( dev-perl/JSON-XS dev-perl/Cpanel-JSON-XS virtual/perl-JSON-PP dev-perl/JSON ) dev-perl/PerlIO-gzip
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/linux-test-project/lcov/releases/download/v2.1/lcov-2.1.tar.gz
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multiprocessing	e5d48c933105327e0f826ce5108afc55	optfeature	f4941a15f8b66955c45f7b0e7c4ae890	prefix	e51c7882b7b721e54e684f7eb143cbfe	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=4a65e72f58654f9c30ef06f95d73e6fb

@@ -1,0 +1,13 @@
+BDEPEND=dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=app-misc/ca-certificates >=dev-perl/IO-Socket-SSL-1.540.0 >=dev-perl/libwww-perl-6.60.0 >=dev-perl/Net-HTTP-6 virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DESCRIPTION=Provide https support for LWP::UserAgent
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/LWP-Protocol-https
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=app-misc/ca-certificates >=dev-perl/IO-Socket-SSL-1.540.0 >=dev-perl/libwww-perl-6.60.0 >=dev-perl/Net-HTTP-6 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/O/OA/OALDERS/LWP-Protocol-https-6.10.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=0db078a9b97e2dd18ba7c5e32d91bbd1

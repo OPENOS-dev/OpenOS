@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DESCRIPTION=Google swordfish library for ChromeOS
+EAPI=7
+IUSE=dlc march_x86-64 march_x86-64-v2 march_x86-64-v3 march_x86-64-v4 march_bdver4 march_znver1 march_znver2 march_znver3 march_znver4 march_silvermont march_goldmont march_goldmont-plus march_tremont march_alderlake march_meteorlake march_skylake march_armv7-a march_armv8-a
+KEYWORDS=*
+LICENSE=BSD-Google Apache-2.0 MPL-2.0 icu-58
+REQUIRED_USE=dlc ^^ ( march_x86-64 march_x86-64-v2 march_x86-64-v3 march_x86-64-v4 march_bdver4 march_znver1 march_znver2 march_znver3 march_znver4 march_silvermont march_goldmont march_goldmont-plus march_tremont march_alderlake march_meteorlake march_skylake march_armv7-a march_armv8-a )
+RESTRICT=mirror
+SLOT=0
+SRC_URI=amd64? ( march_alderlake? ( gs://chromeos-localmirror/distfiles/libswordfish_chromeos_alderlake-0.0.2.tar.gz ) march_meteorlake? ( gs://chromeos-localmirror/distfiles/libswordfish_chromeos_alderlake-0.0.2.tar.gz ) )
+_eclasses_=cros-binary	8d92a34eb534ad68084cd638fc329d74	cros-constants	676fcfd1679a06bba553adf90e231454	dlc	768f1474a752d1b824c04c5695593433
+_md5_=f9b4a09103db38a8d20fdad3fd80ba6a

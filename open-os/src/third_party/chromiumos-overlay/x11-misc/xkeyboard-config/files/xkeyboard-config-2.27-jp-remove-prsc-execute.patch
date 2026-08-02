@@ -1,0 +1,13 @@
+diff --git a/symbols/jp b/symbols/jp
+index 3d2d03b..e55d1b5 100644
+--- a/symbols/jp
++++ b/symbols/jp
+@@ -96,7 +96,7 @@ xkb_symbols "common" {
+ 
+     key <PRSC> {
+ 	type[Group1]= "PC_ALT_LEVEL2",
+-	symbols[Group1]= [ Print, Execute ]
++	symbols[Group1]= [ Print, Print ]
+     };
+ };
+ 

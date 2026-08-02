@@ -1,0 +1,14 @@
+BDEPEND=virtual/perl-Carp virtual/perl-Exporter virtual/perl-File-Spec virtual/perl-File-Temp virtual/perl-IO virtual/perl-Scalar-List-Utils virtual/perl-ExtUtils-MakeMaker test? ( virtual/perl-Test-Simple ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Capture STDOUT and STDERR from Perl, XS or external programs
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Capture-Tiny
+IUSE=test examples
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=virtual/perl-Carp virtual/perl-Exporter virtual/perl-File-Spec virtual/perl-File-Temp virtual/perl-IO virtual/perl-Scalar-List-Utils dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=c5f4435734dd617712e0d5251cb82b1a

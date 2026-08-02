@@ -1,0 +1,5 @@
+group:preserve
+gid:253
+# only these users are allowed to write to
+# /mnt/stateful_partition/unencrypted/preserve.
+users:attestation,rollback_cleanup,root,tpm_manager

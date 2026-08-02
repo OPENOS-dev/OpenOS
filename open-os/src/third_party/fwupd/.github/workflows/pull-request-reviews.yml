@@ -1,0 +1,35 @@
+name: Pull Request reviews
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  pre-commit:
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Docker login
+        run: docker login ghcr.io -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Run pre-commit hooks
+        run: |
+          docker run --privileged -t \
+              -v $GITHUB_WORKSPACE:/github/workspace \
+              "ghcr.io/fwupd/fwupd/fwupd-precommit-${{ case(runner.arch == 'ARM64', 'arm64', 'amd64') }}:latest"
+
+  snap:
+    needs: pre-commit
+    uses: ./.github/workflows/snap.yml
+    with:
+      deploy: false
+    secrets: inherit
+
+  matrix:
+    needs: pre-commit
+    uses: ./.github/workflows/matrix.yml
+    with:
+      publish: false
+    secrets: inherit

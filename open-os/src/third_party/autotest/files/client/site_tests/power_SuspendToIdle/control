@@ -1,0 +1,28 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# Test functionality of Suspend to Idle.
+#
+# Raise TestNAError if default config is not suspend to idle.
+#
+# This test uses the following confidence check to verify that S0ix is working.
+# 1. DMC Firmware is loaded successfully.
+# 2. PCH IP blocks are powergating correctly.
+# 3. DMC firmware entry DC6 state in S0ix.
+# 4. S0ix residency counter is increased.
+# 5. CPU package C10 state residency counter is increased.
+# 6. GPU RC6 state residency counter is increased.
+
+NAME = "power_SuspendToIdle"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a functional test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("suite:power_daily_misc, group:release-health, release-health_power")
+TEST_TYPE = "client"
+
+job.run_test('power_SuspendToIdle')

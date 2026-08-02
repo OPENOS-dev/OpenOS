@@ -1,0 +1,16 @@
+BDEPEND=sys-devel/autoconf-archive app-alternatives/awk virtual/pkgconfig verify-sig? ( sec-keys/openpgp-keys-python ) !cros_host? ( dev-lang/python:3.11 ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install prepare unpack
+DEPEND=app-arch/bzip2:= app-arch/xz-utils:= app-crypt/libb2 >=dev-libs/expat-2.1:= dev-libs/libffi:= >=sys-libs/zlib-1.1.3:= virtual/libcrypt:= virtual/libintl ensurepip? ( dev-python/ensurepip-wheels ) gdbm? ( sys-libs/gdbm:=[berkdb] ) kernel_linux? ( sys-apps/util-linux:= ) ncurses? ( >=sys-libs/ncurses-5.2:= ) readline? ( !libedit? ( >=sys-libs/readline-4.1:= ) libedit? ( dev-libs/libedit:= ) ) sqlite? ( >=dev-db/sqlite-3.3.8:3= ) ssl? ( >=dev-libs/openssl-1.1.1:= ) tk? ( >=dev-lang/tcl-8.0:= >=dev-lang/tk-8.0:= dev-tcltk/blt:= dev-tcltk/tix ) bluetooth? ( net-wireless/libbluez:= ) test? ( app-arch/xz-utils ) valgrind? ( dev-debug/valgrind )
+DESCRIPTION=An interpreted, interactive, object-oriented programming language
+EAPI=7
+HOMEPAGE=https://www.python.org/ https://github.com/python/cpython/
+IUSE=bluetooth build debug +ensurepip examples gdbm libedit +ncurses pgo +readline +sqlite +ssl test tk valgrind pgo_generate +pgo_use cros_host verify-sig asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=PSF-2
+RDEPEND=app-arch/bzip2:= app-arch/xz-utils:= app-crypt/libb2 >=dev-libs/expat-2.1:= dev-libs/libffi:= >=sys-libs/zlib-1.1.3:= virtual/libcrypt:= virtual/libintl ensurepip? ( dev-python/ensurepip-wheels ) gdbm? ( sys-libs/gdbm:=[berkdb] ) kernel_linux? ( sys-apps/util-linux:= ) ncurses? ( >=sys-libs/ncurses-5.2:= ) readline? ( !libedit? ( >=sys-libs/readline-4.1:= ) libedit? ( dev-libs/libedit:= ) ) sqlite? ( >=dev-db/sqlite-3.3.8:3= ) ssl? ( >=dev-libs/openssl-1.1.1:= ) tk? ( >=dev-lang/tcl-8.0:= >=dev-lang/tk-8.0:= dev-tcltk/blt:= dev-tcltk/tix ) !build? ( app-misc/mime-types ) dev-lang/python-exec[python_targets_python3_11(-)]
+REQUIRED_USE=pgo_generate? ( !pgo_use ) cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+RESTRICT=!test? ( test )
+SLOT=3.11
+SRC_URI=https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tar.xz https://dev.gentoo.org/~mgorny/dist/python/python-gentoo-patches-3.11.11_p1.tar.xz verify-sig? ( https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tar.xz.asc ) pgo_use? ( gs://chromeos-localmirror/distfiles/python-3.11-profile.tar.xz )
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	check-reqs	74c98e9a7b34b32be3548357852e9ec3	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	pax-utils	3551398d6ede2b572568832730cc2a45	prefix	e51c7882b7b721e54e684f7eb143cbfe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=ef0055ac7822d0f625283ffb4388e178

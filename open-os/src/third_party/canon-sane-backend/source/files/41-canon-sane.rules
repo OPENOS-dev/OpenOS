@@ -1,0 +1,31 @@
+ACTION!="add", GOTO="cndrvsane_end"
+SUBSYSTEM=="usb_device", GOTO="cndrvsane_start"
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", GOTO="cndrvsane_start"
+GOTO="cndrvsane_end"
+
+LABEL="cndrvsane_start"
+ATTR{idVendor}!="1083",GOTO="cndrvsane_end"
+
+
+# DR-P215II
+ATTR{idProduct}=="1641", MODE="664", GROUP="scanner"
+# DR-C225
+ATTR{idProduct}=="1658", MODE="664", GROUP="scanner"
+# DR-C225II
+ATTR{idProduct}=="165b", MODE="664", GROUP="scanner"
+# DR-P208II
+ATTR{idProduct}=="165d", MODE="664", GROUP="scanner"
+# P-208II
+ATTR{idProduct}=="165f", MODE="664", GROUP="scanner"
+# P208II
+ATTR{idProduct}=="1661", MODE="664", GROUP="scanner"
+# DR-M260
+ATTR{idProduct}=="166d", MODE="664", GROUP="scanner"
+# DR-C230X
+ATTR{idProduct}=="1670", MODE="664", GROUP="scanner"
+# R40
+ATTR{idProduct}=="1679", MODE="664", GROUP="scanner"
+# R50
+ATTR{idProduct}=="167e", MODE="664", GROUP="scanner"
+
+LABEL="cndrvsane_end"

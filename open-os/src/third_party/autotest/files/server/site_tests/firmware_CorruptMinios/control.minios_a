@@ -1,0 +1,43 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.server import utils
+
+AUTHOR = "ChromeOS Team"
+NAME = "firmware_CorruptMinios.minios_a"
+METADATA = {
+    "contacts": ["chromeos-faft@google.com", "jbettis@chromium.org"],
+    "bug_component": "b:792402",  # ChromeOS > Platform > Enablement > Firmware > FAFT
+    "criteria": "Corrupt one MiniOS kernel, set the priority to that, and ensure that both priority can boot",
+}
+ATTRIBUTES = "suite:faft_bios, suite:faft_bios_ro_qual, suite:faft_bios_autotests"
+# TODO(b/427195218): Add servo-exists + servo_state:WORKING after bug resolved.
+# DEPENDENCIES = "servo_state:WORKING"
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+JOB_RETRIES = 0
+
+DOC = """
+This test requires the device to support MiniOS. On runtime, this test uses
+the dd tool to corrupt the MiniOS partition and try to boot MiniOS from
+firmware manual recovery screen.
+"""
+
+args_dict = utils.args_to_dict(args)
+servo_args = hosts.CrosHost.get_servo_arguments(args_dict)
+
+
+def run(machine):
+    host = hosts.create_host(machine, servo_args=servo_args)
+    job.run_test(
+        "firmware_CorruptMinios",
+        host=host,
+        cmdline_args=args,
+        disable_sysinfo=True,
+        minios_section="a",
+        tag="minios_a",
+    )
+
+
+parallel_simple(run, machines)

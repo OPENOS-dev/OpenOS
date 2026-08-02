@@ -1,0 +1,15 @@
+BDEPEND=bash-completion? ( >=app-shells/bash-completion-2.0 ) chromeos-base/minijail >=dev-libs/glib-2.56.2 dev-libs/libxslt dev-util/gdbus-codegen dev-util/glib-utils >=sys-devel/gettext-0.19.8 !cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array dev-vcs/git app-misc/jq virtual/pkgconfig
+DEFINED_PHASES=compile configure info install preinst prepare setup test unpack
+DEPEND=>=dev-libs/glib-2.56.2 >=sys-apps/dbus-1.2 net-dialup/ppp mbim? ( net-libs/libmbim ) qmi? ( net-libs/libqmi ) qrtr? ( net-libs/libqrtr-glib ) !net-misc/modemmanager virtual/libgudev !net-misc/modemmanager-next-interfaces !net-misc/modemmanager !cros_host? ( dev-lang/python ) sys-apps/baselayout
+DESCRIPTION=Modem and mobile broadband management libraries
+EAPI=7
+HOMEPAGE=https://www.freedesktop.org/wiki/Software/ModemManager/
+IUSE=bash-completion doc mbim qmi qrtr fuzzer cros_host test asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan cros_host cros_workon_tree_ fuzzer
+KEYWORDS=~*
+LICENSE=GPL-2
+PROPERTIES=live
+RDEPEND=>=dev-libs/glib-2.56.2 >=sys-apps/dbus-1.2 net-dialup/ppp mbim? ( net-libs/libmbim ) qmi? ( net-libs/libqmi ) qrtr? ( net-libs/libqrtr-glib ) !net-misc/modemmanager sys-apps/baselayout
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-fuzzer	d598850678086f73116a1dba1b01de44	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	meson	0b48ece927e974cd82202dc49f391f82	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=0073a55a49a47d8d76f005d54401e6b1

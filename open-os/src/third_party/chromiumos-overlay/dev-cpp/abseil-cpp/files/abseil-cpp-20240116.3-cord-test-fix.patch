@@ -1,0 +1,41 @@
+From f933ff7c6afdf9f2b95b084be1ee1db8af099793 Mon Sep 17 00:00:00 2001
+From: Di Wu <diwux@google.com>
+Date: Thu, 31 Jul 2025 02:32:43 +0000
+Subject: [PATCH] dev-cpp/abseil-cpp: Fix cord_test build for 20240116.3 uprev
+
+This patch addresses a compilation failure in the `cord_test.cc` unit
+test that occurred during the uprev to abseil-cpp-20240116.3.
+
+The build error was caused by the use of `std::basic_string<uint8_t>`,
+which is not fully supported by the toolchain and results in an error
+related to an undefined `std::char_traits<unsigned char>`.
+
+The fix replaces the usage of `std::basic_string<uint8_t>` with the
+standard `std::string`. This change is confined to the test source and
+has no impact on the library's ABI. This allows the package to be built
+successfully with the 'test' USE flag enabled.
+
+BUG=b:425266540
+TEST=FEATURES=test emerge-brya dev-cpp/abseil-cpp
+---
+ absl/strings/cord_test.cc | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/absl/strings/cord_test.cc b/absl/strings/cord_test.cc
+index f1a5f39..5234b3d 100644
+--- a/absl/strings/cord_test.cc
++++ b/absl/strings/cord_test.cc
+@@ -1512,9 +1512,8 @@ TEST_P(CordTest, CompareAfterAssign) {
+ // comparison methods from basic_string.
+ static void TestCompare(const absl::Cord& c, const absl::Cord& d,
+                         RandomEngine* rng) {
+-  typedef std::basic_string<uint8_t> ustring;
+-  ustring cs(reinterpret_cast<const uint8_t*>(std::string(c).data()), c.size());
+-  ustring ds(reinterpret_cast<const uint8_t*>(std::string(d).data()), d.size());
++  std::u8string cs(reinterpret_cast<const char8_t*>(std::string(c).data()), c.size());
++  std::u8string ds(reinterpret_cast<const char8_t*>(std::string(d).data()), d.size());
+   // ustring comparison is ideal because we expect Cord comparisons to be
+   // based on unsigned byte comparisons regardless of whether char is signed.
+   int expected = sign(cs.compare(ds));
+-- 
+2.50.1.552.g942d659e1b-goog

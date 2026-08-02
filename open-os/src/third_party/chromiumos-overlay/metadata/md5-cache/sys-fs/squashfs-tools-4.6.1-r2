@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile install prepare
+DEPEND=sys-libs/zlib lz4? ( app-arch/lz4 ) lzma? ( app-arch/xz-utils ) lzo? ( dev-libs/lzo ) xattr? ( selinux? ( sys-libs/libselinux ) sys-apps/attr ) zstd? ( app-arch/zstd )
+DESCRIPTION=Tools to create and extract Squashfs filesystems
+EAPI=7
+HOMEPAGE=https://github.com/plougher/squashfs-tools/
+IUSE=debug lz4 lzma lzo selinux xattr zstd
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-libs/zlib lz4? ( app-arch/lz4 ) lzma? ( app-arch/xz-utils ) lzo? ( dev-libs/lzo ) xattr? ( selinux? ( sys-libs/libselinux ) sys-apps/attr ) zstd? ( app-arch/zstd )
+REQUIRED_USE=selinux? ( xattr )
+SLOT=0
+SRC_URI=https://github.com/plougher/squashfs-tools/archive/4.6.1.tar.gz -> squashfs-tools-4.6.1.tar.gz
+_eclasses_=cros-subtool	33cbd2873ed95f1f5b811cef24258032	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3e3e7ed4cba3fc89adec066cb3a7f7ff

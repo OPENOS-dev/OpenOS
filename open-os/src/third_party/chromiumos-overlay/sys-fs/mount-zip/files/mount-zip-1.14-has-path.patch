@@ -1,0 +1,27 @@
+From 8ae60f4dff212d6e2d158da4d942c863eb7b09fd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fran=C3=A7ois=20Degros?= <fdegros@chromium.org>
+Date: Mon, 1 Jun 2026 09:23:35 +1000
+Subject: [PATCH] Add missing overload of Tree::HasSamePath
+
+---
+ lib/tree.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/lib/tree.h b/lib/tree.h
+index f036fa5..ce6c5f2 100644
+--- a/lib/tree.h
++++ b/lib/tree.h
+@@ -198,6 +198,10 @@ class Tree {
+       return hsv.hash == n.path_hash && hsv.string.size() == n.path_length &&
+              n.HasPath(hsv.string);
+     }
++
++    bool operator()(const OriginalName& n, const HashedStringView& hsv) const {
++      return (*this)(hsv, n);
++    }
+   };
+ 
+   using NodesByPathBase =
+-- 
+2.54.0.823.g6e5bcc1fc9-goog
+

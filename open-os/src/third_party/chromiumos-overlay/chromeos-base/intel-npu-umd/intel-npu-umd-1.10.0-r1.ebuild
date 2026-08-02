@@ -1,0 +1,1 @@
+intel-npu-umd-1.10.0.ebuild

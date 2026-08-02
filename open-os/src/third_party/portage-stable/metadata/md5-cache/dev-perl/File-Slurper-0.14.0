@@ -1,0 +1,14 @@
+BDEPEND=dev-perl/PerlIO-utf8_strict virtual/perl-Carp >=virtual/perl-Encode-2.110.0 >=virtual/perl-Exporter-5.570.0 virtual/perl-ExtUtils-MakeMaker test? ( virtual/perl-File-Spec virtual/perl-File-Temp virtual/perl-Test-Simple dev-perl/Test-Warnings ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=A simple, sane and efficient module to slurp a file
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/File-Slurper
+IUSE=test examples
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=dev-perl/PerlIO-utf8_strict virtual/perl-Carp >=virtual/perl-Encode-2.110.0 >=virtual/perl-Exporter-5.570.0 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/L/LE/LEONT/File-Slurper-0.014.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=ef87e0a30255c26c9b0293c85f405ce9

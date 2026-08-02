@@ -1,0 +1,14 @@
+BDEPEND=dev-util/gn dev-util/ninja
+DEFINED_PHASES=compile configure install prepare setup test
+DEPEND=x11-drivers/opengles-headers:= virtual/jpeg:0= virtual/opengles:= media-libs/freetype:2= || ( >=dev-lang/python-3.11.0_p2:3.11 )
+DESCRIPTION=Skia: The 2D Graphics Library
+EAPI=7
+HOMEPAGE=https://github.com/google/skia
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=virtual/jpeg:0= virtual/opengles:= media-libs/freetype:2=
+RESTRICT=!x86? ( !amd64? ( test ) )
+SLOT=0
+SRC_URI=https://github.com/google/skia/archive/52aecbec6fb24f9cf0491563674906a9a43170da.tar.gz -> skia-106.tar.gz
+_eclasses_=cros-common.mk	9e8d1ee1b6c7bcbbba3cb473b2e4df3e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=f34d6863bc37a324afb3839a99445733

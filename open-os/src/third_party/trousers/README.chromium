@@ -1,0 +1,16 @@
+URL: http://sourceforge.net/projects/trousers/
+
+UPSTREAM_REPO: git://git.code.sf.net/p/trousers/trousers
+UPSTREAM_BUGSDB: http://sourceforge.net/p/trousers/bugs/
+
+Version: 0.3.13
+License: BSD
+License File: LICENSE
+
+Description:
+  The trousers package, for interfacing to devices conforming to the TPM v1.2
+  specification.
+
+Local Modifications:
+  See commit history. In general make effort to keep this as close to upstream
+  as possible. Upstream changes are cloned on cros/upstream.

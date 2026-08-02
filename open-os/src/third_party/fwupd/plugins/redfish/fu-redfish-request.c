@@ -1,0 +1,321 @@
+/*
+ * Copyright 2021 Richard Hughes <richard@hughsie.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-redfish-request.h"
+
+struct _FuRedfishRequest {
+	GObject parent_instance;
+	CURL *curl;
+	CURLU *uri;
+	GByteArray *buf;
+	glong status_code;
+	FwupdJsonParser *json_parser;
+	FwupdJsonObject *json_obj;
+	GHashTable *cache; /* nullable */
+};
+
+G_DEFINE_TYPE(FuRedfishRequest, fu_redfish_request, G_TYPE_OBJECT)
+
+typedef gchar curlptr;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(curlptr, curl_free)
+
+FwupdJsonObject *
+fu_redfish_request_get_json_object(FuRedfishRequest *self)
+{
+	g_return_val_if_fail(FU_IS_REDFISH_REQUEST(self), NULL);
+	return fwupd_json_object_ref(self->json_obj);
+}
+
+CURL *
+fu_redfish_request_get_curl(FuRedfishRequest *self)
+{
+	g_return_val_if_fail(FU_IS_REDFISH_REQUEST(self), NULL);
+	return self->curl;
+}
+
+CURLU *
+fu_redfish_request_get_uri(FuRedfishRequest *self)
+{
+	g_return_val_if_fail(FU_IS_REDFISH_REQUEST(self), NULL);
+	return self->uri;
+}
+
+glong
+fu_redfish_request_get_status_code(FuRedfishRequest *self)
+{
+	g_return_val_if_fail(FU_IS_REDFISH_REQUEST(self), G_MAXLONG);
+	return self->status_code;
+}
+
+static gboolean
+fu_redfish_request_load_json(FuRedfishRequest *self, GByteArray *buf, GError **error)
+{
+	g_autoptr(FwupdJsonNode) json_node = NULL;
+	g_autoptr(FwupdJsonObject) json_error = NULL;
+	g_autoptr(GString) str = NULL;
+
+	/* load */
+	if (buf->data == NULL || buf->len == 0) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_INVALID_FILE,
+				    "there was no JSON payload");
+		return FALSE;
+	}
+	json_node = fwupd_json_parser_load_from_data(self->json_parser,
+						     (const gchar *)buf->data,
+						     (gssize)buf->len,
+						     error);
+	if (json_node == NULL)
+		return FALSE;
+	self->json_obj = fwupd_json_node_get_object(json_node, error);
+	if (self->json_obj == NULL)
+		return FALSE;
+
+	/* dump for humans */
+	str = fwupd_json_object_to_string(self->json_obj, FWUPD_JSON_EXPORT_FLAG_INDENT);
+	g_debug("response: %s", str->str);
+
+	/* unauthorized */
+	json_error = fwupd_json_object_get_object(self->json_obj, "error", NULL);
+	if (json_error != NULL) {
+		FwupdError error_code = FWUPD_ERROR_INTERNAL;
+		const gchar *id;
+		const gchar *msg;
+		g_autoptr(FwupdJsonArray) json_error_array = NULL;
+
+		/* extended error present */
+		json_error_array =
+		    fwupd_json_object_get_array(json_error, "@Message.ExtendedInfo", NULL);
+		if (json_error_array != NULL && fwupd_json_array_get_size(json_error_array) > 0) {
+			g_autoptr(FwupdJsonObject) json_error2 = NULL;
+			json_error2 = fwupd_json_array_get_object(json_error_array, 0, error);
+			if (json_error2 == NULL)
+				return FALSE;
+			id = fwupd_json_object_get_string(json_error2, "MessageId", NULL);
+			msg = fwupd_json_object_get_string(json_error2, "Message", NULL);
+		} else {
+			id = fwupd_json_object_get_string(json_error, "code", NULL);
+			msg = fwupd_json_object_get_string(json_error, "message", NULL);
+		}
+		if (g_strcmp0(id, "Base.1.8.AccessDenied") == 0)
+			error_code = FWUPD_ERROR_AUTH_FAILED;
+		else if (g_strcmp0(id, "Base.1.8.PasswordChangeRequired") == 0)
+			error_code = FWUPD_ERROR_AUTH_EXPIRED;
+		else if (g_strcmp0(id, "SMC.1.0.OemLicenseNotPassed") == 0)
+			error_code = FWUPD_ERROR_NOT_SUPPORTED;
+		else if (g_strcmp0(id, "SMC.1.0.OemFirmwareAlreadyInUpdateMode") == 0 ||
+			 g_strcmp0(id, "SMC.1.0.OemBiosUpdateIsInProgress") == 0 ||
+			 g_pattern_match_simple("IDRAC.*.RED014", id))
+			error_code = FWUPD_ERROR_ALREADY_PENDING;
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    error_code,
+				    msg != NULL ? msg : "Unknown failure");
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+gboolean
+fu_redfish_request_perform(FuRedfishRequest *self,
+			   const gchar *path,
+			   FuRedfishRequestPerformFlags flags,
+			   GError **error)
+{
+	CURLcode res;
+	g_autofree gchar *str = NULL;
+	g_autoptr(curlptr) uri_str = NULL;
+
+	g_return_val_if_fail(FU_IS_REDFISH_REQUEST(self), FALSE);
+	g_return_val_if_fail(path != NULL, FALSE);
+	g_return_val_if_fail(self->status_code == 0, FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+	/* already in cache? */
+	if (flags & FU_REDFISH_REQUEST_PERFORM_FLAG_USE_CACHE && self->cache != NULL) {
+		GByteArray *buf = g_hash_table_lookup(self->cache, path);
+		if (buf != NULL) {
+			if (flags & FU_REDFISH_REQUEST_PERFORM_FLAG_LOAD_JSON)
+				return fu_redfish_request_load_json(self, buf, error);
+			g_byte_array_unref(self->buf);
+			self->buf = g_byte_array_ref(buf);
+			return TRUE;
+		}
+	}
+
+	/* do request */
+	(void)curl_url_set(self->uri, CURLUPART_PATH, path, 0);
+	(void)curl_url_get(self->uri, CURLUPART_URL, &uri_str, 0);
+	res = curl_easy_perform(self->curl);
+	curl_easy_getinfo(self->curl, CURLINFO_RESPONSE_CODE, &self->status_code);
+	str = g_strndup((const gchar *)self->buf->data, self->buf->len);
+	g_debug("%s: %s [%li]", uri_str, str, self->status_code);
+
+	/* check result */
+	if (res != CURLE_OK) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_INVALID_FILE,
+			    "failed to request %s: %s",
+			    uri_str,
+			    curl_easy_strerror(res));
+		return FALSE;
+	}
+
+	/* invalid user */
+	if (fu_redfish_request_get_status_code(self) == 401) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_AUTH_FAILED,
+				    "authentication failed");
+		return FALSE;
+	}
+
+	/* load JSON */
+	if (flags & FU_REDFISH_REQUEST_PERFORM_FLAG_LOAD_JSON && self->buf->len > 0) {
+		if (!fu_redfish_request_load_json(self, self->buf, error)) {
+			g_prefix_error(error, "failed to parse %s: ", uri_str);
+			return FALSE;
+		}
+	}
+
+	/* save to cache */
+	if (self->cache != NULL)
+		g_hash_table_insert(self->cache, g_strdup(path), g_byte_array_ref(self->buf));
+
+	/* success */
+	return TRUE;
+}
+
+typedef struct curl_slist _curl_slist;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(_curl_slist, curl_slist_free_all)
+
+static void
+fu_redfish_request_reset(FuRedfishRequest *self)
+{
+	self->status_code = 0;
+	self->json_obj = NULL;
+	g_byte_array_set_size(self->buf, 0);
+}
+
+gboolean
+fu_redfish_request_perform_full(FuRedfishRequest *self,
+				const gchar *path,
+				const gchar *request,
+				FwupdJsonObject *json_obj,
+				FuRedfishRequestPerformFlags flags,
+				GError **error)
+{
+	g_autofree gchar *etag_header = NULL;
+	g_autoptr(_curl_slist) hs = NULL;
+	g_autoptr(GString) str = NULL;
+
+	g_return_val_if_fail(FU_IS_REDFISH_REQUEST(self), FALSE);
+	g_return_val_if_fail(path != NULL, FALSE);
+	g_return_val_if_fail(request != NULL, FALSE);
+	g_return_val_if_fail(json_obj != NULL, FALSE);
+
+	/* get etag */
+	if (flags & FU_REDFISH_REQUEST_PERFORM_FLAG_USE_ETAG) {
+		const gchar *etag;
+		g_autoptr(FwupdJsonObject) json_obj2 = NULL;
+		if (!fu_redfish_request_perform(self,
+						path,
+						FU_REDFISH_REQUEST_PERFORM_FLAG_LOAD_JSON,
+						error)) {
+			g_prefix_error_literal(error, "failed to request etag: ");
+			return FALSE;
+		}
+		json_obj2 = fu_redfish_request_get_json_object(self);
+		etag = fwupd_json_object_get_string(json_obj2, "@odata.etag", NULL);
+		if (etag != NULL)
+			etag_header = g_strdup_printf("If-Match: %s", etag);
+
+		/* allow us to reuse the request */
+		fu_redfish_request_reset(self);
+	}
+
+	/* export as a string */
+	str = fwupd_json_object_to_string(json_obj, FWUPD_JSON_EXPORT_FLAG_INDENT);
+	g_debug("request to %s: %s", path, str->str);
+
+	/* patch */
+	(void)curl_easy_setopt(self->curl, CURLOPT_CUSTOMREQUEST, request);
+	(void)curl_easy_setopt(self->curl, CURLOPT_POSTFIELDS, str->str);
+	(void)curl_easy_setopt(self->curl, CURLOPT_POSTFIELDSIZE, (long)str->len);
+	hs = curl_slist_append(hs, "Content-Type: application/json");
+	if (etag_header != NULL)
+		hs = curl_slist_append(hs, etag_header);
+	(void)curl_easy_setopt(self->curl, CURLOPT_HTTPHEADER, hs);
+	return fu_redfish_request_perform(self, path, flags, error);
+}
+
+static size_t
+fu_redfish_request_write_cb(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	GByteArray *buf = (GByteArray *)userdata;
+	gsize realsize = size * nmemb;
+	g_byte_array_append(buf, (const guint8 *)ptr, realsize);
+	return realsize;
+}
+
+void
+fu_redfish_request_set_cache(FuRedfishRequest *self, GHashTable *cache)
+{
+	g_return_if_fail(FU_IS_REDFISH_REQUEST(self));
+	g_return_if_fail(cache != NULL);
+	g_return_if_fail(self->cache == NULL);
+	self->cache = g_hash_table_ref(cache);
+}
+
+void
+fu_redfish_request_set_curlsh(FuRedfishRequest *self, CURLSH *curlsh)
+{
+	g_return_if_fail(FU_IS_REDFISH_REQUEST(self));
+	g_return_if_fail(curlsh != NULL);
+	(void)curl_easy_setopt(self->curl, CURLOPT_SHARE, curlsh);
+}
+
+static void
+fu_redfish_request_init(FuRedfishRequest *self)
+{
+	self->curl = curl_easy_init();
+	self->uri = curl_url();
+	self->buf = g_byte_array_new();
+	self->json_parser = fwupd_json_parser_new();
+	(void)curl_easy_setopt(self->curl, CURLOPT_WRITEFUNCTION, fu_redfish_request_write_cb);
+	(void)curl_easy_setopt(self->curl, CURLOPT_WRITEDATA, self->buf);
+
+	/* set appropriate limits */
+	fwupd_json_parser_set_max_depth(self->json_parser, 50);
+	fwupd_json_parser_set_max_items(self->json_parser, 1000);
+	fwupd_json_parser_set_max_quoted(self->json_parser, 100000);
+}
+
+static void
+fu_redfish_request_finalize(GObject *object)
+{
+	FuRedfishRequest *self = FU_REDFISH_REQUEST(object);
+	if (self->cache != NULL)
+		g_hash_table_unref(self->cache);
+	g_object_unref(self->json_parser);
+	g_byte_array_unref(self->buf);
+	curl_easy_cleanup(self->curl);
+	curl_url_cleanup(self->uri);
+	G_OBJECT_CLASS(fu_redfish_request_parent_class)->finalize(object);
+}
+
+static void
+fu_redfish_request_class_init(FuRedfishRequestClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS(klass);
+	object_class->finalize = fu_redfish_request_finalize;
+}

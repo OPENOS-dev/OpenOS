@@ -1,0 +1,12 @@
+BDEPEND=virtual/pkgconfig virtual/pkgconfig
+DEFINED_PHASES=install
+DESCRIPTION=Common files for multiple slots of sys-fs/fuse
+EAPI=7
+HOMEPAGE=https://github.com/libfuse/libfuse
+KEYWORDS=*
+LICENSE=GPL-2 LGPL-2.1
+RDEPEND=!<sys-fs/fuse-2.9.7-r1:0
+SLOT=0
+SRC_URI=https://github.com/libfuse/libfuse/releases/download/fuse-3.10.4/fuse-3.10.4.tar.xz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=92e4cf41218620cf9a2b3e4cb8df8a77

@@ -1,0 +1,28 @@
+# Copyright 2023 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+CROS_WORKON_COMMIT="9ed9e5ae6420e9d977c1a541b3a4067b4d13fd11"
+CROS_WORKON_TREE="9ac258db7ac6f53d2ca1600b257f815d21ffb6a1"
+CROS_WORKON_PROJECT="chromiumos/third_party/libcamera"
+CROS_WORKON_LOCALNAME="libcamera/mtkisp7"
+CROS_WORKON_EGIT_BRANCH="mtkisp7"
+
+LIBCAMERA_PIPELINES="mtkisp7"
+LIBCAMERA_IPA="mtkisp7"
+
+LIBCAMERA_DEPEND="
+	media-libs/libcamera-mtkisp7-utils-bin
+	media-libs/libcamera-tuning
+	media-libs/mtk-isp7-3a-libs-bin
+	media-libs/mtk-isp7-aie-firmware
+	media-libs/mtk-isp7-hwcore
+	media-libs/mtk-isp7-tuning-libs-bin
+	"
+
+inherit cros-camera cros-workon libcamera
+
+DESCRIPTION="Camera support library for Linux on mtkisp7"
+
+KEYWORDS="*"

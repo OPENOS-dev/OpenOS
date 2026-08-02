@@ -1,0 +1,19 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'stub_ServerToClientPass'
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': "b:1284375", # ChromeOS > Test > Harness > Tauto > Examples
+    'criteria': 'Stub to verify a client test can be kicked off and passes from a server test'
+}
+TEST_TYPE = 'server'
+ATTRIBUTES = 'suite:infra_qual, suite:py3-beta, suite:cft-beta, suite:cft-critical, suite:cft-nightly, suite:cft_ctf_test_suite'
+
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('stub_ServerToClientPass', host=host)
+
+parallel_simple(run, machines)

@@ -1,0 +1,24 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# Dummy client test for testing power telemetry wrapper tests, measurement
+# loggers, and measurement dashboards. Run for a short amount of time, collect
+# logger data, and upload to power dashboard.
+# Loggers included in this test are all loggers in power_test and
+# power_dashboard.SimplePowerLoggerDashboard.
+
+NAME = "power_Dummy"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark.",
+    "hw_agnostic": False
+}
+ATTRIBUTES = ""
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_Dummy', pdash_note=pdash_note)

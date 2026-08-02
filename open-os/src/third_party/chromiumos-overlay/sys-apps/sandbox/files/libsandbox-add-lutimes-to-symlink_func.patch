@@ -1,0 +1,55 @@
+From cdc89a00ac0bc3170d4ca7bfc77bc2572ce076b0 Mon Sep 17 00:00:00 2001
+From: Mike Gilbert <floppym@gentoo.org>
+Date: Mon, 12 Jun 2023 10:58:39 -0400
+Subject: libsandbox: add lutimes to symlink_func
+
+lutimes operates on symlinks, so we should not check for access against
+the symlink target.
+
+Bug: https://bugs.gentoo.org/908105
+Signed-off-by: Mike Gilbert <floppym@gentoo.org>
+---
+ libsandbox/libsandbox.c | 1 +
+ tests/lutimes-1.sh      | 9 +++++++++
+ tests/lutimes.at        | 1 +
+ 3 files changed, 11 insertions(+)
+ create mode 100755 tests/lutimes-1.sh
+ create mode 100644 tests/lutimes.at
+
+diff --git a/libsandbox/libsandbox.c b/libsandbox/libsandbox.c
+index 0ca2bc9..b9ef52e 100644
+--- a/libsandbox/libsandbox.c
++++ b/libsandbox/libsandbox.c
+@@ -679,6 +679,7 @@ static bool symlink_func(int sb_nr, int flags)
+ 	    sb_nr == SB_NR_LCHOWN       ||
+ 	    sb_nr == SB_NR_LREMOVEXATTR ||
+ 	    sb_nr == SB_NR_LSETXATTR    ||
++	    sb_nr == SB_NR_LUTIMES      ||
+ 	    sb_nr == SB_NR_REMOVE       ||
+ 	    sb_nr == SB_NR_RENAME       ||
+ 	    sb_nr == SB_NR_RENAMEAT     ||
+diff --git a/tests/lutimes-1.sh b/tests/lutimes-1.sh
+new file mode 100755
+index 0000000..8638bb2
+--- /dev/null
++++ b/tests/lutimes-1.sh
+@@ -0,0 +1,9 @@
++#!/bin/sh
++
++addwrite "${PWD}"
++
++sym="lutimes-1.sym"
++ln -s /bad/path "${sym}"
++
++lutimes-0 0 "${sym}" NULL || exit 1
++lutimes-0 -1,EACCES /bin/sh NULL || exit 1
+diff --git a/tests/lutimes.at b/tests/lutimes.at
+new file mode 100644
+index 0000000..081d7d2
+--- /dev/null
++++ b/tests/lutimes.at
+@@ -0,0 +1 @@
++SB_CHECK(1)
+-- 
+2.43.0.381.gb435a96ce8-goog
+

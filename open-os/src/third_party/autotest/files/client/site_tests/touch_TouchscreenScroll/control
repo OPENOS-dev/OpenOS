@@ -1,0 +1,17 @@
+# Copyright 2015 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "touch_TouchscreenScroll"
+METADATA = {
+    "contacts": ["chromeos-tango@google.com"],
+    "bug_component": "b:167277",
+    "criteria": "One finger touchscreen scroll in 4 directions.",
+    "hw_agnostic": False,
+    'variant_category': '{"name": "Touchscreen_SoC_Controller_Variant-def-plus-kernelnext"}',
+}
+ATTRIBUTES = "suite:touch_replay_touchscreen, group:release-health, release-health_touch"
+TEST_TYPE = "client"
+DEPENDENCIES = "touchscreen"
+
+job.run_test('touch_TouchscreenScroll')

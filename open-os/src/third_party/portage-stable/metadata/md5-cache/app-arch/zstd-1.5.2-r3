@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=app-arch/xz-utils sys-libs/zlib lz4? ( app-arch/lz4 )
+DESCRIPTION=zstd fast compression library
+EAPI=7
+HOMEPAGE=https://facebook.github.io/zstd/
+IUSE=lz4 static-libs abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64 split-usr
+KEYWORDS=*
+LICENSE=|| ( BSD GPL-2 )
+RDEPEND=app-arch/xz-utils sys-libs/zlib lz4? ( app-arch/lz4 )
+SLOT=0/1
+SRC_URI=https://github.com/facebook/zstd/archive/v1.5.2.tar.gz -> zstd-1.5.2.tar.gz
+_eclasses_=multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	usr-ldscript	766f0a506b45f02361ad1b8ca205b7e1
+_md5_=da2f56c0282c2d90a376ad2cd8f7e844

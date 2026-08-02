@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure install prepare test
+DESCRIPTION=STMicroelectronics touchscreen controller firmware updater
+EAPI=7
+HOMEPAGE=https://github.com/stmicroelectronics-acp/st-touch-fw-updater
+KEYWORDS=*
+LICENSE=BSD
+RESTRICT=!x86? ( !amd64? ( test ) )
+SLOT=0
+SRC_URI=https://github.com/stmicroelectronics-acp/st-touch-fw-updater/archive/v0.0.1.002.tar.gz -> st-touch-fw-updater-0.0.1.002.tar.gz
+_eclasses_=cros-common.mk	9e8d1ee1b6c7bcbbba3cb473b2e4df3e	flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=fd7f9a3e95cbf637af1349c8b67eda96

@@ -1,0 +1,58 @@
+flatbuffers: use host flatc
+
+This patch removes the hardcoded thirdparty/flatbuffers dep
+in favor of the system one which is newer and is guaranteed
+to work on the host systems, because the older one got
+cross-compiled and it only worked by accident if the host
+and target were sufficiently similar.
+
+--- a/thirdparty/CMakeLists.txt
++++ b/thirdparty/CMakeLists.txt
+@@ -39,41 +39,13 @@ if(NOT ENABLE_PREBUILT_LLVM_MLIR_LIBS)
+     include_directories(SYSTEM ${MLIR_SOURCE_DIR} ${MLIR_BINARY_DIR})
+ endif()
+ 
+-#
+-# flatbuffers
+-#
+-
+-if(CMAKE_SOURCE_DIR STREQUAL OpenVINO_SOURCE_DIR AND
+-    ENABLE_OV_TF_LITE_FRONTEND AND (NOT ENABLE_SYSTEM_FLATBUFFERS OR NOT Flatbuffers_FOUND))
+-    # we are building NPU plugin via -DOPENVINO_EXTRA_MODULES
+-    # and flatbuffers is already built as part of OpenVINO in case of
+-    # building in a single tree
+-else()
+-    set(FLATBUFFERS_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+-    set(FLATBUFFERS_INSTALL OFF CACHE BOOL "" FORCE)
+-    set(FLATBUFFERS_BUILD_FLATC ON CACHE BOOL "" FORCE)
+-
+-    add_subdirectory(flatbuffers EXCLUDE_FROM_ALL)
+-
+-    # FIXME: this flag is forced while building in a single tree with OV
+-    # but code cannot be compiled with the flag
+-    if(NOT MSVC)
+-        target_compile_options(flatbuffers PRIVATE -Wno-suggest-override)
+-        target_compile_options(flatc PRIVATE -Wno-suggest-override)
+-        if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13))
+-            target_compile_options(flatbuffers PRIVATE -Wno-unused-but-set-variable)
+-            target_compile_options(flatc PRIVATE -Wno-unused-but-set-variable)
+-        endif()
+-    endif()
+-
+-    vpux_add_native_tool(flatc "${CMAKE_CURRENT_SOURCE_DIR}/flatbuffers"
+-        CMAKE_ARGS
+-            "FLATBUFFERS_BUILD_TESTS:BOOL=OFF"
+-            "FLATBUFFERS_INSTALL:BOOL=OFF"
+-            "FLATBUFFERS_BUILD_FLATC:BOOL=ON"
+-    )
+-endif()
++if(ENABLE_SYSTEM_FLATBUFFERS AND NOT TARGET flatbuffers)
++    add_library(flatbuffers INTERFACE IMPORTED GLOBAL)
++    set_target_properties(flatbuffers PROPERTIES
++        INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
++    )
++endif()
+ 
+ #
+ # npu_elf
+ #

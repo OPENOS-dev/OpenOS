@@ -1,0 +1,26 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'chromium_Graphics'
+METADATA = {
+    'contacts': ['chrome-browser-infra@google.com'],
+    'bug_component': 'b:1085804',
+    'criteria': 'Run telemetry based server package on Drone for chromium graphics tests',
+    'hw_agnostic': True
+}
+TEST_TYPE = "Server"
+
+MAX_RESULT_SIZE_KB = 256 * 1024
+REQUIRE_SSP = True
+
+DOC = '''
+This is a wrapper for chromium graphics tests. The test executable, runtime
+deps and server packages are provisioned by TLS.
+'''
+
+def run(machine):
+    host=hosts.create_host(machine)
+    job.run_test('chromium_Graphics', host=host, args=args)
+
+parallel_simple(run, machines)

@@ -1,0 +1,25 @@
+From eb275914901a38a333b74653880aa6b2ddbac393 Mon Sep 17 00:00:00 2001
+From: Yi Chou <yich@google.com>
+Date: Wed, 7 Feb 2024 10:57:49 +0800
+Subject: [PATCH] Prevent leaking the uninitialized memory
+
+---
+ src/tpm_mgmt/tpm_version.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tpm_mgmt/tpm_version.c b/src/tpm_mgmt/tpm_version.c
+index 1019b71..d83ccd4 100644
+--- a/src/tpm_mgmt/tpm_version.c
++++ b/src/tpm_mgmt/tpm_version.c
+@@ -85,7 +85,7 @@ char* end_capture_stderr(int olderr)
+     memsize = 100;
+     st.st_size = memsize - 1;
+   }
+-  if (!(buf = malloc(memsize))) {
++  if (!(buf = calloc(memsize, 1))) {
+     perror("malloc()");
+     goto errout;
+   }
+-- 
+2.43.0.594.gd9cf4e227d-goog
+

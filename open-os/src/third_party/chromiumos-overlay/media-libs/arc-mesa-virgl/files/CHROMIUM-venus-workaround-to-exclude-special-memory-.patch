@@ -1,0 +1,40 @@
+From d9debad518aceea6b88af5eb89a30ea94f1d321e Mon Sep 17 00:00:00 2001
+From: Yiwei Zhang <zzyiwei@chromium.org>
+Date: Thu, 24 Apr 2025 18:21:02 +0000
+Subject: [PATCH] CHROMIUM: venus: workaround to exclude special memory types
+
+Special memory types can have allocation limitations unknown to some
+memory cts. e.g. ANV's dynamic visible pool has limited va space
+exposed. This is to workaround the memory mapping and allocation tests
+to not allocate against the special memory types.
+
+The specific types excluded here are not exposed via image or buffer
+memory requirements queried since venus doesn't support descriptor
+buffers. So it's safe to drop them as a workaround here.
+
+BUG=b:412975552
+BUG=b:371137042
+TEST=dEQP-VK.memory.* passing on ovis and rex
+
+Change-Id: I8e9b559c9f96d0aab0c518e9dbc05b2af6fc8d62
+---
+ src/virtio/vulkan/vn_physical_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/virtio/vulkan/vn_physical_device.c b/src/virtio/vulkan/vn_physical_device.c
+index 982c727c67b..af71a6d7b36 100644
+--- a/src/virtio/vulkan/vn_physical_device.c
++++ b/src/virtio/vulkan/vn_physical_device.c
+@@ -722,6 +722,9 @@ vn_physical_device_init_memory_properties(
+ 
+    physical_dev->memory_properties = props2.memoryProperties;
+ 
++   if (physical_dev->memory_properties.memoryTypeCount >= 5)
++      physical_dev->memory_properties.memoryTypeCount = 3;
++
+    /* Kernel makes every mapping coherent. If a memory type is truly
+     * incoherent, it's better to remove the host-visible flag than silently
+     * making it coherent. However, for app compatibility purpose, when
+-- 
+2.49.0.850.g28803427d3-goog
+

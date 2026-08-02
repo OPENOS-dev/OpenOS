@@ -1,0 +1,46 @@
+# Copyright 2021 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk chromeos-config libcrossystem libec runtime_probe mojo_service_manager .gn"
+
+PLATFORM_SUBDIR="runtime_probe/factory_runtime_probe"
+
+inherit cros-workon cros-unibuild platform cros-protobuf
+
+DESCRIPTION="Device component probe tool **for factory environment**."
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/runtime_probe/"
+
+LICENSE="BSD-Google"
+KEYWORDS="~*"
+IUSE=""
+# This package has no unittests.
+RESTRICT="test"
+
+# TODO(yhong): Extract common parts with runtime_probe-9999.ebuild to a shared
+#     eclass.
+
+COMMON_DEPEND="
+	chromeos-base/chromeos-config-tools:=
+	chromeos-base/cros-camera-libs:=
+	chromeos-base/debugd-client:=
+	chromeos-base/diagnostics:=
+	chromeos-base/libcrossystem:=
+	chromeos-base/libec:=
+	chromeos-base/mojo_service_manager:=
+	chromeos-base/shill-client:=
+	dev-libs/libpcre:=
+	media-libs/minigbm:=
+	virtual/libusb:=
+"
+
+RDEPEND="${COMMON_DEPEND}"
+
+DEPEND="${COMMON_DEPEND}
+	chromeos-base/system_api:=[fuzzer?]
+"

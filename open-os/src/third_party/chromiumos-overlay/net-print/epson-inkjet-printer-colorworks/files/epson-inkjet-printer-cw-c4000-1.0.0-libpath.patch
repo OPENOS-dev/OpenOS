@@ -1,0 +1,29 @@
+Install hardcoded library path into subdirectory of CUPS filters
+instead of globally.
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -64,21 +64,8 @@
+ 
+ AC_SUBST(STDCPP_LIBS)
+ 
+-if test "x${host_cpu}" = "xx86_64"; then
+-	case ${prefix} in
+-		NONE) CORE_LIBRARY_PATH="${ac_default_prefix}/lib64";;
+-		*)    CORE_LIBRARY_PATH="${prefix}/lib64";;
+-	esac
+-else
+-	case ${prefix} in
+-		NONE) CORE_LIBRARY_PATH="${ac_default_prefix}/lib";;
+-		*)    CORE_LIBRARY_PATH="${prefix}/lib";;
+-	esac
+-fi
+-case ${prefix} in
+-	NONE) CORE_RESOURCE_PATH=${ac_default_prefix}/resource;;
+-	*)    CORE_RESOURCE_PATH=${prefix}/resource;;
+-esac
++CORE_LIBRARY_PATH=/usr/libexec/cups/filter/epson
++CORE_RESOURCE_PATH=/usr/libexec/cups/filter/epson
+ 
+ AC_SUBST(CORE_LIBRARY_PATH)
+ AC_SUBST(CORE_RESOURCE_PATH)

@@ -1,0 +1,24 @@
+From 7e570abce2c7067be20d853932aa2c6fd18b6a41 Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Thu, 12 Dec 2024 10:42:20 -0700
+Subject: [PATCH] Don't strip binary
+
+---
+ src/Makefile.am | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 12da67a..06ca5b8 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -29,7 +29,6 @@ rastertobarcodetspl_SOURCES  =	./filter/rastertotspl.c	\
+ 						./filter/tspl.c
+ 
+ rastertobarcodetspl_CFLAGS   = -D_TSPL -I.
+-rastertobarcodetspl_LDFLAGS  = -s
+ rastertobarcodetspl_LDADD    = libcommon.a
+ 
+ INCLUDES = -I.
+-- 
+2.47.0.338.g60cca15819-goog
+

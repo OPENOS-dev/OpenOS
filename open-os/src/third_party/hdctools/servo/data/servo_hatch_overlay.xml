@@ -1,0 +1,79 @@
+<root>
+  <!-- ******** Includes ******** -->
+  <include>
+    <name>servoflex_v2_r0_p50.xml</name>
+  </include>
+  <include>
+    <name>x86_ec_common.xml</name>
+  </include>
+  <include>
+    <name>cr50.xml</name>
+  </include>
+  <include>
+    <name>warm_reset_reconf.xml</name>
+  </include>
+  <include>
+    <name>gsc_reset_pch_disable.xml</name>
+  </include>
+  <!-- ******** Controls ******** -->
+  <control>
+    <name>power_state</name>
+    <doc>Used to turn the DUT off and on</doc>
+    <params drv="cros_ec_softrec_power" clobber_ok="patch" reset_recovery="0.6"
+    shutdown_delay="11.0" warm_reset_can_hold_ap="no"/>
+  </control>
+  <control>
+    <name>fw_wp_state</name>
+    <doc>Used to turn fw wp off and on</doc>
+    <params clobber_ok="patch" fw_wp_vref="pp3300"/>
+  </control>
+  <control>
+    <name>cpu_fw_spi</name>
+    <doc>Enable SPI mode for flashing AP firmware over Servo</doc>
+    <params drv="macro" interface="servo" map="onoff" clobber_ok="full">
+      <content>
+        <item key="macro_map">
+          <item key="1">
+            <!-- Cancel any pending reboots to avoid unexpected behavior. -->
+            <item>ec_uart_regexp:None</item>
+            <item>ec_uart_cmd:reboot cancel</item>
+            <item>ec_uart_cmd:apshutdown</item>
+            <item>sleep:2</item>
+            <item>spi2_vref:pp3300</item>
+            <item>spi2_buf_en:on</item>
+            <item>spi2_buf_on_flex_en:on</item>
+            <item>spi_hold:off</item>
+          </item>
+          <item key="0">
+            <item>spi_hold:off</item>
+            <item>spi2_buf_on_flex_en:off</item>
+            <item>spi2_buf_en:off</item>
+            <item>spi2_vref:off</item>
+            <item>sleep:2</item>
+            <item>ec_uart_cmd:powerb</item>
+          </item>
+        </item>
+      </content>
+    </params>
+  </control>
+  <control>
+    <name>cpu_fw_spi_depends_on_ec_fw</name>
+    <doc>Returns "yes" or "no" of whether cpu_fw_spi control depends on DUT EC firmware cooperation. See https://issuetracker.google.com/269804618 for background. This control is only meaningful when cpu_fw_spi control exists.</doc>
+    <params drv="echo" value="yes" interface="servo" clobber_ok="full"/>
+  </control>
+  <control>
+    <name>ec_chip</name>
+    <doc>EC chip name (read-only)</doc>
+    <params clobber_ok="full" cmd="get" subtype="chip" interface="servo"
+    drv="cros_chip" chip="npcx_uut"/>
+  </control>
+  <!-- cr50 UART Buffers & VREF Controls -->
+  <control>
+    <name>jtag_vref_sel0</name>
+    <params clobber_ok="patch" init="off"/>
+  </control>
+  <control>
+    <name>jtag_vref_sel1</name>
+    <params clobber_ok="patch" init="off"/>
+  </control>
+</root>

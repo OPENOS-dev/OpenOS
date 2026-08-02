@@ -1,0 +1,13 @@
+diff --git a/src/music-players.h b/src/music-players.h
+index ee30b97..627a711 100644
+--- a/src/music-players.h
++++ b/src/music-players.h
+@@ -3493,8 +3493,6 @@
+       DEVICE_FLAGS_ANDROID_BUGS },
+   { "Vizio", 0x0489, "VTAB1008", 0xe040,
+       DEVICE_FLAGS_ANDROID_BUGS },
+-  { "Vizio (for Lenovo)", 0x0489, "LIFETAB S9714", 0xe111,
+-      DEVICE_FLAGS_ANDROID_BUGS },
+ 
+ 
+   /*

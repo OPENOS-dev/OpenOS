@@ -1,0 +1,59 @@
+From e7ca857ae921a280acf02ed0148b4746b308d358 Mon Sep 17 00:00:00 2001
+From: Nehemiah Dureus <ndureus@chromium.org>
+Date: Thu, 15 May 2025 20:27:50 +0000
+Subject: [PATCH] CHROMIUM: controller: config for boundary & sniff mode
+
+On a select number of older Qualcomm Atheros chips the
+packet boundary and sniff mode features do not properly work.
+Make these configurable so these features can be disabled on those
+chipsets.
+
+Bug: 356396358
+Tag: #floss
+Test: mmm packages/modules/Bluetooth
+Test: manual switch between A2DP and HFP frequently
+Test: repeated bt tests without disconnection
+Flag: EXEMPT, Floss-only changes as sysprops will only be enabled in
+      cros
+Change-Id: Ic19e14b066ced06bcae20299c2d0fe316d90bdcf
+---
+ system/gd/hci/controller_impl.cc      | 19 ++++++++++++++-----
+ system/gd/sysprops/sysprops_module.cc |  2 ++
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/system/gd/hci/controller_impl.cc b/system/gd/hci/controller_impl.cc
+index 56b00b2284f..e05cdcd523f 100644
+--- a/system/gd/hci/controller_impl.cc
++++ b/system/gd/hci/controller_impl.cc
+@@ -406,8 +406,17 @@ struct ControllerImpl::impl {
+     extended_lmp_features_array_.push_back(complete_view.GetExtendedLmpFeatures());
+-    if (page_number == 0 && local_version_information_.manufacturer_name_ == LMP_COMPID_INTEL &&
+-        local_version_information_.lmp_version_ == LmpVersion::V_4_2 &&
+-        local_version_information_.lmp_subversion_ == LMP_SUBVERSION_INTEL_AC7265) {
++    if (page_number == 0) {
+       // Override the packet boundary feature bit on Intel AC7265 because it don't support well.
+-      extended_lmp_features_array_.back() &=
+-              ~static_cast<uint64_t>(LMPFeaturesPage0Bits::NON_FLUSHABLE_PACKET_BOUNDARY_FLAG);
++      if ((local_version_information_.manufacturer_name_ == LMP_COMPID_INTEL &&
++           local_version_information_.lmp_version_ == LmpVersion::V_4_2 &&
++           local_version_information_.lmp_subversion_ == LMP_SUBVERSION_INTEL_AC7265) ||
++          bluetooth::os::GetSystemPropertyBool("bluetooth.core.disable_packet_boundary", false)) {
++        extended_lmp_features_array_.back() &=
++                ~static_cast<uint64_t>(LMPFeaturesPage0Bits::NON_FLUSHABLE_PACKET_BOUNDARY_FLAG);
++      }
++
++      // Override sniff mode via sysprop
++      if (bluetooth::os::GetSystemPropertyBool("bluetooth.core.disable_sniff_mode", false)) {
++        extended_lmp_features_array_.back() &=
++                ~static_cast<uint64_t>(LMPFeaturesPage0Bits::SNIFF_MODE);
++      }
+     }
+diff --git a/system/gd/sysprops/sysprops_module.cc b/system/gd/sysprops/sysprops_module.cc
+index def72acd5a5..0573fdba2b0 100644
+--- a/system/gd/sysprops/sysprops_module.cc
++++ b/system/gd/sysprops/sysprops_module.cc
+@@ -59,2 +59,4 @@ void SyspropsModule::parse_config(std::string file_path) {
+           "persist.bluetooth.inq_by_rssi",
++          "bluetooth.core.disable_packet_boundary",
++          "bluetooth.core.disable_sniff_mode",
+           // BR/EDR

@@ -1,0 +1,31 @@
+# Description
+# This test records power related statistics while displaying different static
+# pages using settings that usually utilize panel CABC algorithm.
+
+NAME = "power_Display.cabc"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark.",
+    "hw_agnostic": False
+}
+ATTRIBUTES = ""
+TEST_TYPE = "client"
+
+CABC_PAGES = ['white', 'black',
+              'white', 'grey10',
+              'white', 'grey20',
+              'white', 'grey30',
+              'white', 'grey40',
+              'white', 'grey50',
+              'white', 'checker1',
+              'white', 'checker90',
+              'white', 'checker80',
+              'white', 'checker70',
+              'white', 'checker60',
+              'white', 'checker50']
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_Display', tag=NAME.split('.')[1], pages=CABC_PAGES,
+             secs_per_page=20, seconds_period=1, pdash_note=pdash_note)

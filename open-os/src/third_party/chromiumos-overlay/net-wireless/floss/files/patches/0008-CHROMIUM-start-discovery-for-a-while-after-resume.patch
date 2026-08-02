@@ -1,0 +1,128 @@
+From bbc02543c52b86ec712ab45f1e005922dd01ff88 Mon Sep 17 00:00:00 2001
+From: Zhengping Jiang <jiangzp@google.com>
+Date: Fri, 3 Oct 2025 21:51:22 +0000
+Subject: [PATCH] CHROMIUM: start discovery for a while after resume
+
+On AX211, there is chances the LE scan is not started after resume.
+Start discovery can make sure LE scan is started again.
+
+Bug: 404819489
+Test: m -j
+Test: suspend resume on screebo
+Flag: EXEMPT, floss only
+Change-Id: I680cb7a581f3df5c6ded9478a7e668e952213065
+---
+ floss/rust/linux/stack/src/bluetooth.rs | 17 +++++++++++++++
+ floss/rust/linux/stack/src/suspend.rs   | 28 +++++++++++++++++++++++++
+ floss/rust/linux/utils/src/chip_info.rs | 22 +++++++++++++++++++
+ floss/rust/linux/utils/src/lib.rs       |  1 +
+ 4 files changed, 68 insertions(+)
+ create mode 100644 floss/rust/linux/utils/src/chip_info.rs
+
+diff --git a/floss/rust/linux/stack/src/bluetooth.rs b/floss/rust/linux/stack/src/bluetooth.rs
+index 9ce48cfd967..addd06ccecb 100644
+--- a/floss/rust/linux/stack/src/bluetooth.rs
++++ b/floss/rust/linux/stack/src/bluetooth.rs
+@@ -323,2 +323,5 @@ pub enum AdapterActions {
+     CreateBond,
++
++    /// Cancel discovery
++    CancelDiscovery,
+ }
+@@ -1202,2 +1205,6 @@ impl Bluetooth {
+             }
++
++            AdapterActions::CancelDiscovery => {
++                self.cancel_discovery();
++            }
+         }
+@@ -1286,2 +1293,12 @@ impl Bluetooth {
+ 
++    /// Start discovery if there are wake allowed devices bonded.
++    /// TODO(b:404819489): Workaround before finding a firmware fix.
++    pub fn trigger_le_scan_by_discovery(&mut self) -> bool {
++        if !self.is_discovering && self.get_wake_allowed_device_bonded() {
++            self.start_discovery();
++            return true;
++        }
++        false
++    }
++
+     /// Powerd recognizes bluetooth activities as valid wakeup sources if powerd keeps bluetooth in
+diff --git a/floss/rust/linux/stack/src/suspend.rs b/floss/rust/linux/stack/src/suspend.rs
+index 24270ddb73d..dfc1eb559b9 100644
+--- a/floss/rust/linux/stack/src/suspend.rs
++++ b/floss/rust/linux/stack/src/suspend.rs
+@@ -20,2 +20,3 @@ use tokio::time::Duration;
+ 
++use bt_utils::chip_info::read_wlan_chipset;
+ use bt_utils::socket::{BtSocket, HciChannels, MgmtCommand, HCI_DEV_NONE};
+@@ -71,2 +72,5 @@ const SUSPEND_READY_DELAY_MS: u64 = 100;
+ 
++/// Discovery for a short period after resume.
++const DISCOVERY_ON_RESUME_DURATION_MS: u64 = 2000;
++
+ fn notify_suspend_state(hci_index: u16, suspended: bool) {
+@@ -491,2 +495,26 @@ impl ISuspend for Suspend {
+ 
++        let chip_name = match read_wlan_chipset() {
++            Ok(v) => v,
++            Err(_) => "Unknown",
++        };
++
++        // TODO(b:404819489): Workaround before finding a firmware fix. Start discovery for a short
++        // duration for devices with AX211 and if there are bonded wake-allowed devices.
++        if chip_name == "AX211" {
++            if self.bt.lock().unwrap().trigger_le_scan_by_discovery() {
++                let tx = self.tx.clone();
++                log::debug!("Trigger le scan by discovery.");
++                tokio::spawn(async move {
++                    tokio::time::sleep(tokio::time::Duration::from_millis(
++                        DISCOVERY_ON_RESUME_DURATION_MS,
++                    ))
++                    .await;
++                    log::debug!("Timeout cancel discovery.");
++                    let _ = tx
++                        .send(Message::AdapterActions(AdapterActions::CancelDiscovery))
++                        .await;
++                });
++            }
++        }
++
+         true
+diff --git a/floss/rust/linux/utils/src/chip_info.rs b/floss/rust/linux/utils/src/chip_info.rs
+new file mode 100644
+index 00000000000..8b3e9a3a61f
+--- /dev/null
++++ b/floss/rust/linux/utils/src/chip_info.rs
+@@ -0,0 +1,22 @@
++//! This library provides helper functions to parse chipinfo.
++
++const CHIPSET_INFO_WLAN_DIR: &str = "/sys/class/net/wlan0/device";
++
++pub fn read_wlan_chipset() -> std::io::Result<&'static str> {
++    let vid = std::fs::read_to_string(format!("{}/{}", CHIPSET_INFO_WLAN_DIR, "vendor"))?
++        .trim()
++        .to_lowercase();
++    let pid = std::fs::read_to_string(format!("{}/{}", CHIPSET_INFO_WLAN_DIR, "device"))?
++        .trim()
++        .to_lowercase();
++    match vid.as_str() {
++        "0x8086" => match pid.as_str() {
++            "0x51f0" => Ok("AX211"),
++            "0x51f1" => Ok("AX211"),
++            "0x54f0" => Ok("AX211"),
++            "0x7e40" => Ok("AX211"),
++            _ => Ok("Unknown"),
++        },
++        _ => Ok("Unknown"),
++    }
++}
+diff --git a/floss/rust/linux/utils/src/lib.rs b/floss/rust/linux/utils/src/lib.rs
+index caab802e9a6..e8d759bcab5 100644
+--- a/floss/rust/linux/utils/src/lib.rs
++++ b/floss/rust/linux/utils/src/lib.rs
+@@ -5,2 +5,3 @@ pub mod array_utils;
+ pub mod at_command_parser;
++pub mod chip_info;
+ pub mod cod;

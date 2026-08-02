@@ -1,0 +1,58 @@
+{
+  "name": "nassh",
+  "version": "0.78.0",
+  "description": "Terminal emulator and SSH and SFTP client",
+  "type": "module",
+  "main": "js/nassh.js",
+  "repository": {
+    "type": "git",
+    "url": "https://chromium.googlesource.com/apps/libapps.git"
+  },
+  "author": "ChromiumOS Authors",
+  "license": "BSD-3-Clause",
+  "files": [
+    "_locales",
+    "css",
+    "docs",
+    "html",
+    "js",
+    "README.md",
+    "third_party"
+  ],
+  "bugs": {
+    "url": "https://hterm.org/x/ssh/newbug",
+    "email": "chromium-hterm@chromium.org"
+  },
+  "homepage": "https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh",
+  "scripts": {
+    "prepare": "./bin/mkdeps",
+    "start": "http-server --cors -a localhost -c-1 ..",
+    "test": "./bin/load_tests"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "~15",
+    "@rollup/plugin-terser": "~0",
+    "chai": "~5",
+    "eslint": "~9",
+    "http-server": "~14",
+    "license-checker": "~25",
+    "mocha": "~11",
+    "mocha-headless-chrome": "~4",
+    "rollup": "~2",
+    "terser": "~5"
+  },
+  "dependencies": {
+    "@material/mwc-icon-button": "^0.25.3",
+    "asn1js": "~2",
+    "lit": "^2.2.1",
+    "pkijs": "~2.1",
+    "punycode": "~2",
+    "xterm": "https://storage.googleapis.com/chromeos-localmirror/secureshell/distfiles/xterm-218287b72c80df1937b8bd387c01984d4ff6b801392b7e7648bc26fb906fd8b2.tar.gz",
+    "xterm-addon-canvas": "^0.5.0",
+    "xterm-addon-image": "^0.5.0",
+    "xterm-addon-search": "^0.13.0",
+    "xterm-addon-unicode11": "^0.6.0",
+    "xterm-addon-web-links": "^0.9.0",
+    "xterm-addon-webgl": "^0.16.0"
+  }
+}

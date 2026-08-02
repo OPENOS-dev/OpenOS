@@ -1,0 +1,37 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, ChromiumOS"
+NAME = "autoupdate_ForcedOOBEUpdate.m2n.full"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Tests M->N forced update at OOBE."
+}
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:au-m2n"
+DOC = """
+This tests the forced autoupdate flow at OOBE.
+
+Refer to autoupdate_Basic's control.delta file for instructions on how to run
+this test locally from your workstation.
+
+Note: for m2n tests, the source version is the currently serving stable channel
+version.
+"""
+
+from autotest_lib.client.common_lib import utils
+
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('autoupdate_ForcedOOBEUpdate', host=host, full_payload=True,
+                 m2n=True, **args_dict)
+
+job.parallel_simple(run, machines)

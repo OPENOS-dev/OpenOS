@@ -1,0 +1,28 @@
+<root>
+  <!-- ******** Includes ******** -->
+  <include>
+    <name>servoflex_v2_r0_p50.xml</name>
+  </include>
+  <!-- cpu_fw_spi_pp1800.xml was previously included by default in servo_v2 and
+       servo_micro configs.  Since this board config lacks its own cpu_fw_spi
+       implementation, this include has been added as part of removing it from
+       servo configs. -->
+  <include>
+    <name>cpu_fw_spi_pp1800.xml</name>
+  </include>
+  <!-- ******** Controls ******** -->
+  <control>
+    <name>cpu_uart_pty</name>
+    <alias>ap_side_pty</alias>
+    <params clobber_ok="patch"/>
+  </control>
+  <control>
+    <name>cpu_uart_timestamp</name>
+    <params clobber_ok="patch" init="on"/>
+  </control>
+  <control>
+    <name>ec_uart_pty</name>
+    <alias>connector_side_pty</alias>
+    <params clobber_ok="patch"/>
+  </control>
+</root>

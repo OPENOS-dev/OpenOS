@@ -1,0 +1,120 @@
+# Copyright 2024 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_build/target_types.gni")
+import("$dir_pw_unit_test/test.gni")
+import("$pw_external_mcuxpresso/mcuxpresso.gni")
+
+config("default_config") {
+  include_dirs = [ "public" ]
+}
+
+pw_source_set("pw_clock_tree_mcuxpresso_testing") {
+  public_configs = [ ":default_config" ]
+  public = [ "public/pw_clock_tree_mcuxpresso/clock_tree.h" ]
+  public_deps = [
+    ":test_mocks",
+    "$dir_pw_clock_tree",
+    "$dir_pw_preprocessor",
+  ]
+}
+
+pw_source_set("sync_selector_testing") {
+  public_configs = [ ":default_config" ]
+  public = [ "public/pw_clock_tree_mcuxpresso/sync_selector.h" ]
+  public_deps = [
+    ":test_mocks",
+    "$dir_pw_assert",
+    "$dir_pw_clock_tree",
+    "$dir_pw_status",
+  ]
+}
+
+config("test_mocks_config") {
+  include_dirs = [ "test_mocks" ]
+}
+
+pw_source_set("test_mocks") {
+  public_configs = [ ":test_mocks_config" ]
+  public = [
+    "test_mocks/fsl_clock.h",
+    "test_mocks/fsl_power.h",
+    "test_mocks/mocks.h",
+  ]
+  sources = [ "test_mocks/mocks.cc" ]
+}
+
+pw_test("clock_tree_test") {
+  enable_if = pw_third_party_mcuxpresso_SDK == ""
+  sources = [ "clock_tree_test.cc" ]
+  deps = [
+    ":pw_clock_tree_mcuxpresso_testing",
+    "$dir_pw_unit_test",
+  ]
+}
+
+pw_test("clock_tree_mcuxpresso_examples") {
+  enable_if = pw_third_party_mcuxpresso_SDK == ""
+  sources = [ "examples.cc" ]
+  deps = [
+    ":pw_clock_tree_mcuxpresso_testing",
+    ":sync_selector_testing",
+    "$dir_pw_unit_test",
+  ]
+}
+
+pw_test("sync_selector_test") {
+  enable_if = pw_third_party_mcuxpresso_SDK == ""
+  sources = [
+    "sync_selector_nc_test.cc",
+    "sync_selector_test.cc",
+  ]
+  negative_compilation_tests = true
+  deps = [
+    ":pw_clock_tree_mcuxpresso_testing",
+    ":sync_selector_testing",
+  ]
+}
+
+if (pw_third_party_mcuxpresso_SDK != "") {
+  pw_source_set("sync_selector") {
+    public_configs = [ ":default_config" ]
+    public = [ "public/pw_clock_tree_mcuxpresso/sync_selector.h" ]
+    public_deps = [
+      "$dir_pw_assert",
+      "$dir_pw_clock_tree",
+      "$dir_pw_status",
+      pw_third_party_mcuxpresso_SDK,
+    ]
+  }
+
+  pw_source_set("pw_clock_tree_mcuxpresso") {
+    public_configs = [ ":default_config" ]
+    public = [ "public/pw_clock_tree_mcuxpresso/clock_tree.h" ]
+    public_deps = [
+      "$dir_pw_clock_tree",
+      pw_third_party_mcuxpresso_SDK,
+    ]
+  }
+}
+
+pw_test_group("tests") {
+  tests = [
+    ":clock_tree_test",
+    ":clock_tree_mcuxpresso_examples",
+    ":sync_selector_test",
+  ]
+}

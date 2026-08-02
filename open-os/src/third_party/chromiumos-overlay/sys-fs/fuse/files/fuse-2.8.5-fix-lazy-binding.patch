@@ -1,0 +1,10 @@
+--- a/util/Makefile.am
++++ b/util/Makefile.am
+@@ -36,6 +36,7 @@ NORMAL_UNINSTALL = :
+ ## Process this file with automake to produce Makefile.in
+ 
+ AM_CPPFLAGS = -D_FILE_OFFSET_BITS=64 
++AM_CFLAGS=-Wl,-z,now
+ bin_PROGRAMS = fusermount ulockmgr_server
+ noinst_PROGRAMS = mount.fuse
+ 

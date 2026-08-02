@@ -1,0 +1,14 @@
+BDEPEND=app-arch/xz-utils sys-devel/m4 sys-devel/gnuconfig >=app-portage/elt-patches-20170815
+DEFINED_PHASES=compile configure install prepare pretend test
+DESCRIPTION=Library for arbitrary-precision arithmetic on different type of numbers
+EAPI=7
+HOMEPAGE=https://gmplib.org/
+IUSE=+asm doc +cpudetection +cxx pic static-libs abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64
+KEYWORDS=*
+LICENSE=|| ( LGPL-3+ GPL-2+ )
+REQUIRED_USE=cpudetection? ( asm )
+RESTRICT=!cpudetection? ( bindist )
+SLOT=0/10.4
+SRC_URI=https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz mirror://gnu/gmp/gmp-6.3.0.tar.xz doc? ( https://gmplib.org/gmp-man-6.2.1.pdf )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	gnuconfig	24782b842d9d9de6c82fa360b97d8914	libtool	f143db5a74ccd9ca28c1234deffede96	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=6fceefb2b7d52b6818e5c0fbd7bbe65f

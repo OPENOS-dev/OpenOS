@@ -1,0 +1,32 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'hardware_StorageStress.soak'
+METADATA = {
+    'contacts': ['chromeos-storage@google.com'],
+    'bug_component': 'b:974567',
+    'criteria': 'Part of storage AVL qualification suite',
+    'hw_agnostic': False
+}
+AUTHOR = 'gwendal'
+PURPOSE = 'Stress the SSD to age it prematurely.'
+TIME = 'LENGTHY'
+TEST_CLASS = 'hardware'
+TEST_TYPE = 'server'
+PY_VERSION = 3
+
+DOC = """
+Run intensive write/read test at different size for days.
+Interleave every 15h a veritication test and measure latency/throughput.
+
+The test last 7 days.
+"""
+
+def run_hardware_storage_stress(machine):
+    job.run_test('hardware_StorageStress', client_ip=machine, duration=24 * 60 * 60 * 7,
+                  power_command='wait', storage_test_command='full_write',
+                  suspend_duration= 5 * 60)
+
+job.parallel_simple(run_hardware_storage_stress, machines)
+

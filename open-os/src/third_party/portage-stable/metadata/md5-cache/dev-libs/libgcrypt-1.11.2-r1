@@ -1,0 +1,15 @@
+BDEPEND=doc? ( virtual/texi2dvi ) verify-sig? ( sec-keys/openpgp-keys-gnupg ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install prepare pretend setup test unpack
+DEPEND=>=dev-libs/libgpg-error-1.49[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] getentropy? ( kernel_linux? ( elibc_glibc? ( >=sys-libs/glibc-2.25 ) elibc_musl? ( >=sys-libs/musl-1.1.20 ) ) )
+DESCRIPTION=General purpose crypto library based on the code used in GnuPG
+EAPI=7
+HOMEPAGE=https://www.gnupg.org/
+IUSE=+asm doc +getentropy static-libs cpu_flags_arm_neon cpu_flags_arm_aes cpu_flags_arm_sha1 cpu_flags_arm_sha2 cpu_flags_arm_sve cpu_flags_ppc_altivec cpu_flags_ppc_vsx2 cpu_flags_ppc_vsx3 cpu_flags_x86_aes cpu_flags_x86_avx cpu_flags_x86_avx2 cpu_flags_x86_avx512f cpu_flags_x86_padlock cpu_flags_x86_sha cpu_flags_x86_sse4_1 kernel_linux abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64 verify-sig
+KEYWORDS=*
+LICENSE=LGPL-2.1+ GPL-2+ MIT
+RDEPEND=>=dev-libs/libgpg-error-1.49[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] getentropy? ( kernel_linux? ( elibc_glibc? ( >=sys-libs/glibc-2.25 ) elibc_musl? ( >=sys-libs/musl-1.1.20 ) ) )
+REQUIRED_USE=cpu_flags_arm_aes? ( cpu_flags_arm_sha1 cpu_flags_arm_sha2 ) cpu_flags_arm_sha1? ( cpu_flags_arm_aes cpu_flags_arm_sha2 ) cpu_flags_arm_sha2? ( cpu_flags_arm_aes cpu_flags_arm_sha1 ) cpu_flags_ppc_vsx3? ( cpu_flags_ppc_altivec cpu_flags_ppc_vsx2 ) cpu_flags_ppc_vsx2? ( cpu_flags_ppc_altivec )
+SLOT=0/20
+SRC_URI=mirror://gnupg/libgcrypt/libgcrypt-1.11.2.tar.bz2 verify-sig? ( mirror://gnupg/libgcrypt/libgcrypt-1.11.2.tar.bz2.sig )
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	linux-info	327865b9921771330775d971263dc234	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=6a7bbea69cb4efcbff7ba4fa95d7d526

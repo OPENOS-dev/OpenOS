@@ -1,0 +1,13 @@
+BDEPEND=acct-group/netperf acct-user/netperf sys-devel/gnuconfig
+DEFINED_PHASES=configure install prepare
+DESCRIPTION=Network performance benchmark
+EAPI=7
+HOMEPAGE=http://www.netperf.org/
+IUSE=demo sctp
+KEYWORDS=*
+LICENSE=netperf
+RDEPEND=acct-group/netperf acct-user/netperf
+SLOT=0
+SRC_URI=ftp://ftp.netperf.org/netperf/netperf-2.7.0.tar.bz2
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c63fab3a0832bb22baa2977bd3d23271

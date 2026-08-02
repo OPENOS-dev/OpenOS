@@ -1,0 +1,35 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, ChromiumOS"
+NAME = "autoupdate_Cellular.delta.att"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Test autoupdate over cellular with a delta payload."
+}
+TIME = "SHORT"
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:cellular_au_nightly"
+DEPENDENCIES = "carrier:att"
+DOC = """
+This tests autoupdate over a cellular connection.
+
+test_that <hostname>.cros autoupdate_Cellular.delta --args="build=RXX-XXXX.X.X"
+
+"""
+
+from autotest_lib.client.common_lib import utils
+
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('autoupdate_Cellular', host=host, full_payload=False,
+                 **args_dict)
+
+job.parallel_simple(run, machines)

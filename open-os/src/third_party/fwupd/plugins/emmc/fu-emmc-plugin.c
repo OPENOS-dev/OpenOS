@@ -1,0 +1,42 @@
+/*
+ * Copyright 2019 Mario Limonciello <mario.limonciello@dell.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-emmc-device.h"
+#include "fu-emmc-plugin.h"
+
+struct _FuEmmcPlugin {
+	FuPlugin parent_instance;
+};
+
+G_DEFINE_TYPE(FuEmmcPlugin, fu_emmc_plugin, FU_TYPE_PLUGIN)
+
+static void
+fu_emmc_plugin_init(FuEmmcPlugin *self)
+{
+}
+
+static void
+fu_emmc_plugin_constructed(GObject *obj)
+{
+	FuPlugin *plugin = FU_PLUGIN(obj);
+	FuContext *ctx = fu_plugin_get_context(plugin);
+
+	fu_context_add_quirk_key(ctx, "EmmcBlockSize");
+	fu_plugin_add_device_udev_subsystem(plugin, "block:disk");
+	fu_plugin_add_device_gtype(plugin, FU_TYPE_EMMC_DEVICE);
+
+	/* chain up to parent */
+	G_OBJECT_CLASS(fu_emmc_plugin_parent_class)->constructed(obj);
+}
+
+static void
+fu_emmc_plugin_class_init(FuEmmcPluginClass *klass)
+{
+	FuPluginClass *plugin_class = FU_PLUGIN_CLASS(klass);
+	plugin_class->constructed = fu_emmc_plugin_constructed;
+}

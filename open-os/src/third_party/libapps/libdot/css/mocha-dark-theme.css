@@ -1,0 +1,39 @@
+@charset "utf-8";
+
+/*
+ * Copyright 2020 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Apply a dark theme to the mocha html reporter.  We don't update all colors,
+ * just enough to go from white-on-black to black-on-white.
+ */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: white;
+  }
+
+  #mocha .test.pass .duration {
+    color: #000;
+  }
+
+  #mocha .test.fail pre {
+    color: white;
+  }
+
+  #mocha .test .html-error {
+    color: white;
+  }
+
+  #mocha-stats em {
+    color: white;
+  }
+
+  #mocha-stats canvas {
+    filter: invert(1);
+  }
+}

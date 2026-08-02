@@ -1,0 +1,54 @@
+From 8ce131b6a2debd46eb1a5f94908abecf767a578c Mon Sep 17 00:00:00 2001
+From: Gwendal Grignou <gwendal@chromium.org>
+Date: Wed, 9 Oct 2024 12:31:41 -0700
+Subject: [PATCH] Remove dev and io_uring features
+
+Without this change, Cargo will still try in install the crates, in case
+they are needed. The installation process does not look at which
+features is enabled. Only the compilation process does.
+
+This patch makes sure that at compilation time we only import the crates that
+have been listed in:
+src/third_party/rust_crates/projects/third_party/thin-provisioning-tools/Cargo.toml
+
+---
+ Cargo.toml | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index 5a65292..1969109 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -33,27 +33,13 @@ quick-xml = "0.36"
+ rand = "0.8"
+ rangemap = "1.5"
+ roaring = "0.10"
+-rio = { git = "https://github.com/jthornber/rio", branch = "master", optional = true }
+ safemem = "0.3"
+ threadpool = "1.8"
+ thiserror = "1.0"
+-tui = { version = "0.19", default-features = false, features = [
+-  "termion",
+-], optional = true }
+-termion = { version = "1.5", optional = true }
+-
+-[dev-dependencies]
+-duct = "0.13"
+-mockall = "0.12"
+-quickcheck = "1.0"
+-quickcheck_macros = "1.0"
+-rand = { version = "0.8", features = ["small_rng"] }
+-tempfile = "3.6"
+-thinp = { path = ".", features = ["devtools"] }
+ 
+ [features]
+-devtools = ["tui", "termion"]
+-io_uring = ["dep:rio"]
++devtools = []
++io_uring = []
+ no_cleanup = []
+ 
+ [profile.release]
+-- 
+2.47.0.rc0.187.ge670bccf7e-goog
+

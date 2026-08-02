@@ -1,0 +1,13 @@
+BDEPEND=dev-lang/perl
+DEFINED_PHASES=compile configure install postinst postrm prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=File::Temp can be used to create and open temporary files in a safe way
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/File-Temp
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/E/ET/ETHER/File-Temp-0.2311.tar.gz
+_eclasses_=alternatives	eb864f6e50a20036e4cd47c8fd8f64d1	multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=f719452c34c31ba7417f0d4b756cc6ad

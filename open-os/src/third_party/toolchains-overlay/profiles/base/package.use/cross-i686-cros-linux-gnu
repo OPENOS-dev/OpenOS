@@ -1,0 +1,8 @@
+cross-i686-cros-linux-gnu/binutils -multilib
+cross-i686-cros-linux-gnu/gcc -selinux -boundschecking -d -gcj -gtk -libffi -mudflap -objc -objc++ -objc-gc -sanitize -multilib
+cross-i686-cros-linux-gnu/gdb -selinux -multilib
+cross-i686-cros-linux-gnu/glibc -selinux -libraries -multilib
+cross-i686-cros-linux-gnu/libcxx -selinux -multilib
+cross-i686-cros-linux-gnu/libxcrypt -selinux -multilib
+cross-i686-cros-linux-gnu/linux-headers -selinux -multilib
+cross-i686-cros-linux-gnu/llvm-libunwind -selinux -multilib

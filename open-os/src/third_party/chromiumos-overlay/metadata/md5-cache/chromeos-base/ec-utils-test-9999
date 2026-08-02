@@ -1,0 +1,14 @@
+BDEPEND=dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=cr50_onboard? ( dev-libs/openssl:0= ) ti50_onboard? ( dev-libs/openssl:0= )
+DESCRIPTION=Chrome OS EC Utility Helper
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/ec/
+IUSE=biod cr50_onboard ti50_onboard cros_host cros_workon_tree_ python_targets_pypy3 python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 python_targets_python3_8
+KEYWORDS=~*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=python_targets_pypy3? ( >=dev-python/pypy3-7.3.9_p9:0= ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) cr50_onboard? ( dev-libs/openssl:0= ) ti50_onboard? ( dev-libs/openssl:0= ) chromeos-base/ec-utils biod? ( chromeos-base/ec-devutils dev-util/shflags sys-apps/flashrom )
+SLOT=0/0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multibuild	40fe59465edacd730c644ec2bc197809	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=b8c9530723db24e402bb24b827db4e62

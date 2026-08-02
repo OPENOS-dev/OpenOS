@@ -1,0 +1,36 @@
+[package]
+name = "audio_processor"
+version = "0.1.0"
+edition = "2021"
+authors = ["The ChromiumOS Authors"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+# Enable tests that only works with Bazel.
+bazel = []
+
+[dependencies]
+anyhow = { workspace = true }
+assert_matches = { workspace = true }
+clap = { workspace = true }
+command-fds = { workspace = true }
+dasp_sample = { workspace = true }
+hound = { workspace = true }
+libc = { workspace = true }
+nix = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+protobuf = { workspace = true }
+zerocopy = { workspace = true }
+
+[build-dependencies]
+bindgen = { workspace = true }
+cc = { workspace = true }
+protobuf-codegen = { workspace = true }
+protobuf-parse = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

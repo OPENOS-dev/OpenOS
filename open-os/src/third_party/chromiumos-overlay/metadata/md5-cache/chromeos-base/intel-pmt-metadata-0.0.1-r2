@@ -1,0 +1,11 @@
+DEFINED_PHASES=install unpack
+DESCRIPTION=Metadata files describing Intel PMT data decoding
+EAPI=7
+HOMEPAGE=https://github.com/intel/Intel-PMT
+IUSE=intel-pmt-mtl
+KEYWORDS=-* amd64
+LICENSE=Apache-2.0
+SLOT=0
+SRC_URI=https://github.com/intel/Intel-PMT/archive/82edcb69c754595a5c6d90cf6c1c9938f92180d0.tar.gz -> intel-pmt-metadata-0.0.1.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	unpacker	aa6a4e924009232d8b78b31e932c30b5
+_md5_=40d6732ee24a6545eedc7bfbe86d8cc8

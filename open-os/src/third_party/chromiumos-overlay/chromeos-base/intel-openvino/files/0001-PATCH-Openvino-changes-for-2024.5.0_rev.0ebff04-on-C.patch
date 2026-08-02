@@ -1,0 +1,181 @@
+From 43cc1120831452990bd4426c5150deda2ab1d122 Mon Sep 17 00:00:00 2001
+From: Vivek Trambadiya <vivek.dilipbhai.trambadiya@intel.com>
+Date: Tue, 19 Nov 2024 16:49:29 +0530
+Subject: [PATCH] [PATCH] Openvino changes for 2024.5.0_rev.0ebff04 on Chromeos
+ with build fixes.
+
+---
+ cmake/developer_package/linux_name.cmake          | 4 ++++
+ cmake/extra_modules.cmake                         | 8 +++++---
+ docs/snippets/CMakeLists.txt                      | 4 +++-
+ samples/c/common/opencv_c_wrapper/CMakeLists.txt  | 4 +++-
+ samples/cpp/benchmark_app/CMakeLists.txt          | 4 +++-
+ samples/cpp/benchmark_app/main.cpp                | 2 +-
+ samples/cpp/common/format_reader/CMakeLists.txt   | 4 +++-
+ samples/cpp/hello_query_device/main.cpp           | 2 +-
+ src/core/src/any.cpp                              | 2 +-
+ src/plugins/intel_npu/tools/CMakeLists.txt        | 4 +++-
+ src/plugins/intel_npu/tools/compile_tool/main.cpp | 4 ++--
+ 11 files changed, 29 insertions(+), 13 deletions(-)
+
+diff --git a/cmake/developer_package/linux_name.cmake b/cmake/developer_package/linux_name.cmake
+index 8105d32091d7..dc988cd1b6ea 100644
+--- a/cmake/developer_package/linux_name.cmake
++++ b/cmake/developer_package/linux_name.cmake
+@@ -4,4 +4,8 @@
+ 
+ function(get_linux_name res_var)
+     set(${res_var} NOTFOUND PARENT_SCOPE)
++    if (TARGET_OS_NAME STREQUAL "CHROMIUMOS")
++       set(${res_var} "CHROMIUMOS" PARENT_SCOPE)
++       return()
++     endif()
+ endfunction()
+diff --git a/cmake/extra_modules.cmake b/cmake/extra_modules.cmake
+index 0ddafc6773f0..11bc44dbf6f1 100644
+--- a/cmake/extra_modules.cmake
++++ b/cmake/extra_modules.cmake
+@@ -4,9 +4,11 @@
+ 
+ function(ov_generate_dev_package_config)
+     # dummy check that OpenCV is here
+-    find_package(OpenCV QUIET)
+-    if(OpenCV_VERSION VERSION_LESS 3.0)
+-        set(OpenCV_FOUND OFF)
++    if(ENABLE_OPENCV)
++       find_package(OpenCV QUIET)
++       if(OpenCV_VERSION VERSION_LESS 3.0)
++            set(OpenCV_FOUND OFF)
++       endif()    
+     endif()
+ 
+     # create a helper target to build all developer package targets
+diff --git a/docs/snippets/CMakeLists.txt b/docs/snippets/CMakeLists.txt
+index ec1cf14bd0e6..2dd5e0b5ac1e 100644
+--- a/docs/snippets/CMakeLists.txt
++++ b/docs/snippets/CMakeLists.txt
+@@ -38,7 +38,9 @@ if(PkgConfig_FOUND)
+ endif()
+ 
+ # remove OpenCV related sources
+-find_package(OpenCV QUIET COMPONENTS core imgcodecs)
++if(ENABLE_OPENCV)
++       find_package(OpenCV QUIET COMPONENTS core imgcodecs)
++endif()
+ if(NOT OpenCV_FOUND OR NOT OpenCV_VERSION VERSION_GREATER_EQUAL 3)
+     list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../articles_en/assets/snippets/ShapeInference.cpp")
+ endif()
+diff --git a/samples/c/common/opencv_c_wrapper/CMakeLists.txt b/samples/c/common/opencv_c_wrapper/CMakeLists.txt
+index 41268aa874e6..964dab42590f 100644
+--- a/samples/c/common/opencv_c_wrapper/CMakeLists.txt
++++ b/samples/c/common/opencv_c_wrapper/CMakeLists.txt
+@@ -15,7 +15,9 @@ file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+ add_library(${TARGET_NAME} STATIC ${HEADERS} ${SOURCES})
+ 
+ # Find OpenCV components if exist
+-find_package(OpenCV QUIET COMPONENTS core imgproc imgcodecs)
++if(ENABLE_OPENCV)
++       find_package(OpenCV QUIET COMPONENTS core imgproc imgcodecs)
++endif()
+ if(NOT OpenCV_FOUND OR NOT OpenCV_VERSION VERSION_GREATER_EQUAL 3)
+     message(WARNING "OpenCV ver. 3.0+ is not found, ${TARGET_NAME} is built without OPENCV support")
+ else()
+diff --git a/samples/cpp/benchmark_app/CMakeLists.txt b/samples/cpp/benchmark_app/CMakeLists.txt
+index 3f72c0e41235..6916cd3b1317 100644
+--- a/samples/cpp/benchmark_app/CMakeLists.txt
++++ b/samples/cpp/benchmark_app/CMakeLists.txt
+@@ -107,7 +107,9 @@ endif()
+ 
+ # Optional OpenCV dependency
+ 
+-find_package(OpenCV QUIET COMPONENTS core)
++if(ENABLE_OPENCV)
++       find_package(OpenCV QUIET COMPONENTS core)
++endif()
+ if(NOT OpenCV_FOUND OR NOT OpenCV_VERSION VERSION_GREATER_EQUAL 3)
+     message(WARNING "OpenCV ver. 3.0+ is not found, ${TARGET_NAME} will be built without OpenCV support. Set OpenCV_DIR")
+ else()
+diff --git a/samples/cpp/benchmark_app/main.cpp b/samples/cpp/benchmark_app/main.cpp
+index 2cfd15b77afb..b27bffc9b873 100644
+--- a/samples/cpp/benchmark_app/main.cpp
++++ b/samples/cpp/benchmark_app/main.cpp
+@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
+         // -----------------------------------------------------------
+         next_step();
+ 
+-        ov::Core core;
++	ov::Core core("/etc/openvino/plugins.xml");
+ 
+         if (!FLAGS_extensions.empty()) {
+             // Extensions are loaded as a shared library
+diff --git a/samples/cpp/common/format_reader/CMakeLists.txt b/samples/cpp/common/format_reader/CMakeLists.txt
+index b57d3eef388e..d226c15d5cd9 100644
+--- a/samples/cpp/common/format_reader/CMakeLists.txt
++++ b/samples/cpp/common/format_reader/CMakeLists.txt
+@@ -17,7 +17,9 @@ source_group("include" FILES ${LIBRARY_PUBLIC_HEADERS})
+ add_library(${TARGET_NAME} STATIC ${MAIN_SRC} ${LIBRARY_HEADERS} ${LIBRARY_PUBLIC_HEADERS})
+ 
+ # Find OpenCV components if exist
+-find_package(OpenCV QUIET COMPONENTS core imgproc imgcodecs)
++if(ENABLE_OPENCV)
++       find_package(OpenCV QUIET COMPONENTS core imgproc imgcodecs)
++endif()
+ if(NOT OpenCV_FOUND OR NOT OpenCV_VERSION VERSION_GREATER_EQUAL 3)
+     message(WARNING "OpenCV ver. 3.0+ is not found, ${TARGET_NAME} will be built without OpenCV support")
+ else()
+diff --git a/samples/cpp/hello_query_device/main.cpp b/samples/cpp/hello_query_device/main.cpp
+index 53b320ab6662..aa006c39e84e 100644
+--- a/samples/cpp/hello_query_device/main.cpp
++++ b/samples/cpp/hello_query_device/main.cpp
+@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
+         }
+ 
+         // -------- Step 1. Initialize OpenVINO Runtime Core --------
+-        ov::Core core;
++	ov::Core core("/etc/openvino/plugins.xml");
+ 
+         // -------- Step 2. Get list of available devices --------
+         std::vector<std::string> availableDevices = core.get_available_devices();
+diff --git a/src/core/src/any.cpp b/src/core/src/any.cpp
+index 82dc01c99377..84fa5f96fdbf 100644
+--- a/src/core/src/any.cpp
++++ b/src/core/src/any.cpp
+@@ -11,7 +11,7 @@ namespace ov {
+ 
+ bool util::equal(std::type_index lhs, std::type_index rhs) {
+     auto result = lhs == rhs;
+-#if (defined(__ANDROID__) || defined(__APPLE__)) && defined(__clang__)
++#if (defined(__ANDROID__) || defined(__APPLE__) || defined(__CHROMIUMOS__)) && defined(__clang__)    
+     if (!result) {
+         result = std::strcmp(lhs.name(), rhs.name()) == 0;
+     }
+diff --git a/src/plugins/intel_npu/tools/CMakeLists.txt b/src/plugins/intel_npu/tools/CMakeLists.txt
+index c0e620981952..c1da569a5830 100644
+--- a/src/plugins/intel_npu/tools/CMakeLists.txt
++++ b/src/plugins/intel_npu/tools/CMakeLists.txt
+@@ -5,4 +5,6 @@
+ 
+ add_subdirectory(common)
+ add_subdirectory(compile_tool)
+-add_subdirectory(single-image-test)
++if (NOT TARGET_OS_NAME STREQUAL "CHROMIUMOS")
++       add_subdirectory(single-image-test)
++endif()
+diff --git a/src/plugins/intel_npu/tools/compile_tool/main.cpp b/src/plugins/intel_npu/tools/compile_tool/main.cpp
+index 471fd55bb82b..f7eb6c118d5c 100644
+--- a/src/plugins/intel_npu/tools/compile_tool/main.cpp
++++ b/src/plugins/intel_npu/tools/compile_tool/main.cpp
+@@ -536,8 +536,8 @@ int main(int argc, char* argv[]) {
+             return EXIT_SUCCESS;
+         }
+ 
+-        ov::Core core;
+-        std::cout << "Checking FLAGS_LOG_LEVEL " << FLAGS_log_level << std::endl;
++        ov::Core core("/etc/openvino/plugins.xml");
++	std::cout << "Checking FLAGS_LOG_LEVEL " << FLAGS_log_level << std::endl;
+ 
+         if (!FLAGS_log_level.empty()) {
+             std::cout << "Setting log level " << FLAGS_log_level << std::endl;
+-- 
+2.46.0
+

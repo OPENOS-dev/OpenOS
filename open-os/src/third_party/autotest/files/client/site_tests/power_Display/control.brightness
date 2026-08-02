@@ -1,0 +1,22 @@
+# Description
+# This test records power related statistics while displaying different static
+# pages with each of ChromeOS's 16 brightness levels.
+
+NAME = "power_Display.brightness"
+METADATA = {
+  "requirements": ['pwr-batLife-0009-v01', 'pwr-batLife-0009-v02'],
+  "contacts": ["cros-power-notifications@google.com"],
+  "bug_component": "b:1361410",
+  "criteria": "This test is a benchmark.",
+  "hw_agnostic": False
+}
+ATTRIBUTES = ""
+TEST_TYPE = "client"
+
+BRIGHTNESS_PAGES = ['white', 'black', 'checker1']
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_Display', brightness='all', tag=NAME.split('.')[1],
+             pages=BRIGHTNESS_PAGES, secs_per_page=20, seconds_period=1,
+             force_discharge='optional', pdash_note=pdash_note)

@@ -1,0 +1,15 @@
+BDEPEND=virtual/perl-Time-HiRes virtual/perl-XSLoader virtual/perl-ExtUtils-MakeMaker !dev-perl/Class-XSAccessor-Array test? ( virtual/perl-Test-Simple ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Generate fast XS accessors without runtime compilation
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Class-XSAccessor
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Time-HiRes virtual/perl-XSLoader dev-lang/perl:=
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/S/SM/SMUELLER/Class-XSAccessor-1.19.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=8e0115e4f99981bad5590a5d0b7b8d14

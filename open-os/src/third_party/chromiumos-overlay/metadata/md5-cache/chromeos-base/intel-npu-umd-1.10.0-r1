@@ -1,0 +1,12 @@
+BDEPEND=>=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5
+DEFINED_PHASES=compile configure install prepare test unpack
+DESCRIPTION=Intel(R) Neural Processing Unit User-mode driver
+EAPI=7
+HOMEPAGE=https://github.com/intel/linux-npu-driver
+KEYWORDS=-* amd64
+LICENSE=MIT
+RDEPEND=!chromeos-base/intel-vpu-umd dev-libs/openssl sys-fs/udev
+SLOT=0
+SRC_URI=https://github.com/intel/linux-npu-driver/archive/v1.10.0.tar.gz -> intel-npu-umd-1.10.0.tar.gz https://github.com/openvinotoolkit/npu_plugin_elf/archive/98f6fc4e93c0aca2c7620a32bd5c684b515f8532.tar.gz -> npu_plugin_elf-98f6fc4e93c0aca2c7620a32bd5c684b515f8532.tar.gz https://github.com/oneapi-src/level-zero/archive/refs/tags/v1.17.44.tar.gz -> level-zero-1.17.44.tar.gz https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz -> googletest-1.14.0.tar.gz https://github.com/jbeder/yaml-cpp/archive/refs/tags/0.8.0.tar.gz -> yaml-cpp-0.8.0.tar.gz https://github.com/intel/level-zero-npu-extensions/archive/a63155ae4e64feaaa6931f4696c2e2e699063875.tar.gz -> level-zero-npu-extensions-a63155ae4e64feaaa6931f4696c2e2e699063875.tar.gz https://commondatastorage.googleapis.com/chromeos-localmirror/intel-npu-umd-1.10.0-r1-npu-driver-fw-lfs-files.tar.gz -> intel-npu-umd-1.10.0-r1-npu-driver-fw-lfs-files.tar.gz
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	unpacker	aa6a4e924009232d8b78b31e932c30b5	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=60776f7aed110595f31970bcb007fe1d

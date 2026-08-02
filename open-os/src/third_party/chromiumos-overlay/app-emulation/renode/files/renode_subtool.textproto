@@ -1,0 +1,64 @@
+# proto-file: chromiumos/build/api/subtools.proto
+# proto-message: chromiumos.build.api.SubtoolPackage
+name: "renode"
+type: EXPORT_CIPD
+max_files: 2000
+
+# The Build ID for /opt/renode/renode changes unnecessarily every build, so only
+# upload when one of the input ebuilds providing files is revbumped.
+upload_trigger: CHANGE_REVISION_ONLY
+
+paths: [
+  {
+    input: "/opt/renode/renode"
+    input: "/opt/renode/renode-test"
+    input: "/opt/renode/tests/**/*"
+    strip_prefix_regex: "/opt/renode"
+  }
+]
+# Reconstruct the ".renode-root" in bundle/lib, since this is where renode will
+# look for things when running through the lddtree wrapper. The exception is
+# `tests`, which are resolved relative to the renode-test script bundled above.
+paths: [
+  {
+    input: "/opt/renode/.renode-root"
+    input: "/opt/renode/libhostpolicy.so"
+    input: "/opt/renode/libMono.Unix.so"
+    input: "/opt/renode/libSystem.IO.Compression.Native.so"
+    input: "/opt/renode/libcoreclrtraceptprovider.so"
+    input: "/opt/renode/libclrjit.so"
+    input: "/opt/renode/libhostfxr.so"
+    input: "/opt/renode/libSystem.Globalization.Native.so"
+    input: "/opt/renode/libllvm-disas.so"
+    input: "/opt/renode/libSystem.Native.so"
+    input: "/opt/renode/libmscordaccore.so"
+    input: "/opt/renode/libSystem.Net.Security.Native.so"
+    input: "/opt/renode/libSystem.Security.Cryptography.Native.OpenSsl.so"
+    input: "/opt/renode/libmscordbi.so"
+    input: "/opt/renode/libcoreclr.so"
+    input: "/opt/renode/Renode.runtimeconfig.json"
+    input: "/opt/renode/Renode.deps.json"
+    input: "/opt/renode/*.dll"
+    input: "/opt/renode/licenses/**/*"
+    input: "/opt/renode/platforms/**/*"
+    input: "/opt/renode/plugins/**/*"
+    input: "/opt/renode/scripts/**/*"
+    input: "/opt/renode/tools/**/*"
+    input: "/opt/renode/Lib/**/*"
+    strip_prefix_regex: "/opt/renode"
+    dest: "lib"
+  }
+]
+# Gather remaining dependencies that renode/dotnet load at runtime.
+paths: [
+  {
+    input: "/usr/lib64/liblttng-ust-tracepoint.so.0"
+    input: "/usr/lib64/liburcu-bp.so.8"
+    input: "/usr/lib64/libicuuc.so.70"
+    input: "/usr/lib64/libicudata.so.70"
+    input: "/usr/lib64/libicui18n.so.70"
+    input: "/usr/lib64/libssl.so.3"
+    input: "/usr/lib64/libcrypto.so.3"
+    dest: "lib"
+  }
+]

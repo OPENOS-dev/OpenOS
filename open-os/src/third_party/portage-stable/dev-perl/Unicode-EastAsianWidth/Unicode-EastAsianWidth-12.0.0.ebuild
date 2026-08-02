@@ -1,0 +1,21 @@
+# Copyright 1999-2022 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+DIST_AUTHOR=AUDREYT
+DIST_VERSION=12.0
+inherit perl-module
+
+DESCRIPTION="East Asian Width properties"
+
+LICENSE="CC0-1.0"
+SLOT="0"
+KEYWORDS="*"
+
+RDEPEND="
+	virtual/perl-File-Spec
+"
+BDEPEND="${RDEPEND}
+	virtual/perl-ExtUtils-MakeMaker
+"

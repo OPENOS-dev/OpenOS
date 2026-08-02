@@ -1,0 +1,32 @@
+Print debug info if the size read doesn't match the buffer.
+
+See b/410000713
+
+--- a/src/wrapper.c
++++ b/src/wrapper.c
+@@ -426,6 +426,25 @@
+ 			if (customsize_flag){
+ 				fwrite (image_raw, readpixels, 1, pfp);
+ 			}else{
++				if (pageNum + 1 + total_read + readpixels > (WIDTH_BYTES(header.cupsBytesPerLine * 8 ) * header.cupsHeight + 1) * 2) {
++					fprintf(stderr,
++					        "ERROR: Read too large: pageNum=%d, total_read=%d, readpixels=%d, cupsBytesPerLine=%d, cupsHeight=%d, left_lines=%d\n",
++					        pageNum,
++					        total_read,
++					        readpixels,
++					        header.cupsBytesPerLine,
++					        header.cupsHeight,
++					        left_lines
++					);
++					debug_msg("ERROR: Read too large: pageNum=%d, total_read=%d, readpixels=%d, cupsBytesPerLine=%d, cupsHeight=%d, left_lines=%d\n",
++					          pageNum,
++					          total_read,
++					          readpixels,
++					          header.cupsBytesPerLine,
++					          header.cupsHeight,
++					          left_lines
++					);
++				}
+ 				memcpy((page_raw + pageNum +1) + total_read, image_raw, readpixels);
+ 			}
+ 			total_read += readpixels;

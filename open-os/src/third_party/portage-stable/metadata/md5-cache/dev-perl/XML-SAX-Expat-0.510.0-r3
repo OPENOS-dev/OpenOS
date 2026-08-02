@@ -1,0 +1,13 @@
+BDEPEND=>=dev-perl/XML-SAX-1.20.0-r1 >=dev-perl/XML-NamespaceSupport-1.90.0 dev-perl/XML-Parser dev-lang/perl
+DEFINED_PHASES=compile configure install postinst postrm prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=SAX2 Driver for Expat
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/XML-SAX-Expat
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=>=dev-perl/XML-SAX-1.20.0-r1 >=dev-perl/XML-NamespaceSupport-1.90.0 dev-perl/XML-Parser dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/B/BJ/BJOERN/XML-SAX-Expat-0.51.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=b4afd300760746fffb7ee477caf554d0

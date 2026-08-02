@@ -1,0 +1,16 @@
+DESCRIPTION="Userspace interface to qrtr driver"
+HOMEPAGE="https://github.com/andersson/qrtr"
+UPSTREAM_REPO="https://github.com/andersson/qrtr"
+LOCAL_GIT_REPO="https://chromium.googlesource.com/chromiumos/third_party/libqrtr.git"
+UPSTREAM_BUGSDB="https://github.com/andersson/qrtr/issues"
+LOCAL_BUGSDB="https://crbug.com"
+LICENSE="BSD"
+LICENSE_FILE="LICENSE"
+
+Description:
+
+Recent linux kernel versions provide a new interface for modems that use
+QMI, called QRTR. This interface operates differently from the USB-based
+interface used in past modems. libqrtr is a library which provides a
+userspace interface to this driver so it can be used by services such as
+ModemManager/libqmi.

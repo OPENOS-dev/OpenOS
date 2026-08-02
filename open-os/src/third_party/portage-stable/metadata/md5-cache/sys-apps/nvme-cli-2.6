@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig !cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array virtual/pkgconfig virtual/pkgconfig
+DEFINED_PHASES=compile configure install postinst postrm test
+DEPEND=>=sys-libs/libnvme-1.6:=[json?] hugepages? ( sys-libs/libhugetlbfs:= ) json? ( dev-libs/json-c:= ) sys-libs/zlib:= !cros_host? ( dev-lang/python )
+DESCRIPTION=NVM-Express user space tooling for Linux
+EAPI=7
+HOMEPAGE=https://github.com/linux-nvme/nvme-cli
+IUSE=hugepages +json cros_host test
+KEYWORDS=*
+LICENSE=GPL-2 GPL-2+
+RDEPEND=>=sys-libs/libnvme-1.6:=[json?] hugepages? ( sys-libs/libhugetlbfs:= ) json? ( dev-libs/json-c:= ) sys-libs/zlib:=
+SLOT=0
+SRC_URI=https://github.com/linux-nvme/nvme-cli/archive/v2.6.tar.gz -> nvme-cli-2.6.gh.tar.gz
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	meson	0b48ece927e974cd82202dc49f391f82	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=ceeb1b373b67e53dbd31fc973fe134d1

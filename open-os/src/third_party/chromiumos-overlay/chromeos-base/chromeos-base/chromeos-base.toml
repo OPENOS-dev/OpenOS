@@ -1,0 +1,11 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+# This package adds the `root` user with /bin/bash as the shell. user.eclass
+# verifies that the shell is installed. Since /bin is cleared when using
+# interface layers, we need to disable it.
+supports_interface_libraries = false

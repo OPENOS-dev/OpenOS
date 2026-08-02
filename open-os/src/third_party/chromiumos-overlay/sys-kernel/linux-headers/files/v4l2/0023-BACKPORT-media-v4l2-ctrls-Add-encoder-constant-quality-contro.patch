@@ -1,0 +1,42 @@
+From 4ad1b0d410c88c7c8e8fd1298c9d2293b651e35c Mon Sep 17 00:00:00 2001
+From: Maheshwar Ajja <majja@codeaurora.org>
+Date: Sat, 23 May 2020 03:05:26 +0200
+Subject: [PATCH] media: v4l2-ctrls: Add encoder constant quality control
+
+When V4L2_CID_MPEG_VIDEO_BITRATE_MODE value is
+V4L2_MPEG_VIDEO_BITRATE_MODE_CQ, encoder will produce
+constant quality output indicated by
+V4L2_CID_MPEG_VIDEO_CONSTANT_QUALITY control value.
+Encoder will choose appropriate quantization parameter
+and bitrate to produce requested frame quality level.
+
+Signed-off-by: Maheshwar Ajja <majja@codeaurora.org>
+Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ include/uapi/linux/v4l2-controls.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index 0cc89a6e..707c74ae 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -371,6 +371,7 @@ enum v4l2_mpeg_video_aspect {
+ enum v4l2_mpeg_video_bitrate_mode {
+ 	V4L2_MPEG_VIDEO_BITRATE_MODE_VBR = 0,
+ 	V4L2_MPEG_VIDEO_BITRATE_MODE_CBR = 1,
++	V4L2_MPEG_VIDEO_BITRATE_MODE_CQ = 2,
+ };
+ #define V4L2_CID_MPEG_VIDEO_BITRATE		(V4L2_CID_CODEC_BASE+207)
+ #define V4L2_CID_MPEG_VIDEO_BITRATE_PEAK	(V4L2_CID_CODEC_BASE+208)
+@@ -762,6 +763,7 @@ enum v4l2_cid_mpeg_video_hevc_size_of_length_field {
+ #define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L6_BR	(V4L2_CID_CODEC_BASE + 642)
+ #define V4L2_CID_MPEG_VIDEO_REF_NUMBER_FOR_PFRAMES	(V4L2_CID_CODEC_BASE + 643)
+ #define V4L2_CID_MPEG_VIDEO_PREPEND_SPSPPS_TO_IDR	(V4L2_CID_CODEC_BASE + 644)
++#define V4L2_CID_MPEG_VIDEO_CONSTANT_QUALITY		(V4L2_CID_CODEC_BASE + 645)
+ 
+ /*  MPEG-class control IDs specific to the CX2341x driver as defined by V4L2 */
+ #define V4L2_CID_CODEC_CX2341X_BASE				(V4L2_CTRL_CLASS_CODEC | 0x1000)
+-- 
+2.45.2

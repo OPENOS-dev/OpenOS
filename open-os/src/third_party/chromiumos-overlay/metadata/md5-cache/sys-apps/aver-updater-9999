@@ -1,0 +1,15 @@
+BDEPEND=dev-vcs/git app-misc/jq virtual/pkgconfig
+DEFINED_PHASES=compile configure info install preinst prepare setup test unpack
+DEPEND=chromeos-base/libbrillo:= app-arch/libarchive:= >=chromeos-base/libchrome-0.0.1-r1517:0=[cros-debug=,ipcz=] chromeos-base/perfetto:= dev-cpp/gtest:= sys-apps/baselayout
+DESCRIPTION=AVer firmware updater
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/third_party/aver-updater
+IUSE=cros_host cros_workon_tree_ cros-debug ipcz
+KEYWORDS=~*
+LICENSE=BSD
+PROPERTIES=live
+RDEPEND=chromeos-base/libbrillo:= app-arch/libarchive:= >=chromeos-base/libchrome-0.0.1-r1517:0=[cros-debug=,ipcz=] sys-apps/baselayout
+RESTRICT=!x86? ( !amd64? ( test ) )
+SLOT=0
+_eclasses_=cros-common.mk	9e8d1ee1b6c7bcbbba3cb473b2e4df3e	cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-debug	24f14e41660a7626765c7cf71ea9cdc7	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	libchrome	2173a2d4588b0d2d7be56babc416ec4b	libchrome-version	76299e093a195594399a1930ed54fa2d	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=91ca54b93f2b8bf4d9abc7d03c1f867c

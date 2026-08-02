@@ -1,0 +1,47 @@
+Remove cups-browsed because it is unused.
+
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -274,9 +274,6 @@
+ # ===========
+ # CUPS Config
+ # ===========
+-pkgcupsserverrootdir = $(CUPS_SERVERROOT)
+-pkgcupsserverroot_DATA = \
+-	utils/cups-browsed.conf
+ 
+ # =======
+ # Drivers
+@@ -891,32 +891,6 @@
+ 	    --generate-c-code cups-notifier \
+ 	    utils/org.cups.cupsd.Notifier.xml
+ 
+-sbin_PROGRAMS = \
+-	cups-browsed
+-cups_browsed_SOURCES = \
+-	utils/cups-browsed.c
+-nodist_cups_browsed_SOURCES = \
+-	$(cups_notifier_sources)
+-cups_browsed_CFLAGS = \
+-	$(CUPS_CFLAGS) \
+-	$(AVAHI_CFLAGS) \
+-	$(AVAHI_GLIB_CFLAGS) \
+-	$(GLIB_CFLAGS) \
+-	$(GIO_CFLAGS) \
+-	$(GIO_UNIX_CFLAGS) \
+-	-I$(srcdir)/cupsfilters/
+-cups_browsed_CXXFLAGS = $(cups_browsed_CFLAGS)
+-cups_browsed_LDADD = \
+-	$(CUPS_LIBS) \
+-	$(AVAHI_LIBS) \
+-	$(AVAHI_GLIB_LIBS) \
+-	$(GLIB_LIBS) \
+-	$(GIO_LIBS) \
+-	$(GIO_UNIX_LIBS) \
+-	libcupsfilters.la
+-initrcdir = $(INITDDIR)
+-initrc_SCRIPTS = utils/cups-browsed
+-
+ cupsbrowsedmanpages = \
+ 	utils/cups-browsed.8 \
+ 	utils/cups-browsed.conf.5

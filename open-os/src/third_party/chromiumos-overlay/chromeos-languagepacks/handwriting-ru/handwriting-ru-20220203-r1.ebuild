@@ -1,0 +1,1 @@
+handwriting-ru-20220203.ebuild

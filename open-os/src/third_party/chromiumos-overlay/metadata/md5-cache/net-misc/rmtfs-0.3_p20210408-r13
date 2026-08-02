@@ -1,0 +1,14 @@
+DEFINED_PHASES=configure install preinst
+DEPEND=net-libs/libqrtr:= virtual/udev:= sys-apps/baselayout
+DESCRIPTION=QMI Remote File System Server
+EAPI=7
+HOMEPAGE=https://github.com/andersson/rmtfs
+IUSE=asan +seccomp asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=net-libs/libqrtr:= virtual/udev:= sys-apps/baselayout
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=https://github.com/andersson/rmtfs/archive/293ab8babb27ac0f24247bb101fed9420c629c29.tar.gz -> rmtfs-0.3_p20210408.tar.gz
+_eclasses_=cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=9126b568e8e3995f2567e5433d1fe9b2

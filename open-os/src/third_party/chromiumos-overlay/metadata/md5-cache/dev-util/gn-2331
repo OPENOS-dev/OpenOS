@@ -1,0 +1,11 @@
+BDEPEND=app-arch/unzip
+DEFINED_PHASES=install
+DESCRIPTION=GN (generate ninja) meta-build system
+EAPI=7
+HOMEPAGE=https://gn.googlesource.com/gn/
+KEYWORDS=-* amd64
+LICENSE=BSD-Google
+RESTRICT=mirror
+SLOT=0
+SRC_URI=cipd://gn/gn/linux-amd64:n3yhCVXzxZmHcfH1Z1dry0ceDqDgRnhcHfk4-ic2NagC -> gn-2331-amd64.zip
+_md5_=4407b31b9282e0a8dbf68e6f7086ff20

@@ -1,0 +1,14 @@
+BDEPEND=nls? ( sys-devel/gettext ) virtual/pkgconfig virtual/pkgconfig
+DEFINED_PHASES=compile configure install postinst postrm prepare
+DEPEND=dev-libs/inih dev-libs/userspace-rcu:= >=sys-apps/util-linux-2.17.2 icu? ( dev-libs/icu:= ) libedit? ( dev-libs/libedit ) >=sys-kernel/linux-headers-5.4
+DESCRIPTION=XFS filesystem utilities
+EAPI=7
+HOMEPAGE=https://xfs.wiki.kernel.org/ https://git.kernel.org/pub/scm/fs/xfs/xfsprogs-dev.git/
+IUSE=icu libedit nls selinux static-libs
+KEYWORDS=*
+LICENSE=LGPL-2.1
+RDEPEND=dev-libs/inih dev-libs/userspace-rcu:= >=sys-apps/util-linux-2.17.2 icu? ( dev-libs/icu:= ) libedit? ( dev-libs/libedit ) selinux? ( sec-policy/selinux-xfs )
+SLOT=0
+SRC_URI=https://www.kernel.org/pub/linux/utils/fs/xfs/xfsprogs/xfsprogs-6.13.0.tar.xz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=b849c3e15464af892072c714936ff4de

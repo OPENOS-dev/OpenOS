@@ -1,0 +1,46 @@
+# Copyright 2015 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+CROS_WORKON_COMMIT="82215f40ffd2f04f7566e2b5bef3871cbd25cd04"
+CROS_WORKON_TREE="093cd09fc5166e142c8988d820a401e06cb9147d"
+CROS_WORKON_PROJECT="chromiumos/platform/touch_firmware_test"
+CROS_WORKON_LOCALNAME="platform/touch_firmware_test"
+
+PYTHON_COMPAT=( python3_{6..11} )
+inherit cros-sanitizers cros-workon cros-constants cros-debug distutils-r1
+
+DESCRIPTION="Chromium OS multitouch utilities"
+
+LICENSE="BSD-Google"
+SLOT="0/0"
+KEYWORDS="*"
+IUSE="-asan"
+
+RDEPEND=""
+
+DEPEND=${RDEPEND}
+
+src_configure() {
+	sanitizers-setup-env
+	cros-debug-add-NDEBUG
+	default
+}
+
+src_install() {
+	# install the remote package
+	distutils-r1_src_install
+
+	# install the webplot script
+	exeinto /usr/local/bin
+	newexe webplot/chromeos_wrapper.sh webplot
+
+	# install the heatmapplot script
+	newexe heatmap/chromeos_heatmapplot_wrapper.sh heatmapplot
+
+	# install to autotest deps directory for dependency
+	DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests/touch_firmware_test"
+	mkdir -p "${DESTDIR}"
+	echo "CMD:" cp -Rp "${S}"/* "${DESTDIR}"
+	cp -Rp "${S}"/* "${DESTDIR}"
+}

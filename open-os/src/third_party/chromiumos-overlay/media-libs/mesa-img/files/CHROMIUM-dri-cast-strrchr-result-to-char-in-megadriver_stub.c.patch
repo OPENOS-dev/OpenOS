@@ -1,0 +1,38 @@
+From d94732cfa3098e738c33790c50b2a67b5e153f82 Mon Sep 17 00:00:00 2001
+From: Denys Fedoryshchenko <denys.f@collabora.com>
+Date: Tue, 16 Jun 2026 16:01:28 +0300
+Subject: [PATCH 5/5] CHROMIUM: dri: cast strrchr result to char * in megadriver_stub.c
+
+With glibc-2.43 / C23, string functions (such as strrchr) return const-qualified
+pointers if the input argument is a pointer to a const-qualified type.
+Because info.dli_fname is const char *, strrchr returns const char *, which
+discards qualifiers when assigned to driver_name (char *). Cast the result to
+char * to fix the compilation error.
+
+This is a downstream-only compatibility fix for the legacy megadriver_stub.c
+file (which is no longer present in modern upstream Mesa).
+
+Reference:
+https://lists.gnu.org/archive/html/info-gnu/2026-01/msg00005.html
+
+Change-Id: I673953d49d9fbfdc56a3bc3ef7c4b64c3266b123
+---
+ src/mesa/drivers/dri/common/megadriver_stub.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/common/megadriver_stub.c b/src/mesa/drivers/dri/common/megadriver_stub.c
+index d085080a197..4e4aeb43ef9 100644
+--- a/src/mesa/drivers/dri/common/megadriver_stub.c
++++ b/src/mesa/drivers/dri/common/megadriver_stub.c
+@@ -78,7 +78,7 @@ megadriver_stub_init(void)
+       return;
+ 
+    /* Search for the last '/' character in the path. */
+-   driver_name = strrchr(info.dli_fname, '/');
++   driver_name = (char *) strrchr(info.dli_fname, '/');
+    if (driver_name != NULL) {
+       /* Skip '/' character */
+       driver_name++;
+-- 
+2.51.0
+

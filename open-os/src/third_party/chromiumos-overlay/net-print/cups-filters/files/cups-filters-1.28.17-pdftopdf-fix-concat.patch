@@ -1,0 +1,67 @@
+From 7992eb7c6e4abeffd766f54c98cbb2cbb45c5c04 Mon Sep 17 00:00:00 2001
+From: Sergio <Sergio.G.delReal@gmail.com>
+Date: Thu, 12 Sep 2024 15:18:53 -0500
+Subject: [PATCH] pdftopdf: Add newline after each content stream in
+ ::provideStreamData (#587)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When concatenating the data streams for the page's contents, add a new
+line at the end of each data stream to avoid cases where the
+concatenation might result in a corruption.
+Eg (extracted from a real pdf):
+
+        %% Contents for page 1
+        %% Stream 1
+        9 0 obj
+        <<
+          /Length 10 0 R
+        >>
+        stream
+        q
+        endstream
+        endobj
+
+        10 0 obj
+        1
+        endobj
+
+        %% Stream 2
+        11 0 obj
+        <<
+          /Length 12 0 R
+        >>
+        stream
+        q 0.1 0 0 0.1 0 0 cm
+
+the output pdf results in
+        qq 0.1 0 0 0.1 0 0 cm
+
+with the effect that 'qq' is not being parsed correctly, effectively
+mangling the contents.
+
+Signed-off-by: Sergio Gómez <sergio.g.delreal@gmail.com>
+---
+ filter/pdftopdf/qpdf_xobject.cc | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/filter/pdftopdf/qpdf_xobject.cc b/filter/pdftopdf/qpdf_xobject.cc
+index cc33f43a5..12732f1e9 100644
+--- a/filter/pdftopdf/qpdf_xobject.cc
++++ b/filter/pdftopdf/qpdf_xobject.cc
+@@ -29,8 +29,10 @@ void CombineFromContents_Provider::provideStreamData(int objid, int generation,
+ {
+   Pl_Concatenate concat("concat", pipeline);
+   const int clen=contents.size();
+-  for (int iA=0;iA<clen;iA++) {
++  for (int iA=0;iA<clen;iA++)
++  {
+     contents[iA].pipeStreamData(&concat, true, false, false);
++    concat << "\n";
+   }
+   concat.manualFinish();
+ }
+-- 
+2.45.2
+

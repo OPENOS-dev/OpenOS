@@ -1,0 +1,41 @@
+From 8416dc8bcae28bd90ec4a3b7b6dc2d0914c472fc Mon Sep 17 00:00:00 2001
+From: Max Staudt <mstaudt@chromium.org>
+Date: Wed, 17 Apr 2024 15:30:44 +0900
+Subject: [PATCH] udev: permanent symlinks with USB revision for /dev/media*
+
+As a follow-up in the style of:
+  873be895ed ("udev: add USB revision in ID_PATH")
+this patch adds a second symlink for media controllers, this time
+including the USB revision.
+
+This means that in addition to persistent symlinks like:
+  pci-0000:04:00.3-usb-0:1:1.0-media-controller -> ../../media0
+
+We now also get:
+  pci-0000:04:00.3-usbv2-0:1:1.0-media-controller -> ../../media0
+
+...which helps distinguish media devices plugged into different USB root
+hubs provided by the same PCI card, at least as long as they are for
+different USB revisions.
+
+Fixes: 04f19d6735 ("udev: Add /dev/media/by-path symlinks for media controllers")
+---
+ rules.d/60-persistent-media-controller.rules | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/rules.d/60-persistent-media-controller.rules b/rules.d/60-persistent-media-controller.rules
+index bf614d9783..8c2175c5ba 100644
+--- a/rules.d/60-persistent-media-controller.rules
++++ b/rules.d/60-persistent-media-controller.rules
+@@ -7,6 +7,7 @@ SUBSYSTEM!="media", GOTO="persistent_media_ctl_end"
+ ENV{MAJOR}=="", GOTO="persistent_media_ctl_end"
+ 
+ IMPORT{builtin}="path_id"
+-ENV{ID_PATH}=="?*", KERNEL=="media*", SYMLINK+="media/by-path/$env{ID_PATH}-media-controller"
++KERNEL=="media*", ENV{ID_PATH_WITH_USB_REVISION}=="?*", SYMLINK+="media/by-path/$env{ID_PATH_WITH_USB_REVISION}-media-controller"
++KERNEL=="media*", ENV{ID_PATH_WITH_USB_REVISION}=="", ENV{ID_PATH}=="?*", SYMLINK+="media/by-path/$env{ID_PATH}-media-controller"
+ 
+ LABEL="persistent_media_ctl_end"
+-- 
+2.44.0.683.g7961c838ac-goog
+

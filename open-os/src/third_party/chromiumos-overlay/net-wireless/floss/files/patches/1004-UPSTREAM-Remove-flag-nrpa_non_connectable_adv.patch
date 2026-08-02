@@ -1,0 +1,30 @@
+From b41d89d6059dceedcf871f343b3de7f4c50d4e94 Mon Sep 17 00:00:00 2001
+From: Zhengping Jiang <jiangzp@google.com>
+Date: Thu, 18 Sep 2025 19:36:07 +0000
+Subject: [PATCH] UPSTREAM: Remove flag nrpa_non_connectable_adv
+
+Replace the flag with a new flag nrpa_for_non_connectable_adv due
+to missing metadata.
+
+Bug: 319511126
+Test: m -j
+Flag: EXEMPT FLAG_REMOVAL
+Change-Id: I8d27fdc6c722d467c64852958fa3345325f77013
+---
+ flags/le_advertising.aconfig | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/flags/le_advertising.aconfig b/flags/le_advertising.aconfig
+index 3be83daef0d..6783254696d 100644
+--- a/flags/le_advertising.aconfig
++++ b/flags/le_advertising.aconfig
+@@ -3,9 +3,2 @@ container: "com.android.bt"
+ 
+-flag {
+-    name: "nrpa_non_connectable_adv"
+-    namespace: "bluetooth"
+-    description: "Use NRPA for non-connectable advertising with public address policy."
+-    bug: "319511126"
+-}
+-
+ flag {

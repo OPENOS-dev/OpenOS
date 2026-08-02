@@ -1,0 +1,73 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+EAPI=7
+
+CROS_WORKON_COMMIT="edd00d8e491e064a8b6a13c3a1f781454dcf02ed"
+CROS_WORKON_TREE="159fc9cd58a8d3be339c0e68295e20c14a4d465a"
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_SUBTREE="hwsec-utils"
+
+inherit cros-workon cros-rust
+
+DESCRIPTION="Hwsec-related features."
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/hwsec-utils/"
+
+LICENSE="BSD-Google"
+KEYWORDS="*"
+IUSE="cr50_onboard test ti50_onboard"
+REQUIRED_USE="^^ ( ti50_onboard cr50_onboard )"
+CANDIDATES=( "cr50_onboard" "ti50_onboard" )
+
+DEPEND="
+	dev-rust/third-party-crates-src:=
+	dev-rust/libchromeos:=
+	sys-apps/dbus:=
+"
+# (crbug.com/1182669): build-time only deps need to be in RDEPEND so they are pulled in when
+# installing binpkgs since the full source tree is required to use the crate.
+RDEPEND="${DEPEND}"
+
+src_compile() {
+	local features=()
+
+	local candidate
+	for candidate in "${CANDIDATES[@]}"; do
+		if use "${candidate}"; then
+			features+=("${candidate}")
+		fi
+	done
+
+	cros-rust_src_compile --features="${features[*]}"
+}
+
+src_install() {
+	cros-rust_src_install
+
+	files=(
+		cr50_disable_sleep
+		gsc_flash_log
+		gsc_get_name
+		gsc_read_rma_sn_bits
+		gsc_reset
+		gsc_set_board_id
+		gsc_set_factory_config
+		gsc_set_sn_bits
+		gsc_update
+		gsc_verify_ro
+		tpm2_read_board_id
+	)
+	for f in "${files[@]}"; do
+		dosbin "$(cros-rust_get_build_dir)/${f}"
+	done
+}
+
+src_test() {
+	local candidate
+	for candidate in "${CANDIDATES[@]}"; do
+		cros-rust_src_test --features="${candidate}"
+	done
+}

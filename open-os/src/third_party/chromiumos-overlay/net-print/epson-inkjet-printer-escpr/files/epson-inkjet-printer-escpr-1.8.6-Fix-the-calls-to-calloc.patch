@@ -1,0 +1,62 @@
+From 48d23e23676b0e0d9c97a4d0e6457d0b9a83727a Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Mon, 6 Oct 2025 15:41:08 -0600
+Subject: [PATCH] Fix the calls to calloc
+
+The args to calloc were backwards.  This could cause some issues if
+something is trying to track the size of the object (like some fortify
+checks).
+
+Additionally, add a null check for the return value.
+---
+ src/wrapper.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/src/wrapper.c b/src/wrapper.c
+index 8cbedc5..62bb6e0 100644
+--- a/src/wrapper.c
++++ b/src/wrapper.c
+@@ -352,13 +352,37 @@ main (int argc, char *argv[])
+ 			if (!customsize_flag) {
+ 				//2 page分のバッファを確保
+ 				image_bytes = (WIDTH_BYTES(header.cupsBytesPerLine * 8 ) * header.cupsHeight + 1) * 2;
+-				page_raw = (char *)calloc (sizeof (char), image_bytes);
+-				page_raw_cache = (char *)calloc (sizeof (char), image_bytes);
++				page_raw = (char *)calloc (image_bytes, sizeof (char));
++				if (page_raw == NULL) {
++					fprintf(stderr, "ERROR: Failed to allocate memory for page_raw (%d bytes).\n", image_bytes);
++					debug_msg("ERROR: Failed to allocate memory for page_raw (%d bytes).\n", image_bytes);
++					pclose(pfp);
++					cupsRasterClose(ras);
++					return 1;
++				}
++				page_raw_cache = (char *)calloc (image_bytes, sizeof (char));
++				if (page_raw_cache == NULL) {
++					fprintf(stderr, "ERROR: Failed to allocate memory for page_raw_cache (%d bytes).\n", image_bytes);
++					debug_msg("ERROR: Failed to allocate memory for page_raw_cache (%d bytes).\n", image_bytes);
++					safeFree(page_raw);
++					pclose(pfp);
++					cupsRasterClose(ras);
++					return 1;
++				}
+ 			}
+ 		}
+ 
+ 		image_bytes = WIDTH_BYTES(header.cupsBytesPerLine * 8 ) * CUPS_READ_LINE;
+-		image_raw = (char *)calloc (sizeof (char), image_bytes);
++		image_raw = (char *)calloc (image_bytes, sizeof (char));
++		if (image_raw == NULL) {
++			fprintf(stderr, "ERROR: Failed to allocate memory for image_raw (%d bytes).\n", image_bytes);
++			debug_msg("ERROR: Failed to allocate memory for image_raw (%d bytes).\n", image_bytes);
++			safeFree(page_raw);
++			safeFree(page_raw_cache);
++			pclose(pfp);
++			cupsRasterClose(ras);
++			return 1;
++		}
+ 
+ 		if (customsize_flag) {
+ 			
+-- 
+2.51.0.618.g983fd99d29-goog
+

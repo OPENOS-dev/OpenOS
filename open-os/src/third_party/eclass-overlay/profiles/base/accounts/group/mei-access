@@ -1,0 +1,5 @@
+group:mei-access
+gid:427
+# This group is to grant rw access of /dev/mei0 to healthd_psr, because
+# they need access w/o being root.
+users:healthd_psr

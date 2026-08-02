@@ -1,0 +1,26 @@
+/*
+ * This file is auto-generated, do not modify!
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include <glib.h>
+
+#include "{{basename}}"
+{%- if struct_objs %}
+#include "fu-byte-array.h"
+#include "fu-bytes.h"
+#include "fu-mem-private.h"
+#include "fu-string.h"
+{%- endif %}
+
+{%- for header_basename in import_headers %}
+#include "{{header_basename}}"
+{%- endfor %}
+
+#ifdef G_LOG_DOMAIN
+  #undef G_LOG_DOMAIN
+#endif
+#define G_LOG_DOMAIN "FuStruct"

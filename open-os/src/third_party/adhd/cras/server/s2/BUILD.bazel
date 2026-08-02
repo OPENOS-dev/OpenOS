@@ -1,0 +1,49 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@crate_index//:defs.bzl", "all_crate_deps")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_rust//rust:defs.bzl", "rust_test")
+load("//:utils.bzl", "require_no_config")
+load("//rules/cbindgen:rules.bzl", "cras_cbindgen")
+load("//rules/rust:defs.bzl", "cras_rust_library")
+
+cras_rust_library(
+    name = "s2",
+    srcs = glob(
+        include = ["src/**/*.rs"],
+    ),
+    crate_name = "cras_s2",
+    edition = "2021",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(normal = True) + [
+        "//audio_processor",
+        "//cras/common:rust_common",
+        "//cras/server/feature_tier",
+        "//cras/server/ini",
+    ],
+)
+
+rust_test(
+    name = "s2_test",
+    crate = ":s2",
+    target_compatible_with = require_no_config("//:system_cras_rust_build"),
+)
+
+cras_cbindgen(
+    name = "s2_h",
+    out = "s2.h",
+    copyright_year = 2023,
+    extra_args = [
+        "--with-include=cras/common/rust_common.h",
+    ],
+    lib = ":s2",
+)
+
+cc_library(
+    name = "cc",
+    hdrs = ["s2.h"],
+    visibility = ["//visibility:public"],
+    deps = [":s2"],
+)

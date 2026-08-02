@@ -1,0 +1,65 @@
+From 7d6fad85508cb784df3190f67098d8f1fa73af71 Mon Sep 17 00:00:00 2001
+From: Ralph Little <skelband@gmail.com>
+Date: Tue, 27 Jan 2026 22:05:02 -0800
+Subject: [PATCH] epson2: changes from Epson
+
+# Adding new implementation, please refer to
+https://b.corp.google.com/issues/483042730
+
+They fix a bug and add new models.
+---
+ backend/epson2.c             |  2 --
+ backend/epson2_usb.c         |  2 ++
+ doc/descriptions/epson2.desc | 10 ++++++++++
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/backend/epson2.c b/backend/epson2.c
+index cfc2aca00..9157923b5 100644
+--- a/backend/epson2.c
++++ b/backend/epson2.c
+@@ -1377,8 +1377,6 @@ init_options(Epson_Scanner *s)
+ 	s->opt[OPT_SOURCE].constraint_type = SANE_CONSTRAINT_STRING_LIST;
+ 	s->opt[OPT_SOURCE].constraint.string_list = source_list;
+
+-	if (!s->hw->extension)
+-		s->opt[OPT_SOURCE].cap |= SANE_CAP_INACTIVE;
+
+ 	s->val[OPT_SOURCE].w = 0;	/* always use Flatbed as default */
+
+diff --git a/backend/epson2_usb.c b/backend/epson2_usb.c
+index f94d49dc2..4f354d734 100644
+--- a/backend/epson2_usb.c
++++ b/backend/epson2_usb.c
+@@ -187,6 +187,8 @@ SANE_Word sanei_epson_usb_product_ids[] = {
+   0x1142, /* L3110 Series */
+   0x1188, /* L3210 Series */
+   0x1189, /* L3200 Series */
++  0x11C7, /* L3230 Series */
++  0x1409, /* L3310 Series */
+   0	/* last entry - this is used for devices that are specified
+ 	   in the config file as "usb <vendor> <product>" */
+ };
+diff --git a/doc/descriptions/epson2.desc b/doc/descriptions/epson2.desc
+index b5fc8e240..518e545db 100644
+--- a/doc/descriptions/epson2.desc
++++ b/doc/descriptions/epson2.desc
+@@ -1137,6 +1137,16 @@
+ :usbid      "0x04b8" "0x1188"
+ :status     :complete
+
++:model      "L3230 Series"
++:interface  "USB"
++:usbid      "0x04b8" "0x11C7"
++:status     :complete
++
++:model      "L3310 Series"
++:interface  "USB"
++:usbid      "0x04b8" "0x1409"
++:status     :complete
++
+ :model      "LP-7900CS"
+ :status     :untested
+ :comment    "business all-in-one; scanner is a ES-7000H"
+--
+GitLab
+

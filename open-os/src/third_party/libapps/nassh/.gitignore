@@ -1,0 +1,26 @@
+# Bundled dependencies
+js/*.concat.js
+js/*.rollup.js
+
+# Generated HTML files.
+/html/changelog.html
+/html/licenses.html
+
+# Copy of the plugin used when loading as an unpacked extension.
+/plugin/
+
+# Stuff we build for distribution
+/dist
+/fonts
+/nassh-*.tgz
+
+# npm related dirs.
+node_modules
+
+# wassh related dev paths.
+/hterm
+/libdot
+/nassh
+/ssh_client
+/wasi-js-bindings
+/wassh

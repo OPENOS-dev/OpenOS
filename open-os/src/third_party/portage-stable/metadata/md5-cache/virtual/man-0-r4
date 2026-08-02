@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for man
+EAPI=7
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=|| ( sys-apps/man-db >=app-text/mandoc-1.14.5-r1[system-man] )
+SLOT=0
+_md5_=f98d170378ee9b50e4d66e48ae47a9ec

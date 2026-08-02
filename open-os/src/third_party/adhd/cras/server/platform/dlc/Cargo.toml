@@ -1,0 +1,21 @@
+[package]
+name = "cras_dlc"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+cras_common = { workspace = true }
+cras_s2 = { workspace = true }
+dbus = { workspace = true }
+libc = { workspace = true }
+log = { workspace = true }
+once_cell = { workspace = true }
+protobuf = { workspace = true }
+static_assertions = { workspace = true }
+system_api = { workspace = true, optional = true }
+thiserror = { workspace = true }
+
+[features]
+dlc = ["system_api"]

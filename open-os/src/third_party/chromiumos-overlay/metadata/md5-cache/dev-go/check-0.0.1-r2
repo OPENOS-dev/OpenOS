@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/pretty
+DESCRIPTION=Rich testing for the Go language
+EAPI=7
+HOMEPAGE=https://gopkg.in/check.v1
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=dev-go/pretty
+RESTRICT=binchecks strip
+SLOT=0
+SRC_URI=https://github.com/go-check/check/archive/10cb98267c6cb43ea9cd6793f29ff4089c306974.tar.gz -> github.com-go-check-check-10cb98267c6cb43ea9cd6793f29ff4089c306974.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=b0f9116189648a6a64bfc0bd76f1ac95

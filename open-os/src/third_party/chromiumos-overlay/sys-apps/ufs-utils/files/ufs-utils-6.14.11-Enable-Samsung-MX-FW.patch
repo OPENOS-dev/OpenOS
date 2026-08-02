@@ -1,0 +1,52 @@
+From 12184137284c68a87981b3fc5b11ca1c98db993c Mon Sep 17 00:00:00 2001
+From: Gwendal Grignou <gwendal@google.com>
+Date: Wed, 18 Jun 2025 11:22:24 -0700
+Subject: [PATCH] Add support for Samsung MX
+
+UFS memory devices targeted for Samsung MX have special firmware with
+more information. Add support in Identification and Geometry table to
+handle them.
+---
+ ufs.h      | 5 +++++
+ ufs_cmds.c | 2 ++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/ufs.h b/ufs.h
+index 31d5a64..1255e4a 100644
+--- a/ufs.h
++++ b/ufs.h
+@@ -140,6 +140,11 @@ enum query_opcode {
+ };
+ 
+ enum ufs_desc_max_size {
++	/* Max descriptors size from 2.1 to 3.0 MX Vendor UFS spec */
++	QUERY_DESC_DEVICE_MAX_SIZE_VENDOR_SS_MX		= 0x5F,
++	QUERY_DESC_GEOMETRY_MAX_SIZE_VENDOR_SS_MX	= 0x59,
++
++
+ 	/* Max descriptors size from 2.1 to 3.0 UFS spec */
+ 	QUERY_DESC_DEVICE_MAX_SIZE_3_0		= 0x40,
+ 	QUERY_DESC_CONFIGURAION_MAX_SIZE_3_0	= 0x90,
+diff --git a/ufs_cmds.c b/ufs_cmds.c
+index 042304d..5ac83d9 100644
+--- a/ufs_cmds.c
++++ b/ufs_cmds.c
+@@ -1598,6 +1598,7 @@ static int check_read_desc_size(__u8 idn, __u8 *data_buf)
+ 	switch (idn) {
+ 	case QUERY_DESC_IDN_DEVICE:
+ 		if ((data_buf[0] != QUERY_DESC_DEVICE_MAX_SIZE) &&
++		    (data_buf[0] != QUERY_DESC_DEVICE_MAX_SIZE_VENDOR_SS_MX) &&
+ 		    (data_buf[0] != QUERY_DESC_DEVICE_MAX_SIZE_3_0))
+ 			unoff = true;
+ 		break;
+@@ -1617,6 +1618,7 @@ static int check_read_desc_size(__u8 idn, __u8 *data_buf)
+ 		break;
+ 	case QUERY_DESC_IDN_GEOMETRY:
+ 		if ((data_buf[0] != QUERY_DESC_GEOMETRY_MAX_SIZE) &&
++		    (data_buf[0] != QUERY_DESC_GEOMETRY_MAX_SIZE_VENDOR_SS_MX) &&
+ 		    (data_buf[0] != QUERY_DESC_GEOMETRY_MAX_SIZE_3_0) &&
+ 		    (data_buf[0] != QUERY_DESC_GEOMETRY_MAX_SIZE_4_1))
+ 			unoff = true;
+-- 
+2.50.0.rc2.761.g2dc52ea45b-goog
+

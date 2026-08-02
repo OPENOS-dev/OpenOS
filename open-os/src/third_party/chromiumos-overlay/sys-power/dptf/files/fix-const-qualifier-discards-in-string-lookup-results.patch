@@ -1,0 +1,47 @@
+From cd93ea4cb3a635aa61aabfd67dc53bc1fa32ef4b Mon Sep 17 00:00:00 2001
+From: Adrian Ratiu <adrian.ratiu@collabora.com>
+Date: Fri, 15 May 2026 15:38:09 +0300
+Subject: [PATCH] ESIF/IPF: fix const-qualifier discards in string lookup
+ results
+
+esif_ccb_strrchr() and esif_ccb_strpbrk() map to strrchr()/strpbrk(),
+which with strict clang checking return 'const char *' when given a
+'const char *' source. Declare the local result pointers const to
+match and avoid -Werror,-Wincompatible-pointer-types-discards-qualifiers
+build failures.
+
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+---
+ ESIF/Products/ESIF_WS/Sources/esif_ws_http.c | 2 +-
+ IPF/Sources/Common/ipf_ipc_clisrv.c          | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ESIF/Products/ESIF_WS/Sources/esif_ws_http.c b/ESIF/Products/ESIF_WS/Sources/esif_ws_http.c
+index 5e7557a7..a9d340de 100644
+--- a/ESIF/Products/ESIF_WS/Sources/esif_ws_http.c
++++ b/ESIF/Products/ESIF_WS/Sources/esif_ws_http.c
+@@ -183,7 +183,7 @@ const char *Http_GetMimeType(const char *resource)
+ 		{ "txt",  "text/plain" MIME_TYPE_ENCODING },
+ 		{ NULL,   NULL }
+ 	};
+-	char *extension = NULL;
++	const char *extension = NULL;
+ 
+ 	if (resource && ((extension = esif_ccb_strrchr(resource, '.')) != NULL)) {
+ 		size_t j = 0;
+diff --git a/IPF/Sources/Common/ipf_ipc_clisrv.c b/IPF/Sources/Common/ipf_ipc_clisrv.c
+index 53e0fc4d..6270aba4 100644
+--- a/IPF/Sources/Common/ipf_ipc_clisrv.c
++++ b/IPF/Sources/Common/ipf_ipc_clisrv.c
+@@ -117,7 +117,7 @@ esif_error_t IpfIpc_ParseServerAddress(
+ 		if (esif_ccb_stricmp(proto, IPC_PROTO_WEBSOCKET) == 0) {
+ 			char host[ESIF_IPADDR_LEN] = { 0 };
+ 			unsigned short port = IPC_DEFAULT_PORT;
+-			char *portsep = esif_ccb_strpbrk(addr, ":/?");
++			const char *portsep = esif_ccb_strpbrk(addr, ":/?");
+ 			if (portsep) {
+ 				int portnum = (*portsep == ':' ? atoi(portsep + 1) : port);
+ 				port = (unsigned short)(portnum > 0 && portnum <= 0xffff ? portnum : 0);
+-- 
+2.53.0
+

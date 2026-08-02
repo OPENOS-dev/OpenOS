@@ -1,0 +1,30 @@
+From f74b186ac907c1f52c801c7653527fe28712b494 Mon Sep 17 00:00:00 2001
+From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Date: Thu, 31 Oct 2024 14:04:20 +0100
+Subject: [PATCH] BACKPORT: fscrypt: add support for IV_INO_LBLK_64 policies
+
+Import the missing definition needed by userspace, but not originally
+present in 5.4 as it appeared in 5.5 only.
+
+Backported from upstream commit b103fb7653ff.
+---
+ include/uapi/linux/fscrypt.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/fscrypt.h b/include/uapi/linux/fscrypt.h
+index 39ccfe93..1beb174a 100644
+--- a/include/uapi/linux/fscrypt.h
++++ b/include/uapi/linux/fscrypt.h
+@@ -17,7 +17,8 @@
+ #define FSCRYPT_POLICY_FLAGS_PAD_32		0x03
+ #define FSCRYPT_POLICY_FLAGS_PAD_MASK		0x03
+ #define FSCRYPT_POLICY_FLAG_DIRECT_KEY		0x04
+-#define FSCRYPT_POLICY_FLAGS_VALID		0x07
++#define FSCRYPT_POLICY_FLAG_IV_INO_LBLK_64	0x08
++#define FSCRYPT_POLICY_FLAGS_VALID		0x0F
+ 
+ /* Encryption algorithms */
+ #define FSCRYPT_MODE_AES_256_XTS		1
+-- 
+2.45.2
+

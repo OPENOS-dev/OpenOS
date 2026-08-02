@@ -1,0 +1,8 @@
+chromeos-base/tast-use-flags -shipping_kernel
+sys-kernel/chromeos-kernel-5_4 debug kcov lockdebug kunit
+sys-kernel/chromeos-kernel-5_10 debug kcov lockdebug kunit
+sys-kernel/chromeos-kernel-5_15 debug kcov lockdebug kunit
+sys-kernel/chromeos-kernel-6_1 debug kcov lockdebug kunit
+sys-kernel/chromeos-kernel-6_6 debug kcov lockdebug kunit
+sys-kernel/chromeos-kernel-6_10-enablement debug kcov lockdebug kunit
+sys-kernel/chromeos-kernel-6_12 debug kcov lockdebug kunit

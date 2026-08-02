@@ -1,0 +1,13 @@
+BDEPEND=app-arch/xz-utils
+DEFINED_PHASES=compile install
+DEPEND=media-libs/libpng:0= sys-libs/zlib:=
+DESCRIPTION=Portable Network Graphics (PNG) optimizing utility
+EAPI=7
+HOMEPAGE=https://pmt.sourceforge.io/pngcrush/
+KEYWORDS=*
+LICENSE=pngcrush
+RDEPEND=media-libs/libpng:0= sys-libs/zlib:=
+SLOT=0
+SRC_URI=https://downloads.sourceforge.net/pmt/pngcrush-1.8.13-nolib.tar.xz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=39d02a178d5da7a528b43ad196f6139b

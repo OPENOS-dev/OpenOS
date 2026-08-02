@@ -1,0 +1,51 @@
+#!/bin/sh -e
+#---------------------------------------------------------------------
+# Script to run a test in a modified environment where inotify can be
+# disabled.
+#---------------------------------------------------------------------
+# Copyright (C) 2013 Canonical Ltd.
+#
+# Author: James Hunt <james.hunt@canonical.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#---------------------------------------------------------------------
+
+die()
+{
+    msg="$*"
+    echo "ERROR: $msg" >&2
+    exit 1
+}
+
+# Name of test to run in modified environment
+test_name=test_conf
+
+build_dir="@abs_builddir@"
+test_path="$build_dir/$test_name"
+
+# HACK: this assumes some details about automake, but it's better than running
+# libtool inside the test case.
+preload_library="$build_dir/tests/.libs/libwrap_inotify.so"
+
+for file in "$test_path" "$preload_library"
+do
+    [ -e "$file" ] || die "file $file not found"
+done
+
+echo
+echo "INFO: Running test $test_name in LD_PRELOAD environment which allows inotify to be disabled/enabled"
+echo
+
+# Run test in modified environment
+LD_PRELOAD=$preload_library $test_path

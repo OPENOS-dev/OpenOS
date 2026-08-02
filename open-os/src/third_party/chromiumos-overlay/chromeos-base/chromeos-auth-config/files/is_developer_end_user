@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Copyright 2012 The ChromiumOS Authors
+# Copyright 2026 OCS (Open Code Studio) - OPENOS modifications
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# OPENOS: Always return developer mode. OPENOS operates exclusively
+# in developer mode by default. No hardware switch or kernel flag needed.
+exit 0

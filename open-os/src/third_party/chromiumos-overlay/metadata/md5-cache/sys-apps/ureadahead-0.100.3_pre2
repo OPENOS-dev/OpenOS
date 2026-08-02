@@ -1,0 +1,15 @@
+BDEPEND=sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install unpack
+DEPEND=sys-apps/util-linux >=sys-fs/e2fsprogs-1.41 dev-libs/libtracefs
+DESCRIPTION=Ureadahead - Read files in advance during boot
+EAPI=7
+HOMEPAGE=https://github.com/rostedt/ureadahead
+IUSE=arcvm arcpp arcvm arcvm_dlc cheets android-container-pi android-container-rvc android-vm-sc android-vm-tm android-vm-vic android-vm-master asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-apps/util-linux >=sys-fs/e2fsprogs-1.41 dev-libs/libtracefs virtual/tmpfiles
+REQUIRED_USE=cheets? ( || ( arcpp arcvm ) arcpp? ( ^^ ( android-container-pi android-container-rvc ) ) arcvm? ( ^^ ( android-vm-sc android-vm-tm android-vm-vic android-vm-master ) ) ) !cheets? ( !arcpp !arcvm ) !arcpp? ( !android-container-pi !android-container-rvc ) !arcvm? ( !android-vm-sc !android-vm-tm !android-vm-vic !android-vm-master ) cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=https://github.com/rostedt/ureadahead/archive/e034cec088ad94e10407011ec17b42e7dc4721f1.tar.gz -> ureadahead-e034cec088ad94e10407011ec17b42e7dc4721f1.tar.gz
+_eclasses_=arc-build-constants	cfdd26e77dc6a96f05767adee359f72f	autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	tmpfiles	216aa76c3a6fcb5d893c23a0de86048f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=7435d0644abdedb0506c159127f2f745

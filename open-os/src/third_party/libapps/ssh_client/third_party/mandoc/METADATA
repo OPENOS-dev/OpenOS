@@ -1,0 +1,11 @@
+name: "mandoc"
+description: "Suite of tools to convert man pages into HTML"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://mandoc.bsd.lv/"
+  }
+  version: "1.14.6"
+  last_upgrade_date { year: 2021 month: 9 day: 23 }
+}

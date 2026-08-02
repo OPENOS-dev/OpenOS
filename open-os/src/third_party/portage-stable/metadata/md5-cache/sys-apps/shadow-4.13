@@ -1,0 +1,15 @@
+BDEPEND=app-arch/xz-utils sys-devel/gettext verify-sig? ( sec-keys/openpgp-keys-sergehallyn ) >=app-portage/elt-patches-20170815 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install postinst preinst prepare unpack
+DEPEND=virtual/libcrypt:= acl? ( sys-apps/acl:0= ) audit? ( >=sys-process/audit-2.6:0= ) cracklib? ( >=sys-libs/cracklib-2.7-r3:0= ) nls? ( virtual/libintl ) pam? ( sys-libs/pam:0= ) skey? ( sys-auth/skey:0= ) selinux? ( >=sys-libs/libselinux-1.28:0= sys-libs/libsemanage:0= ) xattr? ( sys-apps/attr:0= ) >=sys-kernel/linux-headers-4.14
+DESCRIPTION=Utilities to deal with user accounts
+EAPI=7
+HOMEPAGE=https://github.com/shadow-maint/shadow
+IUSE=acl audit bcrypt cracklib nls pam selinux skey split-usr su xattr verify-sig
+KEYWORDS=*
+LICENSE=BSD GPL-2
+RDEPEND=virtual/libcrypt:= acl? ( sys-apps/acl:0= ) audit? ( >=sys-process/audit-2.6:0= ) cracklib? ( >=sys-libs/cracklib-2.7-r3:0= ) nls? ( virtual/libintl ) pam? ( sys-libs/pam:0= ) skey? ( sys-auth/skey:0= ) selinux? ( >=sys-libs/libselinux-1.28:0= sys-libs/libsemanage:0= ) xattr? ( sys-apps/attr:0= ) !<sys-apps/man-pages-5.11-r1 !=sys-apps/man-pages-5.12-r0 !=sys-apps/man-pages-5.12-r1 nls? ( !<app-i18n/man-pages-it-5.06-r1 !<app-i18n/man-pages-ja-20180315-r1 !<app-i18n/man-pages-ru-5.03.2390.2390.20191017-r1 ) pam? ( >=sys-auth/pambase-20150213 ) su? ( !sys-apps/util-linux[su(-)] )
+REQUIRED_USE=?? ( cracklib pam )
+SLOT=0/4
+SRC_URI=https://github.com/shadow-maint/shadow/releases/download/4.13/shadow-4.13.tar.xz verify-sig? ( https://github.com/shadow-maint/shadow/releases/download/4.13/shadow-4.13.tar.xz.asc )
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=5339f8fb7f4efd8d3ba1f36c72dd1c4c

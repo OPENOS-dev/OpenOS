@@ -1,0 +1,23 @@
+Without this, Rust's build tries to copy all of /usr/lib into the bootstrap
+sysroot. This:
+
+  - wastes a lot of time,
+  - ends up failing if anything isn't readable by the current user,
+  - (**only** when we're building from rust-host; see b/460145304) should be
+    pointing at lib64 anyway, because CrOS' Rust has had `libdir = "lib64"` in
+    its configuration for years
+
+
+diff --git b/src/bootstrap/src/core/build_steps/compile.rs a/src/bootstrap/src/core/build_steps/compile.rs
+index 7a754ca..33ec5d2 100644
+--- b/src/bootstrap/src/core/build_steps/compile.rs
++++ a/src/bootstrap/src/core/build_steps/compile.rs
+@@ -809,7 +809,7 @@ impl Step for StdLink {
+                 let _ = fs::remove_dir_all(sysroot.join("lib/rustlib/src/rust"));
+             }
+ 
+-            builder.cp_link_r(&builder.initial_sysroot.join("lib"), &sysroot.join("lib"));
++            builder.cp_link_r(&builder.initial_sysroot.join("lib64/rustlib"), &sysroot.join("lib64/rustlib"));
+         } else {
+             if builder.download_rustc() {
+                 // Ensure there are no CI-rustc std artifacts.

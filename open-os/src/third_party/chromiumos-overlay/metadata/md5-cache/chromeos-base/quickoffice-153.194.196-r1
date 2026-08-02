@@ -1,0 +1,10 @@
+BDEPEND=app-arch/unzip sys-fs/squashfs-tools
+DEFINED_PHASES=compile install
+DESCRIPTION=Initialization files for Quickoffice on Chrome OS
+EAPI=7
+HOMEPAGE=https://www.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+SRC_URI=gs://chrome-quickoffice/waterfallv2/releases/nacl/153.194/153.194.196/bundle_app/quickoffice-chrome-153.194.196_compExt.zip
+_md5_=314f25877e20213e01d37487e4dae6ed

@@ -1,0 +1,13 @@
+BDEPEND=dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install setup unpack
+DESCRIPTION=shill's test scripts
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/shill/
+IUSE=cros_host cros_workon_tree_ python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8 python_single_target_python3_7 python_single_target_python3_6
+KEYWORDS=~*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) python_single_target_python3_7? ( dev-lang/python:3.7 ) python_single_target_python3_6? ( dev-lang/python:3.6 ) python_single_target_python3_11? ( dev-python/dbus-python[python_targets_python3_11(-)] ) python_single_target_python3_10? ( dev-python/dbus-python[python_targets_python3_10(-)] ) python_single_target_python3_9? ( dev-python/dbus-python[python_targets_python3_9(-)] ) python_single_target_python3_8? ( dev-python/dbus-python[python_targets_python3_8(-)] ) python_single_target_python3_7? ( dev-python/dbus-python[python_targets_python3_7(-)] ) python_single_target_python3_6? ( dev-python/dbus-python[python_targets_python3_6(-)] ) >=chromeos-base/shill-0.0.1-r2205 net-dns/dnsmasq sys-apps/iproute2
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-single-r1	a5747fe6dc0651d95cb78eddd5e160a8	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=b429aa3c96c83cb80994ab2197803235

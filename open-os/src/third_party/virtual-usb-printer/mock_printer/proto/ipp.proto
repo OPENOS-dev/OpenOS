@@ -1,0 +1,239 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
+
+// These messages provide a Protobuf representation of IPP messages.
+
+// Googlers: please refer to
+// go/cros-printing:virtual-usb-printer-deepmock
+
+syntax = "proto3";
+
+package mocking;
+
+// Field used in `IppAttribute`.
+message IntegerRange {
+  // Required.
+  int32 minimum = 1;
+  // Required.
+  int32 maximum = 2;
+}
+
+// Field used in `IppAttribute`.
+message Resolution {
+  enum Units {
+    UNSPECIFIED = 0;
+    DOTS_PER_INCH = 1;
+    DOTS_PER_CENTIMETER = 2;
+  }
+
+  // Required.
+  uint32 xres = 1;
+  // Required.
+  uint32 yres = 2;
+  // Required.
+  Units units = 3;
+}
+
+// Field used in `IppAttribute`.
+message DateTime {
+  enum UtcDirection {
+    UNSPECIFIED = 0;
+    PLUS = 1;
+    MINUS = 2;
+  }
+
+  uint32 year = 1;
+  uint32 month = 2;
+  uint32 day = 3;
+
+  // Fields from here can contain zero values. Since a zero value is
+  // indistinguishable with an unspecified value, test authors should
+  // avoid depending on zero values that are actually significant. The
+  // mock printer currently treats zero values as wildcard matchers.
+  //
+  // If we _need_ to intermingle zero values with unspecified ones,
+  // we can add one or more fields that explicitly spell out what zero
+  // values to take literally.
+  int32 hour = 4;
+  int32 minutes = 5;
+  int32 seconds = 6;
+  int32 deciseconds = 7;
+  UtcDirection utc_direction = 8;
+  int32 utc_hours = 9;
+  int32 utc_minutes = 10;
+}
+
+// Field used in `IppAttribute`.
+// Embedded message indirection to work around Protobuf's `oneof`
+// limitation prohibiting repeated fields.
+message RepeatedIppCollection {
+  repeated IppCollection collections = 1;
+}
+
+// Field used in `IppAttribute`.
+// Embedded message indirection to work around Protobuf's `oneof`
+// limitation prohibiting repeated fields.
+message RepeatedIntValues {
+  repeated int32 int_values = 1;
+}
+
+// Field used by `RepeatedStringValues`.
+// Holds several types backed by "octet strings" per RFC 8010.
+message OctetString {
+  // Usually optional.
+  // Required when this message holds a language-dependent value, e.g.
+  // `textWithLanguage` (0x35) or `nameWithLanguage` (0x36).
+  string language = 1;
+
+  // Required.
+  bytes value = 2;
+}
+
+// Field used in `IppAttribute`.
+// Embedded message indirection to work around Protobuf's `oneof`
+// limitation prohibiting repeated fields.
+message RepeatedStringValues {
+  repeated OctetString string_values = 1;
+}
+
+// Field used in `IppAttribute`.
+// Embedded message indirection to work around Protobuf's `oneof`
+// limitation prohibiting repeated fields.
+message RepeatedIntRanges {
+  repeated IntegerRange int_ranges = 1;
+}
+
+// Field used in `IppAttribute`.
+// Embedded message indirection to work around Protobuf's `oneof`
+// limitation prohibiting repeated fields.
+message RepeatedResolutions {
+  repeated Resolution resolutions = 1;
+}
+
+// Field used in `IppAttribute`.
+// Embedded message indirection to work around Protobuf's `oneof`
+// limitation prohibiting repeated fields.
+message RepeatedDateTimes {
+  repeated DateTime date_times = 1;
+}
+
+// Matches an IPP attribute.
+message IppAttribute {
+  // Required.
+  string name = 1;
+
+  // *  Most fields below are optional when matching.
+  // *  Special constraints are noted in the field comments.
+  // *  When building responses, you should specify exactly what you
+  //    need; do not rely on the mock printer to infer what you want.
+
+  // Defines the attribute type as described here:
+  // https://www.iana.org/assignments/ipp-registrations/ipp-registrations.xml#ipp-registrations-9
+  // Unassigned values are marked reserved.
+  enum IppAttributeType {
+    UNSPECIFIED = 0x00;
+    reserved 0x01 to 0x20;
+    INTEGER = 0x21;
+    BOOLEAN = 0x22;
+    ENUM = 0x23;
+    reserved 0x24 to 0x2f;
+    OCTET_STRING = 0x30;
+    DATETIME = 0x31;
+    RESOLUTION = 0x32;
+    RANGE_OF_INTEGER = 0x33;
+    BEGIN_COLLECTION = 0x34;
+    TEXT_WITH_LANGUAGE = 0x35;
+    NAME_WITH_LANGUAGE = 0x36;
+
+    // RFC 8010 3.1.6 "Collection Attribute" indicates that we should
+    // never see an `IppAttribute` with the `endCollection` type (0x37)
+    // explicitly set. Therefore we also reserve 0x37.
+    reserved 0x37 to 0x40;
+
+    TEXT_WITHOUT_LANGUAGE = 0x41;
+    NAME_WITHOUT_LANGUAGE = 0x42;
+    reserved 0x43;
+    KEYWORD = 0x44;
+    URI = 0x45;
+    URI_SCHEME = 0x46;
+    CHARSET = 0x47;
+    NATURAL_LANGUAGE = 0x48;
+    MIME_MEDIA_TYPE = 0x49;
+    MEMBER_ATTRIBUTE_NAME = 0x4a;
+    reserved 0x4b to 0x7e;
+  }
+
+  // Required when the `oneof value` field below is populated.
+  IppAttributeType type = 2;
+
+  oneof value {
+    // An attribute can be _another_ collection (or set thereof).
+    RepeatedIppCollection collections = 3;
+
+    // If not another collection, an attribute should be either one
+    // thing of a given type or several of a given type.
+    RepeatedIntValues int_values = 4;
+    RepeatedStringValues string_values = 5;
+    RepeatedIntRanges int_ranges = 6;
+    RepeatedResolutions resolutions = 7;
+    RepeatedDateTimes date_times = 8;
+  }
+}
+
+// Matches an IPP collection (of attributes).
+message IppCollection {
+  // Required.
+  repeated IppAttribute attributes = 1;
+}
+
+// Matches an IPP group (of collections).
+message IppGroup {
+  enum IppGroupTag {
+    // Note that `0` is a reserved value as per RFC 8010.
+    UNSPECIFIED = 0;
+    OPERATION_ATTRIBUTES = 1;
+    JOB_ATTRIBUTES = 2;
+    // "end-of-attributes" tag is not needed here.
+    reserved 3;
+    PRINTER_ATTRIBUTES = 4;
+    UNSUPPORTED_ATTRIBUTES = 5;
+    SUBSCRIPTION_ATTRIBUTES = 6;
+    EVENT_NOTIFICATION_ATTRIBUTES = 7;
+    RESOURCE_ATTRIBUTES = 8;
+    DOCUMENT_ATTRIBUTES = 9;
+    SYSTEM_ATTRIBUTES = 10;
+  }
+
+  // Required.
+  IppGroupTag tag = 1;
+
+  // Optional when matching: specifies an IPP collection to match
+  // against when known or useful to specify in the test case.
+  // Required when specifying a response.
+  repeated IppCollection collections = 2;
+}
+
+// The required parameters preceding the `groups` field
+// are documented in RFC 8010.
+message IppMessage {
+  // Optional; defaults to whatever we implement in
+  // virtual-usb-printer.
+  uint32 version_number = 1;
+
+  // Required.
+  uint32 operation_id = 2;
+
+  // Optional; only used when building IPP responses.
+  //
+  // RFC 8010 specifies that the response status code occupies the same
+  // field as the request operation ID. However, `libipp` reads the
+  // `operation_id` to construct the appropriately typed
+  // `ipp::Response`. Therefore, we can't just reuse `operation_id` in
+  // our Proto definition, because that would leave us with no way to
+  // specify a status.
+  uint32 status = 4;
+
+  // Required.
+  repeated IppGroup groups = 3;
+}
