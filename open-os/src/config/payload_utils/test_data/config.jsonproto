@@ -1,0 +1,142 @@
+{
+  "designList": [
+    {
+      "id": {
+        "value": "TestDesign"
+      },
+      "name": "TestDesign",
+      "configs": [
+        {
+          "id": {
+            "value": "TestDesign:123"
+          },
+          "hardwareFeatures": {
+            "camera": {
+              "devices": [
+                {
+                  "interface": "INTERFACE_MIPI",
+                  "facing": "FACING_FRONT",
+                  "orientation": "ORIENTATION_0",
+                  "flags": 1,
+                  "ids": ["TestFrontCamera"]
+                }
+              ]
+            },
+            "cellular": {
+              "present": "PRESENT",
+              "model": "testdesign_fm101",
+              "modemType": "MODEM_FM101"
+            },
+            "fingerprint": {
+              "location": "KEYBOARD_BOTTOM_RIGHT",
+              "board": "testfpboard",
+              "present": true,
+              "roVersion": "123"
+            },
+            "fwConfig": {
+              "mask": 3221226495,
+              "value": 123
+            },
+           "formFactor": {
+              "formFactor": "CLAMSHELL"
+            },
+            "screen": {
+              "touchSupport": "PRESENT"
+            }
+          }
+        },
+        {
+          "id": {
+            "value": "TestDesign:456"
+          },
+          "hardwareFeatures": {
+            "cellular": {
+              "present": "PRESENT",
+              "model": "testdesign_em060",
+              "modemType": "MODEM_EM060"
+            },
+            "fingerprint": {
+              "location": "KEYBOARD_BOTTOM_RIGHT",
+              "board": "testfpboard",
+              "present": true,
+              "roVersion": "123"
+            },
+            "fwConfig": {
+              "mask": 3221226495,
+              "value": 456
+            },
+            "formFactor": {
+              "formFactor": "CONVERTIBLE"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "softwareConfigs": [
+    {
+      "designConfigId": {
+        "value": "TestDesign:123"
+      },
+      "cameraConfig": {
+        "generateMediaProfiles": true
+      },
+      "idScanConfig": {
+        "firmwareSku": 123,
+        "frid": "Google_Frid123"
+      },
+      "firmware": {
+        "ecRoPayload": {
+          "firmwareImageName": "TestDesign_EC",
+          "type": 2,
+          "version": {
+            "major": 15217,
+            "minor": 531
+          }
+        },
+        "mainRoPayload": {
+          "firmwareImageName": "TestDesign",
+          "type": 1,
+          "version": {
+            "major": 15217,
+            "minor": 531
+          }
+        }
+      },
+      "unifiedFwConfig": {
+        "value": [1, 2, 3, 4]
+      }
+    },
+    {
+      "designConfigId": {
+        "value": "TestDesign:456"
+      },
+      "idScanConfig": {
+        "firmwareSku": 456,
+        "frid": "Google_Frid456"
+      },
+      "firmware": {
+        "ecRoPayload": {
+          "firmwareImageName": "TestDesign_EC",
+          "type": 2,
+          "version": {
+            "major": 15217,
+            "minor": 531
+          }
+        },
+        "mainRoPayload": {
+          "firmwareImageName": "TestDesign",
+          "type": 1,
+          "version": {
+            "major": 15217,
+            "minor": 531
+          }
+          }
+        }
+      }
+  ],
+  "partnerList": [],
+  "components": [],
+  "deviceBrandList": [],
+  "brandConfigs": []
+}

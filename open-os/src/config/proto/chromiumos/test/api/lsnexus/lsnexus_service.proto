@@ -1,0 +1,298 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.test.api.lsnexus;
+
+option go_package = "go.chromium.org/chromiumos/config/go/test/api/lsnexus";
+option java_outer_classname = "LsnexusServiceOuterClass";
+
+import "chromiumos/test/api/bols/bols_service.proto";
+
+// Provides the ability to interact with a labstation/container and
+// its peripherals such as servo and dolos.
+service LSNexusService {
+  // StartServod runs a servod daemon.
+  rpc StartServod(StartServodRequest) returns (StartServodResponse);
+
+  // StopServod stops the servod daemon.
+  rpc StopServod(StopServodRequest) returns (StopServodResponse);
+
+  // CallServod runs a servod command.
+  // Allowed methods: doc, get, set, and hwinit.
+  rpc CallServod(CallServodRequest) returns (CallServodResponse);
+
+  // GetFile gets a file from labstation/container.
+  rpc GetFile(GetFileRequest) returns (stream GetFileResponse) {}
+
+  // PutFile puts a file on labstation/container.
+  // If the directory of destination path does not exist, this service
+  // will also create the directory.
+  rpc PutFile(stream PutFileRequest) returns (PutFileResponse) {}
+
+  // RemoveFile removes a file on labstation/container.
+  rpc RemoveFile(RemoveFileRequest) returns (RemoveFileResponse) {}
+
+  // MakeDir make a directory on the labstation/container.
+  rpc MakeDir(MakeDirRequest) returns (MakeDirResponse) {}
+
+  // RemoveDir removes a directory from labstation/container.
+  rpc RemoveDir(RemoveDirRequest) returns (RemoveDirResponse) {}
+
+  // MakeTempDir makes an unique temporary directory on the
+  // labstation/container.
+  rpc MakeTempDir(MakeTempDirRequest) returns (MakeTempDirResponse) {}
+
+  // DMesg returns the output from the dmesg command.
+  rpc DMesg(DMesgRequest) returns (stream DMesgResponse) {}
+
+  // Echo calls the Servo echo method.
+  rpc Echo(EchoRequest) returns (EchoResponse) {}
+
+  // DownloadServoLogs will save servod related logs from the labstation or
+  // container where servod is running to LSNexus' directory
+  // Logs include:
+  //     /var/log/servo_<port>/ latest.DEBUG from servod host.
+  //     /var/log/servo_<port>.STARTUP.log from servod host.
+  //     The extraction of the MCU console logs from latest.DEBUG
+  rpc DownloadServoLogs(DownloadServoLogsRequest)
+      returns (DownloadServoLogsResponse) {}
+
+  ///////// Firmware tool API /////////
+
+  // RunFutility forwards futility request to BOLS.
+  rpc RunFutility(RunFutilityRequest) returns (RunFutilityResponse) {}
+
+  // RunFlashEC forwards EC firmware flashing request to BOLS.
+  // In most of implementation, it runs flash_ec tool on labstation.
+  rpc RunFlashEC(RunFlashECRequest) returns (RunFlashECResponse) {}
+
+  // RunGSCTool forwards gsctool request to BOLS.
+  // Example:
+  //  gsctool -n 1002D052-9066B226 -f
+  //  Params: ["-n", "1002D052-9066B226", "-f" ]
+  rpc RunGSCTool(RunGSCToolRequest) returns (RunGSCToolResponse) {}
+
+  // RunUARTStressTester forwards uart_stress_tester.py request to BOLS.
+  // uart_stress_tester.py repeats sending a uart console command
+  // to each UART device for a given time, and check if output
+  // has any missing characters.
+  // Example:
+  //  uart_stress_tester.py /dev/ttyUSB2 --time 3600
+  rpc RunUARTStressTester(RunUARTStressTesterRequest)
+      returns (RunUARTStressTesterResponse) {}
+}
+
+message StartServodRequest {
+  // Reuse the existing servod session if it is already running.
+  bool reuse_existing = 1;
+}
+
+message StartServodResponse {}
+
+message StopServodRequest {}
+
+message StopServodResponse {}
+
+message CallServodRequest {
+  // The allowed methods to call.
+  enum Method {
+    // Shows info about control.
+    DOC = 0;
+    // Gets the value of control.
+    GET = 1;
+    // Sets the value of control.
+    SET = 2;
+    // Initializes all controls.
+    HWINIT = 3;
+    // Echo a message.
+    ECHO = 4;
+    // Gets servo serial.
+    GET_SERVO_SERIAL = 5;
+    // Gets servo version.
+    GET_SERVO_VERSION = 6;
+    // Gets servod version.
+    GET_SERVOD_VERSION = 7;
+  }
+  // The method to run.
+  Method method = 1;
+
+  // The arguments to pass to the servod call.
+  // For the doc and get methods, it will be control name as single
+  // array value (e.g. ["lid_open"]).
+  // For the set method, it will be control name and the value as
+  // separate array values (e.g. ["lid_open", "yes"]).
+  repeated chromiumos.test.api.bols.ServodValue args = 2;
+
+  // Control is used for for certain method such as GET and SET.
+  string control = 3;
+}
+
+message CallServodResponse {
+  // Response for success.
+  message Success {
+    chromiumos.test.api.bols.ServodValue result = 1;
+  }
+
+  // Error message for failure.
+  message Failure {
+    string error_message = 1;
+  }
+
+  oneof result {
+    Success success = 1;
+    Failure failure = 2;
+  }
+}
+
+message StringList {
+  // A list of strings.
+  repeated string values = 1;
+}
+
+message EchoRequest {
+  // The message of to echo.
+  string msg = 1;
+}
+
+message EchoResponse {
+  // The result of echo.
+  string result = 1;
+}
+
+message DownloadSystemLogsRequest {}
+
+message DownloadSystemLogsResponse {}
+
+message DownloadServoLogsRequest {}
+
+message DownloadServoLogsResponse {}
+
+message GetFileRequest {
+  // The path of the file to get.
+  string filename = 1;
+}
+
+message GetFileResponse {
+  // A chunk of the file's content.
+  // The entire file content is sent as a sequence of these messages.
+  bytes data = 1;
+}
+
+message PutFileRequest {
+  // Source for the file.
+  oneof source {
+    PutFileRequestInitInfo req_info = 1;
+    bytes data = 2;
+  }
+}
+
+message PutFileRequestInitInfo {
+  string filename = 1;
+}
+
+message PutFileResponse {}
+
+message RemoveFileRequest {
+  string file_name = 1;
+}
+
+message RemoveFileResponse {}
+
+message MakeDirRequest {
+  string path = 1;
+}
+
+message MakeDirResponse {}
+
+message RemoveDirRequest {
+  string path = 1;
+}
+
+message RemoveDirResponse {}
+
+message MakeTempDirRequest {
+  // The parent directory of the temporary directory.
+  // If it is empty, $TMPDIR or /tmp will be used.
+  string parent = 1;
+}
+
+message MakeTempDirResponse {
+  // The path to the temporary directory.
+  string path = 1;
+}
+
+message DMesgRequest {}
+
+message DMesgResponse {
+  OutputStream output = 1;
+}
+
+message OutputStream {
+  // The shell command's stdout output since the last response.
+  bytes stdout = 1;
+  // The shell command's stderr output since the last response.
+  bytes stderr = 2;
+}
+
+///////// Firmware tool API messages /////////
+
+message RunFutilityRequest {
+  // List of parameters used at execution.
+  // if --servo_port is specified and the port is not same as the one
+  // specified in the station identifier, an error will be returned.
+  // Example:  "futility gbb --servo_port=9999 --set --flash --flags=0x18".
+  // Params ["gbb", "--set",  "--servo_port=9999", "--flash", "--flags=0x18"]
+  repeated string params = 1;
+  // If true, the service will not automatically append the --servo_port
+  // argument.
+  bool skip_servo_port = 2;
+}
+
+message RunFutilityResponse {
+  OutputStream output = 1;
+}
+
+message RunFlashECRequest {
+  // Params is a list of name value pair that can use for flashing EC firmware.
+  // List of params with values applied used at execution.
+  // if port for --port is not same as the one specified in
+  // the station identifier, an error will be returned.
+  // Example:
+  //  flash_ec --chip=chip1 --image=/tmp/ec.bin --port=9999 --verify --verbose
+  //  Params: ["--chip=chip1", "--image:/tmp/ec.bin", "--port=9999", "--verify",
+  //  "--verbose"]
+  repeated string params = 1;
+  // If true, the service will not automatically append the --port argument.
+  bool skip_servo_port = 2;
+}
+
+message RunFlashECResponse {
+  OutputStream output = 1;
+}
+
+message RunGSCToolRequest {
+  // List of parameters used at execution.
+  // Example:
+  //  gsctool -n 1002D052-9066B226 -f
+  //  Params: ["-n", "1002D052-9066B226", "-f" ]
+  repeated string params = 1;
+}
+
+message RunGSCToolResponse {
+  OutputStream output = 1;
+}
+
+message RunUARTStressTesterRequest {
+  // List of parameters used at execution.
+  // Example:
+  //  uart_stress_tester.py /dev/ttyUSB2 --time 3600
+  //  Params: ["/dev/ttyUSB2", "--time", "3600"]
+  repeated string params = 1;
+}
+
+message RunUARTStressTesterResponse {
+  OutputStream output = 1;
+}
