@@ -1,0 +1,13 @@
+BDEPEND=dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=virtual/perl-Carp virtual/perl-Data-Dumper virtual/perl-Encode >=virtual/perl-Exporter-5.570.0 >=virtual/perl-MIME-Base64-2 virtual/perl-Scalar-List-Utils virtual/perl-libnet virtual/perl-parent virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DESCRIPTION=Uniform Resource Identifiers (absolute and relative)
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/URI
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Carp virtual/perl-Data-Dumper virtual/perl-Encode >=virtual/perl-Exporter-5.570.0 >=virtual/perl-MIME-Base64-2 virtual/perl-Scalar-List-Utils virtual/perl-libnet virtual/perl-parent dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/O/OA/OALDERS/URI-5.11.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=577205df6073f19a3da7e857a328aecd

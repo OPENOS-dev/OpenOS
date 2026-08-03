@@ -1,0 +1,4 @@
+# Java is used by ARC, bazel, and closure-compiler.
+include chromiumos/platform2:/arc/OWNERS
+include chromiumos/overlays/chromiumos-overlay:/dev-util/bazel/OWNERS
+include /dev-lang/closure-compiler-bin/OWNERS

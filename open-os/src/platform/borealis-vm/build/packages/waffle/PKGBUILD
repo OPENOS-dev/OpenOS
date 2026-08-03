@@ -1,0 +1,46 @@
+# Maintainer: David Riley <davdriley@chromium.org>
+# Maintainer: Chad Versace <chadversary@chromium.org>
+
+pkgname=waffle
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='waffle library'
+arch=('x86_64')
+url='http://www.waffle-gl.org'
+license=('BSD')
+
+depends=('libx11' 'libxcb' 'libudev.so' 'libgl' 'libgles')
+optdepends=('libegl: for gbm, surfaceless, x11_egl or wayland support'
+            'mesa: for gbm support'
+            'wayland: for wayland support')
+
+makedepends=('meson' 'xcb-proto' 'mesa' 'cmake'
+             'systemd' 'wayland-protocols')
+
+source=(https://storage.googleapis.com/chromeos-localmirror/distfiles/waffle-${pkgver}.tar.xz{,.asc})
+sha256sums=('69e42d15d08f63e7a54a8b8770295a6eb04dfd1c6f86c328b6039dbe7de28ef3'
+	    '7a7e064395551ce20a694be7ecb4795effc3fd6f614943e50445469631677f6e')
+validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D')
+
+build() {
+  arch-meson "$pkgname-$pkgver" build \
+    --buildtype release \
+    -D gbm=enabled \
+    -D glx=enabled \
+    -D surfaceless_egl=enabled \
+    -D x11_egl=enabled \
+    -D wayland=enabled \
+    -D build-manpages=false \
+    -D build-htmldocs=false \
+    -D build-examples=false
+
+  meson configure build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -m755 -d "$pkgdir/usr/share/licenses/$pkgname"
+  install -m644 "$pkgdir/usr/share/doc/waffle1/LICENSE.txt" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE.txt"
+}

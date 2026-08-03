@@ -1,0 +1,204 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "brand-code": "LDPJ",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "ciri",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-ec": "ciri"
+          },
+          "ec-ro-image": "bcs://Ciri_EC.15705.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "braenn",
+          "main-ro-image": "bcs://Ciri.15705.0.0.tbz2",
+          "main-rw-image": "bcs://Ciri.15706.0.0.tbz2"
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "braenn"
+        },
+        "identity": {
+          "frid": "Google_Ciri",
+          "platform-name": "Geralt",
+          "sku-id": 2147483647
+        },
+        "name": "braenn"
+      },
+      {
+        "brand-code": "LDPJ",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "ciri",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-ec": "ciri"
+          },
+          "ec-ro-image": "bcs://Ciri_EC.15705.0.0.tbz2",
+          "ec-rw-image": "bcs://Ciri_EC.15821.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "ciri",
+          "main-ro-image": "bcs://Ciri.15705.0.0.tbz2",
+          "main-rw-image": "bcs://Ciri.15706.0.0.tbz2"
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "ciri"
+        },
+        "identity": {
+          "frid": "Google_Ciri",
+          "platform-name": "Geralt",
+          "sku-id": 2147483647
+        },
+        "name": "ciri"
+      },
+      {
+        "brand-code": "LDPJ",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "ciri",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-ec": "ciri"
+          },
+          "ec-ro-image": "bcs://Ciri_EC.15820.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "duny",
+          "main-ro-image": "bcs://Ciri.15705.0.0.tbz2"
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "duny"
+        },
+        "identity": {
+          "frid": "Google_Ciri",
+          "platform-name": "Geralt",
+          "sku-id": 2147483409
+        },
+        "name": "duny"
+      },
+      {
+        "brand-code": "LDPJ",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "ciri",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-ec": "ciri"
+          },
+          "ec-ro-image": "bcs://Ciri_EC.15820.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "emhyr",
+          "main-ro-image": "bcs://Ciri.15705.0.0.tbz2",
+          "main-rw-image": "bcs://Ciri.15706.0.0.tbz2"
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "emhyr"
+        },
+        "identity": {
+          "frid": "Google_Ciri",
+          "platform-name": "Geralt",
+          "sku-id": 2147483410
+        },
+        "name": "emhyr"
+      },
+      {
+        "brand-code": "LDPJ",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "ciri",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-ec": "ciri"
+          },
+          "ec-ro-image": "bcs://Ciri_EC.15820.0.0.tbz2",
+          "ec-rw-image": "bcs://Ciri_EC.15821.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "falka",
+          "main-ro-image": "bcs://Ciri.15705.0.0.tbz2",
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "falka"
+        },
+        "identity": {
+          "frid": "Google_Ciri",
+          "platform-name": "Geralt",
+          "sku-id": 2147483411
+        },
+        "name": "falka"
+      },
+      {
+        "brand-code": "LDPJ",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "ciri",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-ec": "ciri"
+          },
+          "ec-ro-image": "bcs://Ciri_EC.15820.0.0.tbz2",
+          "ec-rw-image": "bcs://Ciri_EC.15821.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "fenn",
+          "main-ro-image": "bcs://Ciri.15705.0.0.tbz2",
+          "main-rw-image": "bcs://Ciri.15706.0.0.tbz2",
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "fenn"
+        },
+        "identity": {
+          "frid": "Google_Ciri",
+          "platform-name": "Geralt",
+          "sku-id": 2147483411
+        },
+        "name": "fenn"
+      },
+      {
+        "brand-code": "ZZCR",
+        "firmware": {
+          "bcs-overlay": "overlay-geralt-private",
+          "build-targets": {
+            "bmpblk": "geralt",
+            "coreboot": "geralt",
+            "depthcharge": "geralt",
+            "libpayload": "geralt",
+            "zephyr-detachable-base": "roach",
+            "zephyr-ec": "geralt"
+          },
+          "ec-ro-image": "bcs://Geralt_EC.15663.0.0.tbz2",
+          "firmware-config": 0,
+          "image-name": "geralt",
+          "main-ro-image": "bcs://Geralt.15663.0.0.tbz2",
+          "main-rw-image": "bcs://Geralt.15663.0.0.tbz2"
+        },
+        "firmware-signing": {
+          "key-id": "DEFAULT",
+          "signature-id": "geralt"
+        },
+        "identity": {
+          "frid": "Google_Geralt",
+          "platform-name": "Geralt",
+          "sku-id": 2147483647
+        },
+        "name": "geralt"
+      }
+    ]
+  }
+}

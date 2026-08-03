@@ -1,0 +1,15 @@
+BDEPEND=app-arch/unzip >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5
+DEFINED_PHASES=compile configure install prepare test unpack
+DEPEND=>=dev-util/spirv-headers-1.4.313.0 dev-util/vulkan-headers >=chromeos-base/perfetto-31.0 media-libs/vulkan-loader >=dev-util/spirv-tools-1.4.313.0
+DESCRIPTION=Perfetto-based Vulkan Shader Profiler
+EAPI=7
+HOMEPAGE=https://github.com/rjodinchr/vulkan-shader-profiler
+IUSE=+perfetto asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=media-libs/vulkan-loader >=dev-util/spirv-tools-1.4.313.0
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/vulkan-shader-profiler-11702948e90f301b9302982714ab4ab6412a4de0.zip https://github.com/KhronosGroup/spirv-tools/archive/vulkan-sdk-1.4.313.0.tar.gz -> spirv-tools-1.4.313.0.tar.gz
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=3da82dce1d7823824f5d658527bdb97c

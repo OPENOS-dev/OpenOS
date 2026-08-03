@@ -1,0 +1,14 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/gobusybox dev-go/go-tools dev-go/go-humanize dev-go/goterm dev-go/lz4 dev-go/uio
+DESCRIPTION=A fully Go userland with Linux bootloaders
+EAPI=7
+HOMEPAGE=https://github.com/u-root/u-root
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=dev-go/gobusybox dev-go/go-tools dev-go/go-humanize dev-go/goterm dev-go/lz4 dev-go/uio
+SLOT=0
+SRC_URI=https://github.com/u-root/u-root/archive/v0.15.0.tar.gz -> github.com-u-root-u-root-v0.15.0.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=398172ea6c7dcb0e6408d1eae154390e

@@ -1,0 +1,37 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "hbarnor, ChromiumOS"
+NAME = "autoupdate_InvalidateUpdateBeforeReboot.delta"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Tests invalidating the last update."
+}
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:au-perbuild"
+DOC = """
+This tests the invalidate last update feature.
+
+This test ensures that Update Engine checks for and invalidates a previous
+update if it has not rebooted into it. This is achieved by feeding a full update
+to the update_engine followed by a request to invalidate the update.
+
+Refer to autoupdate_Basic's control.delta file for instructions on how to run
+this test locally from your workstation.
+"""
+
+from autotest_lib.client.common_lib import utils
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('autoupdate_InvalidateUpdateBeforeReboot', host=host, full_payload=False,
+                 **args_dict)
+
+job.parallel_simple(run, machines)

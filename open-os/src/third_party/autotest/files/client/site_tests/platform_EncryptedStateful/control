@@ -1,0 +1,30 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "platform_EncryptedStateful"
+METADATA = {
+    'contacts': ['chromeos-storage@google.com'],
+    'bug_component': 'b:974567',
+    'criteria': 'Verify encstateful mount.',
+    'hw_agnostic': False
+}
+AUTHOR = "ChromeOS Team"
+PURPOSE = "Verify mount-encrypted operates as expected"
+CRITERIA = """
+Fails if the mount-encrypted helper does not operated as expected
+"""
+TIME = "SHORT"
+ATTRIBUTES = "suite:bvt-perbuild, suite:distributed_lab_qual_bvt_shard2"
+TEST_CATEGORY = "Functional"
+TEST_CLASS = "security"
+TEST_TYPE = "client"
+PY_VERSION = 3
+HW_DEPS = ['!lvm_stateful_partition']
+
+DOC = """
+    Ensures the mount-encrypted helper for mounting the encrypted statful
+    partition operates as expected.
+"""
+
+job.run_test('platform_EncryptedStateful')

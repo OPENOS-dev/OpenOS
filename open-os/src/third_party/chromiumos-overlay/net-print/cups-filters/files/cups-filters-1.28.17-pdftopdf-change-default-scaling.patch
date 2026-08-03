@@ -1,0 +1,30 @@
+From 60f1a90bf9339fca9d8cb79d5923fb2b01a35531 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Sergio=20G=C3=B3mez?= <sergio.g.delreal@gmail.com>
+Date: Tue, 3 Dec 2024 23:13:58 -0500
+Subject: [PATCH] pdftopdf: Change default behavior for scaling if no option is
+ provided
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Sergio Gómez <sergio.gdr@collabora.corp-partner.google.com>
+---
+ filter/pdftopdf/pdftopdf.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/filter/pdftopdf/pdftopdf.cc b/filter/pdftopdf/pdftopdf.cc
+index 792202bd5..2869966c9 100644
+--- a/filter/pdftopdf/pdftopdf.cc
++++ b/filter/pdftopdf/pdftopdf.cc
+@@ -359,7 +359,7 @@ void getParameters(ppd_file_t *ppd,int num_options,cups_option_t *options,Proces
+   }
+   if (!param.autoprint && !param.autofit && !param.fitplot &&
+       !param.fillprint && !param.cropfit)
+-    param.autoprint = true;
++    param.cropfit = true;
+   }
+ 
+   // Certain features require a given page size for the page to be
+-- 
+2.45.2
+

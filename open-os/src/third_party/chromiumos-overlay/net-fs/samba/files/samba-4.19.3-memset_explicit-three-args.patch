@@ -1,0 +1,31 @@
+From 13f475104fae9428b688f24cd56625f3f8e9df29 Mon Sep 17 00:00:00 2001
+From: Thomas Klausner <wiz@gatalith.at>
+Date: Sun, 10 Nov 2024 08:37:17 +0100
+Subject: [PATCH] lib/replace: memset_explicit() only takes three arguments
+
+Signed-off-by: Thomas Klausner <wiz@gatalith.at>
+Reviewed-by: Volker Lendecke <vl@samba.org>
+Reviewed-by: Ralph Boehme <slow@samba.org>
+
+Autobuild-User(master): Volker Lendecke <vl@samba.org>
+Autobuild-Date(master): Mon Nov 11 16:47:46 UTC 2024 on atb-devel-224
+---
+ lib/replace/replace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/replace/replace.c b/lib/replace/replace.c
+index 68829f2a3c9..67663fba187 100644
+--- a/lib/replace/replace.c
++++ b/lib/replace/replace.c
+@@ -970,7 +970,7 @@ int rep_memset_s(void *dest, size_t destsz, int ch, size_t count)
+ 	}
+ 
+ #if defined(HAVE_MEMSET_EXPLICIT)
+-	memset_explicit(dest, destsz, ch, count);
++	memset_explicit(dest, ch, count);
+ #else /* HAVE_MEMSET_EXPLICIT */
+ 	memset(dest, ch, count);
+ # if defined(HAVE_GCC_VOLATILE_MEMORY_PROTECTION)
+-- 
+2.53.0
+

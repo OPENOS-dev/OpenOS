@@ -1,0 +1,590 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+group("all") {
+  deps = [
+    ":chromeos_startup",
+    ":clobber-state",
+    ":cros_sysrq_init",
+    ":encrypted-reboot-vault",
+    ":file_attrs_cleaner_tool",
+    ":install_lvm_config",
+    ":install_setuid_restriction",
+    ":libpreservation",
+    ":libtpm_encryption",
+    ":net_poll_tool",
+    ":periodic_scheduler",
+    ":preseeded_files_proto",
+    ":preserve_dev_image",
+    ":preserve_rma_state",
+    ":process_killer",
+    ":sbin_init_scripts",
+    ":static_node_tool",
+    ":usermode-helper",
+    ":usr_share_cros_init_scripts",
+  ]
+  if (use.encrypted_stateful) {
+    deps += [
+      ":libmount_encrypted",
+      ":mount-encrypted",
+    ]
+  }
+  if (use.syslog) {
+    deps += [
+      ":install_chromeos-cleanup-logs",
+      ":install_rsyslog",
+    ]
+  }
+  if (use.test) {
+    deps += [
+      ":chromeos_startup_test",
+      ":clobber_state_test",
+      ":file_attrs_cleaner_test",
+      ":libpreservation_test",
+      ":periodic_scheduler_test",
+      ":process_killer_test",
+      ":tpm_encryption_tests",
+      ":usermode-helper_test",
+      ":utils_test",
+    ]
+    if (use.encrypted_stateful) {
+      deps += [ ":mount_encrypted_tests" ]
+    }
+  }
+}
+
+pkg_config("target_defaults") {
+  defines = [
+    "USE_DEVICE_MAPPER=${use.device_mapper}",
+    "USE_DIRENCRYPTION=${use.direncryption}",
+    "USE_DEFAULT_KEY_STATEFUL=${use.default_key_stateful}",
+    "USE_ENCRYPTED_REBOOT_VAULT=${use.encrypted_reboot_vault}",
+    "USE_ENCRYPTED_STATEFUL=${use.encrypted_stateful}",
+    "USE_ENCSTATEFUL_ONDISK_FINALIZATION=${use.encstateful_ondisk_finalization}",
+    "USE_FSVERITY=${use.fsverity}",
+    "USE_LVM_MIGRATION=${use.lvm_migration}",
+    "USE_LVM_STATEFUL_PARTITION=${use.lvm_stateful_partition}",
+    "USE_DISABLE_LVM_INSTALL=${use.disable_lvm_install}",
+    "USE_PRJQUOTA=${use.prjquota}",
+    "USE_TPM_DYNAMIC=${use.tpm_dynamic}",
+    "USE_TPM_INSECURE_FALLBACK=${use.tpm_insecure_fallback}",
+    "USE_TPM1=${use.tpm}",
+    "USE_TPM2=${use.tpm2}",
+    "USE_TPM2_SIMULATOR=${use.tpm2_simulator}",
+    "USE_VTPM_PROXY=${use.vtpm_proxy}",
+  ]
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libcros_config",
+    "libcrossystem",
+    "libcrypto",
+    "libdlcservice-utils",
+    "libimageloader-manifest",
+    "libmetrics",
+    "libsegmentation",
+    "libselinux",
+    "libstorage_platform",
+    "libstorage_storage_container",
+    "protobuf-lite",
+    "re2",
+  ]
+  libs = [
+    "bootstat",
+    "hwsec-foundation",
+    "rootdev",
+    "secure_erase_file",
+    "vpd",
+  ]
+}
+
+shared_library("libinit_utils") {
+  sources = [ "utils.cc" ]
+  configs += [ ":target_defaults" ]
+  pkg_deps = [ "vboot_host" ]
+  install_path = "lib"
+}
+
+static_library("libcrosstartup") {
+  sources = [
+    "libpreservation/preservation.cc",
+    "startup/chromeos_startup.cc",
+    "startup/factory_mode_mount_helper.cc",
+    "startup/flags.h",
+    "startup/mount_helper.cc",
+    "startup/mount_helper_factory.cc",
+    "startup/mount_var_home_unencrypted_impl.cc",
+    "startup/security_manager.cc",
+    "startup/standard_mount_helper.cc",
+    "startup/startup_dep_impl.cc",
+    "startup/stateful_mount.cc",
+    "startup/test_mode_mount_helper.cc",
+    "startup/uefi_startup.cc",
+  ]
+  if (use.encrypted_stateful) {
+    sources += [ "startup/mount_var_home_encrypted_impl.cc" ]
+  }
+  configs += [ ":target_defaults" ]
+  defines = []
+  deps = [
+    ":libencrypted-reboot-vault",
+    ":libfile_attrs_cleaner",
+    ":libinit_utils",
+    ":libpreservation",
+    ":libtpm_encryption",
+  ]
+  if (use.encrypted_stateful) {
+    deps += [ ":libmount_encrypted" ]
+  }
+}
+
+static_library("libpreservation") {
+  sources = [
+    "libpreservation/ext2fs.cc",
+    "libpreservation/fake_ext2fs.cc",
+    "libpreservation/file_preseeder.cc",
+    "libpreservation/filesystem_manager.cc",
+    "libpreservation/preservation.cc",
+  ]
+  configs += [ ":target_defaults" ]
+
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "protobuf-lite",
+  ]
+
+  deps = [ ":preseeded_files_proto" ]
+
+  all_dependent_pkg_deps = [ "ext2fs" ]
+}
+
+static_library("libclobber") {
+  sources = [
+    "clobber/clobber_state.cc",
+    "clobber/clobber_state_log.cc",
+    "clobber/clobber_ui.cc",
+    "clobber/clobber_wipe.cc",
+    "libpreservation/preservation.cc",
+  ]
+  if (use.device_mapper) {
+    sources += [ "clobber/clobber_lvm.cc" ]
+  }
+  configs += [ ":target_defaults" ]
+  public_deps = [ ":libinit_utils" ]
+  deps = [
+    ":libencrypted-reboot-vault",
+    ":libpreservation",
+  ]
+}
+
+executable("chromeos_startup") {
+  sources = [ "startup/main.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":libcrosstartup",
+    ":libpreservation",
+  ]
+
+  # gnlint: disable=GnLintInstallPathAlias
+  install_path = "/sbin"
+}
+
+executable("clobber-state") {
+  sources = [ "clobber/clobber_state_main.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":libclobber",
+    ":libpreservation",
+  ]
+  install_path = "/sbin"
+}
+
+shared_library("libfile_attrs_cleaner") {
+  sources = [ "file_attrs_cleaner_lib.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "lib"
+}
+
+executable("file_attrs_cleaner_tool") {
+  sources = [ "file_attrs_cleaner_tool.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":libfile_attrs_cleaner" ]
+  install_path = "/sbin"
+}
+
+static_library("process_killer_lib") {
+  sources = [
+    "process_killer/process.cc",
+    "process_killer/process_killer.cc",
+    "process_killer/process_manager.cc",
+  ]
+  configs += [ ":target_defaults" ]
+}
+
+executable("process_killer") {
+  sources = [ "process_killer/main.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":process_killer_lib" ]
+  install_path = "bin"
+}
+
+executable("periodic_scheduler") {
+  sources = [
+    "periodic_scheduler.cc",
+    "periodic_scheduler_main.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  install_path = "bin"
+}
+
+executable("cros_sysrq_init") {
+  sources = [ "cros_sysrq_init.cc" ]
+  pkg_deps = [ "vboot_host" ]
+  configs += [ ":target_defaults" ]
+  install_path = "/sbin"
+}
+
+executable("net_poll_tool") {
+  sources = [ "net_poll_tool.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "/sbin"
+}
+
+executable("static_node_tool") {
+  sources = [ "static_node_tool.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "/sbin"
+}
+
+static_library("usermode-helper_lib") {
+  sources = [ "usermode-helper_lib.cc" ]
+  configs += [ ":target_defaults" ]
+}
+
+shared_library("libinit_metrics") {
+  sources = [ "metrics/metrics.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "lib"
+}
+
+shared_library("libtpm_encryption") {
+  sources = [
+    "tpm_encryption/encryption_key.cc",
+    "tpm_encryption/tpm.cc",
+    "tpm_encryption/tpm_setup.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  defines = [ "CHROMEOS_ENVIRONMENT=1" ]
+
+  if (use.tpm2) {
+    sources += [ "tpm_encryption/tpm2.cc" ]
+
+    # This selects TPM2 code in vboot_host headers.
+    defines += [ "TPM2_MODE=1" ]
+  } else {
+    sources += [ "tpm_encryption/tpm1.cc" ]
+  }
+  public_deps = [ ":libinit_metrics" ]
+  install_path = "lib"
+}
+
+shared_library("libmount_encrypted") {
+  sources = [ "mount_encrypted/encrypted_fs.cc" ]
+  configs += [ ":target_defaults" ]
+  defines = [ "CHROMEOS_ENVIRONMENT=1" ]
+
+  public_deps = [ ":libtpm_encryption" ]
+  install_path = "lib"
+}
+
+executable("mount-encrypted") {
+  sources = [ "mount_encrypted/mount_encrypted.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":libmount_encrypted" ]
+  install_path = "sbin"
+}
+
+shared_library("libencrypted-reboot-vault") {
+  sources = [ "encrypted_reboot_vault/encrypted_reboot_vault.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "lib"
+}
+
+executable("encrypted-reboot-vault") {
+  sources = [ "encrypted_reboot_vault/encrypted_reboot_vault_main.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":libencrypted-reboot-vault" ]
+
+  # Only used for testing.
+  install_path = "/usr/local/bin"
+}
+
+executable("usermode-helper") {
+  sources = [ "usermode-helper.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":usermode-helper_lib" ]
+  install_path = "/sbin"
+}
+
+install_config("usr_share_cros_init_scripts") {
+  sources = [
+    "is_feature_enabled.sh",
+    "send-boot-metrics.sh",
+  ]
+  install_path = "/usr/share/cros/init"
+  type = "executable"
+}
+
+install_config("sbin_init_scripts") {
+  sources = [
+    "chromeos-boot-alert",
+    "chromeos_shutdown",
+    "clobber-log",
+  ]
+  install_path = "/sbin"
+  type = "executable"
+}
+
+install_config("install_setuid_restriction") {
+  sources = [ "setuid_restrictions/init_uid_allowlist.txt" ]
+  install_path = "/usr/share/cros/startup/process_management_policies"
+}
+
+install_config("install_lvm_config") {
+  sources = [ "lvm.conf" ]
+  install_path = "/etc/lvm"
+}
+
+if (use.syslog) {
+  install_config("install_chromeos-cleanup-logs") {
+    sources = [ "chromeos-cleanup-logs" ]
+    install_path = "sbin"
+    type = "executable"
+  }
+
+  install_config("install_rsyslog") {
+    sources = [ "rsyslog.chromeos" ]
+    install_path = "/etc"
+  }
+}
+
+proto_library("preseeded_files_proto") {
+  proto_in_dir = "./libpreservation/proto/"
+  proto_out_dir = "include/init/libpreservation"
+  sources = [ "${proto_in_dir}/preseeded_files.proto" ]
+  standalone = true
+  use_pic = true
+}
+
+executable("preserve_dev_image") {
+  sources = [ "libpreservation/preserve_dev_image.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":libpreservation" ]
+  install_path = "/usr/local/bin"
+}
+
+executable("preserve_rma_state") {
+  sources = [ "libpreservation/preserve_rma_state.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":libpreservation" ]
+  install_path = "/usr/bin"
+}
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [
+      "libbrillo-test",
+      "libchrome-test",
+    ]
+  }
+
+  executable("chromeos_startup_test") {
+    sources = [
+      "startup/chromeos_startup_test.cc",
+      "startup/fake_startup_dep_impl.cc",
+      "startup/security_manager_test.cc",
+      "startup/stateful_mount_test.cc",
+      "startup/uefi_startup_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    libs = [ "hwsec-foundation-mock" ]
+    deps = [
+      ":libcrosstartup",
+      ":libpreservation",
+      "//common-mk/testrunner",
+    ]
+    pkg_deps = [
+      "libcrossystem-test",
+      "libstorage_fake_platform",
+    ]
+  }
+
+  executable("clobber_state_test") {
+    sources = [
+      "clobber/clobber_state_test.cc",
+      "clobber/clobber_ui_test.cc",
+      "clobber/clobber_wipe_test.cc",
+    ]
+    if (use.device_mapper) {
+      sources += [ "clobber/clobber_lvm_test.cc" ]
+    }
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [
+      ":libclobber",
+      ":libpreservation",
+      "//common-mk/testrunner",
+    ]
+    pkg_deps = [ "libcrossystem-test" ]
+  }
+
+  executable("file_attrs_cleaner_test") {
+    sources = [ "file_attrs_cleaner_test.cc" ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [
+      ":libfile_attrs_cleaner",
+      "//common-mk/testrunner",
+    ]
+  }
+
+  executable("tpm_encryption_tests") {
+    sources = [
+      "tpm_encryption/encryption_key_test.cc",
+      "tpm_encryption/tpm_setup_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    libs = [ "hwsec-foundation-mock" ]
+    deps = [
+      ":libtpm_encryption",
+      "//common-mk/testrunner",
+    ]
+    pkg_deps = [
+      "libbrillo-test",
+      "libchrome-test",
+      "libstorage_fake_platform",
+    ]
+
+    if (use.tpm2) {
+      defines = [ "TPM2_MODE=1" ]
+    }
+    run_test = true
+  }
+
+  executable("mount_encrypted_tests") {
+    sources = [ "mount_encrypted/encrypted_fs_test.cc" ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    deps = [
+      ":libmount_encrypted",
+      "//common-mk/testrunner",
+    ]
+    pkg_deps = [
+      "libbrillo-test",
+      "libchrome-test",
+      "libstorage_fake_platform",
+    ]
+
+    run_test = true
+  }
+
+  executable("process_killer_test") {
+    sources = [
+      "process_killer/process_killer_test.cc",
+      "process_killer/process_manager_test.cc",
+      "process_killer/process_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [
+      ":process_killer_lib",
+      "//common-mk/testrunner",
+    ]
+  }
+
+  executable("periodic_scheduler_test") {
+    sources = [
+      "periodic_scheduler.cc",
+      "periodic_scheduler_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [ "//common-mk/testrunner" ]
+  }
+
+  executable("usermode-helper_test") {
+    sources = [ "usermode-helper_test.cc" ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [
+      ":usermode-helper_lib",
+      "//common-mk/testrunner",
+    ]
+  }
+
+  executable("utils_test") {
+    sources = [ "utils_test.cc" ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [
+      ":libinit_utils",
+      "//common-mk/testrunner",
+    ]
+  }
+
+  executable("libpreservation_test") {
+    sources = [
+      "libpreservation/file_preseeder_test.cc",
+      "libpreservation/filesystem_manager_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    run_test = true
+    deps = [
+      ":libpreservation",
+      "//common-mk/testrunner",
+    ]
+  }
+}

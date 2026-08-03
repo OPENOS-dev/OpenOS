@@ -1,0 +1,98 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_pkg//pkg:mappings.bzl", "pkg_filegroup", "pkg_files", "pkg_mkdirs", "pkg_mklink", "strip_prefix")
+load("//bazel/cros_pkg:defs.bzl", "cros_pkg_filegroup", "pkg", "strip_prefix")
+
+pkg_files(
+    name = "pkg_file",
+    srcs = ["testdata/pkg/file"],
+    prefix = "pkg",
+    strip_prefix = strip_prefix.files_only(),
+)
+
+pkg_files(
+    name = "pkg_filegroup_file",
+    srcs = ["testdata/pkg/filegroup_file"],
+    strip_prefix = strip_prefix.from_pkg("testdata"),
+)
+
+pkg_filegroup(
+    name = "pkg_filegroup",
+    srcs = [":pkg_filegroup_file"],
+)
+
+pkg_mkdirs(
+    name = "pkg_dir",
+    dirs = ["pkg/empty_dir"],
+)
+
+pkg_mklink(
+    name = "pkg_symlink",
+    link_name = "pkg/link",
+    target = "path/to/dst",
+)
+
+# See cros_pkg/defs.bzl for an explanation of how it decides to install
+cros_pkg_filegroup(
+    name = "packaging",
+    srcs = [
+        pkg.doc(
+            srcs = glob(["testdata/docs/*.md"]),
+            strip_prefix = strip_prefix.from_pkg("testdata/docs"),
+        ),
+        pkg.bin(
+            name = "renamed_bin",
+            srcs = [":testdata/bin"],
+        ),
+        # You can provide UID, user, or both, but if providing both, then the
+        # UID and user must match. Same goes for GID / group.
+        pkg.file(
+            srcs = glob(["testdata/example/*"]),
+            gid = 0,
+            group = "root",
+            mode = "0640",
+            prefix = "path/to",
+            strip_prefix = strip_prefix.files_only(),
+            uid = 0,
+            user = "root",
+        ),
+        pkg.file(
+            # Installed to /demo/files_only
+            srcs = [":testdata/strip_prefix/files_only"],
+            prefix = "/demo",
+        ),
+        pkg.file(
+            # Installed to /demo/testdata/strip_prefix/from_current_pkg
+            srcs = [":testdata/strip_prefix/from_current_pkg"],
+            prefix = "/demo",
+            strip_prefix = strip_prefix.from_pkg(),
+        ),
+        pkg.file(
+            # Installed to /demo/strip_prefix/from_pkg
+            srcs = [":testdata/strip_prefix/from_pkg"],
+            prefix = "/demo",
+            strip_prefix = strip_prefix.from_pkg("testdata"),
+        ),
+        pkg.file(
+            srcs = [":testdata/dest"],
+            dst = "/tmp/dest",
+        ),
+        pkg.dirs(
+            dirs = ["/inline/empty_dir"],
+            mode = "0640",
+        ),
+        pkg.symlink(
+            link_name = "/inline/symlink_inline",
+            target = "../tmp/dest",
+        ),
+    ],
+    include = [
+        ":pkg_dir",
+        ":pkg_filegroup",
+        ":pkg_file",
+        ":pkg_symlink",
+    ],
+    visibility = ["//bazel/cros_pkg/private:__pkg__"],
+)

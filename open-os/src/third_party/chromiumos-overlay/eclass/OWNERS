@@ -1,0 +1,38 @@
+include chromiumos/overlays/portage-stable:/eclass/OWNERS
+
+per-file chromium-source.eclass = file:/chromeos-base/chromeos-chrome/OWNERS
+per-file cros-firmware.eclass = file:chromiumos/platform/firmware:/OWNERS
+per-file cros-kernel*.eclass = file:chromiumos/owners:v1:/kernel/OWNERS.build
+per-file libchrome-version.eclass = file:chromiumos/platform/libchrome:/OWNERS
+per-file libchrome-version.eclass = chromeos-ci-prod@chromeos-bot.iam.gserviceaccount.com
+per-file modem-fw-dlc.eclass = file:chromiumos/platform2:/modemfwd/OWNERS
+
+# For cros-rust.eclass, primarily intended for simple toolchain-related flag
+# flips, etc. For cros-rustc.eclass, the toolchain team owns this very directly.
+per-file cros-rust*.eclass = file:/chromiumos/third_party/toolchain-utils:/OWNERS.toolchain
+per-file cros-sanitizers.eclass = file:/chromiumos/third_party/toolchain-utils:/OWNERS.toolchain
+
+# Only borealis engineers own shader cache eclasses
+per-file borealis-shader-cache-dlc.eclass = file:chromiumos/platform2:/shadercached/OWNERS
+per-file borealis-shader-cache-dlc-prebuilt.eclass = file:chromiumos/platform2:/shadercached/OWNERS
+
+per-file tast-bundle.eclass = file:chromiumos/platform/tast:/OWNERS
+per-file tast-bundle-data.eclass = file:chromiumos/platform/tast:/OWNERS
+
+per-file cros-factory.eclass = file:chromiumos/platform/factory:/OWNERS
+per-file cros-factory-board.eclass = file:chromiumos/platform/factory:/OWNERS
+per-file cros-racc.eclass = file:chromiumos/owners:v1:/factory/OWNERS.racc
+
+per-file adhd.eclass = file:/media-sound/OWNERS
+
+# For DLC related files.
+per-file dlc-prebuilt.eclass = file:chromiumos/owners:v1:/platform/OWNERS.dlc
+per-file dlc.eclass = file:chromiumos/owners:v1:/platform/OWNERS.dlc
+
+# For coreboot-sdk related files
+per-file coreboot-sdk-build.eclass = file:chromiumos/owners:v1:/firmware/OWNERS.toolchain
+per-file coreboot-sdk-ap-dependencies.eclass = file:chromiumos/owners:v1:/firmware/OWNERS.toolchain
+per-file coreboot-sdk-ec-dependencies.eclass = file:chromiumos/owners:v1:/firmware/OWNERS.toolchain
+per-file coreboot-sdk-versions.eclass = file:chromiumos/owners:v1:/firmware/OWNERS.toolchain
+per-file coreboot-sdk.eclass = file:chromiumos/owners:v1:/firmware/OWNERS.toolchain
+per-file gen/coreboot_sdk_versions.sh = file:chromiumos/owners:v1:/firmware/OWNERS.toolchain

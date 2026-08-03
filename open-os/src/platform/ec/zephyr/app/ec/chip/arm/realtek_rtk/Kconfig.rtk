@@ -1,0 +1,57 @@
+# Copyright 2025 The ChromiumOS Authors.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if SOC_SERIES_RTS5912
+
+# Power management options
+config PM
+	default y
+
+config PM_DEVICE
+	default y
+
+choice PM_POLICY
+	default PM_POLICY_CUSTOM
+endchoice
+
+#
+# RTS5915:
+#	384 kb total SRAM:
+#		0x2000_0000 - 0x2000_03df: vender use
+#		0x2000_03e0 - 0x2004_fbff: code (320 kb + 20 byte header)
+#		0x2004_fd00 - 0x2004_ffff: lfw (300 byte)
+#		0x2005_0000 - 0x2005_ffff: data use (64 kb)
+#	1MB internal SPI flash (reg mapped)
+#		0x6000_0000 - 0x6007_FFFF: RO
+#		0x6008_0000 - 0x600F_FFFF: RW
+
+config CROS_EC_PROGRAM_MEMORY_BASE
+	default 0x20000400
+
+config CROS_EC_RAM_BASE
+	default 0x20050000
+
+# 64KB data buffer
+config CROS_EC_DATA_RAM_SIZE
+	default 0x10000
+
+config CROS_EC_RAM_SIZE
+	default 0x10000
+
+config CROS_EC_RO_MEM_OFF
+	default 0
+
+config CROS_EC_RO_SIZE
+	default 0x4f900
+
+config CROS_EC_RW_SIZE
+	default 0x4f900
+
+config CROS_EC_RW_MEM_OFF
+	default 0
+
+config MAIN_STACK_SIZE
+	default 1280
+
+endif # SOC_SERIES_RTS5912

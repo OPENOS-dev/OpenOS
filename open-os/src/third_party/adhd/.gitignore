@@ -1,0 +1,18 @@
+cscope.*
+__pycache__/
+# clangd
+compile_commands.json
+.cache
+# vscode
+*.code-workspace
+*.vscode
+
+# bazel
+/external
+/bazel-*
+/compile_commands.json
+/.cache/
+/user.bazelrc
+
+# Rust
+/target/

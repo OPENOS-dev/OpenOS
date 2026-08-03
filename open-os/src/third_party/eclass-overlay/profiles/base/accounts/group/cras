@@ -1,0 +1,8 @@
+group:cras
+gid:600
+# The browser runs as chronos.
+# VMs run as the crosvm user.
+# The power manager needs to check if audio is playing.
+# The rtanalytics process (running as the rtanalytics user) needs to talk to
+#   cras for audio capture.
+users:chronos,cras,crosvm,power,rtanalytics,sound_card_init

@@ -1,0 +1,150 @@
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+steps:
+
+- name: 'gcr.io/kaniko-project/executor:latest'
+  id: 'envoy'
+  args:
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/diagnoseme/envoy:$COMMIT_SHA
+  - --cache=true
+  - --cache-ttl=96h
+  - -f=/workspace/dockerfiles/envoy/Dockerfile
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'proto-gen'
+  args:
+    - buildx
+    - build
+    - --output=./src/generated_tmp
+    - --target=copytohost
+    - -f=dockerfiles/utilities/Dockerfile.protoc
+    - /workspace
+  waitFor: ['-']
+
+- name: 'ubuntu'
+  id: 'copy-python-protos'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    rm -rf src/server/generated
+    mkdir -p src/server/generated
+    cp -r src/generated_tmp/python/server/generated/* src/server/generated/
+  waitFor: ['proto-gen']
+
+- name: 'ubuntu'
+  id: 'generate-build-info'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p /workspace/src/ui/src/assets
+    echo "{\"buildDate\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"commitSha\": \"$COMMIT_SHA\"}" > /workspace/src/ui/src/assets/build_info.json
+  waitFor: ['-']
+
+- name: 'gcr.io/kaniko-project/executor:latest'
+  id: 'server-base'
+  args:
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/diagnoseme/server-base:$COMMIT_SHA
+  - --cache=true
+  - --cache-ttl=96h
+  - -f=/workspace/dockerfiles/rpcserver/Dockerfile.base
+  waitFor: ['-']
+
+- name: 'gcr.io/kaniko-project/executor:latest'
+  id: 'server'
+  args:
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/diagnoseme/server:$COMMIT_SHA
+  - --build-arg=BASE_IMAGE=us-docker.pkg.dev/$PROJECT_ID/diagnoseme/server-base:$COMMIT_SHA
+  - --cache=true
+  - --cache-ttl=96h
+  - -f=/workspace/dockerfiles/rpcserver/Dockerfile
+  waitFor: ['copy-python-protos', 'server-base']
+
+- name: 'node:25'
+  id: 'ui-lint'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p src/ui/src/proto
+    cp -r src/generated_tmp/typescript/server/* src/ui/src/proto/
+    cd src/ui
+    npm install --legacy-peer-deps
+    npm run lint
+  waitFor: ['proto-gen']
+
+- name: 'gcr.io/kaniko-project/executor:latest'
+  id: 'ui'
+  args:
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/diagnoseme/ui:$COMMIT_SHA
+  - --cache=true
+  - --cache-ttl=96h
+  - -f=/workspace/dockerfiles/ui/Dockerfile
+  waitFor: ['ui-lint', 'generate-build-info']
+
+- name: 'pyfound/black:25.1.0'
+  id: 'test-black-formatting'
+  entrypoint: 'black'
+  args:
+    - --check
+    - --config=/workspace/pyproject.toml
+    - /workspace
+  waitFor: ['-']
+
+- name: 'xcgd/isort'
+  id: 'test-isort-formatting'
+  entrypoint: 'isort'
+  args:
+    - --check
+    - /workspace
+  waitFor: ['-']
+
+- name: 'python:3.13'
+  id: 'test-pylint'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    python3 -m pip install -r dockerfiles/rpcserver/requirements.txt --require-hashes --break-system-packages
+    pylint --load-plugins=pylint_protobuf --rcfile=/workspace/pylintrc /workspace/src/server
+  waitFor: ['copy-python-protos']
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  id: 'fetch-dist-blobs'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p dist
+    gcloud storage cp "gs://rtk-tools/rtunicpg-2.0.25.3.tar.bz2" "dist/rtunicpg.tar.bz2" || true
+    gcloud storage cp "gs://rtk-tools/r8152-2.21.4.tar.bz2" "dist/r8152.tar.bz2" || true
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'build-deb'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    docker build --build-arg DEB_VERSION="1.0.$(date +%s)" -t deb-builder -f development_environment/deb_builder/Dockerfile .
+  waitFor: ['fetch-dist-blobs']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'extract-deb'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      docker create --name temp-container deb-builder
+      docker cp temp-container:/diagnoseme.deb .
+      docker rm temp-container
+  waitFor: ['build-deb']
+
+options:
+  machineType: 'E2_HIGHCPU_32'
+
+timeout: 3600s

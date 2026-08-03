@@ -1,0 +1,4 @@
+# Copyright 2026 OCS (Open Code Studio)
+# License: GPL-3.0
+
+ACTION=="add|change", DRIVERS=="r8152", SUBSYSTEM=="net", KERNEL=="eth*", ATTR{threaded}="1"

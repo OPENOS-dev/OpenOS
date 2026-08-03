@@ -1,0 +1,805 @@
+#!/bin/bash
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Script to update base firmware in a program's config, and then
+# regenerate the configs of projects that are part of the program.
+# Also updates the firmware manifest, and uploads all of the changes
+# for review.
+#
+# Usage:
+#   ./update_program_fw --board=program --release=NNNNN.nn [ --reviewer=reviewers ]
+#                       [ --project=proj... ]
+# E.g:
+#   ./update_program_fw --board=puff --release=13291 --reviewer=amcrae@google.com
+#
+CONTRIB_DIR=$(dirname "$(readlink -f "$0")")
+. "${CONTRIB_DIR}/common.sh" || exit 1
+
+FLAGS_HELP="
+Command to update the firmware version for a board.
+
+Updates the firmware version configuration for a board's
+master configuration (program.star) and for selected projects
+that include the master configuration.
+
+If no projects are specified, all projects for that board are selected.
+An optional skip list can be specified to skip selected boards.
+
+The configurations for the selected projects are regenerated,
+and the firmware manifest are updated for the projects.
+
+The necessary CLs for these changes are created and uploaded for review.
+An optional reviewer can be specified to send all the CLs to.
+"
+# Flags
+DEFINE_string board "${DEFAULT_BOARD}" "Which board (program) the firmware is for (e.g 'puff')" b
+DEFINE_string release "${DEFAULT_RELEASE}"  "The firmware release to update to (e.g 13310.3)" r
+DEFINE_string project "${DEFAULT_PROJECT}" "Which projects this release is for (defaults to all), e.g 'duffy'" p
+DEFINE_string bug "none" "The bug to reference in the CL e.g b:12345"
+DEFINE_string skip "${DEFAULT_SKIP}" "Skip these projects (comma separated list)" s
+DEFINE_boolean build "${FLAGS_TRUE}" "Attempt to build coreboot"
+DEFINE_boolean setup "${FLAGS_FALSE}" "Run setup_board if necessary"
+DEFINE_boolean program "${FLAGS_FALSE}" "Update the version in the base program.star"
+DEFINE_string reviewer "${DEFAULT_REVIEWER}" "The reviewer(s) to send the CLs to (optional)"
+DEFINE_string test "none" "The 'TEST=' string added to the commit message"
+DEFINE_boolean dryrun "${FLAGS_FALSE}" "Do not perform any actions, just validate and print arguments"
+DEFINE_boolean verify "${FLAGS_TRUE}" "Ask for verification before proceeding"
+DEFINE_boolean ro "${FLAGS_FALSE}" "Update RO version"
+DEFINE_boolean rw "${FLAGS_TRUE}" "Update RW version"
+DEFINE_boolean presubmit "${FLAGS_TRUE}" "Enable upload presubmit"
+DEFINE_string tag "update" "The string prepended to the branch name and gerrit tag"
+
+# Set before flag processing
+COMMAND=$(basename "$0")
+CMDARGS="$*"
+
+# Parse command line
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+set -e
+
+# Script must be run inside the chroot.
+assert_inside_chroot
+#
+# Variables
+#
+PATH="${PATH}:${GCLIENT_ROOT}/src/config/bin"
+TAG=""
+PROGRAM_CL=""
+MAJOR_NUMBER_RE="[1-9][0-9]{4}"
+MINOR_NUMBER_RE="(0|[1-9][0-9]*)"
+PATCH_NUMBER_RE="(0|[1-9][0-9]*)"
+RO_MAJOR="major_version"
+RO_MINOR="minor_version"
+RO_PATCH="patch_version"
+RW_MAJOR="rw_major_version"
+RW_MINOR="rw_minor_version"
+RW_PATCH="rw_patch_version"
+# Unfortunately RO version prefixes are a subset of the RW version prefix
+# so the whole word must be matched (e.g major_version vs rw_major_version)
+RO_MAJOR_RE="\b${RO_MAJOR}\b\s*=\s*${MAJOR_NUMBER_RE}"
+RO_MINOR_RE="\b${RO_MINOR}\b\s*=\s*${MINOR_NUMBER_RE}"
+RO_PATCH_RE="\b${RO_PATCH}\b\s*=\s*${PATCH_NUMBER_RE}"
+RW_MAJOR_RE="\b${RW_MAJOR}\b\s*=\s*${MAJOR_NUMBER_RE}"
+RW_MINOR_RE="\b${RW_MINOR}\b\s*=\s*${MINOR_NUMBER_RE}"
+RW_PATCH_RE="\b${RW_PATCH}\b\s*=\s*${PATCH_NUMBER_RE}"
+#
+# Common functions
+#
+cleanup() {
+  if [[ -d "${TEMPDIR}" ]]; then
+    rm -rf "${TEMPDIR}"
+  fi
+}
+#
+# Abort the update, and clean up branches and CLs
+#
+abort() {
+  CLS=$(gerrit -i --raw search "owner:me status:open hashtag:${TAG}")
+  if [[ -n "${CLS}" ]]; then
+    echo "Abandoning uploaded CLs"
+    for cl in ${CLS}; do
+      gerrit -i abandon "${cl}"
+    done
+  fi
+  # Undo any changes to srcuris
+  cd "${OVERLAY}"
+  git restore .
+  cros workon "--board=${FLAGS_board}" stop "chromeos-base/chromeos-firmware-${FLAGS_board}"
+  cros workon "--board=${FLAGS_board}" stop "chromeos-base/chromeos-config-bsp-private"
+  cros workon "--board=${FLAGS_board}" stop "chromeos-base/chromeos-config"
+  repo abandon "${TAG}"
+  die "$*"
+}
+#
+# Return 0 if file has RO major or minor or patch version in it.
+#
+has_ro() {
+  (grep -E -q "(${RO_MAJOR_RE}|${RO_MINOR_RE}|${RO_PATCH_RE})" "${1}")
+}
+#
+# Return 0 if file has RW major or minor or patch version in it.
+#
+has_rw() {
+  (grep -E -q "(${RW_MAJOR_RE}|${RW_MINOR_RE}|${RW_PATCH_RE})" "${1}")
+}
+#
+# Return 0 if file has required major version strings in it.
+#
+has_major_version() {
+  if [[ "${FLAGS_ro}" -eq "${FLAGS_TRUE}" ]] && ! (grep -E -q "${RO_MAJOR_RE}" "${1}"); then
+    return 1
+  fi
+  if [[ "${FLAGS_rw}" -eq "${FLAGS_TRUE}" ]] && ! (grep -E -q "${RW_MAJOR_RE}" "${1}"); then
+    return 1
+  fi
+  return 0
+}
+#
+# Return 0 if file has required minor version strings in it.
+#
+has_minor_version() {
+  if [[ "${FLAGS_ro}" -eq "${FLAGS_TRUE}" ]] && ! (grep -E -q "${RO_MINOR_RE}" "${1}"); then
+    return 1
+  fi
+  if [[ "${FLAGS_rw}" -eq "${FLAGS_TRUE}" ]] && ! (grep -E -q "${RW_MINOR_RE}" "${1}"); then
+    return 1
+  fi
+  return 0
+}
+#
+# Return 0 if file has required patch version strings in it.
+#
+has_patch_version() {
+  if [[ "${FLAGS_ro}" -eq "${FLAGS_TRUE}" ]] && ! (grep -E -q "${RO_PATCH_RE}" "${1}"); then
+    return 1
+  fi
+  if [[ "${FLAGS_rw}" -eq "${FLAGS_TRUE}" ]] && ! (grep -E -q "${RW_PATCH_RE}" "${1}"); then
+    return 1
+  fi
+  return 0
+}
+#
+# Return 0 if file has ebuild revbump in it
+#
+has_revbump() {
+  (grep -E -q "VERSION=REVBUMP.*[0-9][0-9]*$" "${1}")
+}
+#
+# Extract a CL number from the file containing the output of repo upload
+#
+getcl() {
+  CL=$(grep -o "https://chrome-internal-review.googlesource.com/c/chromeos/$1/+/[0-9][0-9]*" "$2")
+  if [[ -z "${CL}" ]]; then
+    cat "$2"
+    abort CL number not found in repo upload output
+  fi
+  echo "${CL}" | grep -o "[0-9][0-9]*"
+}
+#
+# If not on this branch, start a branch
+#
+branch() {
+  if ! (git branch --show-current | grep -q "${TAG}"); then
+     repo start "${TAG}"
+  else
+     echo "${TAG} already exists, skipping repo start"
+  fi
+}
+#
+# return 'yes' or 'no' for boolean true or false
+#
+yes_no() {
+  if [[ "${1}" -eq  "${FLAGS_FALSE}" ]]; then
+    echo -n "no"
+  else
+    echo -n "yes"
+  fi
+}
+#
+# Normalise a comma or space separated argument or arguments to
+# a single set of space separated arguments.
+#
+rd_list() {
+  local l=()
+  for arg in "$@"; do
+    IFS=', ' read -r -a la <<< "${arg}"
+    l+=("${la[@]}")
+  done
+  echo "${l[@]}"
+}
+#
+# Return true if repo has changes.
+#
+changed() {
+  [[ -n $(git status -s) ]]
+}
+#
+# Add Cq-Depend lines from a file to a commit.
+#
+amend_cq_file() {
+  git log -1 --pretty=%B > "${TEMPDIR}/amend-msg"
+  sed -i "/^Change-Id/e cat ${1}" "${TEMPDIR}/amend-msg"
+  git commit -q --amend -F "${TEMPDIR}/amend-msg"
+}
+#
+# Check the file passed as argument 1 to verify it
+# has the necessary strings in it for replacement.
+#
+check_file_strings() {
+  if ! (has_major_version "${1}"); then
+    version_error "${1} requires major version string"
+  fi
+  if [[ "${MINOR_VERSION}" -ne  "0" ]] && ! (has_minor_version "${1}"); then
+    version_error "${1} requires minor version string"
+  fi
+  if [[ "${PATCH_VERSION}" -ne  "0" ]] && ! (has_patch_version "${1}"); then
+    version_error "${1} requires patch version string"
+  fi
+}
+#
+# Confirm that $1 is a valid project
+#
+check_project() {
+  PFILE="${GCLIENT_ROOT}/src/project/${FLAGS_board}/${1}/config.star"
+  if [[ ! -f "${PFILE}" ]]; then
+    die "${P} is not a valid project (${PFILE} missing)"
+  fi
+  #
+  # If the board's program.star is not being updated, check that the
+  # project has the right config lines to update.
+  #
+  if  [[ "${FLAGS_program}" -eq  "${FLAGS_FALSE}" ]]; then
+    check_file_strings "${PFILE}"
+  fi
+}
+#
+# Return true if $1 is in list $2
+#
+in_list() {
+  for S in ${2}; do
+     if [[ "$1" == "${S}" ]]; then
+       return 0
+     fi
+  done
+  return 1
+}
+#
+# Dump a message about the version expectations and quit.
+#
+version_error() {
+echo "ERROR: ${1}"
+cat << EOF
+
+To correctly update the version, the config files must have existing version
+configuration lines in them that the script can find and replace.
+These lines are in the form of (e.g):
+
+...
+   major_version = 12345,
+   minor_version = 10
+   patch_version = 2
+   rw_major_version = 13579,
+   rw_minor_version = 20
+   rw_patch_version = 3
+...
+
+The first 3 lines represent the RO version, and the next are the RW version.
+The patch versions are optional.
+
+The regular expressions used to find and replace these configuration lines are
+(for RO) "/${RO_MAJOR_RE}/" and "/${RO_MINOR_RE}/" and "/${RO_PATCH_RE}/",
+(for RW) "/${RW_MAJOR_RE}/" and "/${RW_MINOR_RE}/" and "/${RW_PATCH_RE}/",
+The version configuration lines must match these regular expressions.
+
+These configuration lines may appear in the board's base program.star file, or in
+the projects' config.star file. If the minor version is not 0, a 'minor_version' line
+must exist in the files to be updated. If a patch version is used, the
+'patch_version' must also exist.
+
+If the board's program.star file is updated (the default --program option), then carefully
+check that the inherited project configs are correct, especially if projects are skipped.
+
+If the --noprogram option is selected, then a config line of 'major_version' (and
+'minor_version' if the minor version is not 0) must exist in the project config.star files.
+
+Since the project's config is inherited from the board's program.star file, and can override
+the version of the config, ensure that selectively updating either the program.star or
+the project versions will not leave projects in an inconsistent state.
+EOF
+exit 1
+}
+#
+# Update the RO version in the file passed.
+# return 0 if version updated, otherwise 1.
+#
+update_ro() {
+  if [[ "${FLAGS_ro}" -eq "${FLAGS_FALSE}" ]]; then
+    return 1
+  fi
+  # Check for RO major or minor or patch version in file.
+  if ! (has_ro "${1}"); then
+    return 1
+  fi
+  local nf="${TEMPDIR}/new-${1}"
+  sed -E "s/${RO_MAJOR_RE}/${NEW_RO_MAJOR}/" "${1}" >  "${nf}"
+  sed -i -E "s/${RO_MINOR_RE}/${NEW_RO_MINOR}/" "${nf}"
+  if [[ "${NEW_RO_PATCH}" -ne  "0" ]]; then
+    sed -i -E "s/${RO_PATCH_RE}/${NEW_RO_PATCH}/" "${nf}"
+  fi
+  if cmp -s "${1}" "${nf}"; then
+    return 1
+  fi
+  cp "${nf}" "${1}"
+  return 0
+}
+#
+# Update the RW version in the file passed.
+# return 0 if version updated, otherwise 1.
+#
+update_rw() {
+  if [[ "${FLAGS_rw}" -eq "${FLAGS_FALSE}" ]]; then
+    return 1
+  fi
+  # Check for RW major or minor or patch version in file.
+  if ! (has_rw "${1}"); then
+    return 1
+  fi
+  local nf="${TEMPDIR}/new-${1}"
+  sed -E "s/${RW_MAJOR_RE}/${NEW_RW_MAJOR}/" "${1}" >  "${nf}"
+  sed -i -E "s/${RW_MINOR_RE}/${NEW_RW_MINOR}/" "${nf}"
+  if [[ "${NEW_RW_PATCH}" -ne  "0" ]]; then
+    sed -i -E "s/${RW_PATCH_RE}/${NEW_RW_PATCH}/" "${nf}"
+  fi
+  if cmp -s "${1}" "${nf}"; then
+    return 1
+  fi
+  cp "${nf}" "${1}"
+  return 0
+}
+#
+# Update the version in the file passed.
+# return 0 if any version updated.
+# return 1 if version not in file, or file is unchanged.
+#
+update_version() {
+  local res=1
+  if (update_ro "${1}"); then
+    res=0
+  fi
+  if (update_rw "${1}"); then
+    res=0
+  fi
+  return "${res}"
+}
+#
+# Validate arguments
+#
+if [[ -z "${FLAGS_board}" ]]; then
+  die "-b or --board required."
+fi
+if [[ -z "${FLAGS_release}" ]]; then
+  die "-r or --release required."
+fi
+#
+# Must be updating either or both RO and RW.
+#
+if [[ "${FLAGS_ro}" -eq "${FLAGS_FALSE}" ]] && [[ "${FLAGS_rw}" -eq "${FLAGS_FALSE}" ]]; then
+  dir "either or both --rw or --ro must be set."
+fi
+#
+# Program must exist as a directory
+#
+PROGDIR="${GCLIENT_ROOT}/src/program/${FLAGS_board}"
+if [[ ! -d "${PROGDIR}" ]]; then
+  die "${FLAGS_board} is not a valid program (${PROGDIR} missing)"
+fi
+PROGFILE="${PROGDIR}/program.star"
+#
+# Validate release
+# Major must be a 5 digit number
+# Optional minor release must be a number.
+# Optional patch version must be a number.
+#
+if [[ "${FLAGS_release}" =~ ^${MAJOR_NUMBER_RE}$ ]]; then
+  MAJOR_VERSION=${FLAGS_release}
+  MINOR_VERSION="0"
+  PATCH_VERSION="0"
+elif [[ "${FLAGS_release}" =~ ^${MAJOR_NUMBER_RE}\.${MINOR_NUMBER_RE}$ ]]; then
+  MAJOR_VERSION=$(echo "${FLAGS_release}" | cut -d. -f1)
+  MINOR_VERSION=$(echo "${FLAGS_release}" | cut -d. -f2)
+  PATCH_VERSION="0"
+elif [[ "${FLAGS_release}" =~ ^${MAJOR_NUMBER_RE}\.${MINOR_NUMBER_RE}\.${PATCH_NUMBER_RE}$ ]]; then
+  MAJOR_VERSION=$(echo "${FLAGS_release}" | cut -d. -f1)
+  MINOR_VERSION=$(echo "${FLAGS_release}" | cut -d. -f2)
+  PATCH_VERSION=$(echo "${FLAGS_release}" | cut -d. -f3)
+else
+  die "Unknown release format (must be NNNNN[.nn[.nn]])"
+fi
+NEW_RO_MAJOR="${RO_MAJOR} = ${MAJOR_VERSION}"
+NEW_RO_MINOR="${RO_MINOR} = ${MINOR_VERSION}"
+NEW_RO_PATCH="${RO_PATCH} = ${PATCH_VERSION}"
+NEW_RW_MAJOR="${RW_MAJOR} = ${MAJOR_VERSION}"
+NEW_RW_MINOR="${RW_MINOR} = ${MINOR_VERSION}"
+NEW_RW_PATCH="${RW_PATCH} = ${PATCH_VERSION}"
+#
+# If updating the board config, check for program.star
+# and for version strings.
+#
+if [[ "${FLAGS_program}" -eq "${FLAGS_TRUE}" ]]; then
+  if [[ ! -f "${PROGFILE}" ]]; then
+    die "${FLAGS_board} is not a valid program (${PROGFILE} missing)"
+  fi
+  check_file_strings "${PROGFILE}"
+fi
+# Use a common git branch name and gerrit hashtag.
+TAG="${FLAGS_tag}_${FLAGS_board}_fw_${MAJOR_VERSION}_${MINOR_VERSION}_${PATCH_VERSION}"
+#
+# Build the project list.
+# If no projects are specified, use all in the programs directory.
+#
+if [[ -z "${FLAGS_project}" ]]; then
+  BDIR="${GCLIENT_ROOT}/src/project/${FLAGS_board}"
+  cd "${BDIR}"
+  mapfile -t PROJLIST < <(ls)
+else
+  read -r -a PROJLIST <<< "$(rd_list "${FLAGS_project}")"
+fi
+#
+# Get list of reviewers (if any)
+#
+read -r -a REVIEWERS <<< "$(rd_list "${FLAGS_reviewer}")"
+#
+# Filter out the projects that are to be skipped.
+#
+if [[ -n "${FLAGS_skip}" ]]; then
+  PROJECTS=()
+  read -r -a SKIP_ARRAY <<< "$(rd_list "${FLAGS_skip}")"
+  SKIPPED="${SKIP_ARRAY[*]}"
+  for P in "${PROJLIST[@]}"; do
+    if ! (in_list "${P}" "${SKIPPED}"); then
+      PROJECTS+=("${P}")
+    fi
+  done
+else
+  PROJECTS=("${PROJLIST[@]}")
+fi
+#
+# Validate bug number (if any).
+# Must be of the form b:nnnnn or chromium:nnnnn
+#
+if [[ "${FLAGS_bug}" != "none" ]]; then
+  BG="b:[0-9]+|chromium:[0-9]+"
+  BGRE="^(${BG})(,(${BG}))*$"
+  if [[ ! "${FLAGS_bug}" =~ ${BGRE} ]]; then
+    echo "Bug must be of the form b:nnn or chromium:nnn"
+    die "A comma separated list is allowed"
+  fi
+fi
+#
+# Validate project list and file locations.
+#
+for P in "${PROJECTS[@]}"; do
+  check_project "${P}"
+done
+OVERLAY="${GCLIENT_ROOT}/src/private-overlays/overlay-${FLAGS_board}-private/chromeos-base/chromeos-firmware-${FLAGS_board}"
+# Validate project overlay and ebuild file
+EB9999="chromeos-firmware-${FLAGS_board}-9999.ebuild"
+if [[ ! -f "${OVERLAY}/${EB9999}" ]]; then
+  die "${OVERLAY}/${EB9999}: overlay error"
+fi
+# Make sure dev/contrib is accessible
+DEVCONTRIB="${GCLIENT_ROOT}/src/platform/dev/contrib"
+if [[ ! -d "${DEVCONTRIB}" ]]; then
+  die "${DEVCONTRIB}: invalid directory"
+fi
+#
+# Check if the firmware ebuild file has a REVBUMP line in it.
+#
+if ! (has_revbump "${OVERLAY}/${EB9999}"); then
+  echo "Warning -" "${OVERLAY}/${EB9999}" does not have a REVBUMP line
+fi
+#
+# Display arguments.
+#
+echo "Invoked as:"
+echo "${COMMAND} ${CMDARGS}"
+echo "Program (board) to be updated: ${FLAGS_board}"
+echo -n "Projects to be updated are:   "
+for PROJ in "${PROJECTS[@]}"; do
+  echo -n " ${PROJ}"
+done
+if [[ -n "${SKIPPED}" ]]; then
+  echo -n " (skipped:"
+  for S in "${SKIPPED[@]}"; do
+    echo -n " ${S}"
+  done
+  echo -n ")"
+fi
+echo
+echo "Release number of upgrade:     ${FLAGS_release}"
+echo "Major version of release:      ${MAJOR_VERSION}"
+echo "Minor version of release:      ${MINOR_VERSION}"
+if [[ "${PATCH_VERSION}" -ne  "0" ]]; then
+  echo "Patch version of release:      ${PATCH_VERSION}"
+fi
+echo "Update RO version:             $(yes_no "${FLAGS_ro}")"
+echo "Update RW version:             $(yes_no "${FLAGS_rw}")"
+echo "BUG string used in commit:     ${FLAGS_bug}"
+echo "TEST string used in commit:    ${FLAGS_test}"
+echo "Reviewer(s) assigned to CLs:   ${REVIEWERS[*]}"
+echo "Upload presubmit enabled:      $(yes_no "${FLAGS_presubmit}")"
+echo "Tag for branch and gerrit ht:  ${TAG}"
+echo "Update program.star version:   $(yes_no "${FLAGS_program}")"
+echo "Coreboot build enabled:        $(yes_no "${FLAGS_build}")"
+echo "Dry run requested:             $(yes_no "${FLAGS_dryrun}")"
+echo "Verify before proceeding:      $(yes_no "${FLAGS_verify}")"
+#
+if [[ "${FLAGS_dryrun}" -eq  "${FLAGS_TRUE}" ]]; then
+  echo "Dry run requested, exiting"
+  exit 0
+fi
+read -p "Proceed with updating firmware (y/N)? " -r
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+  die "Not verified, exiting..."
+fi
+if [[ "${FLAGS_build}" -eq  "${FLAGS_FALSE}" ]]; then
+  echo
+  echo "******************************************"
+  echo "* You have elected not to build coreboot *"
+  echo "* This assumes coreboot is already built *"
+  echo "******************************************"
+  echo
+fi
+#
+# Determine presubmit option
+#
+if [[ "${FLAGS_presubmit}" -eq  "${FLAGS_TRUE}" ]]; then
+  PRESUBMIT="--verify"
+else
+  PRESUBMIT="--no-verify"
+fi
+#
+# Create a temp directory.
+TEMPDIR=$(mktemp -d -t fw-XXXXXXXXXX)
+
+trap "exit 1"           HUP INT PIPE QUIT TERM
+trap 'cleanup' EXIT
+
+#
+# Ensure that the board has been setup.
+#
+if [[ ! -d "/build/${FLAGS_board}" ]]; then
+  if [[ "${FLAGS_setup}" -eq "${FLAGS_FALSE}" ]]; then
+    die "setup_board needs to be run"
+  fi
+  echo "Running setup_board --board ${FLAGS_board}"
+  setup_board --board "${FLAGS_board}"
+fi
+#
+# From now on, all errors should invoke 'abort'
+# so that the branches and CLs are cleaned up on exit.
+#
+# If required, update the firmware version in the program's program.star file
+#
+if [[ "${FLAGS_program}" -eq "${FLAGS_TRUE}" ]]; then
+  cd "${PROGDIR}"
+  echo "Updating program.star for board ${FLAGS_board}"
+  branch
+  if (update_version "program.star"); then
+    #
+    # If config has changed, create a CL.
+    #
+    git add .
+    git commit -q -F - <<EOF
+${FLAGS_board}: Update program firmware to ${FLAGS_release}
+
+Autogenerated by:
+$(echo "${COMMAND} ${CMDARGS}" | fold -s -w 70 | sed '2,$s/^/    /')
+
+BUG=${FLAGS_bug}
+TEST=${FLAGS_test}
+EOF
+    if ! repo upload -y "${PRESUBMIT}" "--ht=${TAG}" --cbr . > "${TEMPDIR}/upload.output" 2>&1; then
+      cat  "${TEMPDIR}/upload.output"
+      abort "repo upload failed"
+    fi
+    PROGRAM_CL=$(getcl "program/${FLAGS_board}" "${TEMPDIR}/upload.output")
+  fi
+fi
+#
+# Build base coreboot files
+#
+if [[ "${FLAGS_build}" -eq  "${FLAGS_TRUE}" ]]; then
+  echo "Running coreboot build. This may take a while..."
+  #
+  # Attempt to customise the coreboot build depending on the platform.
+  #
+  case "${FLAGS_board}" in
+  "zork")
+    PACKAGES=(coreboot-zork chromeos-bootimage)
+    ;;
+  "ambassador")
+    # Ambassador firmware needs the same set of packages as Puff
+    ;&
+  "puff")
+    PACKAGES=(chromeos-ec coreboot depthcharge vboot_reference libpayload chromeos-bootimage coreboot-private-files intel-cmlfsp coreboot-private-files-puff)
+    ;;
+  *)
+    # Use general packages
+    echo "Taking a guess at coreboot packages for ${FLAGS_board}"
+    echo "If the coreboot build fails, this script may have to be customized for this board"
+    PACKAGES=(chromeos-bootimage)
+    ;;
+  esac
+  if ! (build_packages -b "${FLAGS_board}" --skip-setup-board "${PACKAGES[@]}"); then
+    abort "coreboot build failed!"
+  fi
+  echo "coreboot build successful"
+else
+  echo "Coreboot build not attempted"
+fi
+#
+# Remove any previous attempts to build the firmware.
+#
+cros workon "--board=${FLAGS_board}" stop "chromeos-base/chromeos-firmware-${FLAGS_board}"
+cros workon "--board=${FLAGS_board}" stop "chromeos-base/chromeos-config-bsp-private"
+cros workon "--board=${FLAGS_board}" stop "chromeos-base/chromeos-config"
+cd "${OVERLAY}"
+branch
+#
+# Now walk through the projects and update the version (if present),
+# create and upload a CL and capture the CL number and project directory
+# if the project has changed.
+# Regenerate the configs, run the update script and update the
+# firmware manifest.
+#
+PROJ_CLS=()
+PROJ_DIRS=()
+for PROJ in "${PROJECTS[@]}"; do
+  echo "Updating configs for project ${PROJ}"
+  PDIR="${GCLIENT_ROOT}/src/project/${FLAGS_board}/${PROJ}"
+  cd "${PDIR}"
+  branch
+  update_version "config.star" || true
+  ./config.star || abort "Generate config failed for ${PROJ}"
+  check_config > "${TEMPDIR}/check_config-${PROJ}.output" || abort "check_config failed for ${PROJ}"
+  #
+  # Check if any files changed.
+  #
+  if changed; then
+    echo "Creating CL for changes to project ${PROJ}"
+    git add .
+    git commit -q -F - <<EOF
+${PROJ}: Update firmware to ${FLAGS_release}
+
+Autogenerated by:
+${COMMAND} ${CMDARGS}
+
+BUG=${FLAGS_bug}
+TEST=${FLAGS_test}
+EOF
+    if ! repo upload -y "${PRESUBMIT}" "--ht=${TAG}" --cbr . > "${TEMPDIR}/upload.${PROJ}.output" 2>&1; then
+      cat  "${TEMPDIR}/upload.${PROJ}.output"
+      abort "repo upload failed"
+    fi
+    P_CL=$(getcl "project/${FLAGS_board}/${PROJ}" "${TEMPDIR}/upload.${PROJ}.output")
+    PROJ_CLS+=("${P_CL}")
+    PROJ_DIRS+=("${PDIR}")
+  fi
+  cd "${DEVCONTRIB}"
+  echo "Updating firmware for project ${PROJ}"
+  if ! (./cros_update_firmware -q "--board=${FLAGS_board}" "--project=${PROJ}" "--project_srcuris" "--noappend_srcuris"); then
+    abort "cros_update_firmware failed for ${FLAGS_board} project ${PROJ}"
+  fi
+done
+#
+# Create a file with Cq-Depend lines for all the project CLs
+#
+CQD_FILE="${TEMPDIR}/cqd"
+touch "${CQD_FILE}"
+if [[ -n "${PROJ_CLS[*]}" ]];then
+  for CL in "${PROJ_CLS[@]}"; do
+    echo "Cq-Depend: chrome-internal:${CL}" >> "${CQD_FILE}"
+  done
+  #
+  # If a program CL exists, add the Cq-Depend line to it.
+  #
+  if [[ -n "${PROGRAM_CL}" ]]; then
+    cd "${PROGDIR}"
+    amend_cq_file "${CQD_FILE}"
+    if ! repo upload -y "${PRESUBMIT}" "--ht=${TAG}" --cbr . > "${TEMPDIR}/upload.amend.output" 2>&1; then
+      cat  "${TEMPDIR}/upload.amend.output"
+      abort "repo upload failed"
+    fi
+  fi
+fi
+#
+cd "${OVERLAY}"
+#
+# If files have been updated, then create a CL for the changes.
+#
+OVERLAY_CL=""
+if changed; then
+  if (has_revbump "${EB9999}"); then
+    #
+    # Bump the version in the ebuild file. Relies on the format
+    # of the version so that the last number is at the end of the line.
+    #
+    CURVERS=$(grep "VERSION=REVBUMP" "${EB9999}" | grep -o "[0-9][0-9]*$")
+    NEXTVERS=$((CURVERS + 1))
+    sed -i "/VERSION=REVBUMP/s/${CURVERS}$/${NEXTVERS}/" "${EB9999}"
+  fi
+  git add .
+  cat > "${TEMPDIR}/overlay.msg" <<EOF
+${FLAGS_board}: Update firmware to ${FLAGS_release}
+
+Autogenerated by:
+${COMMAND} ${CMDARGS}
+
+BUG=${FLAGS_bug}
+TEST=${FLAGS_test}
+
+EOF
+  cat "${TEMPDIR}/overlay.msg" "${CQD_FILE}" | git commit -q -F -
+  #
+  # Upload with no-verify since the file lines are too long.
+  #
+  if ! repo upload "--ht=${TAG}" -y --no-verify --cbr . > "${TEMPDIR}/overlay.output" 2>&1; then
+    cat  "${TEMPDIR}/overlay.output"
+    abort "repo upload failed"
+  fi
+  OVERLAY_CL=$(getcl "overlays/overlay-${FLAGS_board}-private" "${TEMPDIR}/overlay.output")
+  #
+  # Go back and amend all the project commit messages with Cq-Depend lines on
+  # the program and overlay CLs.
+  #
+  echo "Cq-Depend: chrome-internal:${OVERLAY_CL}" >  "${TEMPDIR}/over_cqd"
+  if [[ -n "${PROGRAM_CL}" ]]; then
+    echo "Cq-Depend: chrome-internal:${PROGRAM_CL}" >>  "${TEMPDIR}/over_cqd"
+  fi
+  for DIR in "${PROJ_DIRS[@]}"; do
+    cd "${DIR}"
+    amend_cq_file "${TEMPDIR}/over_cqd"
+    if ! repo upload -y "${PRESUBMIT}" --cbr . > "${TEMPDIR}/cqd.output" 2>&1; then
+      cat  "${TEMPDIR}/cqd.output"
+      abort "repo upload failed"
+    fi
+  done
+fi
+#
+# Send all of the CLs to the CQ for a dry run.
+#
+ALL_CLS=$(gerrit -i --raw search "owner:me status:open hashtag:${TAG}")
+if [[ -z "${ALL_CLS}" ]]; then
+  echo "No changes required for program ${FLAGS_board}"
+  repo abandon "${TAG}"
+  exit 0
+fi
+for cl in ${ALL_CLS}; do
+  gerrit -i label-cq "${cl}" 1
+  gerrit -i label-v "${cl}" 1
+  gerrit -i label-as "${cl}" 1
+done
+#
+# If reviewer is set, then add them to the CLs
+#
+if [[ -n "${FLAGS_reviewer}" ]]; then
+  echo "Sending CLs ${ALL_CLS} to ${REVIEWERS[*]} for review"
+  for cl in ${ALL_CLS}; do
+    gerrit -i reviewers "${cl}" "${REVIEWERS[@]}"
+  done
+else
+  echo "Send CLs for review by running:"
+  echo "   for cl in ${ALL_CLS}; do gerrit -i reviewers \$cl <reviewer>; done"
+fi
+#
+# Final instructions.
+#
+echo "Run:"
+echo "  /build/${FLAGS_board}/usr/sbin/chromeos-firmwareupdate --manifest"
+echo "to verify firmware update"
+echo "When submitted, cleanup by running:"
+echo "repo abandon ${TAG}"

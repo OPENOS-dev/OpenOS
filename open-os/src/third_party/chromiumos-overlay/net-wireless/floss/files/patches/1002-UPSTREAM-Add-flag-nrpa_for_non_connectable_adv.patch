@@ -1,0 +1,29 @@
+From 28f4259e37de3c32993b33d9eb2f6a9315cc8e10 Mon Sep 17 00:00:00 2001
+From: Zhengping Jiang <jiangzp@google.com>
+Date: Wed, 10 Sep 2025 19:18:24 +0000
+Subject: [PATCH] UPSTREAM: Add flag nrpa_for_non_connectable_adv
+
+Bug: 444260668
+Test: m -j
+Flag: com.android.bluetooth.flags.nrpa_for_non_connectable_adv
+Change-Id: Ic4bb8bbfaa2e73822869808002d9e0db012b9313
+---
+ flags/le_advertising.aconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/flags/le_advertising.aconfig b/flags/le_advertising.aconfig
+index 56f849ab7ac..3be83daef0d 100644
+--- a/flags/le_advertising.aconfig
++++ b/flags/le_advertising.aconfig
+@@ -9 +9,11 @@ flag {
+ }
++
++flag {
++    name: "nrpa_for_non_connectable_adv"
++    namespace: "bluetooth"
++    description: "Use NRPA for non-connectable advertising with public address policy."
++    bug: "444260668"
++    metadata {
++        purpose: PURPOSE_BUGFIX
++    }
++}

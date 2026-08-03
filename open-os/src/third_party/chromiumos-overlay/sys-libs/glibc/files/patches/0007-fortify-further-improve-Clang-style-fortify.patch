@@ -1,0 +1,385 @@
+From d9780e81004b72f1daf629587dd531a57bc4a61a Mon Sep 17 00:00:00 2001
+From: Adrian Ratiu <adrian.ratiu@collabora.com>
+Date: Thu, 20 Mar 2025 12:57:38 +0000
+Subject: [PATCH 7/7] fortify: further improve Clang style fortify
+
+glibc >= v2.41 significatly improved clang fortify support,
+so I've rebased the ChromeOS toolchain test suite [1] on
+top of the upstream implementation and semantics.
+
+Doing this I noticed some missing upstream diagnostics, so
+I've added them to get Clang builds on par with GCC.
+
+In addition to the missing ones I also noticed some mismatch
+bugs between __glibc_objsize0 vs __glibc_objsize calls done
+via various macros like:
+__fortify_clang_warning_only_if_bos0_lt2 versus
+__fortify_clang_warning_only_if_bos_lt2
+
+The general rule is that the function argument declaration
+must match its uses to ensure check consistency between the
+__glibc_objsize0 and __glibc_objsize calls.
+
+For example if the arg is defined like
+__fortify_clang_overload_arg (...)
+then a form like the following must be used:
+__fortify_clang_warning_only_if_bos_lt2(...)
+
+If the arg is defined like
+__fortify_clang_overload_arg0 (...)
+then a form like the following must be used:
+__fortify_clang_warning_only_if_bos0_lt2(...)
+
+This rule ensures consistent use of __glibc_objsize0 vs
+__glibc_objsize calls in checks.
+
+While a diagnostic message might be correctly printed
+with the above type of mismatch, LLVM/Clang will not be
+able to signal and terminate a process despite e.g. having
+detected a buffer overflow, and the process will happily
+continue.
+
+So the end result of this type of bug fix is that processes
+will get terminated by proper signals when fortify diagnostics
+get triggered.
+
+Based on a patch by George Burgess with contributions from
+Andrej Shadura. [2]
+
+Link: https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/main/cros-toolchain/fortify-tests/clang-fortify-tests.cpp [1]
+Link: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/staging-infra-release-R135-16209.B/sys-libs/glibc/files/local/glibc-2.39/0005-glibc-add-clang-style-FORTIFY.patch [2]
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+Acked-by: Andrej Shadura <andrew.shadura@collabora.co.uk>
+---
+ libio/bits/stdio2.h             | 38 ++++++++++++++++++++++-----------
+ misc/bits/syslog.h              |  6 ++++--
+ posix/bits/unistd.h             |  5 ++++-
+ stdlib/bits/stdlib.h            |  5 ++++-
+ string/bits/string_fortified.h  | 26 +++++++++++++---------
+ string/bits/strings_fortified.h | 11 ++++++----
+ wcsmbs/bits/wchar2.h            | 12 +++++------
+ 7 files changed, 67 insertions(+), 36 deletions(-)
+
+diff --git a/libio/bits/stdio2.h b/libio/bits/stdio2.h
+index d2ed65371f..0dca01ec83 100644
+--- a/libio/bits/stdio2.h
++++ b/libio/bits/stdio2.h
+@@ -33,7 +33,8 @@ __NTH (sprintf (char *__restrict __s, const char *__restrict __fmt, ...))
+ }
+ #elif __fortify_use_clang
+ /* clang does not have __va_arg_pack, so defer to va_arg version.  */
+-__fortify_function_error_function __attribute_overloadable__ int
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 2, 3))) int
+ __NTH (sprintf (__fortify_clang_overload_arg (char *, __restrict, __s),
+ 		const char *__restrict __fmt, ...))
+ {
+@@ -71,9 +72,13 @@ __NTH (snprintf (char *__restrict __s, size_t __n,
+ }
+ # elif __fortify_use_clang
+ /* clang does not have __va_arg_pack, so defer to va_arg version.  */
+-__fortify_function_error_function __attribute_overloadable__ int
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 3, 4))) int
+ __NTH (snprintf (__fortify_clang_overload_arg (char *, __restrict, __s),
+ 		 size_t __n, const char *__restrict __fmt, ...))
++     __fortify_clang_warning_only_if_bos_lt(__n, __s,
++					    "call to snprintf may overflow "
++					    "the destination buffer")
+ {
+   __gnuc_va_list __fortify_ap;
+   __builtin_va_start (__fortify_ap, __fmt);
+@@ -89,13 +94,14 @@ __NTH (snprintf (__fortify_clang_overload_arg (char *, __restrict, __s),
+ 			    __glibc_objsize (str), __VA_ARGS__)
+ # endif
+ 
+-__fortify_function __attribute_overloadable__ int
++__fortify_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 3, 0))) int
+ __NTH (vsnprintf (__fortify_clang_overload_arg (char *, __restrict, __s),
+ 		  size_t __n, const char *__restrict __fmt,
+ 		  __gnuc_va_list __ap))
+-     __fortify_clang_warning (__fortify_clang_bos_static_lt (__n, __s),
+-			      "call to vsnprintf may overflow the destination "
+-			      "buffer")
++     __fortify_clang_warning_only_if_bos_lt(__n, __s,
++					    "call to vsnprintf may overflow "
++					    "the destination buffer")
+ {
+   return __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+ 				    __glibc_objsize (__s), __fmt, __ap);
+@@ -119,7 +125,9 @@ printf (const char *__restrict __fmt, ...)
+ }
+ # elif __fortify_use_clang
+ /* clang does not have __va_arg_pack, so defer to va_arg version.  */
+-__fortify_function_error_function __attribute_overloadable__ __nonnull ((1)) int
++__fortify_function_error_function __attribute_overloadable__ __nonnull ((1))
++__attribute__ ((__format__ (__printf__, 2, 3)))
++int
+ fprintf (__fortify_clang_overload_arg (FILE *, __restrict, __stream),
+ 	 const char *__restrict __fmt, ...)
+ {
+@@ -131,7 +139,8 @@ fprintf (__fortify_clang_overload_arg (FILE *, __restrict, __stream),
+   return __r;
+ }
+ 
+-__fortify_function_error_function __attribute_overloadable__ int
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 1, 2))) int
+ printf (__fortify_clang_overload_arg (const char *, __restrict, __fmt), ...)
+ {
+   __gnuc_va_list __fortify_ap;
+@@ -148,7 +157,8 @@ printf (__fortify_clang_overload_arg (const char *, __restrict, __fmt), ...)
+   __fprintf_chk (stream, __USE_FORTIFY_LEVEL - 1, __VA_ARGS__)
+ # endif
+ 
+-__fortify_function __attribute_overloadable__ int
++__fortify_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 1, 0))) int
+ vprintf (__fortify_clang_overload_arg (const char *, __restrict, __fmt),
+ 	 __gnuc_va_list __ap)
+ {
+@@ -175,7 +185,8 @@ dprintf (int __fd, const char *__restrict __fmt, ...)
+ 			__va_arg_pack ());
+ }
+ #  elif __fortify_use_clang
+-__fortify_function_error_function __attribute_overloadable__ int
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 2, 3))) int
+ dprintf (int __fd, __fortify_clang_overload_arg (const char *, __restrict,
+ 						 __fmt), ...)
+ {
+@@ -223,7 +234,9 @@ __NTH (obstack_printf (struct obstack *__restrict __obstack,
+ 			       __va_arg_pack ());
+ }
+ #  elif __fortify_use_clang
+-__fortify_function_error_function __attribute_overloadable__ int
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 2, 3)))
++__wur int
+ __NTH (asprintf (__fortify_clang_overload_arg (char **, __restrict, __ptr),
+ 		 const char *__restrict __fmt, ...))
+ {
+@@ -247,7 +260,8 @@ __NTH (__asprintf (__fortify_clang_overload_arg (char **, __restrict, __ptr),
+   return __r;
+ }
+ 
+-__fortify_function_error_function __attribute_overloadable__ int
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 2, 3))) int
+ __NTH (obstack_printf (__fortify_clang_overload_arg (struct obstack *,
+ 						     __restrict, __obstack),
+ 		       const char *__restrict __fmt, ...))
+diff --git a/misc/bits/syslog.h b/misc/bits/syslog.h
+index 9907a28cbe..ca3132e09c 100644
+--- a/misc/bits/syslog.h
++++ b/misc/bits/syslog.h
+@@ -37,7 +37,8 @@ syslog (int __pri, const char *__fmt, ...)
+   __syslog_chk (__pri, __USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
+ }
+ #elif __fortify_use_clang && defined __USE_MISC
+-__fortify_function_error_function __attribute_overloadable__ void
++__fortify_function_error_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 2, 3))) void
+ syslog (int __pri, __fortify_clang_overload_arg (const char *, , __fmt), ...)
+ {
+   __gnuc_va_list __fortify_ap;
+@@ -52,7 +53,8 @@ syslog (int __pri, __fortify_clang_overload_arg (const char *, , __fmt), ...)
+ 
+ 
+ #ifdef __USE_MISC
+-__fortify_function __attribute_overloadable__ void
++__fortify_function __attribute_overloadable__
++__attribute__ ((__format__ (__printf__, 2, 0))) void
+ vsyslog (int __pri, __fortify_clang_overload_arg (const char *, ,__fmt),
+ 	 __gnuc_va_list __ap)
+ {
+diff --git a/posix/bits/unistd.h b/posix/bits/unistd.h
+index f3428135ec..0af7b5e53c 100644
+--- a/posix/bits/unistd.h
++++ b/posix/bits/unistd.h
+@@ -79,7 +79,7 @@ pread64 (int __fd, __fortify_clang_overload_arg0 (void *, ,__buf),
+ #if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+ __fortify_function __attribute_overloadable__ __nonnull ((1, 2)) __wur ssize_t
+ __NTH (readlink (const char *__restrict __path,
+-		 __fortify_clang_overload_arg0 (char *, __restrict, __buf),
++		 __fortify_clang_overload_arg (char *, __restrict, __buf),
+ 		 size_t __len))
+      __fortify_clang_warning_only_if_bos_lt (__len, __buf,
+ 					     "readlink called with bigger length "
+@@ -122,6 +122,9 @@ __NTH (getcwd (__fortify_clang_overload_arg (char *, , __buf), size_t __size))
+ __fortify_function __attribute_overloadable__ __nonnull ((1))
+ __attribute_deprecated__ __wur char *
+ __NTH (getwd (__fortify_clang_overload_arg (char *,, __buf)))
++     __fortify_clang_warning (__glibc_objsize (__buf) == (size_t) -1,
++			      "please use getcwd instead, as getwd "
++			      "doesn't specify buffer size")
+ {
+   if (__glibc_objsize (__buf) != (size_t) -1)
+     return __getwd_chk (__buf, __glibc_objsize (__buf));
+diff --git a/stdlib/bits/stdlib.h b/stdlib/bits/stdlib.h
+index 12f9cfd58f..58c51faaf8 100644
+--- a/stdlib/bits/stdlib.h
++++ b/stdlib/bits/stdlib.h
+@@ -129,7 +129,7 @@ __fortify_function __attribute_overloadable__ size_t
+ __NTH (mbstowcs (__fortify_clang_overload_arg (wchar_t *, __restrict, __dst),
+ 		 const char *__restrict __src,
+ 		 size_t __len))
+-     __fortify_clang_warning_only_if_bos0_lt2 (__len, __dst, sizeof (wchar_t),
++     __fortify_clang_warning_only_if_bos_lt2 (__len, __dst, sizeof (wchar_t),
+ 					       "mbstowcs called with dst buffer "
+ 					       "smaller than len * sizeof (wchar_t)")
+ {
+@@ -159,6 +159,9 @@ __fortify_function __attribute_overloadable__ size_t
+ __NTH (wcstombs (__fortify_clang_overload_arg (char *, __restrict, __dst),
+ 		 const wchar_t *__restrict __src,
+ 		 size_t __len))
++     __fortify_clang_warning_only_if_bos_lt (__len, __dst,
++					      "wcstombs called with dst buffer "
++					      "smaller than len")
+ {
+   return __glibc_fortify (wcstombs, __len, sizeof (char),
+ 			  __glibc_objsize (__dst),
+diff --git a/string/bits/string_fortified.h b/string/bits/string_fortified.h
+index ae14cfbab0..2512bc0517 100644
+--- a/string/bits/string_fortified.h
++++ b/string/bits/string_fortified.h
+@@ -22,25 +22,29 @@
+ # error "Never use <bits/string_fortified.h> directly; include <string.h> instead."
+ #endif
+ 
+-__fortify_function void *
+-__NTH (memcpy (void *__restrict __dest, const void *__restrict __src,
+-	       size_t __len))
++__fortify_function __attribute_overloadable__ void *
++__NTH (memcpy (__fortify_clang_overload_arg0 (void *, __restrict, __dest),
++	       const void *__restrict __src, size_t __len))
++     __fortify_clang_warn_if_dest_too_small0 (__dest, __len)
+ {
+   return __builtin___memcpy_chk (__dest, __src, __len,
+ 				 __glibc_objsize0 (__dest));
+ }
+ 
+-__fortify_function void *
+-__NTH (memmove (void *__dest, const void *__src, size_t __len))
++__fortify_function __attribute_overloadable__ void *
++__NTH (memmove (__fortify_clang_overload_arg0 (void *, __restrict, __dest),
++		const void *__src, size_t __len))
++     __fortify_clang_warn_if_dest_too_small0 (__dest, __len)
+ {
+   return __builtin___memmove_chk (__dest, __src, __len,
+ 				  __glibc_objsize0 (__dest));
+ }
+ 
+ #ifdef __USE_GNU
+-__fortify_function void *
+-__NTH (mempcpy (void *__restrict __dest, const void *__restrict __src,
+-		size_t __len))
++__fortify_function __attribute_overloadable__ void *
++__NTH (mempcpy (__fortify_clang_overload_arg0 (void *, __restrict, __dest),
++                const void *__restrict __src, size_t __len))
++     __fortify_clang_warn_if_dest_too_small0 (__dest, __len)
+ {
+   return __builtin___mempcpy_chk (__dest, __src, __len,
+ 				  __glibc_objsize0 (__dest));
+@@ -53,8 +57,10 @@ __NTH (mempcpy (void *__restrict __dest, const void *__restrict __src,
+    especially problematic if the intended fill value is zero.  In this
+    case no work is done at all.  We detect these problems by referring
+    non-existing functions.  */
+-__fortify_function void *
+-__NTH (memset (void *__dest, int __ch, size_t __len))
++__fortify_function __attribute_overloadable__ void *
++__NTH (memset (__fortify_clang_overload_arg0 (void *, __restrict, __dest),
++	       int __ch, size_t __len))
++     __fortify_clang_warn_if_dest_too_small0 (__dest, __len)
+ {
+   return __builtin___memset_chk (__dest, __ch, __len,
+ 				 __glibc_objsize0 (__dest));
+diff --git a/string/bits/strings_fortified.h b/string/bits/strings_fortified.h
+index be65d5937d..327288f289 100644
+--- a/string/bits/strings_fortified.h
++++ b/string/bits/strings_fortified.h
+@@ -19,15 +19,18 @@
+ #ifndef __STRINGS_FORTIFIED
+ # define __STRINGS_FORTIFIED 1
+ 
+-__fortify_function void
+-__NTH (bcopy (const void *__src, void *__dest, size_t __len))
++__fortify_function __attribute_overloadable__ void
++__NTH (bcopy (const void *__src, __fortify_clang_overload_arg0 (void *, , __dest),
++	      size_t __len))
++     __fortify_clang_warn_if_dest_too_small0 (__dest, __len)
+ {
+   (void) __builtin___memmove_chk (__dest, __src, __len,
+ 				  __glibc_objsize0 (__dest));
+ }
+ 
+-__fortify_function void
+-__NTH (bzero (void *__dest, size_t __len))
++__fortify_function __attribute_overloadable__ void
++__NTH (bzero (__fortify_clang_overload_arg0 (void *, , __dest), size_t __len))
++     __fortify_clang_warn_if_dest_too_small0 (__dest, __len)
+ {
+   (void) __builtin___memset_chk (__dest, '\0', __len,
+ 				 __glibc_objsize0 (__dest));
+diff --git a/wcsmbs/bits/wchar2.h b/wcsmbs/bits/wchar2.h
+index c1a1da8166..609cc76986 100644
+--- a/wcsmbs/bits/wchar2.h
++++ b/wcsmbs/bits/wchar2.h
+@@ -21,7 +21,7 @@
+ #endif
+ 
+ __fortify_function __attribute_overloadable__ wchar_t *
+-__NTH (wmemcpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __s1),
++__NTH (wmemcpy (__fortify_clang_overload_arg0 (wchar_t *, __restrict, __s1),
+ 		const wchar_t *__restrict __s2, size_t __n))
+      __fortify_clang_warning_only_if_bos0_lt2 (__n, __s1, sizeof (wchar_t),
+ 					       "wmemcpy called with length bigger "
+@@ -33,7 +33,7 @@ __NTH (wmemcpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __s1),
+ }
+ 
+ __fortify_function __attribute_overloadable__ wchar_t *
+-__NTH (wmemmove (__fortify_clang_overload_arg (wchar_t *, ,__s1),
++__NTH (wmemmove (__fortify_clang_overload_arg0 (wchar_t *, ,__s1),
+ 		 const wchar_t *__s2, size_t __n))
+      __fortify_clang_warning_only_if_bos0_lt2 (__n, __s1, sizeof (wchar_t),
+ 					       "wmemmove called with length bigger "
+@@ -46,7 +46,7 @@ __NTH (wmemmove (__fortify_clang_overload_arg (wchar_t *, ,__s1),
+ 
+ #ifdef __USE_GNU
+ __fortify_function __attribute_overloadable__ wchar_t *
+-__NTH (wmempcpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __s1),
++__NTH (wmempcpy (__fortify_clang_overload_arg0 (wchar_t *, __restrict, __s1),
+ 		 const wchar_t *__restrict __s2, size_t __n))
+      __fortify_clang_warning_only_if_bos0_lt2 (__n, __s1, sizeof (wchar_t),
+ 					       "wmempcpy called with length bigger "
+@@ -59,7 +59,7 @@ __NTH (wmempcpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __s1),
+ #endif
+ 
+ __fortify_function __attribute_overloadable__ wchar_t *
+-__NTH (wmemset (__fortify_clang_overload_arg (wchar_t *, ,__s), wchar_t __c,
++__NTH (wmemset (__fortify_clang_overload_arg0 (wchar_t *, ,__s), wchar_t __c,
+ 		size_t __n))
+      __fortify_clang_warning_only_if_bos0_lt2 (__n, __s, sizeof (wchar_t),
+ 					       "wmemset called with length bigger "
+@@ -93,7 +93,7 @@ __NTH (wcpcpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
+ __fortify_function __attribute_overloadable__ wchar_t *
+ __NTH (wcsncpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
+ 		const wchar_t *__restrict __src, size_t __n))
+-     __fortify_clang_warning_only_if_bos0_lt2 (__n, __dest, sizeof (wchar_t),
++     __fortify_clang_warning_only_if_bos_lt2 (__n, __dest, sizeof (wchar_t),
+ 					       "wcsncpy called with length bigger "
+ 					       "than size of destination buffer")
+ {
+@@ -105,7 +105,7 @@ __NTH (wcsncpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
+ __fortify_function __attribute_overloadable__ wchar_t *
+ __NTH (wcpncpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
+ 		const wchar_t *__restrict __src, size_t __n))
+-     __fortify_clang_warning_only_if_bos0_lt2 (__n, __dest, sizeof (wchar_t),
++     __fortify_clang_warning_only_if_bos_lt2 (__n, __dest, sizeof (wchar_t),
+ 					       "wcpncpy called with length bigger "
+ 					       "than size of destination buffer")
+ {
+-- 
+2.30.2
+

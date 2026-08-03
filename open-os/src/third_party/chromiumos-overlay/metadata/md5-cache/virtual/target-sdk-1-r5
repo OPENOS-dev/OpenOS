@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of packages that are needed inside the sdk to build everything; by default, we build a ChromiumOS SDK
+EAPI=7
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=virtual/target-chromium-os-sdk
+SLOT=0
+_md5_=b9220c39293e4dd265dcd22b19007007

@@ -1,0 +1,42 @@
+From ae5b70ea7e49350322aa7fe1eb9c8cf67fbed2fe Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Fri, 3 Oct 2025 18:15:46 +0800
+Subject: [PATCH] UPSTREAM: Handle invalid C string device name in the
+ advertisement
+
+Rust String may contain \0, but in C/C++ it's forbidden.
+This patch aligns the implementation for parsing device name in
+advertisement and from LibBluetooth property.
+
+Bug: 449108308
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: manual Pair LE mouse
+Test: manual Fast Pair
+Flag: NONE Floss only change
+Change-Id: I7c24f66d484ff024499f673022af731967d7a58a
+---
+ floss/rust/linux/utils/src/adv_parser.rs | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/floss/rust/linux/utils/src/adv_parser.rs b/floss/rust/linux/utils/src/adv_parser.rs
+index ecd0d91ff1a..ad73bb2eaa7 100644
+--- a/floss/rust/linux/utils/src/adv_parser.rs
++++ b/floss/rust/linux/utils/src/adv_parser.rs
+@@ -4,3 +4,3 @@ use std::collections::{HashMap, HashSet};
+ 
+-use bt_topshim::bindings::root::bluetooth::Uuid;
++use bt_topshim::btif::{ascii_to_string, Uuid};
+ 
+@@ -98,3 +98,3 @@ pub fn extract_name(bytes: &[u8]) -> String {
+         .or(iterate_adv_data(bytes, SHORTENED_LOCAL_NAME).next())
+-        .map_or("".to_string(), |v| String::from_utf8_lossy(v).to_string())
++        .map_or("".to_string(), |v| ascii_to_string(v, v.len()))
+ }
+@@ -284,2 +284,6 @@ mod tests {
+         assert_eq!(name, "test");
++
++        let payload: Vec<u8> = vec![2, FLAGS, 3, 6, SHORTENED_LOCAL_NAME, 116, 101, 115, 116, 0];
++        let name = extract_name(payload.as_slice());
++        assert_eq!(name, "test");
+     }

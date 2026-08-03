@@ -1,0 +1,102 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/install_seccomp_policy.gni")
+import("//common-mk/mojom_bindings_generator.gni")
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":camera_diagnostics_ipc",
+    ":cros_camera_diagnostics_service",
+    ":install_cros_camera_diagnostics_conf",
+    ":install_cros_camera_diagnostics_mojo",
+    ":install_cros_camera_diagnostics_policy",
+    ":install_minijail_conf",
+    ":libcros_camera_diagnostics_mojom",
+  ]
+}
+
+generate_mojom_bindings("libcros_camera_diagnostics_mojom") {
+  sources = [ "//camera/mojo/camera_diagnostics.mojom" ]
+  mojo_root = "${platform2_root}"
+  use_pic = true
+  install_package = "camera-diagnostics"
+}
+
+generate_pkg_config("camera_diagnostics_ipc") {
+  name = "camera_diagnostics_ipc"
+  description = "Mojom bindings for camera diagnostics"
+  version = getenv("PV")
+  requires_private = [ "libchrome" ]
+  requires = [ "libmojo" ]
+  libs = [ "-lcros_camera_diagnostics_mojom" ]
+
+  # Other packages should include files from
+  # /usr/include/camera-diagnostics/camera/mojo.
+  cflags = [ "-I/usr/include/camera-diagnostics" ]
+  install = true
+}
+
+executable("cros_camera_diagnostics_service") {
+  sources = [
+    "camera_diagnostics_helpers.cc",
+    "camera_diagnostics_main.cc",
+    "camera_diagnostics_mojo_manager.cc",
+    "camera_diagnostics_processor.cc",
+    "camera_diagnostics_server.cc",
+    "camera_diagnostics_session.cc",
+    "camera_service_controller.cc",
+  ]
+  configs += [
+    "//camera/build:cros_camera_common",
+    ":camera_diagnostics_config",
+  ]
+  pkg_deps = [
+    "libbrillo",
+    "libcros_camera",
+    "libcros_camera_android_deps",
+    "libmojo",
+    "mojo_service_manager",
+
+    # For event tracing helpers.
+    "perfetto",
+  ]
+  libs = [
+    "dl",
+    "rt",
+  ]
+  deps = [
+    ":libcros_camera_diagnostics_mojom",
+    "//camera/diagnostics/analyzers:analyzers",
+    "//ml_core/dlc:dlc_client",
+  ]
+  install_path = "bin"
+}
+
+config("camera_diagnostics_config") {
+  defines = [ "USE_DLC=${use.dlc}" ]
+}
+
+install_config("install_cros_camera_diagnostics_conf") {
+  sources = [ "init/cros-camera-diagnostics.conf" ]
+  install_path = "upstart"
+}
+
+install_config("install_cros_camera_diagnostics_mojo") {
+  sources = [ "mojo/cros_camera_diagnostics_mojo.jsonc" ]
+  install_path = "/etc/mojo/service_manager/policy"
+}
+
+install_config("install_minijail_conf") {
+  sources = [ "minijail/cros-camera-diagnostics.conf" ]
+  install_path = "minijail_conf"
+}
+
+install_seccomp_policy("install_cros_camera_diagnostics_policy") {
+  arch = getenv("ARCH")
+  sources = [ "seccomp_filter/cros-camera-diagnostics-${arch}.policy" ]
+  outputs = [ "cros-camera-diagnostics.policy" ]
+  install_path = "seccomp_policy"
+}

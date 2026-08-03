@@ -1,0 +1,15 @@
+BDEPEND=icu? ( virtual/pkgconfig )
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=icu? ( dev-libs/icu:0=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] ) dev-cpp/abseil-cpp:=
+DESCRIPTION=An efficient, principled regular expression library
+EAPI=7
+HOMEPAGE=https://github.com/google/re2
+IUSE=icu asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=icu? ( dev-libs/icu:0=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] ) dev-cpp/abseil-cpp:=
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0/11
+SRC_URI=https://github.com/google/re2/archive/2023-09-01.tar.gz -> re2-2023-09-01.tar.gz
+_eclasses_=cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=e9308510b8d9dc708527d3a09f19beb4

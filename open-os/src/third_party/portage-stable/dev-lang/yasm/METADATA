@@ -1,0 +1,11 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+third_party {
+  security {
+    # ChromeOS > Infra > Toolchain
+    tag: "vuln_reporting:buganizer_component:1034879"
+    tag: "vuln_reporting:contact_emails:chromeos-toolchain@google.com"
+  }
+}

@@ -1,0 +1,26 @@
+From c6a2702f81b8f3c92f62f16aabca510ce20c2b59 Mon Sep 17 00:00:00 2001
+From: "Li, Xin6" <xin6.li@intel.com>
+Date: Mon, 11 Aug 2025 11:02:35 +0800
+Subject: [PATCH] [CP] Test change for clang
+
+Clang has a different behavior in initializing field structure.
+
+---
+ .../agnostic/common/hw/vdbox/mhw_vdbox_huc_interface.cpp        | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/media_driver/agnostic/common/hw/vdbox/mhw_vdbox_huc_interface.cpp b/media_driver/agnostic/common/hw/vdbox/mhw_vdbox_huc_interface.cpp
+index 2f671d5b4f2..b4fb6b4ebac 100644
+--- a/media_driver/agnostic/common/hw/vdbox/mhw_vdbox_huc_interface.cpp
++++ b/media_driver/agnostic/common/hw/vdbox/mhw_vdbox_huc_interface.cpp
+@@ -53,5 +53,7 @@ MhwVdboxHucInterface::MhwVdboxHucInterface(
+         AddResourceToCmd = Mhw_AddResourceToCmd_PatchList;
+     }
+ 
++    MOS_ZeroMemory(m_cacheabilitySettings, sizeof(m_cacheabilitySettings));
++
+ }
+ 
+-- 
+2.34.1
+

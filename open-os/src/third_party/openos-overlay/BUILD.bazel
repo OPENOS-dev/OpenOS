@@ -1,0 +1,5 @@
+# ── OpenOS Overlay Root ────────────────────────────────────────
+# ChromiumOS Bazel overlay root for OPENOS customization.
+# All packages under chromeos-base/ and x11-themes/.
+
+package(default_visibility = ["//visibility:public"])

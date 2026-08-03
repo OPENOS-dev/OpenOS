@@ -1,0 +1,25 @@
+From ff36d27fb85587459890aeb54a9d72c2ad09a130 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Fri, 3 Oct 2025 18:50:27 +0800
+Subject: [PATCH] UPSTREAM: Handle empty length advertisement flag
+
+Bug: 449108308
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: manual Pair LE mouse
+Test: manual Fast Pair
+Flag: NONE Floss only change
+Change-Id: I043b816c2664d81de78c00ff9f9e2d4328f1831c
+---
+ floss/rust/linux/utils/src/adv_parser.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/floss/rust/linux/utils/src/adv_parser.rs b/floss/rust/linux/utils/src/adv_parser.rs
+index ad73bb2eaa7..2d4604ec4db 100644
+--- a/floss/rust/linux/utils/src/adv_parser.rs
++++ b/floss/rust/linux/utils/src/adv_parser.rs
+@@ -55,3 +55,3 @@ fn iterate_adv_data(data: &[u8], data_type: u8) -> AdvDataIterator {
+ pub fn extract_flags(bytes: &[u8]) -> u8 {
+-    iterate_adv_data(bytes, FLAGS).next().map_or(0, |v| v[0])
++    iterate_adv_data(bytes, FLAGS).next().map_or(0, |v| *v.first().unwrap_or(&0))
+ }

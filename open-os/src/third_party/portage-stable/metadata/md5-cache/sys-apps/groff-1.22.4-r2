@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install prepare
+DEPEND=X? ( x11-libs/libX11 x11-libs/libXt x11-libs/libXmu x11-libs/libXaw x11-libs/libSM x11-libs/libICE ) dev-lang/perl sys-apps/texinfo
+DESCRIPTION=Text formatter used for man pages
+EAPI=6
+HOMEPAGE=https://www.gnu.org/software/groff/groff.html
+IUSE=examples X
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=X? ( x11-libs/libX11 x11-libs/libXt x11-libs/libXmu x11-libs/libXaw x11-libs/libSM x11-libs/libICE )
+SLOT=0
+SRC_URI=mirror://gnu/groff/groff-1.22.4.tar.gz mirror://gnu-alpha/groff/groff-1.22.4.tar.gz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=113f760d461f488778553dcef6507d1d

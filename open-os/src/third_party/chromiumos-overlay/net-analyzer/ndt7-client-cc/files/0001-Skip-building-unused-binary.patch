@@ -1,0 +1,39 @@
+From ae5c875b664fcffefb16af6b4774472c1f1dd6f9 Mon Sep 17 00:00:00 2001
+From: BaiiYuan <byronlee@google.com>
+Date: Wed, 13 Mar 2024 14:25:05 +0000
+Subject: [PATCH] Skip building unused binary
+
+* Skip building and installing unused `ndt-client-cc` to save the build time.
+* Also skip installing the unused single_include header.
+---
+ CMakeLists.txt | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ba5bad2..5503f6b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -180,9 +180,6 @@ endforeach()
+ add_library(ndt7 STATIC ${MK_LIBNDT7_LIBRARY_SOURCE})
+ set_target_properties(ndt7 PROPERTIES LINKER_LANGUAGE CXX)
+ 
+-add_executable(ndt7-client-cc ndt7-client-cc.cpp)
+-target_link_libraries(ndt7-client-cc "ndt7" ${CMAKE_REQUIRED_LIBRARIES})
+-
+ enable_testing()
+ 
+ add_test(NAME curlx_unit_tests COMMAND curlx_test)
+@@ -195,10 +192,6 @@ add_test(NAME modern_test COMMAND ndt7-client-cc
+          -ca-bundle-path ${CMAKE_SOURCE_DIR}/third_party/curl.haxx.se/ca/cacert.pem
+          -verbose -download -upload -scheme=wss)
+ 
+-INSTALL(PROGRAMS ndt7-client-cc
+-        DESTINATION bin)
+-INSTALL(FILES ${MK_LIBNDT7_AMALGAMATE_DEST}
+-        DESTINATION include/libndt7)
+ INSTALL(FILES include/libndt7/libndt7.h
+         DESTINATION include/libndt7)
+ INSTALL(FILES third_party/github.com/nlohmann/json/json_fwd.hpp
+-- 
+2.44.0.278.ge034bb2e1d-goog
+

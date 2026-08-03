@@ -1,0 +1,30 @@
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "zsm, ChromeOS Kernel Team"
+NAME = "syzkaller"
+PURPOSE = "Suite to run Syzkaller tests on ChromeOS devices."
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': 'b:1034523', # ChromeOS > Test > Harness > Tauto
+    'criteria': 'Tauto wrapper for specified tast tests',
+}
+TIME = "LONG"
+TEST_CATEGORY = "General"
+TEST_CLASS = "suite"
+TEST_TYPE = "Server"
+
+DOC = """
+This suite utilizes Syzkaller to fuzz the ChromeOS Kernel.
+See go/ctp-syzkaller for more details.
+"""
+
+import common
+from autotest_lib.server.cros.dynamic_suite import dynamic_suite
+
+args_dict['max_runtime_mins'] = 90
+args_dict['name'] = NAME
+args_dict['job'] = job
+
+dynamic_suite.reimage_and_run(**args_dict)

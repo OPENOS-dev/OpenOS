@@ -1,0 +1,13 @@
+BDEPEND=virtual/pkgconfig virtual/pkgconfig
+DEFINED_PHASES=compile install postinst setup
+DESCRIPTION=Required tools for WireGuard, such as wg(8) and wg-quick(8)
+EAPI=7
+HOMEPAGE=https://www.wireguard.com/
+IUSE=+wg-quick kernel_linux
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=wg-quick? ( || ( net-firewall/nftables net-firewall/iptables ) net-dns/openresolv ) !<virtual/wireguard-1
+SLOT=0
+SRC_URI=https://git.zx2c4.com/wireguard-tools/snapshot/wireguard-tools-1.0.20200319.tar.xz
+_eclasses_=bash-completion-r1	47a7402d95930413ce25ba8d857339bb	linux-info	327865b9921771330775d971263dc234	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3886e488e4f68300393a8214968fe575

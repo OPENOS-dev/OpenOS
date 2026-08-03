@@ -1,0 +1,6 @@
+subdir('cbi')
+subdir('file')
+subdir('memory')
+subdir('smbios')
+subdir('spd')
+subdir('val2str')

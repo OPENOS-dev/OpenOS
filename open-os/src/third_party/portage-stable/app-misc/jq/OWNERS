@@ -1,0 +1,4 @@
+# jq is used by the factory code, the vboot (debugging script), the firmware
+# updater, and other programs accessing the JSON data (especially the firmware
+# updater) - including various tests and postinst scripts.
+include chromiumos/overlays/chromiumos-overlay:/chromeos-base/factory/OWNERS

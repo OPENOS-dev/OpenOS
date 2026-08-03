@@ -1,0 +1,29 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "gwendal"
+NAME = "hardware_StorageQualBase.test"
+METADATA = {
+    'contacts': ['chromeos-storage@google.com'],
+    'bug_component': 'b:974567',
+    'criteria': 'Part of storage AVL qualification suite',
+    'hw_agnostic': False
+}
+TIME = "LONG"
+TEST_CATEGORY = "Functional"
+TEST_CLASS = "suite"
+TEST_TYPE = "server"
+PY_VERSION = 3
+FAST = False
+
+DOC = """
+Check the test hardware_StorageQualBase is working as expected.
+"""
+
+def run_server_tests(machine):
+    job.run_test('hardware_StorageQualBase', client_ip=machine,
+                 client_tag='test', crypto_runtime=30)
+
+parallel_simple(run_server_tests, machines)
+

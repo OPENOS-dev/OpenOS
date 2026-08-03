@@ -1,0 +1,14 @@
+BDEPEND=>=dev-perl/B-Hooks-EndOfScope-0.120.0 >=dev-perl/Package-Stash-0.230.0 virtual/perl-ExtUtils-MakeMaker test? ( >=virtual/perl-Test-Simple-0.470.0 ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Keep imports and functions out of your namespace
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/namespace-clean
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=>=dev-perl/B-Hooks-EndOfScope-0.120.0 >=dev-perl/Package-Stash-0.230.0 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/R/RI/RIBASUSHI/namespace-clean-0.27.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=b71b5d47b1fb31b797195ad00fb639bd

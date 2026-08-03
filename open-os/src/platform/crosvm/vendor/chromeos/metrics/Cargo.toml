@@ -1,0 +1,14 @@
+[package]
+name = "metrics_chromeos"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = "*"
+base = { path = "../../../base" }
+metrics_events = { path = "../../../metrics_events" }
+metrics_rs = { version="0.1.0" }
+serde = { version = "1", features = ["derive"] }
+sync = { path = "../../../common/sync" }
+virtio_sys = { path = "../../../virtio_sys" }

@@ -1,0 +1,125 @@
+# Copyright 2024 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("@rules_python//sphinxdocs:sphinx_docs_library.bzl", "sphinx_docs_library")
+load("@zephyr//:cc.bzl", "zephyr_cc_library")
+load("//pw_build:compatibility.bzl", "incompatible_with_mcu")
+
+package(default_visibility = ["//visibility:public"])
+
+sphinx_docs_library(
+    name = "docs",
+    srcs = [
+        "Kconfig",
+        "docs.rst",
+    ],
+    prefix = "pw_thread_zephyr/",
+    target_compatible_with = incompatible_with_mcu(),
+)
+
+zephyr_cc_library(
+    name = "id",
+    hdrs = [
+        "id_public_overrides/pw_thread_backend/id_inline.h",
+        "id_public_overrides/pw_thread_backend/id_native.h",
+    ],
+    strip_include_prefix = "id_public_overrides",
+    deps = [":id_private"],
+)
+
+zephyr_cc_library(
+    name = "id_private",
+    hdrs = [
+        "public/pw_thread_zephyr/id_inline.h",
+        "public/pw_thread_zephyr/id_native.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pw_assert:assert",
+        "//pw_interrupt:context",
+        "//pw_thread:id.facade",
+    ],
+)
+
+zephyr_cc_library(
+    name = "sleep",
+    hdrs = ["sleep_public_overrides/pw_thread_backend/sleep_inline.h"],
+    strip_include_prefix = "sleep_public_overrides",
+    deps = [":sleep_private"],
+)
+
+zephyr_cc_library(
+    name = "sleep_private",
+    srcs = ["sleep.cc"],
+    hdrs = ["public/pw_thread_zephyr/sleep_inline.h"],
+    implementation_deps = ["//pw_assert:check"],
+    strip_include_prefix = "public",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pw_chrono:system_clock",
+        "//pw_thread:sleep.facade",
+        "//pw_thread:thread",
+    ],
+)
+
+zephyr_cc_library(
+    name = "thread",
+    srcs = ["thread.cc"],
+    implementation_deps = ["//pw_assert:check"],
+    deps = [
+        ":public_includes",
+        ":public_overrides_includes",
+        "//pw_assert:assert",
+        "//pw_function",
+        "//pw_span",
+        "//pw_string",
+        "//pw_thread:thread.facade",
+    ],
+)
+
+zephyr_cc_library(
+    name = "thread_creation",
+    deps = [
+        ":public_includes",
+        ":public_overrides_includes",
+    ],
+)
+
+zephyr_cc_library(
+    name = "public_includes",
+    hdrs = [
+        "public/pw_thread_zephyr/context.h",
+        "public/pw_thread_zephyr/options.h",
+        "public/pw_thread_zephyr/priority.h",
+        "public/pw_thread_zephyr/stack.h",
+        "public/pw_thread_zephyr/thread_inline.h",
+        "public/pw_thread_zephyr/thread_native.h",
+    ],
+    strip_include_prefix = "public",
+    deps = ["//pw_assert:check"],
+)
+
+zephyr_cc_library(
+    name = "public_overrides_includes",
+    hdrs = [
+        "thread_public_overrides/pw_thread_backend/context.h",
+        "thread_public_overrides/pw_thread_backend/options.h",
+        "thread_public_overrides/pw_thread_backend/priority.h",
+        "thread_public_overrides/pw_thread_backend/stack.h",
+        "thread_public_overrides/pw_thread_backend/thread_inline.h",
+        "thread_public_overrides/pw_thread_backend/thread_native.h",
+    ],
+    strip_include_prefix = "thread_public_overrides",
+)

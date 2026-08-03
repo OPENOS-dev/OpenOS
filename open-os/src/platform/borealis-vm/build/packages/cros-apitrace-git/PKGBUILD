@@ -1,0 +1,75 @@
+# Maintainer: David Riley <davidriley@chromium.org>
+
+pkgname=cros-apitrace-git
+pkgver=3598.cfa80d0
+pkgrel=1
+pkgdesc="apitrace tool"
+arch=('x86_64' 'i686')
+url="https://github.com/apitrace/apitrace"
+license=('BSD')
+makedepends=('cmake>=2.8' 'git' 'mesa' 'python3')
+depends=('libgl' 'procps-ng' 'waffle')
+optdepends=('qt5-webkit: GUI support')
+provides=('cros-apitrace' 'apitrace')
+conflicts=('cros-apitrace' 'apitrace')
+_borealis_branch_tracked=('master')
+_borealis_current_ref=('commit=1090464595110ae95d329f2f7b6220443052c215')
+source=("apitrace::git+https://chromium.googlesource.com/chromiumos/third_party/apitrace#${_borealis_current_ref}"
+        'frametrim/tests::git+https://github.com/apitrace/gltrim-tests.git#commit=12ceee777636bfca4a35390697e8e702254a82b2'
+        'thirdparty/brotli::git+https://github.com/google/brotli#commit=f4153a09f87cbb9c826d8fc12c74642bb2d879ea'
+        'thirdparty/gtest::git+https://github.com/google/googletest#commit=8ccdb9d56d07b9169ecd17f1164f251a637c250e'
+        'thirdparty/libbacktrace::git+https://github.com/ianlancetaylor/libbacktrace#commit=4d2dd0b172f2c9192f83ba93425f868f2a13c553'
+        'thirdparty/libpng::git+https://github.com/apitrace/libpng#commit=a37d4836519517bdce6cb9d956092321eca3e73b'
+        'thirdparty/snappy::git+https://github.com/google/snappy#commit=8dd58a519f79f0742d4c68fbccb2aed2ddb651e8'
+        'thirdparty/zlib::git+https://github.com/madler/zlib#commit=21767c654d31d2dccdde4330529775c6c5fd5389'
+        '0001-CHROMIUM-retrace-Fix-includes-to-include-cstdint.patch')
+md5sums=(SKIP
+         SKIP
+         SKIP
+         SKIP
+         SKIP
+         SKIP
+         SKIP
+         SKIP
+         SKIP)
+
+prepare() {
+  cd ${srcdir}/apitrace
+  patch --forward --strip=1 --input="${srcdir}/0001-CHROMIUM-retrace-Fix-includes-to-include-cstdint.patch"
+  git submodule init
+  git config submodule.frametrim/tests.url "${srcdir}/../frametrim/tests"
+  git config submodule.third_party/brotli.url "${srcdir}/../thirdparty/brotli"
+  git config submodule.third_party/gtest.url "${srcdir}/../thirdparty/gtest"
+  git config submodule.third_party/libbacktrace.url "${srcdir}/../thirdparty/libbacktrace"
+  git config submodule.third_party/libpng.url "${srcdir}/../thirdparty/libpng"
+  git config submodule.third_party/snappy.url "${srcdir}/../thirdparty/snappy"
+  git config submodule.third_party/zlib.url "${srcdir}/../thirdparty/zlib"
+  git -c protocol.file.allow=always submodule update
+}
+
+pkgver() {
+  cd ${srcdir}/apitrace
+
+  echo $(git rev-list --count master).$(git rev-parse --short master)
+}
+
+build() {
+  cd ${srcdir}/apitrace
+
+  cmake . -Bbuild -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_GUI=FALSE \
+    -DENABLE_WAFFLE=ON \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++
+  make -j -C build
+}
+
+package() {
+  cd ${srcdir}/apitrace
+  make -C build DESTDIR="${pkgdir}/" install
+
+  install -m755 -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  cp "${pkgdir}"/usr/share/doc/apitrace/LICENSE.txt \
+    "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

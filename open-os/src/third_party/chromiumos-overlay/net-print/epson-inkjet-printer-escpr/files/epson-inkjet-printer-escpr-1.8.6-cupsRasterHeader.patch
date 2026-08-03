@@ -1,0 +1,63 @@
+Set the Ink key based on raster header to support both
+ColorModel and Ink.
+
+See crrev.com/c/2033816
+--- a/src/filter.c
++++ b/src/filter.c
+@@ -360,9 +360,18 @@
+ 	band_line = 1;
+ 
+ 	if (strcmp (fopt.ink, "COLOR") == 0)
++	{
+ 		byte_par_pixel = 3;
++	}
++	else if (strcmp (fopt.ink, "MONO") == 0)
++	{
++		byte_par_pixel = 1;
++	}
+ 	else
++	{
++		fprintf(stderr, "ERROR: [escpr] raster data is handled as 8bpp, unknown option\n");
+ 		byte_par_pixel = 1;
++	}
+ 
+ ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 	epsInitLib();
+--- a/src/wrapper.c
++++ b/src/wrapper.c
+@@ -206,6 +206,19 @@
+ 		int ret;
+ 		ret = cupsRasterReadHeader (ras, &header);
+ 
++		if (header.cupsBitsPerPixel == 24 && header.cupsColorSpace == 1)
++		{
++			strcpy (fopt.ink, "COLOR");
++		}
++		else if (header.cupsBitsPerPixel == 8 && header.cupsColorSpace == 0)
++		{
++			strcpy (fopt.ink, "MONO");
++		}
++		else
++		{
++			strcpy (fopt.ink, "NOT_SUPPORTED");
++		}
++
+ 		if (ret == 0 && customsize_flag) break;  //カスタムサイズのときはキャッシュしない
+ 		
+ 		if (ret == 0 || cancel_flg) //データをすべて読み終わった
+@@ -484,14 +497,7 @@
+ 	}
+ 
+ 	/* ink */
+-	if (filter_opt_p->ink[0] == '\0')
+-	{
+-		opt = get_default_choice (ppd_p, "Ink");
+-		if (!opt)
+-			return 1;
+-
+-		strcpy (filter_opt_p->ink, opt);
+-	}
++	// Don't touch Ink key.
+ 
+ 	/* MediaType */
+ 	if (filter_opt_p->quality[0] == '\0')

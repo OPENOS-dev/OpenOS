@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/go-sys
+DESCRIPTION=Go terminal and console support
+EAPI=7
+HOMEPAGE=https://golang.org/x/term
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-go/go-sys
+RESTRICT=binchecks strip
+SLOT=0
+SRC_URI=https://go.googlesource.com/term/+archive/03fcf44c2211dcd5eb77510b5f7c1fb02d6ded50.tar.gz -> go.googlesource.com-term-03fcf44c2211dcd5eb77510b5f7c1fb02d6ded50.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=59c8f251e8ea7f1e95173929bffd67ce

@@ -1,0 +1,108 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@bazel_skylib//rules/directory:subdirectory.bzl", "subdirectory")
+load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
+load("//bazel/build_defs:bool_flag.bzl", "config_setting_all")
+load("//bazel/platforms:platforms.bzl", "HOST_PLATFORM")
+
+package(default_visibility = ["//visibility:public"])
+
+bool_flag(
+    name = "hermetic",
+    build_setting_default = False,
+)
+
+config_setting_all(
+    name = "use_hermetic_launcher_config",
+    targets = [
+        ":hermetic_enabled",
+        "//bazel/platforms/constraints:vendor_pc",
+    ],
+)
+
+alias(
+    name = "use_hermetic_launcher",
+    actual = select({
+        ":use_hermetic_launcher_config": "//bazel/build_defs/bool_flag:true",
+        "//conditions:default": "//bazel/build_defs/bool_flag:false",
+    }),
+)
+
+config_setting(
+    name = "hermetic_explicitly_enabled",
+    flag_values = {
+        ":hermetic": "True",
+    },
+    visibility = ["//visibility:private"],
+)
+
+selects.config_setting_group(
+    name = "hermetic_enabled",
+    match_any = [
+        ":hermetic_explicitly_enabled",
+        # Hermetic rust only works with hermetic cc.
+        "//bazel/module_extensions/toolchains/rust:hermetic_enabled",
+    ],
+)
+
+subdirectory(
+    name = "include",
+    parent = "//bazel/module_extensions/toolchains/files:sysroot",
+    path = "usr/include/c++/v1",
+)
+
+subdirectory(
+    name = "clang_include",
+    parent = "//bazel/module_extensions/toolchains/files:sysroot",
+    path = "usr/lib64/clang/18/include",
+)
+
+cc_toolchain(
+    name = "toolchain_impl",
+    action_type_configs = [
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:ar",
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:assemble",
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:c_compile",
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:cpp_compile",
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:link_executable",
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:link_dynamic_library",
+        "//bazel/module_extensions/toolchains/cc/action_type_configs:strip",
+    ],
+    args = [
+        "//bazel/module_extensions/toolchains/cc/args:determinism",
+        "//bazel/module_extensions/toolchains/cc/args:hardening",
+        "//bazel/module_extensions/toolchains/cc/args:no_canonical_prefixes",
+        "//bazel/module_extensions/toolchains/cc/args:linker_bin_path",
+        "//bazel/module_extensions/toolchains/cc/args:warnings",
+        "//bazel/module_extensions/toolchains/cc/args:default_args",
+    ],
+    cxx_builtin_include_directories = [
+        ":include",
+        ":clang_include",
+    ],
+    sysroot = "//bazel/module_extensions/toolchains/files:sysroot",
+    toolchain_features = [
+        "//bazel/module_extensions/toolchains/cc/features:dbg",
+        "//bazel/module_extensions/toolchains/cc/features:fastbuild",
+        "//bazel/module_extensions/toolchains/cc/features:opt",
+        "@rules_cc//cc/toolchains/features/legacy:shared_flag",
+    ],
+)
+
+toolchain(
+    name = "toolchain",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+    target_compatible_with = HOST_PLATFORM.constraints,
+    target_settings = [
+        ":hermetic_enabled",
+    ],
+    toolchain = ":toolchain_impl",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)

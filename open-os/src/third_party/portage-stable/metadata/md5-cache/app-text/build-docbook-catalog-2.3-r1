@@ -1,0 +1,10 @@
+DEFINED_PHASES=configure postinst prepare
+DESCRIPTION=DocBook XML catalog auto-updater
+EAPI=7
+HOMEPAGE=https://gitweb.gentoo.org/proj/build-docbook-catalog.git/
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-libs/libxml2 || ( sys-apps/util-linux app-misc/getopt )
+SLOT=0
+SRC_URI=https://gitweb.gentoo.org/proj/build-docbook-catalog.git/snapshot/build-docbook-catalog-2.3.tar.bz2
+_md5_=61350efa204e57c4d51c4ebb8f119151

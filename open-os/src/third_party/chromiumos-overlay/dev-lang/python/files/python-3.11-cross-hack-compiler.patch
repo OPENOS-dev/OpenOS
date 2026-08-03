@@ -1,0 +1,26 @@
+Remove local python modules from the search path when running the compiler.
+
+The python build will invoke python with a custom PYTHONPATH (pointing to
+local libs) which will mess up any python scripts we execute, like our
+compiler wrapper.
+
+We can't create wrappers and point the build at those because python will
+record the values for CC/CXX and write it out to its installed modules, and
+those values will be loaded later when cross-compiling other python packages.
+
+This hack is kind of terrible, but so are many of the alternatives.
+
+--- a/setup.py
++++ b/setup.py
+@@ -55,6 +55,11 @@
+     from distutils.spawn import find_executable
+ 
+ 
++for v in ('CC', 'CXX', 'LDSHARED'):
++    if v in os.environ:
++        os.environ[v] = 'env -u PYTHONPATH ' + os.environ[v]
++
++
+ # This global variable is used to hold the list of modules to be disabled.
+ DISABLED_MODULE_LIST = []
+ 

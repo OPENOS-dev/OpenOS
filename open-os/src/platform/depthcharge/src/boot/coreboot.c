@@ -1,0 +1,106 @@
+/*
+ * Copyright 2013 Google LLC
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <coreboot_tables.h>
+#include <libpayload.h>
+#include <sysinfo.h>
+
+#include "base/device_tree.h"
+#include "base/fw_config.h"
+#include "base/init_funcs.h"
+
+static int install_coreboot_data(struct device_tree_fixup *fixup,
+				 struct device_tree *tree)
+{
+	u32 addr_cells = 2, size_cells = 1;
+	const char *firmware_path[] = { "firmware", NULL };
+	struct device_tree_node *firmware_node = dt_find_node(tree->root,
+		firmware_path, &addr_cells, &size_cells, 1);
+
+	// Need to add '#address-cells' and '#size-cells'
+	dt_add_u32_prop(firmware_node, "#address-cells", addr_cells);
+	dt_add_u32_prop(firmware_node, "#size-cells", size_cells);
+
+	// Need to add 'ranges' to the intermediate node to make 'reg' work.
+	dt_add_bin_prop(firmware_node, "ranges", NULL, 0);
+
+	const char *coreboot_path[] = { "coreboot", NULL };
+	struct device_tree_node *coreboot_node = dt_find_node(firmware_node,
+		coreboot_path, &addr_cells, &size_cells, 1);
+
+	dt_add_string_prop(coreboot_node, "compatible", "coreboot");
+
+	struct memrange *cbmem_range = NULL;
+	for (int i = lib_sysinfo.n_memranges - 1; i >= 0; i--) {
+		if (lib_sysinfo.memrange[i].type == CB_MEM_TABLE) {
+			cbmem_range = &lib_sysinfo.memrange[i];
+			break;
+		}
+	}
+	if (!cbmem_range)
+		return 1;
+
+	u64 reg_addrs[2];
+	u64 reg_sizes[2];
+
+	// First 'reg' address range is the coreboot table.
+	struct cb_header *header = phys_to_virt(lib_sysinfo.cb_header);
+	reg_addrs[0] = (intptr_t)header;
+	reg_sizes[0] = header->header_bytes +
+		       header->table_bytes;
+
+	// Second is the CBMEM area (which usually includes the coreboot table).
+	reg_addrs[1] = cbmem_range->base;
+	reg_sizes[1] = cbmem_range->size;
+
+	dt_add_reg_prop(coreboot_node, reg_addrs, reg_sizes, 2,
+			addr_cells, size_cells);
+
+	// Expose board ID, SKU ID, RAM code, and FW config exported from
+	// coreboot to userspace.
+	if (lib_sysinfo.board_id != UNDEFINED_STRAPPING_ID) {
+		dt_add_u32_prop(coreboot_node,
+				"board-id", lib_sysinfo.board_id);
+	}
+	if (lib_sysinfo.sku_id != UNDEFINED_STRAPPING_ID) {
+		dt_add_u32_prop(coreboot_node,
+				"sku-id", lib_sysinfo.sku_id);
+	}
+	if (lib_sysinfo.ram_code != UNDEFINED_STRAPPING_ID) {
+		dt_add_u32_prop(coreboot_node,
+				"ram-code", lib_sysinfo.ram_code);
+	}
+
+	if (fw_config_is_provisioned()) {
+		dt_add_u64_prop(coreboot_node,
+				"fw-config", lib_sysinfo.fw_config);
+	}
+
+	return 0;
+}
+
+static struct device_tree_fixup coreboot_fixup = {
+	.fixup = &install_coreboot_data
+};
+
+static int coreboot_setup(void)
+{
+	list_insert_after(&coreboot_fixup.list_node, &device_tree_fixups);
+	return 0;
+}
+
+INIT_FUNC(coreboot_setup);

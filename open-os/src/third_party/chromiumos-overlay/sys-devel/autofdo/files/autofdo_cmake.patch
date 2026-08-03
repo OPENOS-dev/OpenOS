@@ -1,0 +1,99 @@
+Fix the AutoFDO CMake so it uses installed pkgs
+
+AutoFDO by default uses git subtrees for pinning
+the versions of its dependencies. However, this is
+incompatible with how ChromeOS installs these
+dependencies. Instead, look up these depnedencies
+via `find_package` CMake modules.
+
+Also do NOT install NVPTX tooling for propeller.
+Have a specific carveout for that target
+
+--- autofdo-3dafe34db0eb53af146cf782124f788ceaf6a9aa/CMakeLists.txt	2024-09-06 17:21:21.000000000 +0000
++++ autofdo-3dafe34db0eb53af146cf782124f788ceaf6a9aa_new/CMakeLists.txt	2024-12-05 00:49:27.773041268 +0000
+@@ -1,5 +1,4 @@
+ cmake_minimum_required(VERSION 3.10)
+-set(CMAKE_CXX_STANDARD 17)
+ set(ABSL_PROPAGATE_CXX_STD on)
+ 
+ project(autofdo)
+@@ -174,22 +173,6 @@
+ endfunction()
+ 
+ function (build_llvm)
+-  execute_process(COMMAND sh -c "git -C ${CMAKE_HOME_DIRECTORY}/third_party/llvm-project log -1 --format=%H"
+-     RESULT_VARIABLE clang_version_status
+-     OUTPUT_VARIABLE CLANG_VERSION_OUTPUT)
+-
+-  set(CLANG_KNOWN_GIT_COMMIT_HASH "e4f9175d23950ecaef32db075ed47dafe3be555c")
+-  if (clang_version_status)
+-     message(WARNING "Could not get clang commit hash : Use clang git hash " ${CLANG_KNOWN_GIT_COMMIT_HASH})
+-  else()
+-     string(REGEX MATCH "([0-9|a-f]+)" CLANG_GIT_COMMIT_HASH ${CLANG_VERSION_OUTPUT})
+-     if ("${CLANG_GIT_COMMIT_HASH}" STREQUAL ${CLANG_KNOWN_GIT_COMMIT_HASH})
+-       message(STATUS "Found known git commit hash of clang (" ${CLANG_GIT_COMMIT_HASH} ") - Success")
+-     else()
+-       message(FATAL_ERROR "Unverified git commit hash of llvm source - ${CLANG_GIT_COMMIT_HASH}. Do not modify or update third_party/llvm-project")
+-     endif()
+-  endif()
+-
+   # Disable GFLAGS and UNWIND for glog, we do not control glog using
+   # gflags, nor does call stacks used in log information. And glog
+   # does not provide a way to force static link these two libraries.
+@@ -215,20 +198,26 @@
+   set (LLVM_ENABLE_TERMINFO OFF CACHE BOOL "enable terminfo")
+   ###
+ 
+-  add_subdirectory(third_party/abseil)
++  find_package(absl REQUIRED)
+   add_subdirectory(third_party/glog)
+-  add_subdirectory(third_party/googletest)
+-  add_subdirectory(third_party/llvm-project/llvm)
++  set (llvm_search_paths
++    ${LLVM_PATH}
++    ${LLVM_PATH}/lib/cmake
++    ${LLVM_PATH}/lib/cmake/llvm
++    ${LLVM_PATH}/lib/cmake/clang)
++  find_package(LLVM REQUIRED CONFIG
++    PATHS ${llvm_search_paths}
++    NO_DEFAULT_PATH)
+ 
+   add_custom_target(exclude_extlib_tests ALL
+     COMMAND rm -f ${gtest_BINARY_DIR}/CTestTestfile.cmake
+     COMMAND rm -f ${gmock_BINARY_DIR}/CTestTestfile.cmake
+-    COMMAND rm -f ${googletest-distribution_BINARY_DIR}/CTestTestfile.cmake
+     COMMAND rm -f ${glog_BINARY_DIR}/CTestTestfile.cmake
+     COMMAND rm -f ${absl_BINARY_DIR}/CTestTestfile.cmake)
+ 
+   add_definitions(-DHAVE_LLVM=1)
+-  include_directories(${CMAKE_HOME_DIRECTORY}
++  include_directories(${LLVM_INCLUDE_DIRS}
++    ${CMAKE_HOME_DIRECTORY}
+     third_party/glog/src
+     third_party/abseil
+     third_party/llvm-project/llvm/include
+@@ -243,6 +232,14 @@
+     third_party/perf_data_converter/src/quipper
+     util/regexp)
+ 
++  add_definitions(-DLLVM_VERSION_MAJOR=${LLVM_VERSION_MAJOR})
++  add_definitions(-DLLVM_VERSION_MINOR=${LLVM_VERSION_MINOR})
++
++  set (CMAKE_REQUIRED_INCLUDES ${LLVM_INCLUDE_DIRS})
++  set (CMAKE_REQUIRED_LIBRARIES LLVMObject)
++  set (CMAKE_REQUIRED_LIBRARIES LLVMProfileData)
++
++
+   add_library(llvm_propeller_cfg_proto llvm_propeller_cfg.proto)
+   protobuf_generate(TARGET llvm_propeller_cfg_proto LANGUAGE cpp)
+   target_link_libraries(llvm_propeller_cfg_proto PUBLIC protobuf::libprotobuf)
+@@ -268,6 +265,9 @@
+   foreach (tgt ${LLVM_TARGETS_TO_BUILD})
+     set( tp ${PROJECT_BINARY_DIR}/third_party/llvm-project/llvm/lib/libLLVM${tgt})
+     foreach (tool AsmParser Desc Disassembler Info)
++      if(tgt STREQUAL "NVPTX" AND tool MATCHES "AsmParser|Disassembler")
++        continue()
++      endif()
+       target_link_libraries(mini_disassembler LLVM${tgt}${tool})
+     endforeach()
+   endforeach()

@@ -1,0 +1,91 @@
+From d72a8110dd0eaa644bb0983ce766c17f7ce2acff Mon Sep 17 00:00:00 2001
+From: Gwendal Grignou <gwendal@chromium.org>
+Date: Thu, 29 Aug 2024 20:11:46 -0700
+Subject: [PATCH] tune2fs: do not update quota when not needed
+
+Enabling quota is expensive: All inodes in the filesystem are scanned.
+Only do it when the requested quota configuration does not match the
+existing configuration.
+
+Test:
+Add a tiny patch to print out when core of function
+handle_quota_options() is triggered.
+Issue commands:
+truncate -s 1G unused ; mkfs.ext4 unused
+
+| commands                                                | trigger | comments
++---------------------------------------------------------+---------+---------
+| tune2fs -Qusrquota,grpquota -Qprjquota -O quota unused  | Y       |
+                  Quota not set at formatting.
+| tune2fs -Qusrquota,grpquota -Qprjquota -O quota unused  | N       |
+                  Already set just above
+| tune2fs -Qusrquota,grpquota -Q^prjquota -O quota unused | Y       |
+                  Disabling a quota option always force a deep look.
+| tune2fs -Qusrquota,grpquota -Q^prjquota -O quota unused | Y       |
+                  See just above
+| tune2fs -Qusrquota,grpquota -O quota unused             | N       |
+                  No change from previous line.
+| tune2fs -Qusrquota,^grpquota -O quota unused            | Y       |
+                  Disabling a quota option always force a deep look.
+| tune2fs -Qusrquota -O quota unused                      | N       |
+                  No change from previous line.
+| tune2fs -O ^quota unused                                | Y       |
+                  Remove quota
+| tune2fs -O quota unused                                 | X       |
+                  function handle_quota_options() not called, default values
+                  (-Qusrquota,grpquota) used.
+| tune2fs -O quota -Qusrquota unused                      | N       |
+                  Already set just above
+---
+ misc/tune2fs.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/misc/tune2fs.c b/misc/tune2fs.c
+index 6de40e93..3cce8861 100644
+--- a/misc/tune2fs.c
++++ b/misc/tune2fs.c
+@@ -1804,6 +1804,41 @@ static int handle_quota_options(ext2_filsys fs)
+ 			qtype_bits |= 1 << qtype;
+ 	}
+ 
++	/*
++	 * Check if the filesystem already has quota enabled and more features
++	 * need to be enabled and are not, or some features need to be disabled.
++	 */
++	if (ext2fs_has_feature_quota(fs->super) && qtype_bits) {
++		for (qtype = 0 ; qtype < MAXQUOTAS; qtype++) {
++			if ((quota_enable[qtype] == QOPT_ENABLE &&
++			     *quota_sb_inump(fs->super, qtype) == 0) ||
++			    (quota_enable[qtype] == QOPT_DISABLE)) {
++				/* Some work needed to match the configuration. */
++				break;
++			}
++		}
++		if (qtype == MAXQUOTAS) {
++			/* Nothing to do. */
++			return 0;
++		}
++	}
++	/*
++	 * Check if the user wants all features disabled and it is already
++	 * the case.
++	 */
++	if (!ext2fs_has_feature_quota(fs->super) && !qtype_bits) {
++		for (qtype = 0 ; qtype < MAXQUOTAS; qtype++) {
++			if (*quota_sb_inump(fs->super, qtype)) {
++				/* Some work needed to match the configuration. */
++				break;
++			}
++		}
++		if (qtype == MAXQUOTAS) {
++			/* Nothing to do. */
++			return 0;
++		}
++	}
++
+ 	retval = quota_init_context(&qctx, fs, qtype_bits);
+ 	if (retval) {
+ 		com_err(program_name, retval,
+-- 
+2.46.0.469.g59c65b2a67-goog
+

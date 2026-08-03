@@ -1,0 +1,34 @@
+# Lint as: python3
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This class can be called to run
+# bluetooth_AVLHCI.spec_5_0_adv_sets_number_test
+#
+# This test contains these subtests:
+#     test_advertisement_sets_number()
+#
+#
+# Purpose: Tests the Bluetooth v5.0 advertisement sets number of Bluetooth AVL
+# requirements
+
+# Deprecated variables:
+#     TIME = 'SHORT'
+#     TEST_CATEGORY = 'Functional'
+
+NAME = 'bluetooth_AVLHCI.spec_5_0_adv_sets_number_test'
+METADATA = {
+    'contacts': ['chromeos-bt-team@google.com'],
+    # ChromeOS > Platform > Connectivity > Bluetooth
+    'bug_component': 'b:167317',
+    'criteria': 'all subtests passed',
+    'hw_agnostic': False,
+    'requirements': ['bt-spec-0022-v01']
+}
+
+ATTRIBUTES = 'suite:bluetooth_fw'
+TEST_TYPE = 'client'
+
+
+job.run_test('bluetooth_AVLHCI', test_name=NAME.split('.')[1], tag='.'.join(NAME.split('.')[1:]))

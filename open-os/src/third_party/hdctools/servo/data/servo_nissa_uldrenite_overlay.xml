@@ -1,0 +1,51 @@
+<root>
+  <include>
+    <name>servo_nissa_trulo_overlay.xml</name>
+  </include>
+  <control>
+    <name>init_keyboard</name>
+    <doc>initialize keyboard handler</doc>
+    <params  map="onoff" init="on" drv="kb_handler_init" interface="servo"
+      subtype="init_default_keyboard" handler_type="ChromeMatrix30" clobber_ok="full"></params>
+  </control>
+  <control>
+    <name>lid_open</name>
+    <doc>Emulated lid switch on ec</doc>
+    <params clobber_ok="full" cmd="get" uart_cmd="lidstate" regex="lid state: (open|closed)"
+    group="1" retries="3" formatting="map_open" interface="EC_CONSOLE"
+    drv="simple_ec" map="yesno"></params>
+    <params clobber_ok="full" cmd="set" subtype="lid_open" interface="EC_CONSOLE"
+    drv="ec" map="yesno"></params>
+  </control>
+  <!-- Modify trulo's cpu_fw_spi to add spi2_vref:pp3300 for servo_micro (b/420706078). -->
+  <control>
+    <name>cpu_fw_spi</name>
+    <doc>Enable SPI mode for flashing AP firmware over direct SPI connection</doc>
+    <params drv="macro" interface="servo" map="onoff" clobber_ok="full">
+      <content>
+        <item key="macro_map">
+          <item key="1">
+            <item>cold_reset:on</item>
+            <item>servo_spi_programming:on</item>
+            <item>spi2_buf_en:on</item>
+            <item>spi2_buf_on_flex_en:on</item>
+            <item>spi2_vref:pp3300</item>
+          </item>
+          <item key="0">
+            <item>spi2_vref:off</item>
+            <item>spi2_buf_on_flex_en:off</item>
+            <item>spi2_buf_en:off</item>
+            <item>servo_spi_programming:off</item>
+            <item>cold_reset:off</item>
+          </item>
+        </item>
+      </content>
+    </params>
+  </control>
+  <!-- Increase short_press duration from 0.2 to 1.2 (b/423955603). -->
+  <map>
+    <name>keypress_duration</name>
+    <doc>short hand configs for keypress durations</doc>
+    <params tab="0.1" short_press="1.2" press="1.2" long_press="8.5"/>
+  </map>
+</root>

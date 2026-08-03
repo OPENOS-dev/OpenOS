@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure install test
+DEPEND=dev-libs/openssl:0= tpm_slb9655_v4_31? ( chromeos-base/ec-utils )
+DESCRIPTION=Infineon TPM firmware updater
+EAPI=7
+IUSE=tpm_slb9655_v4_31
+KEYWORDS=*
+LICENSE=BSD-Infineon LICENSE.infineon-firmware-updater-TCG
+RDEPEND=dev-libs/openssl:0= tpm_slb9655_v4_31? ( chromeos-base/ec-utils )
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/infineon-firmware-updater-1.1.2459.0.tar.gz
+_eclasses_=cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=67828c9daa331158a8be7f0266c740e5

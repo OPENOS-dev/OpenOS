@@ -1,0 +1,20 @@
+{
+  "ec_boot_to_console": 0.2,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "ec_ro_vbus_bug": true,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "keyboard_dev_switcher",
+  "platform": "kunimitsu",
+  "smm_store": false,
+  "spi_voltage": "pp3300",
+  "usb_a_port_count": -1
+}

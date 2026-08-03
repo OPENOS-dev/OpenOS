@@ -1,0 +1,21 @@
+[package]
+name = "one_time_init_loader"
+version = "0.1.0"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[dependencies]
+cortex-m = "0.7.1"
+cortex-m-rt = "0.6.13"
+mcu_common = { path = "../../mcu_common" }
+panic-halt = "0.2.0"
+stm32g0 = "0.13.0"
+
+[build-dependencies]
+anyhow = "1.0.38"
+mcu_common = { path = "../../mcu_common", features = [ "std" ] }
+
+[features]
+# Builds such that we can be loaded at the 64KB offset in flash as used by old
+# versions of stage0.
+legacy-stage0 = []

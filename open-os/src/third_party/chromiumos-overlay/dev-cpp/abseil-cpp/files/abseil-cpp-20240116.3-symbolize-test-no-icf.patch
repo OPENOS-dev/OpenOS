@@ -1,0 +1,43 @@
+From 70c9077c940b02873cd5ae61cc0c61687734d49d Mon Sep 17 00:00:00 2001
+From: Di Wu <diwux@google.com>
+Date: Fri, 1 Aug 2025 04:28:28 +0000
+Subject: dev-cpp/abseil-cpp: Disable ICF for symbolize_test
+
+The SymbolizeSplitTextSections test in symbolize_test.cc fails
+when building with Identical Code Folding (--icf=all) enabled. The
+test expects several small functions with identical bodies to remain
+distinct symbols.
+
+With ICF enabled, the linker merges these functions, causing the
+symbolizer to return the same name for all of them and failing the
+test's assertions.
+
+This change disables ICF for the absl_symbolize_test target by
+adding the `-Wl,--icf=none` linker flag. This ensures the functions
+are not merged and allows the test to pass.
+
+BUG=b:425266540
+TEST=FEATURE=TEST ebuild-brya dev-cpp/abseil-cpp
+---
+ absl/debugging/CMakeLists.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/absl/debugging/CMakeLists.txt b/absl/debugging/CMakeLists.txt
+index 65e2af8..6f49f1d 100644
+--- a/absl/debugging/CMakeLists.txt
++++ b/absl/debugging/CMakeLists.txt
+@@ -111,3 +111,9 @@
+     absl::symbolize
+     GTest::gmock
+ )
++if(ABSL_BUILD_TESTING)
++  if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
++    # The SymbolizeSplitTextSections test requires that ICF is disabled.
++    target_link_options(absl_symbolize_test PRIVATE -Wl,--icf=none)
++  endif()
++endif()
+ 
+ # Internal-only target, do not depend on directly.
+ absl_cc_library(
+-- 
+2.50.1.565.gc32cd1483b-goog

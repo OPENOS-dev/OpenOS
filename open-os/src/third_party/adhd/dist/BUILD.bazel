@@ -1,0 +1,213 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_filegroup", "pkg_files", "pkg_mklink")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//:utils.bzl", "require_config")
+load(":defs.bzl", "EXECUTABLE_ATTRIBUTES", "FILE_ATTRIBUTES", "LIBDIR", "LOCAL_LIBDIR")
+
+#
+# Tarballs.
+#
+pkg_tar(
+    name = "default",
+    srcs = [
+        ":media_libs_libcras_files",
+        ":media_sound_adhd_files",
+    ],
+)
+
+# For the ChromeOS media-sound/adhd package.
+pkg_tar(
+    name = "media_sound_adhd",
+    srcs = [":media_sound_adhd_files"],
+)
+
+pkg_filegroup(
+    name = "media_sound_adhd_files",
+    srcs = [
+        ":bin",
+        ":extra_bin",
+        ":extra_lib",
+        "//cras-config:dist_files",
+        "//dbus-config:dist_files",
+        "//init:init_files",
+        "//tmpfiles.d:tmpfiles_d_files",
+        "//ucm-config:dist_files",
+    ],
+)
+
+# For the ChromeOS media-libs/libcras package.
+pkg_tar(
+    name = "media_libs_libcras",
+    srcs = [":media_libs_libcras_files"],
+)
+
+pkg_filegroup(
+    name = "media_libs_libcras_files",
+    srcs = [
+        ":alsa_lib",
+        ":include",
+        ":lib",
+        ":pkgconfig",
+        "//cras/dbus_bindings:dist_files",
+    ],
+)
+
+pkg_tar(
+    name = "client_only",
+    srcs = [
+        ":alsa_lib",
+        ":lib",
+        "//cras/deprecated/cras_test_client",
+    ],
+)
+
+pkg_tar(
+    name = "client_lib_only",
+    srcs = [
+        ":alsa_lib",
+        ":lib",
+    ],
+)
+
+#
+# Targets.
+#
+
+# Binary targets.
+pkg_files(
+    name = "bin",
+    srcs = [
+        "//cras/deprecated/cras_test_client",
+        "//cras/src/server:cras",
+    ],
+    attributes = EXECUTABLE_ATTRIBUTES,
+    prefix = "usr/bin",
+)
+
+# Extra binary targets.
+# These are installed to /usr/local/bin by ebuild, hence only appear on test images.
+pkg_files(
+    name = "extra_bin",
+    srcs = [
+        "//cras/benchmark:cras_bench",
+        "//cras/scripts:asoc_dapm_graph",
+        "//cras/src/tools:cras_monitor",
+        "//cras/src/tools:cras_router",
+    ] + select({
+        "//:apm_build": [
+            "@webrtc_apm//rtc_tools:unpack_aecdump",
+        ],
+        "//conditions:default": [],
+    }),
+    attributes = EXECUTABLE_ATTRIBUTES,
+    prefix = "usr/local/bin",
+)
+
+pkg_files(
+    name = "extra_lib",
+    srcs = [
+        "//audio_processor/c:test_plugins",
+    ],
+    attributes = EXECUTABLE_ATTRIBUTES,
+    prefix = LOCAL_LIBDIR,
+)
+
+# Public header targets.
+pkg_files(
+    name = "include",
+    srcs = ["//cras/include:public_headers"],
+    attributes = FILE_ATTRIBUTES,
+    prefix = "usr/include",
+)
+
+# Library targets
+pkg_filegroup(
+    name = "lib",
+    srcs = [
+        "libcras_so",
+        "libcras_so_0",
+        "libcras_so_0_0_0",
+    ],
+)
+
+pkg_files(
+    name = "libcras_so",
+    srcs = [
+        "//cras/src/libcras:cras",
+    ],
+    attributes = EXECUTABLE_ATTRIBUTES,
+    prefix = LIBDIR,
+)
+
+pkg_mklink(
+    name = "libcras_so_0",
+    link_name = LIBDIR + "/libcras.so.0",
+    target = "libcras.so",
+)
+
+pkg_mklink(
+    name = "libcras_so_0_0_0",
+    link_name = LIBDIR + "/libcras.so.0.0.0",
+    target = "libcras.so",
+)
+
+pkg_files(
+    name = "alsa_lib",
+    srcs = [
+        "//cras/src/alsa_plugin:asound_module_ctl_cras",
+        "//cras/src/alsa_plugin:asound_module_pcm_cras",
+    ],
+    attributes = EXECUTABLE_ATTRIBUTES,
+    prefix = LIBDIR + "/alsa-lib",
+)
+
+pkg_files(
+    name = "pkgconfig",
+    srcs = [
+        "//cras:libcras.pc",
+    ],
+    attributes = FILE_ATTRIBUTES,
+    prefix = LIBDIR + "/pkgconfig",
+)
+
+pkg_tar(
+    name = "fuzzers",
+    srcs = [
+        "//cras/fuzz:cras_fl_media_fuzzer",
+        "//cras/fuzz:cras_hfp_slc_fuzzer",
+        "//cras/fuzz:cras_rclient_message_fuzzer",
+    ],
+    target_compatible_with = require_config("//:fuzzer_build"),
+)
+
+#
+# libdir selection
+#
+string_flag(
+    name = "libdir",
+    build_setting_default = "lib",
+    values = [
+        "lib",
+        "lib32",
+        "lib64",
+    ],
+)
+
+config_setting(
+    name = "lib_is_lib",
+    flag_values = {":libdir": "lib"},
+)
+
+config_setting(
+    name = "lib_is_lib32",
+    flag_values = {":libdir": "lib32"},
+)
+
+config_setting(
+    name = "lib_is_lib64",
+    flag_values = {":libdir": "lib64"},
+)

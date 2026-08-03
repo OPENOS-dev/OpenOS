@@ -1,0 +1,48 @@
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config PDC_DEBUG
+	bool "Enable debug messages from PDC"
+	depends on UART_INTERRUPT_DRIVEN
+
+config TPS6699X_INTERRUPTS
+	bool "Enable TPS6699X interrupt handling"
+	default n
+
+choice SBU_MUX_TYPE
+	bool "Type of mux for SBU lanes"
+
+config SBU_MUX_TYPE_PDC
+	bool "PDC as SBU lanes mux"
+
+config SBU_MUX_TYPE_GPIO
+	bool "GPIO as SBU lanes mux"
+
+endchoice
+
+config SBU_MUX_INIT_DELAY
+	int "Delay between bootup and polling in milliseconds"
+	default 300
+
+config SBU_MUX_PERIOD
+	int "Period of reading the SBU lanes in milliseconds"
+	default 100
+
+config HOST_MUX_INIT_DELAY
+	int "Delay between bootup and polling in milliseconds"
+	default 10
+
+config HOST_MUX_PERIOD
+	int "Period of reading the Host CC lanes in milliseconds"
+	default 20
+
+config HOST_MUX_HIGH_THRESH
+	int "Lower voltage threshold to treat signal as high (millivolts)"
+	default 200
+
+config GPIO_INIT_PRIORITY
+	int "GPIO subsystem init priority"
+	default 89
+
+source "Kconfig.zephyr"

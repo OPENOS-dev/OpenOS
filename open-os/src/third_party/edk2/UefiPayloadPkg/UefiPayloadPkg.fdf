@@ -1,0 +1,601 @@
+## @file
+# Bootloader Payload Package
+#
+# Provides drivers and definitions to create uefi payload for bootloaders.
+#
+# Copyright (c) 2014 - 2020, Intel Corporation. All rights reserved.<BR>
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+DEFINE FD_BASE       = 0x00800000
+DEFINE FD_BLOCK_SIZE = 0x00001000
+
+!if $(TARGET) == "NOOPT"
+DEFINE FD_SIZE     = 0x00850000
+DEFINE NUM_BLOCKS  = 0x850
+!else
+
+DEFINE FD_SIZE     = 0x01000000
+DEFINE NUM_BLOCKS  = 0x1000
+!endif
+
+################################################################################
+[FD.UefiPayload]
+BaseAddress   = $(FD_BASE) | gUefiPayloadPkgTokenSpaceGuid.PcdPayloadFdMemBase
+Size          = $(FD_SIZE) | gUefiPayloadPkgTokenSpaceGuid.PcdPayloadFdMemSize
+ErasePolarity = 1
+BlockSize     = $(FD_BLOCK_SIZE)
+NumBlocks     = $(NUM_BLOCKS)
+
+0x00000000|$(FD_SIZE)
+FV = PLDFV
+
+################################################################################
+[FV.PLDFV]
+FvNameGuid         = 96E75986-6FDD-491E-9FD5-35E21AC45B45
+BlockSize          = $(FD_BLOCK_SIZE)
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+!if $(UNIVERSAL_PAYLOAD) == FALSE
+INF UefiPayloadPkg/UefiPayloadEntry/UefiPayloadEntry.inf
+!endif
+FILE FV_IMAGE = 4E35FD93-9C72-4c15-8C4B-E77F1DB2D793 {
+    SECTION FV_IMAGE = DXEFV
+}
+!if $(UNIVERSAL_PAYLOAD) == TRUE
+!if $(NETWORK_DRIVER_ENABLE) == TRUE
+################################################################################
+[FV.NETWORKFV]
+FvNameGuid         = 3CF5CB69-C439-4B84-AF11-8167B22D7221
+BlockSize          = $(FD_BLOCK_SIZE)
+FvForceRebase      = FALSE
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+#
+# UEFI network modules
+#
+!include NetworkPkg/Network.fdf.inc
+!endif
+
+################################################################################
+[FV.BDSFV]
+FvNameGuid         = CA5590AF-9558-4822-B5EA-BE2E876CD3EC
+BlockSize          = $(FD_BLOCK_SIZE)
+FvForceRebase      = FALSE
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+INF RuleOverride = UI MdeModulePkg/Application/UiApp/UiApp.inf
+INF MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+!endif
+
+[FV.DXEFV]
+FvNameGuid         = 8063C21A-8E58-4576-95CE-089E87975D23
+BlockSize          = $(FD_BLOCK_SIZE)
+FvForceRebase      = FALSE
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+APRIORI DXE {
+  INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
+  INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+  INF  MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf
+  INF  MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf
+  INF  UefiPayloadPkg/BlSupportDxe/BlSupportDxe.inf
+  INF  MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+
+!if $(VARIABLE_SUPPORT) == "EMU"
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+!elseif $(VARIABLE_SUPPORT) == "SMMSTORE"
+  INF UefiPayloadPkg/SmmStoreFvb/SmmStoreFvbRuntimeDxe.inf
+  INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+!elseif $(VARIABLE_SUPPORT) == "SPI"
+  INF UefiPayloadPkg/FvbRuntimeDxe/FvbSmm.inf
+  INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmm.inf
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmm.inf
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
+!endif
+
+!if $(SECURE_BOOT_ENABLE) == TRUE
+  INF  PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
+  INF  UefiPayloadPkg/SecureBootEnrollDefaultKeys/SecureBootSetup.inf # After SMBusConfigLoader and PcatRealTimeClockRuntimeDxe, before Tcg2Dxe
+!endif
+}
+
+#
+# DXE Phase modules
+#
+INF MdeModulePkg/Core/Dxe/DxeMain.inf
+INF MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+INF MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf
+INF MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf
+
+!if $(CRYPTO_PROTOCOL_SUPPORT) == TRUE
+INF CryptoPkg/Driver/CryptoDxe.inf
+!endif
+!if $(SECURITY_STUB_ENABLE) == TRUE
+INF MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
+!endif
+INF UefiCpuPkg/CpuDxe/CpuDxe.inf
+
+INF PcAtChipsetPkg/HpetTimerDxe/HpetTimerDxe.inf
+INF MdeModulePkg/Universal/Metronome/Metronome.inf
+INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
+INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+INF MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
+INF MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
+
+!if $(DISABLE_RESET_SYSTEM) == FALSE
+INF MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
+!endif
+INF PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
+!if $(PERFORMANCE_MEASUREMENT_ENABLE)
+  INF MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf
+!endif
+
+#
+# SMM Support
+#
+!if $(SMM_SUPPORT) == TRUE
+  INF UefiPayloadPkg/SmmAccessDxe/SmmAccessDxe.inf
+  INF UefiPayloadPkg/SmmControlRuntimeDxe/SmmControlRuntimeDxe.inf
+  INF UefiPayloadPkg/BlSupportSmm/BlSupportSmm.inf
+  INF MdeModulePkg/Core/PiSmmCore/PiSmmIpl.inf
+  INF MdeModulePkg/Core/PiSmmCore/PiSmmCore.inf
+  INF UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
+  INF UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
+  INF UefiPayloadPkg/PchSmiDispatchSmm/PchSmiDispatchSmm.inf
+!if $(PERFORMANCE_MEASUREMENT_ENABLE)
+  INF  MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf
+!endif
+!endif
+
+!if $(VARIABLE_SUPPORT) == "EMU"
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+!elseif $(VARIABLE_SUPPORT) == "SMMSTORE"
+  INF UefiPayloadPkg/SmmStoreFvb/SmmStoreFvbRuntimeDxe.inf
+  INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+!elseif $(VARIABLE_SUPPORT) == "SPI"
+  INF UefiPayloadPkg/FvbRuntimeDxe/FvbSmm.inf
+  INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmm.inf
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmm.inf
+  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
+!endif
+
+INF UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
+INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
+!if $(MEMORY_TEST) == "GENERIC"
+INF  MdeModulePkg/Universal/MemoryTest/GenericMemoryTestDxe/GenericMemoryTestDxe.inf
+!elseif $(MEMORY_TEST) == "NULL"
+INF  MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
+!endif
+INF MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
+INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
+INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+# INF MdeModulePkg/Universal/PlatformDriOverrideDxe/PlatformDriOverrideDxe.inf
+INF MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+INF UefiPayloadPkg/BlSupportDxe/BlSupportDxe.inf
+
+INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+!if $(BOOTSPLASH_IMAGE)
+INF MdeModulePkg/Logo/LogoDxe.inf
+!endif
+
+#
+# PCI Support
+#
+INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
+
+#
+# ISA Support
+#
+!if $(SERIAL_DRIVER_ENABLE) == TRUE
+INF MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
+!endif
+!if $(SIO_BUS_ENABLE) == TRUE
+INF OvmfPkg/SioBusDxe/SioBusDxe.inf
+!endif
+!if $(PS2_KEYBOARD_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2KeyboardDxe.inf
+!endif
+!if $(PS2_MOUSE_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Isa/Ps2MouseDxe/Ps2MouseDxe.inf
+!endif
+
+#
+# Console Support
+#
+INF MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
+INF MdeModulePkg/Universal/Console/ConSplitterDxe/ConSplitterDxe.inf
+INF MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
+!if $(DISABLE_SERIAL_TERMINAL) == FALSE
+INF MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
+!endif
+
+!if $(USE_PLATFORM_GOP) == TRUE
+!if "X64" in $(ARCH)
+INF UefiPayloadPkg/PlatformGopPolicy/PlatformGopPolicy.inf
+!endif
+FILE DRIVER = FF0C8745-3270-4439-B74F-3E45F8C77064 {
+  SECTION DXE_DEPEX_EXP = {gPlatformGOPPolicyGuid}
+  SECTION PE32 = UefiPayloadPkg/IntelGopDriver.efi
+  SECTION UI = "IntelGopDriver"
+}
+
+FILE FREEFORM = 878AC2CC-5343-46F2-B563-51F89DAF56BA {
+  SECTION RAW = UefiPayloadPkg/vbt.bin
+  SECTION UI = "IntelGopVbt"
+}
+!else
+INF UefiPayloadPkg/GraphicsOutputDxe/GraphicsOutputDxe.inf
+!endif
+
+#
+# SCSI/ATA/IDE/DISK Support
+#
+INF MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
+INF MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
+INF MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
+!if $(ATA_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Pci/SataControllerDxe/SataControllerDxe.inf
+INF MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
+!endif
+INF MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
+INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
+INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+!if $(NVME_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+!endif
+!if $(RAM_DISK_ENABLE) == TRUE
+INF MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
+!endif
+INF FatPkg/EnhancedFatDxe/Fat.inf
+
+#
+# Filesystem drivers
+#
+!if $(ARCH) == IA32
+INF  RuleOverride=BINARY USE = IA32 FSDrivers/exfat.inf
+INF  RuleOverride=BINARY USE = IA32 FSDrivers/ext2.inf
+INF  RuleOverride=BINARY USE = IA32 FSDrivers/ntfs.inf
+INF  RuleOverride=BINARY USE = IA32 FSDrivers/ext4.inf
+!else
+INF  RuleOverride=BINARY USE = X64 FSDrivers/exfat.inf
+INF  RuleOverride=BINARY USE = X64 FSDrivers/ext2.inf
+INF  RuleOverride=BINARY USE = X64 FSDrivers/ntfs.inf
+INF  RuleOverride=BINARY USE = X64 FSDrivers/ext4.inf
+!endif
+
+#
+# SD/eMMC Support
+#
+!if $(SD_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Pci/SdMmcPciHcDxe/SdMmcPciHcDxe.inf
+INF MdeModulePkg/Bus/Sd/EmmcDxe/EmmcDxe.inf
+INF MdeModulePkg/Bus/Sd/SdDxe/SdDxe.inf
+!endif
+
+#
+# TPM support
+#
+!if $(TPM_ENABLE) == TRUE
+INF  SecurityPkg/Tcg/TcgDxe/TcgDxe.inf
+INF  SecurityPkg/Tcg/TcgConfigDxe/TcgConfigDxe.inf
+INF  SecurityPkg/Tcg/Tcg2Dxe/Tcg2Dxe.inf
+INF  SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+!endif
+
+#
+# Usb Support
+#
+INF MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
+INF MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
+INF MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
+
+#
+# ACPI Support
+#
+INF  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+!if $(BOOTSPLASH_IMAGE)
+INF  MdeModulePkg/Universal/Acpi/AcpiPlatformDxe/AcpiPlatformDxe.inf
+INF  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
+!endif
+
+!if $(UNIVERSAL_PAYLOAD) == FALSE
+INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+INF RuleOverride = UI MdeModulePkg/Application/UiApp/UiApp.inf
+INF MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+#
+# UEFI network modules
+#
+!if $(NETWORK_DRIVER_ENABLE) == TRUE
+  !include NetworkPkg/Network.fdf.inc
+!endif
+!endif
+
+#
+# Network modules (only available on X64)
+# Available at https://www.realtek.com and https://asix.com.tw
+#
+!if $(NETWORK_ENABLE)
+!if $(ARCH) == IA32
+  # FIXME
+!else
+!if $(NETWORK_RTEK_PCI)
+  FILE DRIVER = D30D5496-6DF9-462D-9B97-0B93F659D1A0 {
+    SECTION PE32 = UefiPayloadPkg/NetworkDrivers/RtkUndiDxe.efi
+  }
+!endif
+!if $(NETWORK_RTEK_USB)
+  FILE DRIVER = 95BA3BCA-F086-4FDA-BBAC-44F5AEE5176B {
+    SECTION PE32 = UefiPayloadPkg/NetworkDrivers/RtkUsbUndiDxe.efi
+  }
+!endif
+!if $(NETWORK_ASIX_USB3)
+  FILE DRIVER = 27E5D3B6-7839-47C2-8618-5D2190729BC7 {
+    SECTION PE32 = UefiPayloadPkg/NetworkDrivers/AX88179X_178A_772D_UEFI_v3.2.0_X64_signed.efi
+  }
+!endif
+!if $(NETWORK_ASIX_USB2)
+  FILE DRIVER = B15239D6-6A01-4808-A0F7-B7F20F073555 {
+    SECTION PE32 = UefiPayloadPkg/NetworkDrivers/AX88772C_772B_772A_UEFI_V2.8.0_X64.efi
+  }
+!endif
+!endif
+!endif
+
+#
+# Security
+#
+!if $(SECURE_BOOT_ENABLE) == TRUE
+  INF  SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
+  INF  UefiPayloadPkg/SecureBootEnrollDefaultKeys/SecureBootSetup.inf
+
+  FILE FREEFORM = A23665E3-ACA6-4F6D-80CC-341E7D7B8CC6 {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/kek.crt
+    SECTION UI = "SecureBootKekCert"
+  }
+
+  FILE FREEFORM = 6f64916e-9f7a-4c35-b952-cd041efb05a3 {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/kek-system76.crt
+    SECTION UI = "SecureBootS76KekCert"
+  }
+
+  FILE FREEFORM = F8104268-A364-45F5-8E00-ABA3FDEA12BE {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/pk.crt
+    SECTION UI = "SecureBootPkCert"
+  }
+
+  FILE FREEFORM = 26A517B0-E3FD-46C2-8932-E926BF98941F {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/db-1.crt
+    SECTION UI = "SecureBootDb1Cert"
+  }
+
+  FILE FREEFORM = 91D2E32B-0134-4306-BA90-54EDCBF349CA {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/db-2.crt
+    SECTION UI = "SecureBootDb2Cert"
+  }
+
+  FILE FREEFORM = c491d352-7623-4843-accc-2791a7574421 {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/db-system76.crt
+    SECTION UI = "SecureBootS76DbCert"
+  }
+
+  FILE FREEFORM = 74BB6E72-2A56-4D0E-A5B3-5D39FC2EE346 {
+    SECTION RAW = UefiPayloadPkg/SecureBootEnrollDefaultKeys/keys/crl.bin
+    SECTION UI = "SecureBootDbxCert"
+  }
+
+!endif
+
+#
+# Shell
+#
+!if $(SHELL_TYPE) == BUILD_SHELL
+INF ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf
+!if $(PERFORMANCE_MEASUREMENT_ENABLE) == TRUE
+INF ShellPkg/DynamicCommand/DpDynamicCommand/DpDynamicCommand.inf
+!endif
+INF ShellPkg/Application/Shell/Shell.inf
+!endif
+
+
+################################################################################
+#
+# Rules are use with the [FV] section's module INF type to define
+# how an FFS file is created for a given INF file. The following Rule are the default
+# rules for the different module type. User can add the customized rules to define the
+# content of the FFS file.
+#
+################################################################################
+
+[Rule.Common.SEC]
+  FILE SEC = $(NAMED_GUID) {
+    PE32     PE32   Align=32    $(INF_OUTPUT)/$(MODULE_NAME).efi
+  }
+
+[Rule.Common.PEI_CORE]
+  FILE PEI_CORE = $(NAMED_GUID) {
+    PE32     PE32   Align=Auto    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING ="$(MODULE_NAME)" Optional
+    VERSION  STRING ="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.PEIM]
+  FILE PEIM = $(NAMED_GUID) {
+     PEI_DEPEX PEI_DEPEX Optional        $(INF_OUTPUT)/$(MODULE_NAME).depex
+     PE32      PE32   Align=Auto           $(INF_OUTPUT)/$(MODULE_NAME).efi
+     UI       STRING="$(MODULE_NAME)" Optional
+     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.DXE_CORE]
+  FILE DXE_CORE = $(NAMED_GUID) {
+    PE32     PE32           $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING="$(MODULE_NAME)" Optional
+    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.DXE_DRIVER]
+  FILE DRIVER = $(NAMED_GUID) {
+    DXE_DEPEX    DXE_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
+    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING="$(MODULE_NAME)" Optional
+    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.DXE_RUNTIME_DRIVER]
+  FILE DRIVER = $(NAMED_GUID) {
+    DXE_DEPEX    DXE_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
+    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING="$(MODULE_NAME)" Optional
+    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+[Rule.Common.DXE_SMM_DRIVER]
+  FILE SMM = $(NAMED_GUID) {
+    SMM_DEPEX SMM_DEPEX Optional       $(INF_OUTPUT)/$(MODULE_NAME).depex
+    PE32      PE32                     $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI        STRING="$(MODULE_NAME)" Optional
+    VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.SMM_CORE]
+  FILE SMM_CORE = $(NAMED_GUID) {
+    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING="$(MODULE_NAME)" Optional
+    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.UEFI_DRIVER]
+  FILE DRIVER = $(NAMED_GUID) {
+    DXE_DEPEX    DXE_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
+    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING="$(MODULE_NAME)" Optional
+    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.UEFI_DRIVER.BINARY]
+  FILE DRIVER = $(NAMED_GUID) {
+    DXE_DEPEX DXE_DEPEX Optional      |.depex
+    PE32      PE32                    |.efi
+    UI        STRING="$(MODULE_NAME)" Optional
+    VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.UEFI_APPLICATION]
+  FILE APPLICATION = $(NAMED_GUID) {
+    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI       STRING="$(MODULE_NAME)" Optional
+    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.UEFI_APPLICATION.BINARY]
+  FILE APPLICATION = $(NAMED_GUID) {
+    PE32      PE32                    |.efi
+    UI        STRING="$(MODULE_NAME)" Optional
+    VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.USER_DEFINED.ACPITABLE]
+  FILE FREEFORM = $(NAMED_GUID) {
+    RAW ACPI               |.acpi
+    RAW ASL                |.aml
+  }
+
+[Rule.Common.USER_DEFINED.CSM]
+  FILE FREEFORM = $(NAMED_GUID) {
+    RAW BIN                |.bin
+  }
+
+[Rule.Common.SEC.RESET_VECTOR]
+  FILE RAW = $(NAMED_GUID) {
+    RAW RAW                |.raw
+  }
+
+[Rule.Common.UEFI_APPLICATION.UI]
+  FILE APPLICATION = $(NAMED_GUID) {
+    PE32      PE32                     $(INF_OUTPUT)/$(MODULE_NAME).efi
+    UI        STRING="Enter Setup"
+    VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[RULE.COMMON.USER_DEFINED]
+  FILE FREEFORM = $(NAMED_GUID) {
+    RAW BIN                |.crt
+    RAW BIN                |.bin
+  }
+
+[RULE.COMMON.USER_DEFINED.BINARY]
+  FILE FREEFORM = $(NAMED_GUID) {
+    RAW BIN                |.crt
+    RAW BIN                |.bin
+    UI       STRING="$(MODULE_NAME)" Optional
+  }

@@ -1,0 +1,14 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+
+# This package generates an LD wrapper script as `libbrlapi.so`. `llvm-ifs`
+# only works on ELF files. By adding the wrapper scrip to the allow list, we
+# copy the file as is without any modifications.
+interface_library_allowlist = [
+	"/usr/lib64/libbrlapi.so",
+]

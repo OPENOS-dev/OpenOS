@@ -1,0 +1,11 @@
+cross-aarch64-cros-linux-gnu/binutils -multilib
+cross-aarch64-cros-linux-gnu/compiler-rt -selinux -multilib
+cross-aarch64-cros-linux-gnu/gcc -vtv -selinux -boundschecking -d -gcj -gtk -libffi -mudflap -objc -objc++ -objc-gc -sanitize -multilib
+cross-aarch64-cros-linux-gnu/gdb -selinux -multilib
+cross-aarch64-cros-linux-gnu/glibc -selinux -libraries -multilib
+cross-aarch64-cros-linux-gnu/go -selinux -multilib
+cross-aarch64-cros-linux-gnu/libcxx -selinux -multilib
+cross-aarch64-cros-linux-gnu/libxcrypt -selinux -multilib
+cross-aarch64-cros-linux-gnu/linux-headers -selinux -multilib
+cross-aarch64-cros-linux-gnu/llvm-libunwind -selinux -multilib
+cross-aarch64-cros-linux-gnu/rust -selinux -multilib

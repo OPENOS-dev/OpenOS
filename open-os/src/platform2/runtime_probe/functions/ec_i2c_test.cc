@@ -1,0 +1,369 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "runtime_probe/functions/ec_i2c.h"
+
+#include <string>
+#include <utility>
+
+#include <base/json/json_reader.h>
+#include <base/strings/stringprintf.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <libec/i2c_read_command.h>
+
+#include "runtime_probe/utils/function_test_utils.h"
+
+namespace runtime_probe {
+namespace {
+
+using ::testing::ByMove;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Return;
+
+// Status codes defined in ec/include/ec_commands.h .
+constexpr uint32_t kEcResultSuccess = 0;
+constexpr uint32_t kEcResultTimeout = 10;
+constexpr uint8_t kEcI2cStatusSuccess = 0;
+constexpr uint8_t kEcI2cStatusError = 1;
+
+class EcI2cFunctionTest : public BaseFunctionTest {
+ protected:
+  void SetUp() override {
+    BaseFunctionTest::SetUp();
+    SetFile("dev/cros_ec", "");
+    SetFile("dev/cros_ish", "");
+  }
+
+ public:
+  class MockI2cReadCommand : public ec::I2cReadCommand {
+   public:
+    template <typename T = MockI2cReadCommand>
+    static std::unique_ptr<T> Create(uint8_t read_len,
+                                     bool success,
+                                     uint32_t result,
+                                     uint8_t i2c_status,
+                                     uint32_t data) {
+      auto cmd = ec::I2cReadCommand::Create<T>(0, 0, 0, read_len);
+      ON_CALL(*cmd, Run).WillByDefault(Return(success));
+      ON_CALL(*cmd, Result).WillByDefault(Return(result));
+      ON_CALL(*cmd, I2cStatus).WillByDefault(Return(i2c_status));
+      ON_CALL(*cmd, Data).WillByDefault(Return(data));
+      return cmd;
+    }
+
+    MOCK_METHOD(bool, Run, (int), (override));
+    MOCK_METHOD(uint32_t, Data, (), (const override));
+    MOCK_METHOD(uint32_t, Result, (), (const override));
+    MOCK_METHOD(uint8_t, I2cStatus, (), (const override));
+  };
+
+  class MockEcI2cFunction : public EcI2cFunction {
+    using EcI2cFunction::EcI2cFunction;
+
+   public:
+    MOCK_METHOD(std::unique_ptr<ec::I2cReadCommand>,
+                GetI2cReadCommand,
+                (),
+                (const override));
+  };
+};
+
+TEST_F(EcI2cFunctionTest, ProbeSucceed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      1, true, kEcResultSuccess, kEcI2cStatusSuccess, 42);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    [
+      {
+        "data": 42
+      }
+    ]
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, Probe16bitDataSucceed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0,
+      "size": 16
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      2, true, kEcResultSuccess, kEcI2cStatusSuccess, 4200);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    [
+      {
+        "data": 4200
+      }
+    ]
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, Probe32bitDataSucceed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0,
+      "size": 32
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      2, true, kEcResultSuccess, kEcI2cStatusSuccess, 1234567890);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    [
+      {
+        "data": 1234567890
+      }
+    ]
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, Probe32bitLargeDataSucceed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0,
+      "size": 32
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      2, true, kEcResultSuccess, kEcI2cStatusSuccess, 4294967295u);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    [
+      {
+        "data": "4294967295"
+      }
+    ]
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, InvalidSize) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0,
+      "size": 7
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  EXPECT_FALSE(
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict()));
+}
+
+TEST_F(EcI2cFunctionTest, EcFailed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      1, false, kEcResultTimeout, kEcI2cStatusSuccess, 0);
+  EXPECT_CALL(*cmd, Data).Times(0);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    []
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, EcI2cFailed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      1, true, kEcResultSuccess, kEcI2cStatusError, 0);
+  EXPECT_CALL(*cmd, Data).Times(0);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    []
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, ProbeIshSucceed) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "ec_type": "cros_ish",
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+      1, true, kEcResultSuccess, kEcI2cStatusSuccess, 42);
+  EXPECT_CALL(*probe_function, GetI2cReadCommand)
+      .WillOnce(Return(ByMove(std::move(cmd))));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    [
+      {
+        "data": 42
+      }
+    ]
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, NoCrosEcDevice) {
+  UnsetPath("dev/cros_ec");
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto create_cmd_func = [] {
+    auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+        1, true, kEcResultSuccess, kEcI2cStatusSuccess, 42);
+    return cmd;
+  };
+  ON_CALL(*probe_function, GetI2cReadCommand)
+      .WillByDefault(Invoke(create_cmd_func));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    []
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, NoCrosIshDevice) {
+  UnsetPath("dev/cros_ish");
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "ec_type": "cros_ish",
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto create_cmd_func = [] {
+    auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+        1, true, kEcResultSuccess, kEcI2cStatusSuccess, 42);
+    return cmd;
+  };
+  ON_CALL(*probe_function, GetI2cReadCommand)
+      .WillByDefault(Invoke(create_cmd_func));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    []
+  )JSON"));
+}
+
+TEST_F(EcI2cFunctionTest, InvalidEcType) {
+  auto probe_statement =
+      base::JSONReader::Read(R"JSON(
+    {
+      "ec_type": "invalid-type",
+      "i2c_bus": 0,
+      "chip_addr": 0,
+      "data_addr": 0
+    }
+  )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto probe_function =
+      CreateProbeFunction<MockEcI2cFunction>(probe_statement->GetDict());
+
+  auto create_cmd_func = [] {
+    auto cmd = MockI2cReadCommand::Create<NiceMock<MockI2cReadCommand>>(
+        1, true, kEcResultSuccess, kEcI2cStatusSuccess, 42);
+    return cmd;
+  };
+  ON_CALL(*probe_function, GetI2cReadCommand)
+      .WillByDefault(Invoke(create_cmd_func));
+
+  EXPECT_EQ(EvalProbeFunction(probe_function.get()),
+            CreateProbeResultFromJson(R"JSON(
+    []
+  )JSON"));
+}
+
+}  // namespace
+}  // namespace runtime_probe

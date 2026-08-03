@@ -1,0 +1,11 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# udev rules to start firmware update for SDINHFT4 UFS memory device.
+SUBSYSTEM=="scsi", \
+ATTR{vendor}=="WDC     ", \
+ATTR{model}=="SDINHFT4-256G   ", \
+ATTR{rev}=="1198", \
+ACTION=="add", \
+RUN+="/sbin/initctl emit fwupdtool-update PLUGIN=scsi GUID=3330628f-1c90-56bd-b9cf-542b4b50ea43 AT_BOOT=true"

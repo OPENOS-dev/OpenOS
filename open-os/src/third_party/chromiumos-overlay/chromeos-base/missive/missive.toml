@@ -1,0 +1,11 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+
+# This package generates proto .a files and the daemon binary.
+# TODO(b/343242269): split proto files into their own library.
+generate_interface_libraries = false

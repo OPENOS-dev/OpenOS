@@ -1,0 +1,215 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "runtime_probe/functions/network.h"
+
+#include <map>
+#include <optional>
+#include <set>
+#include <string>
+
+#include <base/containers/span.h>
+#include <base/files/file_path.h>
+#include <base/strings/stringprintf.h>
+#include <brillo/variant_dictionary.h>
+#include <dbus/shill/dbus-constants.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include "runtime_probe/utils/function_test_utils.h"
+#include "shill/dbus-constants.h"
+
+namespace runtime_probe {
+namespace {
+
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Pointee;
+using ::testing::Return;
+
+class MockNetworkFunction : public NetworkFunction {
+  using NetworkFunction::NetworkFunction;
+
+ public:
+  NAME_PROBE_FUNCTION("mock_network");
+
+  MOCK_METHOD(std::optional<std::string>,
+              GetNetworkType,
+              (),
+              (const, override));
+};
+
+class NetworkFunctionTest : public BaseFunctionTest {
+ protected:
+  void SetNetworkDevice(const std::string& dev_name,
+                        const std::string& network_type,
+                        const std::string& interface_name = "") {
+    const std::string bus_dev =
+        "/sys/devices/pci0000:00/0000:00:08.1" + dev_name;
+    const std::string bus_dev_relative_to_sys = "../../../";
+    SetSymbolicLink(bus_dev, {"/sys/class/net", dev_name, "device"});
+    // The symbolic link is for getting the bus type.
+    SetSymbolicLink({bus_dev_relative_to_sys, "bus", "pci"},
+                    {bus_dev, "subsystem"});
+    SetFile({bus_dev, "device"}, "0x1111");
+    SetFile({bus_dev, "vendor"}, "0x2222");
+    SetFile({bus_dev, "class"}, "0x010203");
+
+    std::string interface = interface_name;
+    if (interface.empty()) {
+      interface = dev_name;
+    }
+
+    shill_devices_["/dev/" + dev_name] = {
+        {shill::kInterfaceProperty, interface},
+        {shill::kTypeProperty, network_type}};
+    mock_context()->SetShillProxies(shill_devices_);
+  }
+
+  void SetUsbNetworkDevice(const std::string& dev_name,
+                           const std::string& network_type,
+                           const std::string& removable) {
+    const std::string bus_dev =
+        "/sys/devices/pci0000:00/0000:00:08.1/0000:03:00.3/usb2/2-3" + dev_name;
+    const std::string bus_dev_relative_to_sys = "../../../../../../";
+    const std::string interface_name = "2-3:1.0";
+    SetSymbolicLink({bus_dev, interface_name},
+                    {"/sys/class/net", dev_name, "device"});
+    // The symbolic link is for getting the bus type.
+    SetSymbolicLink({bus_dev_relative_to_sys, "bus", "usb"},
+                    {bus_dev, interface_name, "subsystem"});
+    SetFile({bus_dev, "idProduct"}, "0x1111");
+    SetFile({bus_dev, "idVendor"}, "0x2222");
+    SetFile({bus_dev, "removable"}, removable);
+    shill_devices_["/dev/" + dev_name] = {{shill::kInterfaceProperty, dev_name},
+                                          {shill::kTypeProperty, network_type}};
+    mock_context()->SetShillProxies(shill_devices_);
+  }
+
+  std::map<std::string, brillo::VariantDictionary> shill_devices_;
+};
+
+TEST_F(NetworkFunctionTest, ProbeNetwork) {
+  SetNetworkDevice("wlan0", shill::kTypeWifi);
+  auto probe_function = CreateProbeFunction<NetworkFunction>();
+
+  auto result = EvalProbeFunction(probe_function.get());
+  EXPECT_EQ(result.size(), 1);
+  EXPECT_TRUE(result[0].GetDict().FindString("path"));
+  EXPECT_TRUE(result[0].GetDict().FindString("bus_type"));
+}
+
+TEST_F(NetworkFunctionTest, ProbeNetworkByType) {
+  SetNetworkDevice("wlan0", shill::kTypeWifi);
+  SetNetworkDevice("eth0", shill::kTypeEthernet);
+  SetNetworkDevice("wwan0", shill::kTypeCellular);
+  const std::set<std::string> expected_types{
+      shill::kTypeWifi, shill::kTypeEthernet, shill::kTypeCellular};
+
+  // Probe all.
+  {
+    auto probe_function = CreateProbeFunction<NetworkFunction>();
+    auto result = EvalProbeFunction(probe_function.get());
+    std::set<std::string> result_types;
+    for (const auto& each_result : result) {
+      auto* type = each_result.GetDict().FindString("type");
+      if (type) {
+        result_types.insert(*type);
+      }
+    }
+    EXPECT_EQ(result_types, expected_types);
+  }
+  // Filter by each type.
+  for (const auto& expected_type : expected_types) {
+    base::DictValue arg;
+    arg.Set("device_type", expected_type);
+    auto probe_function = CreateProbeFunction<NetworkFunction>(arg);
+    auto result = EvalProbeFunction(probe_function.get());
+    EXPECT_EQ(result.size(), 1);
+    EXPECT_THAT(result[0].GetDict().FindString("type"),
+                Pointee(Eq(expected_type)));
+  }
+
+  // TODO(b/269822306): The below two do the same thing as the above, but use
+  // the old interface to pass the type. Remove this after we done the
+  // migration.
+  // Probe all.
+  {
+    auto probe_function = CreateProbeFunction<MockNetworkFunction>();
+    EXPECT_CALL(*probe_function, GetNetworkType())
+        .WillOnce(Return(std::nullopt));
+    auto result = EvalProbeFunction(probe_function.get());
+    std::set<std::string> result_types;
+    for (const auto& each_result : result) {
+      auto* type = each_result.GetDict().FindString("type");
+      if (type) {
+        result_types.insert(*type);
+      }
+    }
+    EXPECT_EQ(result_types, expected_types);
+  }
+  // Filter by each type.
+  for (const auto& expected_type : expected_types) {
+    auto probe_function = CreateProbeFunction<MockNetworkFunction>();
+    EXPECT_CALL(*probe_function, GetNetworkType())
+        .WillOnce(Return(expected_type));
+    auto result = EvalProbeFunction(probe_function.get());
+    EXPECT_EQ(result.size(), 1);
+    EXPECT_THAT(result[0].GetDict().FindString("type"),
+                Pointee(Eq(expected_type)));
+  }
+}
+
+TEST_F(NetworkFunctionTest, CreateNetworkFunctionFailed) {
+  base::DictValue arg;
+  arg.Set("device_type", "unknown_type");
+  auto probe_function = CreateProbeFunction<NetworkFunction>(arg);
+  EXPECT_FALSE(probe_function);
+}
+
+TEST_F(NetworkFunctionTest, ProbeAllFilterExternalEthernet) {
+  SetUsbNetworkDevice("wwan0", shill::kTypeCellular, "unknown");
+  SetUsbNetworkDevice("wlan0", shill::kTypeWifi, "unknown");
+  SetUsbNetworkDevice("eth0", shill::kTypeEthernet, "unknown");
+  auto probe_function = CreateProbeFunction<NetworkFunction>();
+
+  auto result = EvalProbeFunction(probe_function.get());
+  EXPECT_EQ(result.size(), 2);
+}
+
+TEST_F(NetworkFunctionTest, ProbeAll_ShillReportsDefaultCellularInterface) {
+  SetNetworkDevice("wwan0", shill::kTypeCellular,
+                   shill::kCellularDefaultInterfaceName);
+  SetNetworkDevice("eth0", shill::kTypeEthernet);
+
+  auto probe_function = CreateProbeFunction<NetworkFunction>();
+
+  auto result = EvalProbeFunction(probe_function.get());
+  auto ans = CreateProbeResultFromJson(base::StringPrintf(
+      R"JSON(
+    [
+      {
+        "bus_type": "pci",
+        "path": "%s",
+        "pci_class": "0x010203",
+        "pci_device_id": "0x1111",
+        "pci_vendor_id": "0x2222",
+        "type": "cellular"
+      }, {
+        "bus_type": "pci",
+        "path": "%s",
+        "pci_class": "0x010203",
+        "pci_device_id": "0x1111",
+        "pci_vendor_id": "0x2222",
+        "type": "ethernet"
+      }
+    ]
+  )JSON",
+      GetPathUnderRoot("/sys/class/net/wwan0").value().c_str(),
+      GetPathUnderRoot("/sys/class/net/eth0").value().c_str()));
+  ExpectUnorderedListEqual(result, ans);
+}
+
+}  // namespace
+}  // namespace runtime_probe

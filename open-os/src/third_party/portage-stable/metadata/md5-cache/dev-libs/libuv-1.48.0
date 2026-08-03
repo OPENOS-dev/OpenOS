@@ -1,0 +1,12 @@
+BDEPEND=dev-build/libtool virtual/pkgconfig verify-sig? ( sec-keys/openpgp-keys-libuv ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install prepare unpack
+DESCRIPTION=Cross-platform asychronous I/O
+EAPI=7
+HOMEPAGE=https://github.com/libuv/libuv
+IUSE=verify-sig
+KEYWORDS=*
+LICENSE=BSD BSD-2 ISC MIT
+SLOT=0/1
+SRC_URI=https://dist.libuv.org/dist/v1.48.0/libuv-v1.48.0.tar.gz -> libuv-1.48.0.tar.gz verify-sig? ( https://dist.libuv.org/dist/v1.48.0/libuv-v1.48.0.tar.gz.sign -> libuv-1.48.0.tar.gz.sig )
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	libtool	f143db5a74ccd9ca28c1234deffede96	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=8a795af41afe766c4a3c94d4bf0fbebc

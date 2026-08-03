@@ -1,0 +1,10 @@
+[package]
+name = "fake_i2c"
+version = "0.1.0"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[dependencies]
+embedded-hal = "0.2.4"
+i2c_peripheral = { path = "../i2c_peripheral" }
+nb = "1.0.0"

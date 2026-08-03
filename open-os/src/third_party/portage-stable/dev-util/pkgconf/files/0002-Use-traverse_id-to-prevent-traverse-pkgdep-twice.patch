@@ -1,0 +1,88 @@
+From 1378db0232a783bff0581d104872c7d4ebd8c064 Mon Sep 17 00:00:00 2001
+From: Yi Chou <yich@google.com>
+Date: Fri, 22 Dec 2023 00:13:31 +0800
+Subject: [PATCH 2/2] Use traverse_id to prevent traverse pkgdep twice
+
+---
+ libpkgconf/libpkgconf.h |  7 +++++++
+ libpkgconf/pkg.c        | 18 ++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+
+diff --git a/libpkgconf/libpkgconf.h b/libpkgconf/libpkgconf.h
+index 8c70251..ea8c854 100644
+--- a/libpkgconf/libpkgconf.h
++++ b/libpkgconf/libpkgconf.h
+@@ -20,6 +20,7 @@
+ #include <stdarg.h>
+ #include <stddef.h>
+ #include <stdbool.h>
++#include <stdint.h>
+ #include <libpkgconf/libpkgconf-api.h>
+ #include <libpkgconf/iter.h>
+ #include <libpkgconf/bsdstubs.h>
+@@ -123,6 +124,8 @@ struct pkgconf_path_ {
+ #define PKGCONF_PKG_PROPF_SEEN			0x04
+ #define PKGCONF_PKG_PROPF_UNINSTALLED		0x08
+ #define PKGCONF_PKG_PROPF_VIRTUAL		0x10
++#define PKGCONF_PKG_PROPF_VISITED		0x20
++#define PKGCONF_PKG_PROPF_VISITED_PRIVATE	0x40
+ 
+ struct pkgconf_pkg_ {
+ 	pkgconf_node_t cache_iter;
+@@ -157,6 +160,8 @@ struct pkgconf_pkg_ {
+ 	 */
+ 	pkgconf_tuple_t *orig_prefix;
+ 	pkgconf_tuple_t *prefix;
++
++	uint64_t traverse_id;
+ };
+ 
+ typedef bool (*pkgconf_pkg_iteration_func_t)(const pkgconf_pkg_t *pkg, void *data);
+@@ -191,6 +196,8 @@ struct pkgconf_client_ {
+ 	char *prefix_varname;
+ 
+ 	bool already_sent_notice;
++
++	uint64_t traverse_id;
+ };
+ 
+ struct pkgconf_cross_personality_ {
+diff --git a/libpkgconf/pkg.c b/libpkgconf/pkg.c
+index f700d5e..5096616 100644
+--- a/libpkgconf/pkg.c
++++ b/libpkgconf/pkg.c
+@@ -1570,6 +1570,21 @@ pkgconf_pkg_traverse_main(pkgconf_client_t *client,
+ 	if (maxdepth == 0)
+ 		return eflags;
+ 
++	unsigned int visited_flag = (client->flags & PKGCONF_PKG_PKGF_ITER_PKG_IS_PRIVATE) ? PKGCONF_PKG_PROPF_VISITED_PRIVATE : PKGCONF_PKG_PROPF_VISITED;
++
++	if (root->traverse_id == client->traverse_id)
++	{
++		if (root->flags & visited_flag)
++			return eflags;
++	}
++	else
++	{
++		root->traverse_id = client->traverse_id;
++		root->flags &= ~(PKGCONF_PKG_PROPF_VISITED | PKGCONF_PKG_PROPF_VISITED_PRIVATE);
++	}
++
++	root->flags |= visited_flag;
++
+ 	PKGCONF_TRACE(client, "%s: level %d", root->id, maxdepth);
+ 
+ 	if ((root->flags & PKGCONF_PKG_PROPF_VIRTUAL) != PKGCONF_PKG_PROPF_VIRTUAL || (client->flags & PKGCONF_PKG_PKGF_SKIP_ROOT_VIRTUAL) != PKGCONF_PKG_PKGF_SKIP_ROOT_VIRTUAL)
+@@ -1614,6 +1629,9 @@ pkgconf_pkg_traverse(pkgconf_client_t *client,
+ 	int maxdepth,
+ 	unsigned int skip_flags)
+ {
++	static uint64_t traverse_id = 0;
++	client->traverse_id = ++traverse_id;
++
+ 	return pkgconf_pkg_traverse_main(client, root, func, data, maxdepth, skip_flags);
+ }
+ 
+-- 
+2.43.0.472.g3155946c3a-goog
+

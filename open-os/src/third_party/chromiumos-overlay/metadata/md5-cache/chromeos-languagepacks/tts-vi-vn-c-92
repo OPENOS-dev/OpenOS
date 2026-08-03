@@ -1,0 +1,11 @@
+DEFINED_PHASES=install
+DESCRIPTION=tts vi-vn Language Pack for Chromium OS
+EAPI=7
+IUSE=dlc
+KEYWORDS=*
+LICENSE=BSD-Google
+REQUIRED_USE=dlc
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/languagepack-tts-vi-vn-92.tar.xz
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	dlc	768f1474a752d1b824c04c5695593433
+_md5_=3b1e340e370868b6d474657dd3f8ebda

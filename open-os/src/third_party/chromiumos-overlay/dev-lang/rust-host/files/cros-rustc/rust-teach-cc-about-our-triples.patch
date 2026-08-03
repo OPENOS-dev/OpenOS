@@ -1,0 +1,194 @@
+For a while, the `cc` crate started hardcoding a list of triples rather than
+trying to parse attributes from them. As of cc 1.2.17, parsing was preferred
+again. Until then, add hardcoded support for cros triples, since those are not
+represented upstream.
+
+NOTE: This patch also requires updating .cargo-checksums.json, since it's a
+patch to a vendor crate. That logic is in the eclass, so we don't have to
+rechecksum target.rs every time.
+
+index b00a9da..8b53381 100644
+--- a/vendor/cc-1.2.0/src/target.rs
++++ b/vendor/cc-1.2.0/src/target.rs
+@@ -52,6 +52,10 @@ impl FromStr for TargetInfo<'_> {
+ 
+     /// This will fail when using a custom target triple unknown to `rustc`.
+     fn from_str(target_triple: &str) -> Result<Self, Error> {
++        if let Some(t) = from_cros_target(target_triple) {
++            return Ok(t);
++        }
++
+         if let Ok(index) =
+             generated::LIST.binary_search_by_key(&target_triple, |(target_triple, _)| target_triple)
+         {
+@@ -78,6 +82,56 @@ NOTE: `cc-rs` only supports a fixed set of targets when not in a build script.
+     }
+ }
+ 
++fn from_cros_target(target: &str) -> Option<TargetInfo<'static>> {
++    match target {
++        "aarch64-cros-linux-gnu" => {
++            Some(TargetInfo {
++                full_arch: "aarch64",
++                arch: "aarch64",
++                vendor: "cros",
++                os: "linux",
++                env: "gnu",
++                abi: "",
++                unversioned_llvm_target: "aarch64-cros-linux-gnu",
++            })
++        }
++        "armv7a-cros-linux-gnueabihf" => {
++            Some(TargetInfo {
++                full_arch: "armv7a",
++                arch: "arm",
++                vendor: "cros",
++                os: "linux",
++                env: "gnu",
++                abi: "eabihf",
++                unversioned_llvm_target: "armv7a-cros-linux-gnueabihf",
++            })
++        }
++        "x86_64-cros-linux-gnu" => {
++            Some(TargetInfo {
++                full_arch: "x86_64",
++                arch: "x86_64",
++                vendor: "cros",
++                os: "linux",
++                env: "gnu",
++                abi: "",
++                unversioned_llvm_target: "x86_64-cros-linux-gnu",
++            })
++        }
++        "x86_64-pc-linux-gnu" => {
++            Some(TargetInfo {
++                full_arch: "x86_64",
++                arch: "x86_64",
++                vendor: "pc",
++                os: "linux",
++                env: "gnu",
++                abi: "",
++                unversioned_llvm_target: "x86_64-pc-linux-gnu",
++            })
++        }
++        _ => None,
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use std::str::FromStr;
+@@ -126,4 +180,20 @@ mod tests {
+             let _ = TargetInfo::from_str(target).unwrap_err();
+         }
+     }
++
++    #[test]
++    fn can_parse_cros_triples() {
++        let targets = [
++            "aarch64-cros-linux-gnu",
++            "armv7a-cros-linux-gnueabihf",
++            "x86_64-cros-linux-gnu",
++            "x86_64-pc-linux-gnu",
++        ];
++
++        for target in targets {
++            let i = TargetInfo::from_str(target).unwrap();
++            let inferred_target_name = format!("{}-{}-{}-{}{}", i.full_arch, i.vendor, i.os, i.env, i.abi);
++            assert_eq!(target, inferred_target_name);
++        }
++    }
+ }
+index b00a9da..8b53381 100644
+--- a/vendor/cc-1.2.16/src/target.rs
++++ b/vendor/cc-1.2.16/src/target.rs
+@@ -52,6 +52,10 @@ impl FromStr for TargetInfo<'_> {
+ 
+     /// This will fail when using a custom target triple unknown to `rustc`.
+     fn from_str(target_triple: &str) -> Result<Self, Error> {
++        if let Some(t) = from_cros_target(target_triple) {
++            return Ok(t);
++        }
++
+         if let Ok(index) =
+             generated::LIST.binary_search_by_key(&target_triple, |(target_triple, _)| target_triple)
+         {
+@@ -78,6 +82,56 @@ NOTE: `cc-rs` only supports a fixed set of targets when not in a build script.
+     }
+ }
+ 
++fn from_cros_target(target: &str) -> Option<TargetInfo<'static>> {
++    match target {
++        "aarch64-cros-linux-gnu" => {
++            Some(TargetInfo {
++                full_arch: "aarch64",
++                arch: "aarch64",
++                vendor: "cros",
++                os: "linux",
++                env: "gnu",
++                abi: "",
++                llvm_target: "aarch64-cros-linux-gnu",
++            })
++        }
++        "armv7a-cros-linux-gnueabihf" => {
++            Some(TargetInfo {
++                full_arch: "armv7a",
++                arch: "arm",
++                vendor: "cros",
++                os: "linux",
++                env: "gnu",
++                abi: "eabihf",
++                llvm_target: "armv7a-cros-linux-gnueabihf",
++            })
++        }
++        "x86_64-cros-linux-gnu" => {
++            Some(TargetInfo {
++                full_arch: "x86_64",
++                arch: "x86_64",
++                vendor: "cros",
++                os: "linux",
++                env: "gnu",
++                abi: "",
++                llvm_target: "x86_64-cros-linux-gnu",
++            })
++        }
++        "x86_64-pc-linux-gnu" => {
++            Some(TargetInfo {
++                full_arch: "x86_64",
++                arch: "x86_64",
++                vendor: "pc",
++                os: "linux",
++                env: "gnu",
++                abi: "",
++                llvm_target: "x86_64-pc-linux-gnu",
++            })
++        }
++        _ => None,
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use std::str::FromStr;
+@@ -126,4 +180,20 @@ mod tests {
+             let _ = TargetInfo::from_str(target).unwrap_err();
+         }
+     }
++
++    #[test]
++    fn can_parse_cros_triples() {
++        let targets = [
++            "aarch64-cros-linux-gnu",
++            "armv7a-cros-linux-gnueabihf",
++            "x86_64-cros-linux-gnu",
++            "x86_64-pc-linux-gnu",
++        ];
++
++        for target in targets {
++            let i = TargetInfo::from_str(target).unwrap();
++            let inferred_target_name = format!("{}-{}-{}-{}{}", i.full_arch, i.vendor, i.os, i.env, i.abi);
++            assert_eq!(target, inferred_target_name);
++        }
++    }
+ }
+

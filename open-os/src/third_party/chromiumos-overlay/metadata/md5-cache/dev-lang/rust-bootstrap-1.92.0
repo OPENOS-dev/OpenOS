@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install prepare setup
+DEPEND=dev-libs/openssl
+DESCRIPTION=Bootstraps the rustc Rust compiler using mrustc
+EAPI=7
+HOMEPAGE=https://github.com/thepowersgang/mrustc
+KEYWORDS=*
+LICENSE=MIT Apache-2.0 BSD-1 BSD-2 BSD-4 UoI-NCSA
+RDEPEND=dev-libs/openssl
+RESTRICT=binchecks strip
+SLOT=1.92.0
+SRC_URI=gs://chromeos-localmirror/distfiles/rustc-1.92.0-src.tar.gz gs://chromeos-localmirror/distfiles/rust-bootstrap-1.92.0.tbz2
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=ec7f0a8731665773c9f44e28d1ff6ef4

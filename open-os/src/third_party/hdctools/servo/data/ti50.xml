@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<root>
+  <include>
+    <name>cr50.xml</name>
+  </include>
+  <!-- All Ti50-based devices support EFS2 -->
+  <include>
+    <name>ec_efs2.xml</name>
+  </include>
+  <control>
+    <name>gsc_fw_type</name>
+    <doc>Name of GSC fw</doc>
+    <params clobber_ok="patch" value="ti50"/>
+  </control>
+  <control>
+    <name>gsc_version</name>
+    <alias>ti50_version</alias>
+    <params clobber_ok="patch" />
+  </control>
+  <control>
+    <name>ec3po_gsc_uart</name>
+    <params has_chan="no" clobber_ok="patch" />
+  </control>
+  <!-- Use Ti50 to drive the write protect signal. Reset the servo flex wp signal -->
+  <control>
+    <name>fw_wp_state</name>
+    <doc>Use GSC CCD to control WP</doc>
+    <params drv="fw_wp_gsc_flex" interface="servo" init="force_off"
+    clobber_ok="patch"
+    ></params>
+  </control>
+  <control>
+    <name>ti50_aprv_latch_state</name>
+    <doc>ti50 ap ro verification latch state</doc>
+    <params cmd="get" uart_cmd="ap_ro_verify" regex="Latched: (No|Yes)" group="1" fmt="lowercase"
+    interface="GSC_CONSOLE" drv="cr50"
+    ></params>
+  </control>
+  <control>
+    <name>ti50_aprv_status</name>
+    <doc>ti50 ap ro verification status</doc>
+    <params cmd="get" uart_cmd="ap_ro_verify" regex="APRV status: ([^\(]+) *\("
+    group="1" fmt="lowercase" interface="GSC_CONSOLE" drv="cr50"
+    ></params>
+  </control>
+  <control>
+    <name>ti50_aprv_status_detailed</name>
+    <doc>ti50 detailed ap ro verification status</doc>
+    <params cmd="get" uart_cmd="ap_ro_verify" regex="APRV status: .*\((0x\S+)\)"
+    group="1" fmt="lowercase" interface="GSC_CONSOLE" drv="cr50"
+    ></params>
+  </control>
+  <control>
+    <name>ap_flash_select</name>
+    <doc>AP_FLASH_SELECT GPIO pin in H1</doc>
+    <params subtype="ap_flash_select" interface="GSC_CONSOLE" drv="cr50"
+      map="onoff" init="off" clobber_ok="full"/>
+  </control>
+</root>

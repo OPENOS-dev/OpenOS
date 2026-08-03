@@ -1,0 +1,27 @@
+From dcab380e835f37f554370ac2d1a75cff63538726 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fran=C3=A7ois=20Degros?= <fdegros@chromium.org>
+Date: Sun, 24 May 2026 22:03:21 +1000
+Subject: [PATCH] Patch for ChromeOS
+
+Disabled workaround for libarchive issue 2514, since the ChromeOS
+version of libarchive 3.8.7 has a patch fixing this issue.
+---
+ lib/reader.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/reader.cc b/lib/reader.cc
+index f336fa0..7acbc6c 100644
+--- a/lib/reader.cc
++++ b/lib/reader.cc
+@@ -529,7 +529,7 @@ void Reader::SetRpmFormat() {
+   }
+ 
+ #define WORK_AROUND_ISSUE_2513 ARCHIVE_VERSION_NUMBER < 3'008'007
+-#define WORK_AROUND_ISSUE_2514 ARCHIVE_VERSION_NUMBER < 3'009'000
++#define WORK_AROUND_ISSUE_2514 ARCHIVE_VERSION_NUMBER < 3'008'007
+ 
+ bool Reader::SetFilter(std::string_view const ext) {
+   static std::unordered_map<std::string_view, void (*)(Reader&)> const
+-- 
+2.54.0.794.g4f17f83d09-goog
+

@@ -1,0 +1,21 @@
+// Copyright 2011 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef LOGIN_MANAGER_MOCK_FILE_CHECKER_H_
+#define LOGIN_MANAGER_MOCK_FILE_CHECKER_H_
+
+#include <gmock/gmock.h>
+
+#include "login_manager/file_checker.h"
+
+namespace login_manager {
+class MockFileChecker : public FileChecker {
+ public:
+  MockFileChecker();
+  ~MockFileChecker();
+  MOCK_METHOD(bool, exists, (), (override));
+};
+}  // namespace login_manager
+
+#endif  // LOGIN_MANAGER_MOCK_FILE_CHECKER_H_

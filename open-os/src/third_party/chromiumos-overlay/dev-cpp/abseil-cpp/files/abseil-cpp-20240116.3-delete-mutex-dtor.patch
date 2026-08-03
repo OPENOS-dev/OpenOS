@@ -1,0 +1,65 @@
+From 3fec309de8c07f3b66d45780bb505e140cd923d5 Mon Sep 17 00:00:00 2001
+From: Di Wu <diwux@google.com>
+Date: Tue, 7 Oct 2025 06:27:27 +0000
+Subject: [PATCH] absl/synchronization: Fix ABI mismatch in Mutex destructor
+
+This patch resolves an ABI incompatibility that occurs when the Abseil
+library is compiled in release mode (with NDEBUG defined) but is used by
+downstream code that includes `<absl/synchronization/mutex.h>` in
+debug mode (without NDEBUG defined).
+
+The Mutex destructor is a unique case where its definition is toggled by
+the NDEBUG preprocessor flag. In debug builds, the destructor calls an
+out-of-line `Mutex::Dtor()` symbol. This symbol is not emitted in
+release builds, leading to linker errors for mismatched downstream
+users.
+
+This change forces the header to always expose the release version of
+the destructor. This ensures that all consumers are compatible with the
+release-built Abseil library, preventing runtime crashes.
+
+A review of the codebase confirms that other NDEBUG guards in Abseil
+headers do not affect the public ABI of classes and therefore do not
+require this bypass.
+
+A modified version of this patch was upstreamed to Abseil on November 5, 2025.
+In the future, when ChromeOS receives a newer LTS copy of Abseil (newer than
+20251105), this patch should be removed.
+---
+ absl/synchronization/mutex.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/absl/synchronization/mutex.cc b/absl/synchronization/mutex.cc
+index cb3c7e7..9512e1a 100644
+--- a/absl/synchronization/mutex.cc
++++ b/absl/synchronization/mutex.cc
+@@ -738,7 +738,12 @@ static unsigned TsanFlags(Mutex::MuHow how) {
+ Mutex::~Mutex() { Dtor(); }
+ #endif
+ 
+-#if !defined(NDEBUG) || defined(ABSL_HAVE_THREAD_SANITIZER)
++// ChromeOS: Provide an empty definition for `Mutex::Dtor() {}` so that
++// TUs built for `cros-debug` have something to link against here, even
++// if this library is being built with `USE=-cros-debug`.
++#if 1
++void Mutex::Dtor() {}
++#elif !defined(NDEBUG) || defined(ABSL_HAVE_THREAD_SANITIZER)
+ void Mutex::Dtor() {
+   if (kDebugMode) {
+     this->ForgetDeadlockInfo();
+diff --git a/absl/synchronization/mutex.h b/absl/synchronization/mutex.h
+index d53a22b..d68dfd7 100644
+--- a/absl/synchronization/mutex.h
++++ b/absl/synchronization/mutex.h
+@@ -1069,7 +1069,10 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE
+ inline Mutex::~Mutex() { Dtor(); }
+ #endif
+ 
+-#if defined(NDEBUG) && !defined(ABSL_HAVE_THREAD_SANITIZER)
++// ChromeOS: This is for downstream packages that include the header but do not
++// specify NDEBUG. This was originally `1`, but adjusted in response to
++// b/453621607.
++#if !defined(ABSL_BUILD_DLL)
+ // Use default (empty) destructor in release build for performance reasons.
+ // We need to mark both Dtor and ~Mutex as always inline for inconsistent
+ // builds that use both NDEBUG and !NDEBUG with dynamic libraries. In these

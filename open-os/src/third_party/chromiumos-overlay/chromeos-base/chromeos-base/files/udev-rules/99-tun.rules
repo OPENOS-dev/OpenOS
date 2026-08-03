@@ -1,0 +1,5 @@
+# Copyright 2026 OCS (Open Code Studio)
+# License: GPL-3.0
+
+# Give tun access to users in the "tun" group.
+KERNEL=="tun", GROUP="tun", MODE="0660"

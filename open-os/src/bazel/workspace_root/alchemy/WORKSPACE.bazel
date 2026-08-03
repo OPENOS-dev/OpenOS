@@ -1,0 +1,13 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Since we use bzlmod, we don't use WORKSPACE.bazel. Don't add new entries here.
+# Instead, modify src/MODULE.bazel and src/bazel/module_extensions/...
+# Preflight checks are the only exception because we want to run them eagerly.
+
+load("//bazel/repo_defs:preflight_checks.bzl", "basic_preflight_checks")
+
+basic_preflight_checks(name = "basic_preflight_checks")
+
+load("@basic_preflight_checks//:ok.bzl", "ok")  # @unused

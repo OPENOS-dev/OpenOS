@@ -1,0 +1,23 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# It belongs to the calibration suite, which verifies provisioning.
+# The only purpose of this test is to trigger a provision task.
+# We explicitly make it not call job.runtest to avoid overhead of
+# installing/uninstalling autotest packages.
+NAME = "stub_PassServer.calibration"
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': "b:1284375", # ChromeOS > Test > Harness > Tauto > Examples
+    'criteria': 'An empty control file that does nothing'
+}
+ATTRIBUTES = "suite:calibration, suite:sanity"
+TEST_TYPE = "server"
+
+
+# We need to record the state, so that tko paser can still parse it
+# as a test.
+job.record('START', None, NAME)
+job.record('GOOD', None, None, 'completed successfully')
+job.record('END GOOD', None, NAME)

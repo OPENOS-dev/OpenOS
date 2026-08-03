@@ -1,0 +1,112 @@
+# Copyright 1999-2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/bison.asc
+inherit flag-o-matic verify-sig
+
+DESCRIPTION="A general-purpose (yacc-compatible) parser generator"
+HOMEPAGE="https://www.gnu.org/software/bison/"
+SRC_URI="mirror://gnu/${PN}/${P}.tar.xz"
+SRC_URI+=" verify-sig? ( mirror://gnu/${PN}/${P}.tar.xz.sig )"
+
+LICENSE="GPL-3+"
+SLOT="0"
+KEYWORDS="*"
+IUSE="examples nls static test"
+RESTRICT="!test? ( test )"
+
+DEPEND="
+	nls? ( >=sys-devel/gettext-0.21 )
+"
+RDEPEND="
+	${DEPEND}
+	>=sys-devel/m4-1.4.16
+"
+BDEPEND="
+	sys-devel/flex
+	>=sys-devel/m4-1.4.16
+	test? ( dev-lang/perl )
+	verify-sig? ( sec-keys/openpgp-keys-bison )
+"
+PDEPEND="app-alternatives/yacc"
+
+DOCS=( AUTHORS ChangeLog NEWS README THANKS TODO ) # ChangeLog-2012 ChangeLog-1998 PACKAGING README-alpha README-release
+
+PATCHES=(
+	# To avoid pulling in autoconf as a dependency we apply the "regen"
+	# patch instead of the real patch.
+	#
+	# See https://lists.gnu.org/archive/html/bug-gnulib/2024-02/msg00190.html
+	# for the original source.
+	#
+	# https://bugs.gentoo.org/925100
+	# "${FILESDIR}/0001-libtextstyle-Add-with-libtextstyle-option.patch"
+	"${FILESDIR}/0001-libtextstyle-Add-with-libtextstyle-option-regen-v${PV}.patch"
+)
+
+src_prepare() {
+	# Old logic when we needed to patch configure.ac
+	# Keeping in case it's useful for future
+
+	# Record date to avoid 'config.status --recheck' & regen of 'tests/package.m4'
+	#touch -r configure.ac old.configure.ac || die
+	touch -r configure old.configure || die
+
+	default
+
+	# Restore date after patching
+	#touch -r old.configure.ac configure.ac || die
+	touch -r old.configure configure || die
+
+	# The makefiles make the man page depend on the configure script
+	# which we patched above.  Touch it to prevent regeneration.
+	#touch doc/bison.1 || die #548778 #538300#9
+
+	# Avoid regenerating the info page when the timezone is diff. #574492
+	sed -i '2iexport TZ=UTC' build-aux/mdate-sh || die
+}
+
+src_configure() {
+	use static && append-ldflags -static
+
+	local myeconfargs=(
+		"$(use_enable nls)"
+		"$(usex nls "--with-libtextstyle" "--without-libtextstyle")"
+	)
+
+	econf "${myeconfargs[@]}"
+}
+
+src_install() {
+	default
+
+	# These are owned by app-alternatives/yacc
+	mv "${ED}"/usr/bin/yacc{,.bison} || die
+	mv "${ED}"/usr/share/man/man1/yacc{,.bison}.1 || die
+
+	# We do not need liby.a
+	rm -r "${ED}"/usr/lib* || die
+
+	# Examples are about 200K, so let's make them optional still for now.
+	if ! use examples ; then
+		rm -r "${ED}"/usr/share/doc/${PF}/examples/ || die
+	fi
+}
+
+pkg_postinst() {
+	# ensure to preserve the symlinks before app-alternatives/yacc
+	# is installed
+	if [[ ! -h ${EROOT}/usr/bin/yacc ]]; then
+		if [[ -e ${EROOT}/usr/bin/yacc ]] ; then
+			# bug #886123
+			ewarn "${EROOT}/usr/bin/yacc exists but is not a symlink."
+			ewarn "This is expected during Prefix bootstrap and unsual otherwise."
+			ewarn "Moving away unexpected ${EROOT}/usr/bin/yacc to .bak."
+			mv "${EROOT}/usr/bin/yacc" "${EROOT}/usr/bin/yacc.bak" || die
+		fi
+
+		ln -s yacc.bison "${EROOT}/usr/bin/yacc" || die
+	fi
+}

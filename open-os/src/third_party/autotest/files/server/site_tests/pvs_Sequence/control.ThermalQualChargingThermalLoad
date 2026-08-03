@@ -1,0 +1,61 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'pvs_Sequence.ThermalQualChargingThermalLoad'
+TEST_TYPE = 'server'
+METADATA = {
+    'contacts': ['chromeos-pvs-eng@google.com'],
+    'bug_component': 'b:1110659',
+    'criteria': 'Sequence to validate thermal stability while charging',
+    'requirements': ['pwr-therm-0003-v01', 'pwr-therm-0003-v02']
+}
+
+import datetime
+
+from autotest_lib.server import utils
+from autotest_lib.client.common_lib.bounds import Bound
+
+args_dict = utils.args_to_dict(args)
+servo_args = hosts.CrosHost.get_servo_arguments(args_dict)
+
+HOURS=60*60
+
+pdash_note = args_dict.get('pdash_note',
+                           NAME + '_' + datetime.datetime.utcnow().isoformat())
+
+SEQUENCE = [
+    # power_BatteryDrain and _BatteryCharge both called to validate
+    # that we're starting at 30% each time
+    ('power_BatteryDrain', {
+        'force_discharge': True, 'drain_to_percent': 30,
+        'drain_timeout': 5 * HOURS,
+        'use_design_charge_capacity': False}, False),
+    ('power_BatteryCharge', {
+        'percent_target_charge': 30,
+        'max_run_time': 5 * HOURS,
+        'use_design_charge_capacity': False}, False),
+    ('power_WaitForCoolDown', {}, False),
+    ('power_ThermalLoad', {'pdash_note': pdash_note}, False),
+    ('power_Speedometer2', {'pdash_note': pdash_note}, False)
+]
+
+BOUNDS = [
+    Bound('power_Speedometer2\.result', min=0),
+    Bound('power_ThermalLoad\.avg_fps_3000_fishes_fps_avg', min=55),
+    Bound('power_ThermalLoad\.avg_fps_3000_fishes_fps_std', max=15),
+]
+
+def run(machine):
+    # Setup the client machine.
+    host = hosts.create_host(machine, servo_args=servo_args)
+
+    # run the pvs_Sequence wrapper, with the input of the SEQUENCE
+    # defined above
+    job.run_test('pvs_Sequence',
+                           tag=NAME.split('.')[1],
+                           host=host,
+                           sequence=SEQUENCE,
+                           bounds=BOUNDS)
+
+parallel_simple(run, machines)

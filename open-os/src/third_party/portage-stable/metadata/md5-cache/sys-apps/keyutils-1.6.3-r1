@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install prepare setup test
+DEPEND=!prefix? ( >=sys-kernel/linux-headers-2.6.11 )
+DESCRIPTION=Linux Key Management Utilities
+EAPI=7
+HOMEPAGE=https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git
+IUSE=static static-libs test kernel_linux abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64 split-usr
+KEYWORDS=*
+LICENSE=GPL-2 LGPL-2.1
+RESTRICT=!test? ( test )
+SLOT=0/1.9
+SRC_URI=https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git/snapshot/keyutils-1.6.3.tar.gz
+_eclasses_=linux-info	327865b9921771330775d971263dc234	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	usr-ldscript	766f0a506b45f02361ad1b8ca205b7e1
+_md5_=08522831c2fe5adad53df0b48c13ef1c

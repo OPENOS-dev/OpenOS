@@ -1,0 +1,1 @@
+realtek-rts5453vb-GOOG0R00-firmware-0.45.3.ebuild

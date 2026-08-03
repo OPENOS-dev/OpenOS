@@ -1,0 +1,238 @@
+{
+  "c++": {
+    "mojo_base.mojom.File": {
+      "copyable_pass_by_value": false,
+      "default_constructible": false,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": true,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "base/files/file.h"
+      ],
+      "traits_headers": [
+        "odml/mojom/file_mojom_traits.h"
+      ],
+      "typename": "base::File"
+    },
+    "mojo_base.mojom.ReadOnlyFile": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": true,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "base/files/file.h"
+      ],
+      "traits_headers": [
+        "odml/mojom/read_only_file_mojom_traits.h"
+      ],
+      "typename": "base::File"
+    },
+    "mojo_base.mojom.Uuid": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "base/uuid.h"
+      ],
+      "traits_headers": [
+        "odml/mojom/uuid_mojom_traits.h"
+      ],
+      "typename": "base::Uuid"
+    },
+    "on_device_model.mojom.AdaptationAssets": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": true,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/public/cpp/model_assets.h"
+      ],
+      "traits_headers": [
+        "odml/mojom/adaptation_assets_mojom_traits.h"
+      ],
+      "typename": "on_device_model::AdaptationAssets"
+    },
+    "on_device_model.mojom.Capabilities": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/public/cpp/capabilities_mojom_traits.h"
+      ],
+      "traits_headers": [
+        "odml/on_device_model/public/cpp/capabilities_mojom_traits.h"
+      ],
+      "typename": "::on_device_model::Capabilities"
+    },
+    "on_device_model.mojom.ModelAssets": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": true,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/public/cpp/model_assets.h"
+      ],
+      "traits_headers": [
+        "odml/mojom/model_assets_mojom_traits.h"
+      ],
+      "typename": "on_device_model::ModelAssets"
+    },
+    "on_device_model.mojom.Token": {
+      "copyable_pass_by_value": true,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": true,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/ml/chrome_ml_types.h"
+      ],
+      "traits_headers": [
+        "odml/on_device_model/ml/chrome_ml_types_traits.h"
+      ],
+      "typename": "::ml::Token"
+    },
+    "on_device_model.mojom.InputPiece": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": true,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/ml/chrome_ml_types.h"
+      ],
+      "traits_headers": [
+        "odml/on_device_model/ml/chrome_ml_types_traits.h"
+      ],
+      "typename": "::ml::InputPiece"
+    },
+    "mojo_base.mojom.Token": {
+      "copyable_pass_by_value": false,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": false,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": true,
+      "public_headers": [
+        "base/token.h"
+      ],
+      "traits_headers": [
+        "odml/mojom/token_mojom_traits.h"
+      ],
+      "typename": "base::Token"
+    },
+    "mojo_base.mojom.Time": {
+      "hashable": false,
+      "typename": "base::Time",
+      "forward_declaration": null,
+      "traits_headers": [
+        "ml/mojom/time_mojom_traits.h"
+      ],
+      "copyable_pass_by_value": true,
+      "default_constructible": true,
+      "force_serialize": false,
+      "move_only": false,
+      "nullable_is_same_type": false,
+      "non_const_ref": false,
+      "non_copyable_non_movable": false,
+      "public_headers": [
+        "base/time/time.h"
+      ]
+    },
+    "mojo_base.mojom.TimeDelta": {
+      "hashable": false,
+      "typename": "base::TimeDelta",
+      "forward_declaration": null,
+      "traits_headers": [
+        "ml/mojom/time_mojom_traits.h"
+      ],
+      "copyable_pass_by_value": true,
+      "default_constructible": true,
+      "force_serialize": false,
+      "move_only": false,
+      "nullable_is_same_type": false,
+      "non_const_ref": false,
+      "non_copyable_non_movable": false,
+      "public_headers": [
+        "base/time/time.h"
+      ]
+    },
+    "on_device_model.mojom.ModelBackendType": {
+      "copyable_pass_by_value": true,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": true,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/ml/chrome_ml_types.h"
+      ],
+      "traits_headers": [
+        "odml/on_device_model/ml/chrome_ml_types_traits.h"
+      ],
+      "typename": "::ml::ModelBackendType"
+    },
+    "on_device_model.mojom.ModelPerformanceHint": {
+      "copyable_pass_by_value": true,
+      "default_constructible": true,
+      "force_serialize": false,
+      "forward_declaration": null,
+      "hashable": true,
+      "move_only": false,
+      "non_copyable_non_movable": false,
+      "non_const_ref": false,
+      "nullable_is_same_type": false,
+      "public_headers": [
+        "odml/on_device_model/ml/chrome_ml_types.h"
+      ],
+      "traits_headers": [
+        "odml/on_device_model/ml/chrome_ml_types_traits.h"
+      ],
+      "typename": "::ml::ModelPerformanceHint"
+    }
+  }
+}

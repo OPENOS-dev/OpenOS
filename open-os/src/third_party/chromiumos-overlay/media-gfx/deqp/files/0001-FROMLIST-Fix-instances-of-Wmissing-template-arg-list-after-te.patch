@@ -1,0 +1,55 @@
+From a843574c3b29e730556ce19b0b20454147b8d4f1 Mon Sep 17 00:00:00 2001
+From: Andrej Shadura <andrew.shadura@collabora.co.uk>
+Date: Fri, 29 Nov 2024 14:27:05 +0100
+Subject: [PATCH] Fix instances of -Wmissing-template-arg-list-after-template-kw
+
+Clang has a new warning that requires a template argument list after using
+the template keyword. Remove uses of the template keyword when we're not
+specifying types.
+
+See https://github.com/llvm/llvm-project/issues/94194 for the upstream
+clang change.
+
+BUG=b:381287292
+
+Origin: vendor
+Forwarded: https://github.com/KhronosGroup/VK-GL-CTS/pull/501
+---
+ .../shaderexecutor/vktShaderBuiltinPrecisionTests.cpp     | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/external/vulkancts/modules/vulkan/shaderexecutor/vktShaderBuiltinPrecisionTests.cpp b/external/vulkancts/modules/vulkan/shaderexecutor/vktShaderBuiltinPrecisionTests.cpp
+index 8537d6f2ee9d..601b64eaa46f 100644
+--- a/external/vulkancts/modules/vulkan/shaderexecutor/vktShaderBuiltinPrecisionTests.cpp
++++ b/external/vulkancts/modules/vulkan/shaderexecutor/vktShaderBuiltinPrecisionTests.cpp
+@@ -1081,15 +1081,15 @@ struct IntervalWriter
+ 
+         else if (interval.lo() == interval.hi())
+         {
+-            const auto lo = FloatTypeSelector<GenType>::type::template convert(tcu::Float64(interval.lo()));
++            const auto lo = FloatTypeSelector<GenType>::type::convert(tcu::Float64(interval.lo()));
+             os << '{';
+             void(lo.isDenorm() ? (os << std::hexfloat << interval.lo() << std::defaultfloat) : (os << interval.lo()));
+             os << '}';
+         }
+         else
+         {
+-            const auto lo = FloatTypeSelector<GenType>::type::template convert(tcu::Float64(interval.lo()));
+-            const auto hi = FloatTypeSelector<GenType>::type::template convert(tcu::Float64(interval.hi()));
++            const auto lo = FloatTypeSelector<GenType>::type::convert(tcu::Float64(interval.lo()));
++            const auto hi = FloatTypeSelector<GenType>::type::convert(tcu::Float64(interval.hi()));
+ 
+             os << '[';
+             void(lo.isDenorm() ? (os << std::hexfloat << interval.lo() << std::defaultfloat) : (os << interval.lo()));
+@@ -7048,7 +7048,7 @@ void DefaultSubnormalsSampling<T>::genSubnormals(const FloatFormat &fmt, const P
+             DE_ASSERT((man & fullMantissaMask) != 0);
+             DE_UNREF(fullMantissaMask);
+ 
+-            outValues.push_back(SamplingT::SelectorT::template conv(val));
++            outValues.push_back(SamplingT::SelectorT::conv(val));
+         }
+     }
+ }
+-- 
+2.43.0
+

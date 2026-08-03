@@ -1,0 +1,15 @@
+BDEPEND=!cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array
+DEFINED_PHASES=compile configure install test
+DEPEND=dev-libs/libxml2:= media-gfx/sane-backends:= media-libs/libjpeg-turbo:= media-libs/libpng:= net-dns/avahi:= net-libs/gnutls:= !cros_host? ( dev-lang/python )
+DESCRIPTION=eSCL and WSD SANE backend
+EAPI=7
+HOMEPAGE=https://github.com/alexpevzner/sane-airscan
+IUSE=fuzzer cros_host test fuzzer asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-libs/libxml2:= media-gfx/sane-backends:= media-libs/libjpeg-turbo:= media-libs/libpng:= net-dns/avahi:= net-libs/gnutls:=
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0/0.99.36
+SRC_URI=https://github.com/alexpevzner/sane-airscan/archive/0.99.36.tar.gz -> sane-airscan-0.99.36.tar.gz
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-fuzzer	d598850678086f73116a1dba1b01de44	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	meson	0b48ece927e974cd82202dc49f391f82	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=084937c78ef187d59b0c566710c7c983

@@ -1,0 +1,14 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Tell tooling which bug component to use.
+third_party {
+  security {
+    # ChromeOS > Platform > Services > Printing
+    tag: "vuln_reporting:buganizer_component:167231"
+
+    # Created a patch to not compile code that contains this vulnerability.
+    mitigated_security_patch: "CVE-2023-24805"
+  }
+}

@@ -1,0 +1,18 @@
+# Description
+# This test records power related statistics while staying idle, and
+# compares between cellular on and off.
+
+NAME = "power_CellularIdle"
+METADATA = {
+    "contacts": ["chromeos-cellular-team@google.com"],
+    "bug_component": "b:167157",
+    "criteria": "This test is a benchmark.",
+    "hw_agnostic": False
+}
+# Disabling tauto test. b/328059571
+# ATTRIBUTES = "suite:cellular_power"
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_CellularIdle', pdash_note=pdash_note)

@@ -1,0 +1,154 @@
+// SPDX-License-Identifier: GPL-2.0
+
+#include <string.h>
+
+#include "boot/bootconfig.h"
+#include "tests/test.h"
+
+#define BR "\n"
+
+char bootconfig_buf[512];
+struct bootconfig bc;
+
+static void test_bootconfig_update(void **state)
+{
+	bootconfig_init(&bc, bootconfig_buf, sizeof(bootconfig_buf));
+
+	/* Test update appends with := */
+	assert_int_equal(bootconfig_append(&bc, "key1", "val1"), 0);
+	assert_int_equal(bootconfig_update_value(&bc, "key1", "new_val1"), 0);
+	assert_non_null(strstr(bootconfig_buf, "key1=\"val1\""));
+	assert_non_null(strstr(bootconfig_buf, "key1:=\"new_val1\""));
+
+	/* Test update non-existent key */
+	assert_int_equal(bootconfig_update_value(&bc, "key2", "val2"), 0);
+	assert_non_null(strstr(bootconfig_buf, "key2:=\"val2\""));
+}
+
+static void test_bootconfig_api(void **state)
+{
+	struct bootconfig_trailer *trailer;
+	struct bootconfig reinited_bc;
+	char *init_params = "k0=v0" BR "k1=v1" BR;
+	char *init_cmdline = "c0=v0 c1=\"v1\"      c2=v2";
+	const char *expected = "k0=v0" BR "k1=v1" BR "c0=v0" BR "c1=\"v1\"" BR
+			       "c2=v2" BR "testkey=\"testval\"" BR;
+
+	/* Verify basic bootconfig API */
+	bootconfig_init(&bc, bootconfig_buf, sizeof(bootconfig_buf));
+	assert_int_equal(bootconfig_append_params(&bc, init_params, strlen(init_params)), 0);
+	assert_int_equal(bootconfig_append_cmdline(&bc, init_cmdline), 0);
+	assert_int_equal(bootconfig_append(&bc, "testkey", "testval"), 0);
+	assert_string_equal(expected, bootconfig_buf);
+	trailer = bootconfig_finalize(&bc, 0);
+	assert_non_null(trailer);
+
+	/*
+	 * Verify that reinit correctly restore pointer and size of bootconfig
+	 * space
+	 */
+	bootconfig_reinit(&reinited_bc, trailer);
+	assert_ptr_equal(reinited_bc.start, bc.start);
+	assert_int_equal(reinited_bc.size, bc.size);
+}
+
+/* Verify quoting the value */
+static void test_bootconfig_quoting_logic(void **state)
+{
+	memset(&bc, 0, sizeof(bc));
+	memset(bootconfig_buf, 0, sizeof(bootconfig_buf));
+	bootconfig_init(&bc, bootconfig_buf, sizeof(bootconfig_buf));
+
+	/* Value contains hash '#' */
+	assert_int_equal(bootconfig_append(&bc, "key.hash", "val#ue"), 0);
+	assert_non_null(strstr(bootconfig_buf, "key.hash=\"val#ue\""));
+
+	/* Value contains comma ',' */
+	assert_int_equal(bootconfig_append(&bc, "key.comma", "val,ue"), 0);
+	assert_non_null(strstr(bootconfig_buf, "key.comma=\"val,ue\""));
+
+	/* Value contains curly bracket '}' */
+	assert_int_equal(bootconfig_append(&bc, "key.bracket", "}value"), 0);
+	assert_non_null(strstr(bootconfig_buf, "key.bracket=\"}value\""));
+
+	/* Value contains new line '\n' */
+	assert_int_equal(bootconfig_append(&bc, "key.newline", "va\nlue"), 0);
+	assert_non_null(strstr(bootconfig_buf, "key.newline=\"va\nlue\""));
+
+	/* Value contains semicolon ';' */
+	assert_int_equal(bootconfig_append(&bc, "key.semicolon",
+			 "value; init=test123"), 0);
+	assert_non_null(strstr(bootconfig_buf,
+			 "key.semicolon=\"value; init=test123\""));
+}
+
+static void test_bootconfig_params_validation(void **state)
+{
+	char *init_params = "k0=v0";
+
+	/* No space in bootconfig area */
+	bootconfig_init(&bc, bootconfig_buf, sizeof(struct bootconfig_trailer) + 1);
+	assert_int_equal(bootconfig_append_params(&bc, init_params, strlen(init_params)), -1);
+	assert_int_equal(bootconfig_append_cmdline(&bc, "too long"), -1);
+	assert_int_equal(bootconfig_append(&bc, "too", "long"), -1);
+
+	memset(&bc, 0, sizeof(bc));
+	memset(bootconfig_buf, 0, sizeof(bootconfig_buf));
+	bootconfig_init(&bc, bootconfig_buf, sizeof(bootconfig_buf));
+
+	/* Forbidden character found in bootconfig key value */
+	assert_int_equal(bootconfig_append(&bc, "androidboot.test",
+			 "value\""), -1);
+	assert_int_equal(bootconfig_append(&bc, "androidboot.test",
+			 "val'ue"), -1);
+	assert_int_equal(bootconfig_append(&bc, "androidboot.test",
+			 "value\\"), -1);
+}
+
+static void test_bootconfig_unmatched_quote(void **state)
+{
+	char *init_cmdline_bad = "c0=\"v0";
+
+	bootconfig_init(&bc, bootconfig_buf, sizeof(bootconfig_buf));
+	assert_int_equal(bootconfig_append_cmdline(&bc, init_cmdline_bad), -1);
+}
+
+#define TEST(test_function_name) \
+	cmocka_unit_test_setup(test_function_name, setup)
+
+static int setup(void **state)
+{
+	memset(&bc, 0, sizeof(bc));
+	memset(bootconfig_buf, 0, sizeof(bootconfig_buf));
+	return 0;
+}
+
+static void test_bootconfig_append_params_delimiter(void **state)
+{
+	char *params1 = "k1=v1";
+	char *params2 = "k2=v2" BR;
+
+	bootconfig_init(&bc, bootconfig_buf, sizeof(bootconfig_buf));
+
+	/* Append params without delimiter, should auto-insert one at the end */
+	assert_int_equal(bootconfig_append_params(&bc, params1, strlen(params1)), 0);
+	assert_string_equal("k1=v1" BR, bootconfig_buf);
+
+	/* Append second block which already has delimiter, should not add another */
+	assert_int_equal(bootconfig_append_params(&bc, params2, strlen(params2)), 0);
+	assert_string_equal("k1=v1" BR "k2=v2" BR, bootconfig_buf);
+}
+
+int main(void)
+{
+	const struct CMUnitTest tests[] = {
+		TEST(test_bootconfig_api),
+		TEST(test_bootconfig_quoting_logic),
+		TEST(test_bootconfig_params_validation),
+		TEST(test_bootconfig_unmatched_quote),
+		TEST(test_bootconfig_update),
+		TEST(test_bootconfig_append_params_delimiter),
+	};
+
+	return cmocka_run_group_tests(tests, NULL, NULL);
+}

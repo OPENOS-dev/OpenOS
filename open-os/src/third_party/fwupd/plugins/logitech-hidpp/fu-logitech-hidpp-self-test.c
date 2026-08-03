@@ -1,0 +1,26 @@
+/*
+ * Copyright 2017 Richard Hughes <richard@hughsie.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-logitech-hidpp-common.h"
+
+static void
+fu_logitech_hidpp_common(void)
+{
+	g_autofree gchar *ver1 = NULL;
+	ver1 = fu_logitech_hidpp_format_version(" A ", 0x87, 0x65, 0x4321);
+	g_assert_cmpstr(ver1, ==, "A87.65_B4321");
+}
+
+int
+main(int argc, char **argv)
+{
+	(void)g_setenv("G_TEST_SRCDIR", SRCDIR, FALSE);
+	g_test_init(&argc, &argv, NULL);
+	g_test_add_func("/logitech-hidpp/common", fu_logitech_hidpp_common);
+	return g_test_run();
+}

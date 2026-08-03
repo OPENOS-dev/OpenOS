@@ -1,0 +1,68 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SHILL_NETWORK_MOCK_NETWORK_MONITOR_H_
+#define SHILL_NETWORK_MOCK_NETWORK_MONITOR_H_
+
+#include <memory>
+
+#include <chromeos/net-base/http_url.h>
+#include <chromeos/net-base/ip_address.h>
+#include <chromeos/net-base/network_config.h>
+#include <gmock/gmock.h>
+
+#include "shill/metrics.h"
+#include "shill/network/network_monitor.h"
+#include "shill/network/validation_log.h"
+#include "shill/technology.h"
+
+namespace shill {
+
+class MockNetworkMonitor : public NetworkMonitor {
+ public:
+  MockNetworkMonitor();
+  ~MockNetworkMonitor() override;
+
+  MOCK_METHOD(NetworkMonitor::ValidationMode,
+              GetValidationMode,
+              (),
+              (override));
+  MOCK_METHOD(void, SetCapportEnabled, (bool), (override));
+  MOCK_METHOD(void, Start, (ValidationReason), (override));
+  MOCK_METHOD(bool, Stop, (), (override));
+  MOCK_METHOD(bool, IsRunning, (), (const, override));
+  MOCK_METHOD(void,
+              StartReachabilityDiagnostic,
+              (const net_base::NetworkConfig&, net_base::IPFamily family),
+              (override));
+  MOCK_METHOD(bool,
+              IsReachabilityDiagnosticsRunning,
+              (net_base::IPFamily family),
+              (const, override));
+};
+
+class MockNetworkMonitorFactory : public NetworkMonitorFactory {
+ public:
+  MockNetworkMonitorFactory();
+  ~MockNetworkMonitorFactory() override;
+
+  MOCK_METHOD(std::unique_ptr<NetworkMonitor>,
+              Create,
+              (EventDispatcher*,
+               Metrics*,
+               NetworkMonitor::ClientNetwork*,
+               patchpanel::Client*,
+               Technology,
+               int,
+               std::string_view,
+               PortalDetector::ProbingConfiguration,
+               NetworkMonitor::ValidationMode validation_mode,
+               std::unique_ptr<ValidationLog>,
+               std::string_view),
+              (override));
+};
+
+}  // namespace shill
+
+#endif  // SHILL_NETWORK_MOCK_NETWORK_MONITOR_H_

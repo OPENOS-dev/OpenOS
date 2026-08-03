@@ -1,0 +1,13 @@
+BDEPEND=!binary? ( amd64? ( app-arch/xz-utils dev-lang/perl iso? ( app-cdr/cdrtools sys-boot/syslinux ) ) x86? ( app-arch/xz-utils dev-lang/perl iso? ( app-cdr/cdrtools sys-boot/syslinux ) ) )
+DEFINED_PHASES=compile configure install postinst
+DESCRIPTION=Open source network boot (PXE) firmware
+EAPI=7
+HOMEPAGE=https://ipxe.org/
+IUSE=+binary efi efi64 ipv6 iso lkrn +qemu undi usb vmware savedconfig
+KEYWORDS=*
+LICENSE=GPL-2
+REQUIRED_USE=!amd64? ( !x86? ( binary ) )
+SLOT=0
+SRC_URI=!binary? ( https://github.com/ipxe/ipxe/archive/4fa4052c7ebb59e4d4aa396f1563c89118623ec7.tar.gz -> ipxe-1.21.1_p20230601.gh.tar.gz ) binary? ( https://dev.gentoo.org/~tamiko/distfiles/ipxe-1.21.1_p20230601-bin.tar.xz )
+_eclasses_=portability	536c5e70c5fb252ed3b769e04aa3f05b	savedconfig	973a6df1a0949eba28a185eac79de815	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=44c6a9f0373a59ffd9c0c214b0c2ef1f

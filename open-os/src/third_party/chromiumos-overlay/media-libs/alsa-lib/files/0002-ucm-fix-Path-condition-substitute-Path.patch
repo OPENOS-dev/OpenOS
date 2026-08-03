@@ -1,0 +1,33 @@
+From 3fd24db22dd3b09fd70de2ae1c58804251737ff4 Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Wed, 24 Apr 2024 14:47:27 +0200
+Subject: [PATCH] ucm: fix Path condition - substitute Path
+
+Use the appropriate variable for access/eaccess call.
+
+Fixes: https://github.com/alsa-project/alsa-lib/issues/395
+Fixes: ef6463a2 ("ucm: fix Path condition - substitute Path and Mode fields")
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+---
+ src/ucm/ucm_cond.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/ucm/ucm_cond.c b/src/ucm/ucm_cond.c
+index 70effda0..bc4444e3 100644
+--- a/src/ucm/ucm_cond.c
++++ b/src/ucm/ucm_cond.c
+@@ -315,9 +315,9 @@ static int if_eval_path(snd_use_case_mgr_t *uc_mgr, snd_config_t *eval)
+ 	if (err < 0)
+ 		return err;
+ #ifdef HAVE_EACCESS
+-	err = eaccess(path, amode);
++	err = eaccess(s, amode);
+ #else
+-	err = access(path, amode);
++	err = access(s, amode);
+ #endif
+ 	free(s);
+ 	return err ? 0 : 1;
+-- 
+2.45.1.288.g0e0cd299f1-goog
+

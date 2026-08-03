@@ -1,0 +1,80 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("base") {
+  public_deps = [ ":libdiagnostics_base" ]
+
+  # TODO(b/328015642): Remove this public dependency.
+  if (use.test || use.fuzzer) {
+    public_deps += [ ":test_support" ]
+  }
+}
+
+config("libdiagnostics_base_config") {
+  use_test = use.test || use.fuzzer
+  defines = [ "USE_TEST=${use_test}" ]
+}
+
+# Provides basic utilities for all the executables under //diagnostics.
+shared_library("libdiagnostics_base") {
+  sources = [
+    "file_utils.cc",
+    "mojo_utils.cc",
+    "path_literal.cc",
+  ]
+  public_configs = [ ":libdiagnostics_base_config" ]
+  public_pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libmojo",
+  ]
+  assert_no_deps = [
+    "//diagnostics/bindings/*",
+    "//diagnostics/constants/*",
+    "//diagnostics/cros_health_tool/*",
+    "//diagnostics/cros_healthd/*",
+    "//diagnostics/mojom/*",
+  ]
+  install_path = "lib"
+}
+
+if (use.test || use.fuzzer) {
+  source_set("test_support") {
+    sources = [ "file_test_utils.cc" ]
+    public_configs = [
+      ":libdiagnostics_base_config",
+      "//common-mk:test",
+    ]
+    public_pkg_deps = [ "libchrome" ]
+    pkg_deps = [ "libbrillo" ]
+    public_deps = [ ":libdiagnostics_base" ]
+  }
+}
+
+if (use.test) {
+  source_set("healthd_testrunner") {
+    sources = [ "healthd_testrunner.cc" ]
+    public_configs = [ "//common-mk:test" ]
+    pkg_deps = [ "libmojo" ]
+    public_deps = [ "//common-mk/testrunner:testrunner" ]
+  }
+
+  source_set("test") {
+    sources = [
+      "file_test_utils_test.cc",
+      "file_utils_test.cc",
+      "mojo_utils_test.cc",
+      "path_literal_test.cc",
+    ]
+    pkg_deps = [
+      "libchrome",
+      "libmojo",
+    ]
+    deps = [
+      ":healthd_testrunner",
+      ":libdiagnostics_base",
+      ":test_support",
+    ]
+  }
+}

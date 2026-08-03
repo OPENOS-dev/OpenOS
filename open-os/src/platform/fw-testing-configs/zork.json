@@ -1,0 +1,124 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "cr50_capability": {
+    "rdd_off_in_g3": true
+  },
+  "custom_max_tpm_init_us": 150000,
+  "custom_usb_enable_pins": [
+    {
+      "ioex": true,
+      "name": "EN_USB_A0_5V"
+    },
+    {
+      "ioex": true,
+      "name": "EN_USB_A1_5V_DB"
+    }
+  ],
+  "delay_powerinfo_stable": 5,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "firmware_screen": 15,
+  "hold_pwr_button_poweroff": 10,
+  "max_charging_power": 65.0,
+  "minidiag_capability": {
+    "event_log_launch_count": false
+  },
+  "minios_enabled": false,
+  "models": {
+    "berknip": {
+      "delay_reboot_to_ping": 70
+    },
+    "dalboz": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": true,
+          "name": "EN_USB_A0_5V"
+        },
+        {
+          "ioex": true,
+          "name": "EN_USB_A1_5V_DB_OPT1"
+        }
+      ]
+    },
+    "dirinboz": {
+      "delay_reboot_to_ping": 65
+    },
+    "ezkinil": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": true,
+          "name": "EN_USB_A0_5V"
+        }
+      ]
+    },
+    "gumboz": {
+      "delay_reboot_to_ping": 75
+    },
+    "jelboz": {
+      "max_charging_power": 45.0
+    },
+    "jelboz360": {
+      "max_charging_power": 45.0
+    },
+    "shuboz": {
+      "max_charging_power": 45.0
+    },
+    "vilboz": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": true,
+          "name": "EN_USB_A0_5V"
+        },
+        {
+          "ioex": false,
+          "name": "EN_USB_A1_5V"
+        }
+      ],
+      "delay_reboot_to_ping": 65
+    },
+    "vilboz14": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": true,
+          "name": "EN_USB_A0_5V"
+        },
+        {
+          "ioex": false,
+          "name": "EN_USB_A1_5V"
+        }
+      ]
+    },
+    "vilboz360": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": true,
+          "name": "EN_USB_A0_5V"
+        },
+        {
+          "ioex": false,
+          "name": "EN_USB_A1_5V"
+        }
+      ]
+    },
+    "woomax": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": true,
+          "name": "EN_USB_A0_5V"
+        }
+      ]
+    }
+  },
+  "platform": "zork",
+  "servo_prog_state_delay": 1.0,
+  "smm_store": false,
+  "usb_image_boot_timeout": 240,
+  "white_screen_power_press_time": 1.5
+}

@@ -1,0 +1,64 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(
+    default_visibility = ["//:__subpackages__"],
+)
+
+cc_library(
+    name = "native_handle",
+    hdrs = ["native_handle.h"],
+)
+
+cc_library(
+    name = "native_handle_util",
+    srcs = ["native_handle_util.cc"],
+    hdrs = ["native_handle_util.h"],
+    deps = [
+        ":native_handle",
+    ],
+)
+
+cc_library(
+    name = "hardware_buffer",
+    hdrs = ["hardware_buffer.h"],
+    deps = [
+        ":native_handle",
+    ],
+)
+
+cc_binary(
+    name = "libnativewindow.so",
+    srcs = ["hardware_buffer.cc"],
+    linkopts = [
+        # Expose necessary symbols only.
+        "-Wl,--version-script=$(location :libnativewindow.lds)",
+    ],
+    linkshared = True,
+    deps = [
+        ":hardware_buffer",
+        ":libnativewindow.lds",
+        ":native_handle_util",
+        "//common:log",
+        "//common:scoped_fd",
+    ],
+)
+
+cc_binary(
+    name = "hardware_buffer_test",
+    testonly = True,
+    srcs = [
+        "hardware_buffer_test.cc",
+        "libnativewindow.so",
+    ],
+    deps = [
+        ":hardware_buffer",
+        ":native_handle_util",
+        "//common:log",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+    ],
+)

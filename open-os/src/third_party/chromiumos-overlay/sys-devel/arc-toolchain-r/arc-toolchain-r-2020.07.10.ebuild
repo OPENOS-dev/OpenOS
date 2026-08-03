@@ -1,0 +1,42 @@
+# Copyright 1999-2017 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+EAPI="7"
+
+DESCRIPTION="Ebuild for Android toolchain (compilers, linker, libraries, headers)."
+
+# The source tarball contains files collected from the sources below.
+#
+#   # from ab/6669064
+#   bertha_arm64-target_files-6669064.zip
+#   bertha_x86_64-target_files-6669064.zip
+#
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+
+LICENSE="GPL-3 LGPL-3 GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 FDL-1.2 UoI-NCSA"
+SLOT="0"
+KEYWORDS="-* amd64"
+IUSE=""
+
+BDEPEND="
+	app-misc/pax-utils
+"
+RDEPEND="
+	sys-libs/readline:6
+"
+
+S="${WORKDIR}"
+INSTALL_DIR="/opt/android-r"
+
+# These prebuilts are already properly stripped.
+RESTRICT="strip"
+QA_PREBUILT="*"
+
+src_install() {
+	dodir "${INSTALL_DIR}"
+	# Remove unused libraries which depend on ncurses:5
+	# shellcheck disable=SC2046
+	rm -f $(scanelf -qRN libtinfo.so.5 .|awk '{print $2}')
+	cp -pPR ./* "${D}/${INSTALL_DIR}/" || die
+}

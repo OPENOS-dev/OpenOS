@@ -1,0 +1,73 @@
+From 0476ffa1e07e7846a7aad36b57d34b0ec4efdc46 Mon Sep 17 00:00:00 2001
+From: Zhengping Jiang <jiangzp@google.com>
+Date: Wed, 10 Sep 2025 19:43:41 +0000
+Subject: [PATCH] UPSTREAM: Replace nrpa_non_connectable_adv with
+ nrpa_for_non_connectable_adv
+
+The flag nrpa_non_connectable_adv uses a wrong flag type. Replace it
+with a flag with bugfix tag.
+
+Bug: 444260668
+Bug: 286138970
+Test: m -j
+Test: atest LeExtendedAdvertisingManagerTest
+Flag: com.android.bluetooth.flags.nrpa_for_non_connectable_adv
+Change-Id: I7d9d7ec0edea2483b2b9fe09b428655c8a76697e
+---
+ system/gd/hci/le_address_manager.cc               | 6 +++---
+ system/gd/hci/le_advertising_manager_impl.cc      | 4 ++--
+ system/gd/hci/le_advertising_manager_impl_test.cc | 6 +++---
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/system/gd/hci/le_address_manager.cc b/system/gd/hci/le_address_manager.cc
+index d0a980a69d2..609b921679a 100644
+--- a/system/gd/hci/le_address_manager.cc
++++ b/system/gd/hci/le_address_manager.cc
+@@ -116,3 +116,3 @@ void LeAddressManager::SetPrivacyPolicyForInitiatorAddress(
+ 
+-  if (com_android_bluetooth_flags_nrpa_non_connectable_adv()) {
++  if (com_android_bluetooth_flags_nrpa_for_non_connectable_adv()) {
+     minimum_rotation_time_ = minimum_rotation_time;
+@@ -149,3 +149,3 @@ void LeAddressManager::SetPrivacyPolicyForInitiatorAddress(
+       rotation_irk_ = rotation_irk;
+-      if (!com_android_bluetooth_flags_nrpa_non_connectable_adv()) {
++      if (!com_android_bluetooth_flags_nrpa_for_non_connectable_adv()) {
+         minimum_rotation_time_ = minimum_rotation_time;
+@@ -332,3 +332,3 @@ AddressWithType LeAddressManager::NewResolvableAddress() {
+ AddressWithType LeAddressManager::NewNonResolvableAddress() {
+-  if (!com_android_bluetooth_flags_nrpa_non_connectable_adv()) {
++  if (!com_android_bluetooth_flags_nrpa_for_non_connectable_adv()) {
+     log::assert_that(RotatingAddress(), "assert failed: RotatingAddress()");
+diff --git a/system/gd/hci/le_advertising_manager_impl.cc b/system/gd/hci/le_advertising_manager_impl.cc
+index 7967fb28709..adbdde76836 100644
+--- a/system/gd/hci/le_advertising_manager_impl.cc
++++ b/system/gd/hci/le_advertising_manager_impl.cc
+@@ -555,3 +555,3 @@ struct LeAdvertisingManagerImpl::impl : public bluetooth::hci::LeAddressManagerC
+ 
+-    if (com_android_bluetooth_flags_nrpa_non_connectable_adv() && !config.connectable) {
++    if (com_android_bluetooth_flags_nrpa_for_non_connectable_adv() && !config.connectable) {
+       advertising_sets_[id].address_type = GetAdvertiserAddressTypeNonConnectable(
+@@ -664,3 +664,3 @@ struct LeAdvertisingManagerImpl::impl : public bluetooth::hci::LeAddressManagerC
+     advertising_sets_[id].handler = handler;
+-    if (com_android_bluetooth_flags_nrpa_non_connectable_adv() && !config.connectable) {
++    if (com_android_bluetooth_flags_nrpa_for_non_connectable_adv() && !config.connectable) {
+       advertising_sets_[id].address_type = GetAdvertiserAddressTypeNonConnectable(
+diff --git a/system/gd/hci/le_advertising_manager_impl_test.cc b/system/gd/hci/le_advertising_manager_impl_test.cc
+index b20f85c16da..e09743d21d5 100644
+--- a/system/gd/hci/le_advertising_manager_impl_test.cc
++++ b/system/gd/hci/le_advertising_manager_impl_test.cc
+@@ -1833,3 +1833,3 @@ TEST_F(LeExtendedAdvertisingManagerTest,
+        use_public_address_type_if_public_address_policy_non_connectable) {
+-  TEST_BT::provider_->nrpa_non_connectable_adv(false);
++  TEST_BT::provider_->nrpa_for_non_connectable_adv(false);
+   // arrange: use PUBLIC address policy
+@@ -1858,3 +1858,3 @@ TEST_F(LeExtendedAdvertisingManagerTest,
+ TEST_F(LeExtendedAdvertisingManagerTest, use_nrpa_if_public_address_policy_non_connectable) {
+-  com::android::bluetooth::flags::provider_->nrpa_non_connectable_adv(true);
++  com::android::bluetooth::flags::provider_->nrpa_for_non_connectable_adv(true);
+ 
+@@ -1893,3 +1893,3 @@ TEST_F(LeExtendedAdvertisingManagerTest,
+        use_public_if_requested_with_public_address_policy_non_connectable) {
+-  com::android::bluetooth::flags::provider_->nrpa_non_connectable_adv(true);
++  com::android::bluetooth::flags::provider_->nrpa_for_non_connectable_adv(true);
+   // arrange: use PUBLIC address policy

@@ -1,0 +1,28 @@
+Remove the oldtime feature. In old chrono versions, this
+opened up a version of time suceptible to
+https://rustsec.org/advisories/RUSTSEC-2020-0071.html
+
+In newer chrono versions (0.4.30+), the oldtime feature no longer pulls
+in the vulnerable `time` crate:
+https://github.com/chronotope/chrono/commit/8f5becd2774daabb172ea846fd5e5a0e192461f5
+
+However, to ensure no dependencies on the oldtime feature are added,
+the chrono oldtime feature is still removed by this patch.
+
+diff --git a/vendor/chrono-0.4.34/Cargo.toml b/vendor/chrono-0.4.34/Cargo.toml
+index 1472f851..d49875e1 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -95,12 +95,10 @@
+ default = [
+     "clock",
+     "std",
+-    "oldtime",
+     "wasmbind",
+ ]
+ libc = []
+ now = ["std"]
+-oldtime = []
+ rkyv = [
+     "dep:rkyv",
+     "rkyv/size_32",

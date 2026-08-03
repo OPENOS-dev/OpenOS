@@ -1,0 +1,150 @@
+type cros_chromeos_install, domain, chromeos_domain;
+
+domain_auto_trans_nnp(cros_os_install_service, cros_chromeos_install_exec, cros_chromeos_install)
+
+# Allow the chromeos-install binary to execute the shell script.
+# TODO(tbrandston): Can we remove this when b/356344778 is done?
+allow cros_chromeos_install cros_chromeos_install_exec:file rx_file_perms;
+
+# chromeos-install.sh is a shell script executed by chromeos-install
+# that needs to run lots of other programs.
+allow cros_chromeos_install sh_exec:file rx_file_perms;
+allow cros_chromeos_install cros_blockdev_exec:file rx_file_perms;
+allow cros_chromeos_install cros_blkid_exec:file rx_file_perms;
+allow cros_chromeos_install cros_cgpt_exec:file rx_file_perms;
+allow cros_chromeos_install cros_coreutils_exec:file rx_file_perms;
+allow cros_chromeos_install cros_crossystem_exec:file rx_file_perms;
+allow cros_chromeos_install cros_dlc_metadata_util_exec:file rx_file_perms;
+allow cros_chromeos_install cros_find_exec:file rx_file_perms;
+allow cros_chromeos_install cros_getopt_exec:file rx_file_perms;
+allow cros_chromeos_install cros_grep_exec:file rx_file_perms;
+allow cros_chromeos_install cros_initctl_exec:file rx_file_perms;
+allow cros_chromeos_install cros_jq_exec:file rx_file_perms;
+allow cros_chromeos_install cros_losetup_exec:file rx_file_perms;
+allow cros_chromeos_install cros_mawk_exec:file rx_file_perms;
+allow cros_chromeos_install cros_mke2fs_exec:file rx_file_perms;
+allow cros_chromeos_install cros_mkfs_fat_exec:file rx_file_perms;
+allow cros_chromeos_install cros_mount_exec:file rx_file_perms;
+allow cros_chromeos_install cros_mountpoint_exec:file rx_file_perms;
+allow cros_chromeos_install cros_sed_exec:file rx_file_perms;
+allow cros_chromeos_install cros_sfdisk_exec:file rx_file_perms;
+allow cros_chromeos_install cros_system_file:file rx_file_perms;
+allow cros_chromeos_install cros_udevadm_exec:file rx_file_perms;
+allow cros_chromeos_install cros_umount_exec:file rx_file_perms;
+allow cros_chromeos_install cros_init:unix_stream_socket connectto;
+allow cros_chromeos_install cros_udevd:unix_stream_socket connectto;
+
+allow cros_chromeos_install cros_os_install_service:fd use;
+allow cros_chromeos_install cros_os_install_service:fifo_file rw_file_perms;
+
+allow cros_chromeos_install self:capability { chown fowner fsetid sys_admin };
+allow cros_chromeos_install self:process setfscreate;
+allow cros_chromeos_install kernel:process setsched;
+# Needed by mkfs.vfat
+allow cros_chromeos_install kernel:system module_request;
+
+allow cros_chromeos_install cros_var_lock:dir search;
+allow cros_chromeos_install cros_run_lock:file { read write lock };
+
+create_dir_file(cros_chromeos_install cros_dev_tast_test)
+create_dir_file(cros_chromeos_install cros_var_cache_dlcservice_images)
+create_dir_file(cros_chromeos_install cros_var_db_pkg)
+create_dir_file(cros_chromeos_install cros_var_lib_portage)
+rw_dir_file(cros_chromeos_install cros_dev_image_files)
+rw_dir_file(cros_chromeos_install cros_dev_tast_test)
+rw_dir_file(cros_chromeos_install cros_stateful_partition_unencrypted)
+r_dir_file(cros_chromeos_install cros_init)
+r_dir_file(cros_chromeos_install sysfs)
+r_dir_file(cros_chromeos_install sysfs_dm)
+r_dir_file(cros_chromeos_install sysfs_fs_ext4_features)
+r_dir_file(cros_chromeos_install sysfs_loop)
+
+allow cros_chromeos_install cros_dev_image_files:dir create_dir_perms;
+allow cros_chromeos_install cros_dev_image_files:file create_file_perms;
+allow cros_chromeos_install cros_run:dir w_dir_perms;
+allow cros_chromeos_install cros_run_udev:dir { r_dir_perms watch };
+allow cros_chromeos_install cros_run_udev:sock_file write;
+allow cros_chromeos_install cros_stateful_partition:dir r_dir_perms;
+allow cros_chromeos_install cros_stateful_partition_unencrypted:file unlink;
+allow cros_chromeos_install cros_usr_dirs:dir create_dir_perms;
+allow cros_chromeos_install device:{blk_file lnk_file} rw_file_perms;
+allow cros_chromeos_install labeledfs:filesystem unmount;
+allow cros_chromeos_install proc_cmdline:file r_file_perms;
+allow cros_chromeos_install proc_filesystems:file r_file_perms;
+allow cros_chromeos_install tmpfs:dir mounton;
+allow cros_chromeos_install tmpfs:file create_file_perms;
+allow cros_chromeos_install vfat:dir create_dir_perms;
+allow cros_chromeos_install vfat:file create_file_perms;
+allow cros_chromeos_install vfat:filesystem { mount unmount };
+
+# Special handling for permissions that conflict with CTS neverallow
+# rules. This makes the policy permissive when used with the ARC
+# container, but not when used with ARCVM. The two branches should be
+# kept in sync.
+is_arc_vm(`
+  allow cros_chromeos_install labeledfs:filesystem mount;
+  allow cros_chromeos_install device:chr_file rw_file_perms;
+  # TODO(b/187204745): properly label these files.
+  create_dir_file(cros_chromeos_install unlabeled)
+  allow cros_chromeos_install unlabeled:file link;
+  allow cros_chromeos_install self:capability { dac_override setfcap };
+  allow cros_chromeos_install cros_dev_image_exec:{file lnk_file} { create_file_perms link };
+  allow cros_chromeos_install cros_iioservice_test_exec:file create_file_perms;
+  allow cros_chromeos_install cros_factory_runtime_probe_exec:file create_file_perms;
+',`arc_cts_fails_release(`
+  allow cros_chromeos_install labeledfs:filesystem mount;
+  allow cros_chromeos_install device:chr_file rw_file_perms;
+  # TODO(b/187204745): properly label these files.
+  create_dir_file(cros_chromeos_install unlabeled)
+  allow cros_chromeos_install unlabeled:file link;
+  allow cros_chromeos_install self:capability { dac_override setfcap };
+  allow cros_chromeos_install cros_dev_image_exec:{file lnk_file} { create_file_perms link };
+  allow cros_chromeos_install cros_iioservice_test_exec:file create_file_perms;
+  allow cros_chromeos_install cros_factory_runtime_probe_exec:file create_file_perms;
+  ', (`cros_chromeos_install'))
+')
+
+# This macro makes the policy permissive when used with the ARC container,
+# but not when used with ARCVM.
+# These allow rules were added by crrev/c/5804826 for ARCVM on ChromeOS Flex.
+is_arc_vm(`
+  allow cros_chromeos_install cros_python_exec:dir { create_dir_perms getattr };
+  allow cros_chromeos_install cros_python_exec:file create_file_perms;
+',`arc_cts_fails_release(`
+  allow cros_chromeos_install cros_python_exec:dir { create_dir_perms getattr };
+  allow cros_chromeos_install cros_python_exec:file create_file_perms;
+  ', (`cros_chromeos_install'))
+')
+
+allowxperm cros_chromeos_install cros_os_install_service:fifo_file ioctl TIOCGWINSZ;
+allowxperm cros_chromeos_install device:blk_file ioctl {
+  BLKBSZGET
+  BLKGETSIZE64
+  BLKIOMIN
+  BLKIOOPT
+  BLKRRPART
+  BLKSSZGET
+  FDGETFDCSTAT
+  HDIO_GETGEO
+};
+
+# b/387519228 noted slow install times under certain conditions. FS_IOC_FIEMAP
+# is used by coreutils (where we get our `cp`) until version 9 to improve speed
+# of copying.
+# `cp` is used on many different files, so we need to specify several tcontexts.
+# Remove this when we upgrade to coreutils >=9.
+allowxperm cros_chromeos_install {
+  cros_dev_image_exec
+  cros_dev_tast_test
+  cros_python_exec
+  unlabeled
+}:file ioctl { FS_IOC_FIEMAP };
+
+# Used by mkfs.ext4
+allowxperm cros_chromeos_install device:blk_file ioctl {
+  BLKGETZONESZ
+  BLKDISCARDZEROES
+  BLKPBSZGET
+  BLKDISCARD
+  BLKROGET
+};

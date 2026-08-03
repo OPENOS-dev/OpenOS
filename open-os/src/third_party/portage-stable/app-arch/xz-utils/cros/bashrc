@@ -1,0 +1,9 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# b/409032792: This package is near the top 25 in CrOS, and relatively small,
+# so optimize for speed.
+cros_pre_src_prepare_optimize_for_speed() {
+	cros_optimize_package_for_speed
+}

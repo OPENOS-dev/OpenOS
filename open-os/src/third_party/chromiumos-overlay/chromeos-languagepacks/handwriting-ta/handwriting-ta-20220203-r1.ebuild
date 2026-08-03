@@ -1,0 +1,1 @@
+handwriting-ta-20220203.ebuild

@@ -1,0 +1,52 @@
+From fbf32410e99d921f3b8e31d337ca2aaa03f9df8b Mon Sep 17 00:00:00 2001
+From: howardchung <howardchung@google.com>
+Date: Fri, 16 Jan 2026 01:49:11 +0000
+Subject: [PATCH] UPSTREAM: Force immediate termination on controller issues
+
+Previously, when a controller issue was detected, Floss sent a signal
+to itself to initiate a teardown. However, this standard teardown
+procedure frequently triggered secondary crashes.
+
+To mitigate these crashes, this CL switches to using `_exit(0)`. This
+forces the process to terminate immediately, bypassing the unstable
+cleanup logic. This is intended as a short-term workaround.
+
+Bug: 472970590
+Flag: NONE Floss only
+Test: m com.google.android.bt
+Test: rmmod btusb and verify Floss does not crash
+Change-Id: Idb2108cc78024eadb1f8730b0d500d817d497e77
+---
+ floss/rust/linux/service/Cargo.toml  |  1 +
+ floss/rust/linux/service/src/main.rs | 10 +++++-----
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/floss/rust/linux/service/Cargo.toml b/floss/rust/linux/service/Cargo.toml
+index cf490c4c380..39a80712380 100644
+--- a/floss/rust/linux/service/Cargo.toml
++++ b/floss/rust/linux/service/Cargo.toml
+@@ -17,2 +17,3 @@ dbus-tokio = "0.7.6"
+ futures = "0.3.13"
++libc = "0.2"
+ log = "0.4.14"
+diff --git a/floss/rust/linux/service/src/main.rs b/floss/rust/linux/service/src/main.rs
+index 4fc43d11f31..52a61d63afd 100644
+--- a/floss/rust/linux/service/src/main.rs
++++ b/floss/rust/linux/service/src/main.rs
+@@ -4,2 +4,3 @@ use dbus_tokio::connection;
+ use futures::future;
++use libc;
+ use nix::sys::signal;
+@@ -358,8 +359,7 @@ extern "C" fn handle_sigusr1(_signum: i32) {
+     log::info!("SIGUSR1 received");
+-    if !try_cleanup_stack(true) {
+-        log::info!("Skipped to handle SIGUSR1");
+-        return;
++    // use _exit(0) to terminate the process immediately and avoid the unstable cleanup path in
++    // libbluetooth.
++    unsafe {
++        libc::_exit(0);
+     }
+-    log::info!("SIGUSR1 completed");
+-    std::process::exit(0);
+ }

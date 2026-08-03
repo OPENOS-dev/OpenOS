@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DESCRIPTION=Tar symlink
+EAPI=7
+HOMEPAGE=https://wiki.gentoo.org/wiki/Project:Base/Alternatives
+IUSE=split-usr +gnu libarchive
+KEYWORDS=*
+LICENSE=CC0-1.0
+RDEPEND=!<app-arch/tar-1.34-r2 gnu? ( >=app-arch/tar-1.34-r2 ) libarchive? ( app-arch/libarchive )
+REQUIRED_USE=^^ ( gnu libarchive )
+SLOT=0
+_eclasses_=app-alternatives	0d485a9273e176378fd2c635a815950f
+_md5_=d7e37e7b189dbdfe7bc1eabee3f79c22

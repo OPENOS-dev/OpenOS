@@ -1,0 +1,11 @@
+DEFINED_PHASES=-
+DEPEND=!chromeos-base/chromeos-factory
+DESCRIPTION=List of packages that are needed inside the ChromiumOS factory image.
+EAPI=7
+HOMEPAGE=http://dev.chromium.org/
+IUSE=no_factory_flow
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=!no_factory_flow? ( chromeos-base/factory !chromeos-base/chromeos-factory )
+SLOT=0
+_md5_=9bd58347ef46e3b881ccac0fe5445e1a

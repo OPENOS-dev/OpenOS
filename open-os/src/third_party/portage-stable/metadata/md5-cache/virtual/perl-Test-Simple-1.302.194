@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for Test-Simple
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* =dev-lang/perl-5.38* ~perl-core/Test-Simple-1.302.194 ) !<dev-perl/Test-Tester-0.114.0 !<dev-perl/Test-use-ok-0.160.0
+SLOT=0
+_md5_=de27bafcf70c9bc1c949b5e3e5d2195e

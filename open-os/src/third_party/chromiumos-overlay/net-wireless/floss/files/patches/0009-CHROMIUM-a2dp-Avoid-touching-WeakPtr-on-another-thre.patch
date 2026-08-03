@@ -1,0 +1,55 @@
+From 5e1580a2ae2011895742a32cfd394a20040e5788 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Sat, 10 Jan 2026 01:07:24 +0800
+Subject: [PATCH] CHROMIUM: a2dp: Avoid touching WeakPtr on another thread
+
+Toughing WeakPtr on a thread that's different from which it's spawned is
+disallowed. This should prevent from crashing in the debug build.
+
+To be removed in 26Q1 after message loop refactor.
+
+Bug: 472907742
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: emerge-cherry floss-upstream
+Test: bluetooth_AdapterAUHealth.au_a2dp_test.floss
+Flag: EXEMPT BUGFIX
+Change-Id: I9f1a80177f0c6f386c848a814f2564eb4886740d
+---
+ system/btif/src/btif_a2dp_source.cc | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/system/btif/src/btif_a2dp_source.cc b/system/btif/src/btif_a2dp_source.cc
+index ae00fa4323..2705338402 100644
+--- a/system/btif/src/btif_a2dp_source.cc
++++ b/system/btif/src/btif_a2dp_source.cc
+@@ -600,3 +600,13 @@ void btif_a2dp_source_cleanup(void) {
+ // This runs on worker thread
+-bool btif_a2dp_source_is_streaming(void) { return btif_a2dp_source_cb.media_alarm.IsScheduled(); }
++bool btif_a2dp_source_is_streaming(void) {
++  std::promise<bool> promise;
++  auto future = promise.get_future();
++  btif_a2dp_source_thread.DoInThread(base::BindOnce(
++          [](std::promise<bool> promise) {
++            promise.set_value(btif_a2dp_source_cb.media_alarm.IsScheduled());
++          },
++          std::move(promise)));
++  future.wait();
++  return future.get();
++}
+ 
+@@ -903,3 +913,13 @@ static void btif_a2dp_source_audio_tx_stop_event(void) {
+   /* Stop the timer first */
+-  btif_a2dp_source_cb.media_alarm.CancelAndWait();
++  {
++    std::promise<void> promise;
++    auto future = promise.get_future();
++    btif_a2dp_source_thread.DoInThread(base::BindOnce(
++            [](std::promise<void> promise) {
++              btif_a2dp_source_cb.media_alarm.CancelAndWait();
++              promise.set_value();
++            },
++            std::move(promise)));
++    future.wait();
++  }
+   wakelock_release();

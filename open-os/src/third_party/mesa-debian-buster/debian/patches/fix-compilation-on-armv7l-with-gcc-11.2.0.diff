@@ -1,0 +1,36 @@
+From d27805753fdc6319676ef1c7aa86ac3d941c6a3c Mon Sep 17 00:00:00 2001
+From: satmandu <satadru@umich.edu>
+Date: Fri, 10 Sep 2021 20:58:09 +0000
+Subject: [PATCH] Fix compilation on armv7l with gcc 11.2.0
+
+Cc: mesa-stable
+Reviewed-by: Rob Clark <robdclark@chromium.org>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/12810>
+---
+ src/gallium/drivers/freedreno/freedreno_util.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/drivers/freedreno/freedreno_util.h b/src/gallium/drivers/freedreno/freedreno_util.h
+index 5e0065717e4..22f99c41909 100644
+--- a/src/gallium/drivers/freedreno/freedreno_util.h
++++ b/src/gallium/drivers/freedreno/freedreno_util.h
+@@ -106,12 +106,14 @@ extern bool fd_binning_enabled;
+ 
+ #include <unistd.h>
+ #include <sys/types.h>
++#include <sys/syscall.h>
+ 
+ #define DBG(fmt, ...)                                                          \
+    do {                                                                        \
+       if (FD_DBG(MSGS))                                                        \
+-         mesa_logi("%5d: %s:%d: " fmt, gettid(), __FUNCTION__, __LINE__,       \
+-                   ##__VA_ARGS__);                                             \
++         mesa_logi("%5d: %s:%d: " fmt, ((pid_t)syscall(SYS_gettid)),           \
++                                        __FUNCTION__, __LINE__,                \
++                                        ##__VA_ARGS__);                        \
+    } while (0)
+ 
+ #define perf_debug_message(debug, type, ...)                                   \
+-- 
+2.37.2.789.g6183377224-goog
+

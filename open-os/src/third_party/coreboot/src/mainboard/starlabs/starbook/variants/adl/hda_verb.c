@@ -1,0 +1,94 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <device/azalia_device.h>
+#include <device/azalia_codec/realtek.h>
+
+const u32 cim_verb_data[] = {
+	/* coreboot specific header */
+	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269 */
+	0x1e507007,	/* Subsystem ID */
+	17,		/* Number of verb entries */
+
+	/* Reset Codec First */
+	AZALIA_RESET(0x1),
+
+	/* HDA Codec Subsystem ID */
+	AZALIA_SUBVENDOR(0, 0x1e507007),
+
+	/* Pin Widget Verb-table */
+	AZALIA_PIN_CFG(0, ALC269_DMIC12,	AZALIA_PIN_DESC(
+							AZALIA_INTEGRATED,
+							AZALIA_MOBILE_LID_INSIDE,
+							AZALIA_MIC_IN,
+							AZALIA_OTHER_DIGITAL,
+							AZALIA_COLOR_UNKNOWN,
+							AZALIA_NO_JACK_PRESENCE_DETECT,
+							3,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC269_SPEAKERS,	AZALIA_PIN_DESC(
+							AZALIA_INTEGRATED,
+							AZALIA_INTERNAL | AZALIA_FRONT,
+							AZALIA_SPEAKER,
+							AZALIA_OTHER_ANALOG,
+							AZALIA_COLOR_UNKNOWN,
+							AZALIA_NO_JACK_PRESENCE_DETECT,
+							1,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC269_MIC1,		AZALIA_PIN_DESC(
+							AZALIA_JACK,
+							AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_RIGHT,
+							AZALIA_MIC_IN,
+							AZALIA_STEREO_MONO_1_8,
+							AZALIA_BLACK,
+							AZALIA_JACK_PRESENCE_DETECT,
+							2,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC269_VB_HP_OUT,	AZALIA_PIN_DESC(
+							AZALIA_JACK,
+							AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_RIGHT,
+							AZALIA_HP_OUT,
+							AZALIA_STEREO_MONO_1_8,
+							AZALIA_BLACK,
+							AZALIA_JACK_PRESENCE_DETECT,
+							1,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC269_MONO,		AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC269_VC_HP_OUT,	AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC269_MIC2,		AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC269_LINE1,		AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC269_LINE2,		AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC269_PC_BEEP,	AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC269_SPDIF_OUT,	AZALIA_PIN_CFG_NC(0)),
+
+	/* ALC269 Default 1 */
+	0x02050011,
+	0x02041410,
+	0x02050012,
+	0x02042901,
+
+	/* ALC269 Default 2 */
+	0x0205000d,
+	0x02044440,
+	0x02050007,
+	0x02040040,
+
+	/* ALC269 Default 3 */
+	0x02050002,
+	0x0204aab8,
+	0x02050008,
+	0x02040300,
+
+	/* ALC269 Default 4 */
+	0x02050017,
+	0x020400af,
+	0x02050005,
+	0x020400c0,
+};
+
+const u32 pc_beep_verbs[] = {};
+
+AZALIA_ARRAY_SIZES;

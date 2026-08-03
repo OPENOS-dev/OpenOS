@@ -1,0 +1,19 @@
+[package]
+name = "mem_stress"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sysinfo = "0.30.5"
+anyhow = "1.0.80"
+procfs = "0.16.0"
+rand = "0.8.5"
+log = "0.4"
+simple_logger = "4.3.3"
+sdl2 = { version = "0.35", features = ["ttf", "image"] }
+dbus = "0.9.7"
+dbus-crossroads = "0.5.2"
+closure = "0.3.0"

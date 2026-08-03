@@ -1,0 +1,92 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl8sdzpPbCg8pDh/1zrwU17WdrQROlsJsuxGA0RkMX0T0+b/Tarh4YcSA5NDhAqVO3hA8acmYnjkCCOMpP0roceVLBUOag9WxhpXak4A0ZPrwZi2bLPjx+gxkccyAp8bXwskSvjaL+vF/+zN8PT9yDz/Np7WJmfakksDPAZSoCnbykVbaEtpG8qbbUPgmjndrHkgV9cMjpNLAd+GnlARyQ/DceBPtA27z06N/nV+hS7TRIQJTx7XwH6rGKSJ1gn61/wtBWqZQyL3PA6997++55GYtWVB4pmLPXa0vog3GF2wFYf3geD9v2jfP4t9PhPZy9zESr6fP4nqd1HXd6pzamwIDAQAB",
+  "minimum_chrome_version": "108",
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "frame-ancestors 'self'; script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "name": "__MSG_nassh_product_name__",
+  "version": "0.78",
+  "version_name": "ToT",
+  "default_locale": "en",
+  "icons": {
+    "128": "images/dev/icon-128.png",
+    "48": "images/dev/icon-48.png",
+    "32": "images/dev/icon-32.png",
+    "24": "images/dev/icon-24.png",
+    "16": "images/dev/icon-16.png"
+  },
+  "description": "Terminal emulator and SSH and SFTP client.",
+  "offline_enabled": true,
+  "options_page": "html/nassh_preferences_editor.html",
+  "incognito": "split",
+  "permissions": [
+    "clipboardRead",
+    "clipboardWrite",
+    "contextMenus",
+    "idle",
+    "notifications",
+    "storage",
+    "terminalPrivate",
+    "unlimitedStorage",
+    "fileSystemProvider",
+    "accessibilityFeatures.read"
+  ],
+  "optional_host_permissions": [
+    "https://us-cloudtoplifecycle-googleapis.corp.google.com/*",
+    "https://uberproxy-debug.corp.google.com/*"
+  ],
+  "sockets": {
+    "tcp": {
+      "connect": [
+        "*:*"
+      ]
+    },
+    "tcpServer": {
+      "listen": [
+        "*:*"
+      ]
+    },
+    "udp": {
+      "bind": [
+        "*:*"
+      ],
+      "send": [
+        "*:*"
+      ]
+    }
+  },
+  "file_system_provider_capabilities": {
+    "multiple_mounts": true,
+    "configurable": true,
+    "source": "network"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "html/nassh.html",
+        "html/nassh_google_relay.html"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "js/nassh_background_main.js",
+    "type": "module"
+  },
+  "omnibox": {
+    "keyword": "ssh"
+  },
+  "action": {
+    "default_popup": "html/nassh_popup.html",
+    "default_icon": {
+      "128": "images/dev/icon-128.png",
+      "48": "images/dev/icon-48.png",
+      "32": "images/dev/icon-32.png",
+      "24": "images/dev/icon-24.png",
+      "16": "images/dev/icon-16.png"
+    }
+  }
+}

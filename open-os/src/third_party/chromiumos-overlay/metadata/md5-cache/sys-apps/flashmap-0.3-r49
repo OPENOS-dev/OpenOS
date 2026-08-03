@@ -1,0 +1,15 @@
+BDEPEND=dev-vcs/git app-misc/jq
+DEFINED_PHASES=configure info install setup test unpack
+DEPEND=python? ( python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) )
+DESCRIPTION=Utility for manipulating firmware ROM mapping data structure
+EAPI=7
+HOMEPAGE=http://flashmap.googlecode.com
+IUSE=python cros_host cros_workon_tree_6948abf0a1669d0d7e3ffc9b90007848c90f232f python_targets_python3_12 python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 python_targets_python3_8
+KEYWORDS=*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=python? ( python_targets_python3_12? ( dev-lang/python:3.12 ) python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_targets_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) )
+RESTRICT=test
+SLOT=0/0.3-r49
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=099d7b88357707a9e570787ab7957df4

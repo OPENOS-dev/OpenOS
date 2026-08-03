@@ -1,0 +1,25 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "hbarnor, The ChromiumOS Authors"
+NAME = "autoupdate_InvalidateSuccessfulUpdate"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Tests installing an update and invalidating it before it is booted."
+}
+TEST_TYPE = "client"
+TIME = "SHORT"
+PY_VERSION = 3
+
+DOC = """
+This test will first apply an update and check that it was applied successfully
+and DUT is in NEED_REBOOT state. Then it will invalidate the update and check
+that DUT invalidated the update by looking at state and boot priority.
+"""
+
+job.run_test('autoupdate_InvalidateSuccessfullUpdate')

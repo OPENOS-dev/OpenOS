@@ -1,0 +1,137 @@
+From 206bc0f6fb945e90cfea677339ef8adfaedc4b4f Mon Sep 17 00:00:00 2001
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Date: Thu, 26 Nov 2020 14:02:18 +0100
+Subject: [PATCH] media: vicodec: mark the stateless FWHT API as stable
+
+The FWHT stateless 'uAPI' was staging and marked explicitly in the
+V4L2 specification that it will change and is unstable.
+Note that these control IDs were never exported as a public API,
+they were only defined in kernel-local headers (fwht-ctrls.h).
+
+Now, the FWHT stateless controls is ready to be part
+of the stable uAPI.
+
+While not too late:
+
+- Rename V4L2_CID_MPEG_VIDEO_FWHT_PARAMS to V4L2_CID_STATELESS_FWHT_PARAMS.
+
+- Move the contents of fwht-ctrls.h to v4l2-controls.h.
+
+- Move the public parts of drivers/media/test-drivers/vicodec/codec-fwht.h
+  to v4l2-controls.h.
+
+- Add V4L2_CTRL_TYPE_FWHT_PARAMS control initialization and validation.
+
+- Add p_fwht_params to struct v4l2_ext_control.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ include/uapi/linux/v4l2-controls.h | 70 ++++++++++++++++++++++++++++++
+ include/uapi/linux/videodev2.h     |  3 ++
+ 2 files changed, 73 insertions(+)
+
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index a02cb576..833ad7eb 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -1758,6 +1758,76 @@ struct v4l2_ctrl_vp8_frame {
+ 	__u64 flags;
+ };
+ 
++/* Stateless FWHT control, used by the vicodec driver */
++
++/* Current FWHT version */
++#define V4L2_FWHT_VERSION			3
++
++/* Set if this is an interlaced format */
++#define V4L2_FWHT_FL_IS_INTERLACED		0x001
++/* Set if this is a bottom-first (NTSC) interlaced format */
++#define V4L2_FWHT_FL_IS_BOTTOM_FIRST		0x002
++/* Set if each 'frame' contains just one field */
++#define V4L2_FWHT_FL_IS_ALTERNATE		0x004
++/*
++ * If V4L2_FWHT_FL_IS_ALTERNATE was set, then this is set if this
++ * 'frame' is the bottom field, else it is the top field.
++ */
++#define V4L2_FWHT_FL_IS_BOTTOM_FIELD		0x008
++/* Set if the Y' plane is uncompressed */
++#define V4L2_FWHT_FL_LUMA_IS_UNCOMPRESSED	0x010
++/* Set if the Cb plane is uncompressed */
++#define V4L2_FWHT_FL_CB_IS_UNCOMPRESSED		0x020
++/* Set if the Cr plane is uncompressed */
++#define V4L2_FWHT_FL_CR_IS_UNCOMPRESSED		0x040
++/* Set if the chroma plane is full height, if cleared it is half height */
++#define V4L2_FWHT_FL_CHROMA_FULL_HEIGHT		0x080
++/* Set if the chroma plane is full width, if cleared it is half width */
++#define V4L2_FWHT_FL_CHROMA_FULL_WIDTH		0x100
++/* Set if the alpha plane is uncompressed */
++#define V4L2_FWHT_FL_ALPHA_IS_UNCOMPRESSED	0x200
++/* Set if this is an I Frame */
++#define V4L2_FWHT_FL_I_FRAME			0x400
++
++/* A 4-values flag - the number of components - 1 */
++#define V4L2_FWHT_FL_COMPONENTS_NUM_MSK		0x70000
++#define V4L2_FWHT_FL_COMPONENTS_NUM_OFFSET	16
++
++/* A 4-values flag - the pixel encoding type */
++#define V4L2_FWHT_FL_PIXENC_MSK			0x180000
++#define V4L2_FWHT_FL_PIXENC_OFFSET		19
++#define V4L2_FWHT_FL_PIXENC_YUV			(1 << V4L2_FWHT_FL_PIXENC_OFFSET)
++#define V4L2_FWHT_FL_PIXENC_RGB			(2 << V4L2_FWHT_FL_PIXENC_OFFSET)
++#define V4L2_FWHT_FL_PIXENC_HSV			(3 << V4L2_FWHT_FL_PIXENC_OFFSET)
++
++#define V4L2_CID_STATELESS_FWHT_PARAMS		(V4L2_CID_CODEC_STATELESS_BASE + 100)
++/**
++ * struct v4l2_ctrl_fwht_params - FWHT parameters
++ *
++ * @backward_ref_ts: timestamp of the V4L2 capture buffer to use as reference.
++ * The timestamp refers to the timestamp field in struct v4l2_buffer.
++ * Use v4l2_timeval_to_ns() to convert the struct timeval to a __u64.
++ * @version: must be V4L2_FWHT_VERSION.
++ * @width: width of frame.
++ * @height: height of frame.
++ * @flags: FWHT flags (see V4L2_FWHT_FL_*).
++ * @colorspace: the colorspace (enum v4l2_colorspace).
++ * @xfer_func: the transfer function (enum v4l2_xfer_func).
++ * @ycbcr_enc: the Y'CbCr encoding (enum v4l2_ycbcr_encoding).
++ * @quantization: the quantization (enum v4l2_quantization).
++ */
++struct v4l2_ctrl_fwht_params {
++	__u64 backward_ref_ts;
++	__u32 version;
++	__u32 width;
++	__u32 height;
++	__u32 flags;
++	__u32 colorspace;
++	__u32 xfer_func;
++	__u32 ycbcr_enc;
++	__u32 quantization;
++};
++
+ /* MPEG-compression definitions kept for backwards compatibility */
+ #ifndef __KERNEL__
+ #define V4L2_CTRL_CLASS_MPEG            V4L2_CTRL_CLASS_CODEC
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 8187f55f..f905708d 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -1736,6 +1736,7 @@ struct v4l2_ext_control {
+ 		struct v4l2_ctrl_h264_pred_weights __user *p_h264_pred_weights;
+ 		struct v4l2_ctrl_h264_slice_params __user *p_h264_slice_params;
+ 		struct v4l2_ctrl_h264_decode_params __user *p_h264_decode_params;
++		struct v4l2_ctrl_fwht_params __user *p_fwht_params;
+ 		struct v4l2_ctrl_vp8_frame __user *p_vp8_frame;
+ 		void __user *ptr;
+ 	};
+@@ -1790,6 +1791,8 @@ enum v4l2_ctrl_type {
+ 	V4L2_CTRL_TYPE_H264_DECODE_PARAMS   = 0x0204,
+ 	V4L2_CTRL_TYPE_H264_PRED_WEIGHTS    = 0x0205,
+ 
++	V4L2_CTRL_TYPE_FWHT_PARAMS	    = 0x0220,
++
+ 	V4L2_CTRL_TYPE_VP8_FRAME            = 0x0240,
+ };
+ 
+-- 
+2.45.2

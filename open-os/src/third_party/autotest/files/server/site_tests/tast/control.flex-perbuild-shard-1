@@ -1,0 +1,47 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = 'ChromiumOS team'
+NAME = 'tast.flex-perbuild-shard-1'
+METADATA = {
+  "contacts": [
+    "chromeos-flex-eng@google.com",
+    "josephsussman@google.com"
+  ],
+  "bug_component": "b:998633", # ChromeOS > Platform > Enablement > ChromeOS Flex
+  "hw_agnostic": False
+}
+TIME = 'MEDIUM'
+TEST_TYPE = 'Server'
+ATTRIBUTES = 'suite:flex-perbuild'
+MAX_RESULT_SIZE_KB = 1024 * 1024
+PY_VERSION = 3
+
+# tast.py uses binaries installed from autotest_server_package.tar.bz2.
+REQUIRE_SSP = True
+
+DOC = '''
+Run the Tast mainline tests without clearing the TPM.
+
+ChromeOS Flex DUTs do not support automated TPM reset (b/246592434).
+See go/cros-flex-hw-testing for more information.
+'''
+
+def run(machine):
+    job.run_test('tast',
+                 host=hosts.create_host(machine),
+                 test_exprs=['('
+                 '"group:mainline" && '
+                 '!"group:crostini_slow" &&'
+                 '!"group:hw_agnostic" &&'
+                 '!informational'
+                 ')'],
+                 ignore_test_failures=False,
+                 totalshards=4,
+                 shardindex=1,
+                 max_run_sec=7200,
+                 command_args=args,
+                 clear_tpm=False)
+
+parallel_simple(run, machines)

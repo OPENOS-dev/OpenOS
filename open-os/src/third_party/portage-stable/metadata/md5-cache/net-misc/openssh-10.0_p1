@@ -1,0 +1,16 @@
+BDEPEND=sys-devel/autoconf virtual/pkgconfig verify-sig? ( sec-keys/openpgp-keys-openssh ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 virtual/pkgconfig verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install postinst preinst prepare pretend test unpack
+DEPEND=acct-group/sshd acct-user/sshd !static? ( audit? ( sys-process/audit ) ldns? ( net-libs/ldns net-libs/ldns[ecdsa(+),ssl(+)] ) libedit? ( dev-libs/libedit:= ) security-key? ( >=dev-libs/libfido2-1.5.0:= ) selinux? ( >=sys-libs/libselinux-1.28 ) ssl? ( >=dev-libs/openssl-1.1.1l-r1:0= ) virtual/libcrypt:= >=sys-libs/zlib-1.2.3:= ) pam? ( sys-libs/pam ) kerberos? ( virtual/krb5 ) virtual/os-headers kernel_linux? ( !prefix-guest? ( >=sys-kernel/linux-headers-5.1 ) ) static? ( audit? ( sys-process/audit[static-libs(+)] ) ldns? ( net-libs/ldns[static-libs(+)] net-libs/ldns[ecdsa(+),ssl(+)] ) libedit? ( dev-libs/libedit:=[static-libs(+)] ) security-key? ( >=dev-libs/libfido2-1.5.0:=[static-libs(+)] ) selinux? ( >=sys-libs/libselinux-1.28[static-libs(+)] ) ssl? ( >=dev-libs/openssl-1.1.1l-r1:0=[static-libs(+)] ) virtual/libcrypt:=[static-libs(+)] >=sys-libs/zlib-1.2.3:=[static-libs(+)] ) sys-apps/baselayout
+DESCRIPTION=Port of OpenBSD's free SSH release
+EAPI=7
+HOMEPAGE=https://www.openssh.com/
+IUSE=abi_mips_n32 audit debug kerberos ldns libedit livecd pam +pie security-key selinux +ssl static test xmss verify-sig
+KEYWORDS=*
+LICENSE=BSD GPL-2
+RDEPEND=acct-group/sshd acct-user/sshd !static? ( audit? ( sys-process/audit ) ldns? ( net-libs/ldns net-libs/ldns[ecdsa(+),ssl(+)] ) libedit? ( dev-libs/libedit:= ) security-key? ( >=dev-libs/libfido2-1.5.0:= ) selinux? ( >=sys-libs/libselinux-1.28 ) ssl? ( >=dev-libs/openssl-1.1.1l-r1:0= ) virtual/libcrypt:= >=sys-libs/zlib-1.2.3:= ) pam? ( sys-libs/pam ) kerberos? ( virtual/krb5 ) !net-misc/openssh-contrib pam? ( >=sys-auth/pambase-20081028 ) !prefix? ( sys-apps/shadow ) sys-apps/baselayout
+REQUIRED_USE=ldns? ( ssl ) pie? ( !static ) static? ( !kerberos !pam ) xmss? ( ssl ) test? ( ssl ) test? ( !xmss )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://openbsd/OpenSSH/portable/openssh-10.0p1.tar.gz verify-sig? ( mirror://openbsd/OpenSSH/portable/openssh-10.0p1.tar.gz.asc )
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	eapi9-ver	6a71fa30cdb3fe445114fdeab156c1f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	optfeature	f4941a15f8b66955c45f7b0e7c4ae890	pam	3f746974e1cc47cabe3bd488c08cdc8e	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	user	bb36bb02334dae8c5fd9efa0d8d2ec70	user-info	23cfd192154f4aeac3a0cff98113134e	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=2d8adb47e1dfd1393f0eda6eda7747b8

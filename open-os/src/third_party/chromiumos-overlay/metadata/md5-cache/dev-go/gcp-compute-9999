@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) ) app-misc/jq
+DEFINED_PHASES=compile info install nofetch postinst setup test unpack
+DEPEND=dev-go/net dev-go/gapi
+DESCRIPTION=Google Cloud Client Libraries for Go Compute API
+EAPI=7
+HOMEPAGE=https://code.googlesource.com/gocloud
+IUSE=coverage cros_host cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=BSD-Google
+RDEPEND=dev-go/net dev-go/gapi
+RESTRICT=binchecks strip test
+SLOT=0
+SRC_URI=https://github.com/GoogleCloudPlatform/google-cloud-go/archive/06a54a16a5866cce966547c51e203b9e09a25bc0.tar.gz -> github.com-GoogleCloudPlatform-google-cloud-go-06a54a16a5866cce966547c51e203b9e09a25bc0.tar.gz
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=9ef943f62356465a2a6343743c3a4ee8

@@ -1,0 +1,892 @@
+{
+  "steps": [
+    {
+      "name": "gcr.io/cloud-builders/git",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "adhd"
+      ],
+      "id": "prepare-source:0",
+      "entrypoint": "mkdir"
+    },
+    {
+      "name": "gcr.io/cloud-builders/git",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        ".",
+        "-mindepth",
+        "1",
+        "-maxdepth",
+        "1",
+        "-not",
+        "-name",
+        "adhd",
+        "-exec",
+        "mv",
+        "{}",
+        "adhd",
+        ";"
+      ],
+      "id": "prepare-source:1",
+      "waitFor": [
+        "prepare-source:0"
+      ],
+      "entrypoint": "find"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-ensure-bazel",
+      "id": "ensure-bazel:0",
+      "waitFor": [
+        "prepare-source:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-ensure-bazel",
+          "path": "/workspace-ensure-bazel"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "version"
+      ],
+      "dir": "/workspace-ensure-bazel",
+      "id": "ensure-bazel:1",
+      "waitFor": [
+        "ensure-bazel:0"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-ensure-bazel",
+          "path": "/workspace-ensure-bazel"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-copgen-check",
+      "id": "copgen-check:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-copgen-check",
+          "path": "/workspace-copgen-check"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "--check"
+      ],
+      "dir": "/workspace-copgen-check",
+      "id": "copgen-check:1",
+      "waitFor": [
+        "copgen-check:0"
+      ],
+      "entrypoint": "devtools/copgen.sh",
+      "volumes": [
+        {
+          "name": "workspace-copgen-check",
+          "path": "/workspace-copgen-check"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-rust_generate",
+      "id": "rust_generate:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-rust_generate",
+          "path": "/workspace-rust_generate"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "dir": "/workspace-rust_generate",
+      "id": "rust_generate:1",
+      "waitFor": [
+        "rust_generate:0"
+      ],
+      "entrypoint": "devtools/rust_generate.py",
+      "volumes": [
+        {
+          "name": "workspace-rust_generate",
+          "path": "/workspace-rust_generate"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "diff",
+        "--exit-code"
+      ],
+      "dir": "/workspace-rust_generate",
+      "id": "rust_generate:2",
+      "waitFor": [
+        "rust_generate:1"
+      ],
+      "entrypoint": "git",
+      "volumes": [
+        {
+          "name": "workspace-rust_generate",
+          "path": "/workspace-rust_generate"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-archlinux-clang",
+      "id": "archlinux-clang:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-clang",
+          "path": "/workspace-archlinux-clang"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "test",
+        "//...",
+        "--config=ci",
+        "-c",
+        "dbg",
+        "--config=local-clang"
+      ],
+      "dir": "/workspace-archlinux-clang",
+      "id": "archlinux-clang:1",
+      "waitFor": [
+        "archlinux-clang:0"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-clang",
+          "path": "/workspace-archlinux-clang"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-archlinux-clang-asan",
+      "id": "archlinux-clang-asan:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-clang-asan",
+          "path": "/workspace-archlinux-clang-asan"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "test",
+        "//...",
+        "--config=ci",
+        "-c",
+        "dbg",
+        "--config=local-clang",
+        "--config=asan"
+      ],
+      "dir": "/workspace-archlinux-clang-asan",
+      "id": "archlinux-clang-asan:1",
+      "waitFor": [
+        "archlinux-clang-asan:0"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-clang-asan",
+          "path": "/workspace-archlinux-clang-asan"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-archlinux-clang-ubsan",
+      "id": "archlinux-clang-ubsan:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-clang-ubsan",
+          "path": "/workspace-archlinux-clang-ubsan"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "test",
+        "//...",
+        "--config=ci",
+        "-c",
+        "dbg",
+        "--config=local-clang",
+        "--config=ubsan"
+      ],
+      "dir": "/workspace-archlinux-clang-ubsan",
+      "id": "archlinux-clang-ubsan:1",
+      "waitFor": [
+        "archlinux-clang-ubsan:0"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-clang-ubsan",
+          "path": "/workspace-archlinux-clang-ubsan"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-archlinux-gcc",
+      "id": "archlinux-gcc:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-gcc",
+          "path": "/workspace-archlinux-gcc"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "test",
+        "//...",
+        "--config=ci",
+        "-c",
+        "dbg",
+        "--config=local-gcc",
+        "--config=gcc-strict"
+      ],
+      "dir": "/workspace-archlinux-gcc",
+      "id": "archlinux-gcc:1",
+      "waitFor": [
+        "archlinux-gcc:0"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-gcc",
+          "path": "/workspace-archlinux-gcc"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-archlinux-system-cras-rust",
+      "id": "archlinux-system-cras-rust:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-system-cras-rust",
+          "path": "/workspace-archlinux-system-cras-rust"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "install",
+        "dbus-codegen"
+      ],
+      "dir": "/workspace-archlinux-system-cras-rust",
+      "id": "archlinux-system-cras-rust:1",
+      "waitFor": [
+        "archlinux-system-cras-rust:0"
+      ],
+      "entrypoint": "cargo",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-system-cras-rust",
+          "path": "/workspace-archlinux-system-cras-rust"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "build",
+        "--workspace"
+      ],
+      "dir": "/workspace-archlinux-system-cras-rust",
+      "id": "archlinux-system-cras-rust:2",
+      "waitFor": [
+        "archlinux-system-cras-rust:1"
+      ],
+      "entrypoint": "cargo",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-system-cras-rust",
+          "path": "/workspace-archlinux-system-cras-rust"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "test",
+        "--workspace"
+      ],
+      "dir": "/workspace-archlinux-system-cras-rust",
+      "id": "archlinux-system-cras-rust:3",
+      "waitFor": [
+        "archlinux-system-cras-rust:2"
+      ],
+      "entrypoint": "cargo",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-system-cras-rust",
+          "path": "/workspace-archlinux-system-cras-rust"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "test",
+        "//...",
+        "--config=ci",
+        "-c",
+        "dbg",
+        "--//:system_cras_rust",
+        "--repo_env=SYSTEM_CRAS_RUST_LIB=/workspace-archlinux-system-cras-rust/target/debug/libcras_rust.a",
+        "--override_repository=rules_rust=/workspace-archlinux-system-cras-rust/cras/rules_rust_stub",
+        "--config=local-clang"
+      ],
+      "dir": "/workspace-archlinux-system-cras-rust",
+      "id": "archlinux-system-cras-rust:4",
+      "waitFor": [
+        "archlinux-system-cras-rust:3"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-archlinux-system-cras-rust",
+          "path": "/workspace-archlinux-system-cras-rust"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-kythe",
+      "id": "kythe:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-kythe",
+          "path": "/workspace-kythe"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "devtools/kythe/build_kzip.bash",
+        "."
+      ],
+      "dir": "/workspace-kythe",
+      "id": "kythe:1",
+      "waitFor": [
+        "kythe:0"
+      ],
+      "entrypoint": "bash",
+      "volumes": [
+        {
+          "name": "workspace-kythe",
+          "path": "/workspace-kythe"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz-setup"
+      ],
+      "id": "oss-fuzz-setup:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "mkdir"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "adhd/"
+      ],
+      "dir": "oss-fuzz-setup",
+      "id": "oss-fuzz-setup:1",
+      "waitFor": [
+        "oss-fuzz-setup:0"
+      ],
+      "entrypoint": "rsync"
+    },
+    {
+      "name": "gcr.io/cloud-builders/git",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "clone",
+        "--depth=1",
+        "https://github.com/google/oss-fuzz"
+      ],
+      "dir": "oss-fuzz-setup",
+      "id": "oss-fuzz-setup:2",
+      "waitFor": [
+        "oss-fuzz-setup:1"
+      ],
+      "entrypoint": "git"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "build_image",
+        "--pull",
+        "cras"
+      ],
+      "dir": "oss-fuzz-setup",
+      "id": "oss-fuzz-setup:3",
+      "waitFor": [
+        "oss-fuzz-setup:2"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "oss-fuzz-setup/",
+        "oss-fuzz-address/"
+      ],
+      "id": "oss-fuzz-address:0",
+      "waitFor": [
+        "oss-fuzz-setup:3"
+      ],
+      "entrypoint": "rsync"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "build_fuzzers",
+        "--sanitizer",
+        "address",
+        "--engine",
+        "libfuzzer",
+        "cras",
+        "/workspace/oss-fuzz-address/adhd"
+      ],
+      "dir": "oss-fuzz-address",
+      "id": "oss-fuzz-address:1",
+      "waitFor": [
+        "oss-fuzz-address:0"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "check_build",
+        "--sanitizer",
+        "address",
+        "--engine",
+        "libfuzzer",
+        "cras"
+      ],
+      "dir": "oss-fuzz-address",
+      "id": "oss-fuzz-address:2",
+      "waitFor": [
+        "oss-fuzz-address:1"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "oss-fuzz-setup/",
+        "oss-fuzz-address-afl/"
+      ],
+      "id": "oss-fuzz-address-afl:0",
+      "waitFor": [
+        "oss-fuzz-setup:3"
+      ],
+      "entrypoint": "rsync"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "build_fuzzers",
+        "--sanitizer",
+        "address",
+        "--engine",
+        "afl",
+        "cras",
+        "/workspace/oss-fuzz-address-afl/adhd"
+      ],
+      "dir": "oss-fuzz-address-afl",
+      "id": "oss-fuzz-address-afl:1",
+      "waitFor": [
+        "oss-fuzz-address-afl:0"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "check_build",
+        "--sanitizer",
+        "address",
+        "--engine",
+        "afl",
+        "cras"
+      ],
+      "dir": "oss-fuzz-address-afl",
+      "id": "oss-fuzz-address-afl:2",
+      "waitFor": [
+        "oss-fuzz-address-afl:1"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "oss-fuzz-setup/",
+        "oss-fuzz-undefined/"
+      ],
+      "id": "oss-fuzz-undefined:0",
+      "waitFor": [
+        "oss-fuzz-setup:3"
+      ],
+      "entrypoint": "rsync"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "build_fuzzers",
+        "--sanitizer",
+        "undefined",
+        "--engine",
+        "libfuzzer",
+        "cras",
+        "/workspace/oss-fuzz-undefined/adhd"
+      ],
+      "dir": "oss-fuzz-undefined",
+      "id": "oss-fuzz-undefined:1",
+      "waitFor": [
+        "oss-fuzz-undefined:0"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "oss-fuzz/infra/helper.py",
+        "check_build",
+        "--sanitizer",
+        "undefined",
+        "--engine",
+        "libfuzzer",
+        "cras"
+      ],
+      "dir": "oss-fuzz-undefined",
+      "id": "oss-fuzz-undefined:2",
+      "waitFor": [
+        "oss-fuzz-undefined:1"
+      ],
+      "entrypoint": "python3"
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "-ah",
+        "/workspace/adhd/",
+        "./"
+      ],
+      "dir": "/workspace-cppcheck",
+      "id": "cppcheck:0",
+      "waitFor": [
+        "ensure-bazel:1"
+      ],
+      "entrypoint": "rsync",
+      "volumes": [
+        {
+          "name": "workspace-cppcheck",
+          "path": "/workspace-cppcheck"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "build",
+        "//...",
+        "--config=ci",
+        "--config=local-clang"
+      ],
+      "dir": "/workspace-cppcheck",
+      "id": "cppcheck:1",
+      "waitFor": [
+        "cppcheck:0"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-cppcheck",
+          "path": "/workspace-cppcheck"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "run",
+        "//:compdb"
+      ],
+      "dir": "/workspace-cppcheck",
+      "id": "cppcheck:2",
+      "waitFor": [
+        "cppcheck:1"
+      ],
+      "entrypoint": "bazel",
+      "volumes": [
+        {
+          "name": "workspace-cppcheck",
+          "path": "/workspace-cppcheck"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/${PROJECT_ID}/adhd-archlinux-builder",
+      "env": [
+        "DOCKER_API_VERSION=1.41"
+      ],
+      "args": [
+        "devtools/cppcheck.sh",
+        "/workspace-cppcheck/compile_commands.json"
+      ],
+      "dir": "/workspace-cppcheck",
+      "id": "cppcheck:3",
+      "waitFor": [
+        "cppcheck:2"
+      ],
+      "volumes": [
+        {
+          "name": "workspace-cppcheck",
+          "path": "/workspace-cppcheck"
+        }
+      ]
+    }
+  ],
+  "timeout": "1200s",
+  "options": {
+    "machineType": "E2_HIGHCPU_32"
+  },
+  "CoP_hide_full_logs": true
+}

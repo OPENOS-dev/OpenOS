@@ -1,0 +1,74 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CRYPTOHOME_MOCK_SIGNALLING_H_
+#define CRYPTOHOME_MOCK_SIGNALLING_H_
+
+#include <cryptohome/proto_bindings/UserDataAuth.pb.h>
+#include <gmock/gmock.h>
+
+#include "cryptohome/signalling.h"
+
+namespace cryptohome {
+
+class MockSignalling : public SignallingInterface {
+ public:
+  MockSignalling() = default;
+
+  MockSignalling(const MockSignalling&) = delete;
+  MockSignalling& operator=(const MockSignalling&) = delete;
+
+  MOCK_METHOD(void,
+              SendAuthFactorStatusUpdate,
+              (const user_data_auth::AuthFactorStatusUpdate&),
+              (override));
+  MOCK_METHOD(void,
+              SendLowDiskSpace,
+              (const user_data_auth::LowDiskSpace&),
+              (override));
+  MOCK_METHOD(void,
+              SendPrepareAuthFactorProgress,
+              (const user_data_auth::PrepareAuthFactorProgress&),
+              (override));
+  MOCK_METHOD(void,
+              SendAuthenticateStarted,
+              (const user_data_auth::AuthenticateStarted&),
+              (override));
+  MOCK_METHOD(void,
+              SendAuthenticateAuthFactorCompleted,
+              (const user_data_auth::AuthenticateAuthFactorCompleted&),
+              (override));
+  MOCK_METHOD(void,
+              SendMountStarted,
+              (const user_data_auth::MountStarted&),
+              (override));
+  MOCK_METHOD(void,
+              SendMountCompleted,
+              (const user_data_auth::MountCompleted&),
+              (override));
+  MOCK_METHOD(void,
+              SendAuthFactorAdded,
+              (const user_data_auth::AuthFactorAdded&),
+              (override));
+  MOCK_METHOD(void,
+              SendAuthFactorRemoved,
+              (const user_data_auth::AuthFactorRemoved&),
+              (override));
+  MOCK_METHOD(void,
+              SendAuthFactorUpdated,
+              (const user_data_auth::AuthFactorUpdated&),
+              (override));
+  MOCK_METHOD(void,
+              SendAuthSessionExpiring,
+              (const user_data_auth::AuthSessionExpiring&),
+              (override));
+  MOCK_METHOD(void,
+              SendRemoveCompleted,
+              (const user_data_auth::RemoveCompleted&),
+              (override));
+};
+
+}  // namespace cryptohome
+
+#endif  // CRYPTOHOME_MOCK_SIGNALLING_H_

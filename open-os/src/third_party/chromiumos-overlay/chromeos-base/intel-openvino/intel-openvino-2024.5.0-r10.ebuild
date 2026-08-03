@@ -1,0 +1,1 @@
+intel-openvino-2024.5.0.ebuild

@@ -1,0 +1,90 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("//:utils.bzl", "require_config")
+
+cc_binary(
+    name = "cras_bench",
+    visibility = ["//dist:__pkg__"],
+    deps = [
+        ":alsa_benchmark",
+        ":benchmark_util",
+        ":default_benchmarks",
+        "@com_github_google_benchmark//:benchmark_main",
+    ] + select({
+        "//:apm_build": [":apm_benchmark"],
+        "//conditions:default": [],
+    }) + select({
+        "//:ml_build": ["am_benchmark"],
+        "//conditions:default": [],
+    }),
+)
+
+cc_library(
+    name = "default_benchmarks",
+    srcs = [
+        "dsp_benchmark.cc",
+        "mixer_ops_benchmark.cc",
+    ],
+    deps = [
+        ":benchmark_util",
+        "//cras/src/dsp:drc",
+        "//cras/src/dsp:dsp_util",
+        "//cras/src/dsp:eq2",
+        "//cras/src/server:cras_mix",
+        "@com_github_google_benchmark//:benchmark",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "am_benchmark",
+    srcs = ["am_benchmark.cc"],
+    target_compatible_with = require_config("//:ml_build"),
+    deps = [
+        ":benchmark_util",
+        "//cras/src/dsp:am",
+        "@com_github_google_benchmark//:benchmark",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "apm_benchmark",
+    srcs = [
+        "apm_benchmark.cc",
+    ],
+    target_compatible_with = require_config("//:apm_build"),
+    deps = [
+        ":benchmark_util",
+        "//cras/src/dsp:dsp_util",
+        "@com_github_google_benchmark//:benchmark",
+        "@webrtc_apm//webrtc_apm",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "alsa_benchmark",
+    srcs = [
+        "alsa_benchmark.cc",
+    ],
+    deps = [
+        ":benchmark_util",
+        "//cras/src/libcras:cras_client",
+        "//cras/src/server:cras_alsa_helpers",
+        "//cras/src/server:cras_alsa_ucm",
+        "//cras/src/server:cras_mix",
+        "@com_github_google_benchmark//:benchmark",
+        "@pkg_config//alsa",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "benchmark_util",
+    srcs = ["benchmark_util.cc"],
+    hdrs = ["benchmark_util.hh"],
+)

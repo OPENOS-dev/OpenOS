@@ -1,0 +1,20 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# Tests that powerd tries to suspend when the system is idle.
+
+NAME = "power_IdleSuspend"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "spang, chromeos-kernel",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a functional test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("suite:kernel_daily_regression")
+TEST_TYPE = "client"
+
+job.add_sysinfo_logfile('/sys/kernel/debug/suspend_stats', on_every_test=True)
+job.run_test('power_IdleSuspend')

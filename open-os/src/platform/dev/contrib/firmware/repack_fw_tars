@@ -1,0 +1,132 @@
+#!/bin/bash
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# shellcheck disable=SC1091
+CONTRIB_DIR="$(dirname "$(readlink -f "$0")")/.."
+. "${CONTRIB_DIR}/common.sh" || exit 1
+
+FLAGS_HELP="
+Repack the official firmware tarball (such as ChromeOS-firmware-R109-15194.10.0-corsola.tar.bz2)
+for uploading to Binary Component Server (BCS).
+
+Usage: $0 [flags] tarball
+
+tarball: The firmware tarball to be repacked (either GCS URI or local file)"
+
+# Flags.
+DEFINE_string model "" "Comma-separated list of models (variants)" m
+DEFINE_string output "." "Output directory" o
+
+# Parse command line.
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+
+# Only after this point should you enable `set -e` as shflags does not work
+# when that is turned on first.
+set -e
+
+make_tar() {
+  local tar=$1
+  local dir=$2
+  local files=("${@:3}")
+  tar -cjvf "${tar}" -C "${dir}" "${files[@]}"
+}
+
+make_fw_tar() {
+  local fw_dir=$1
+  local model=$2
+  info "Packing ${model} firmware..."
+  local output=$3
+  local ap="${fw_dir}/image-${model}.bin"
+  local ec="${fw_dir}/${model}/ec.bin"
+  local ec_manifest_fn="component_manifest.json"
+  local model_uc="${model^}"
+  local ap_version
+  local ec_version
+  local ec_suffix
+  ap_version="$(futility update --manifest -i "${ap}" |
+    jq -r -c .default.host.versions.ro)"
+  ap_version="$(cut -d "." -f2- <<< "${ap_version}")"
+  ec_version="${ap_version}"
+
+  # Make AP tar
+  local ap_tar="${output}/${model_uc}.${ap_version}${ec_suffix}.tbz2"
+  make_tar "${ap_tar}" "$(dirname "${ap}")" "$(basename "${ap}")"
+
+  # Make EC tar
+  local ec_tar="${output}/${model_uc}_EC.${ec_version}.tbz2"
+  local ec_files=("$(basename "${ec}")")
+  local ec_dir
+  ec_dir="$(dirname "${ec}")"
+  if [ -f "${ec_dir}/${ec_manifest_fn}" ]; then
+    ec_files+=("${ec_manifest_fn}")
+  else
+    warn "${ec_manifest_fn} not found for ${model}"
+  fi
+  make_tar "${ec_tar}" "${ec_dir}" "${ec_files[@]}"
+}
+
+main() {
+  assert_inside_chroot
+
+  if [ $# -eq 0 ]; then
+    flags_help
+    die "tarball missing"
+  fi
+
+  local temp_dir
+  temp_dir=$(mktemp -d)
+
+  local tarball="$1"
+
+  if [[ "${tarball}" == "gs://"* ]]; then
+    info "Downloading ${tarball} to ${temp_dir} ..."
+    gsutil cp "${tarball}" "${temp_dir}/"
+    tarball="${temp_dir}/$(basename "${tarball}")"
+  fi
+
+  tarball="$(readlink -v -f "${tarball}")"
+
+  # Files such as component_manifest.json may not exist in the tarball,
+  # so we cannot pass the file name to tar as "tar -xjf ${tarball} FILES".
+  # Instead, we exclude a few patterns to save some space.
+  local excluded_files=(
+    "cbfs-ro-compress/*"
+    "*/coreboot*/*"
+    "*/depthcharge/*"
+    "*/libpayload*/*"
+  )
+  local opts=()
+
+  for file in "${excluded_files[@]}"; do
+    opts+=("--exclude" "${file}")
+  done
+
+  info "Extracting images to ${temp_dir}..."
+  (cd "${temp_dir}" && tar -xjf "${tarball}" "${opts[@]}")
+
+  if [[ -n "${FLAGS_model}" ]]; then
+    IFS=',' read -ra models <<< "${FLAGS_model}"
+  else
+    models=()
+    while IFS= read -r -d '' f; do
+      f="${f##*/}"
+      model="${f#image-}"
+      model="${model%.bin}"
+      models+=("${model}")
+    done < <(find "${temp_dir}" -maxdepth 1 -regextype posix-extended -regex \
+               ".*/image-[^.]+\.bin" -print0)
+    info "Found models: ${models[*]}"
+  fi
+
+  for model in "${models[@]}"; do
+    make_fw_tar "${temp_dir}" "${model}" "${FLAGS_output}"
+  done
+
+  info "Output files saved to ${FLAGS_output}/"
+  info "Done"
+}
+
+main "$@"

@@ -1,0 +1,16 @@
+[
+    {
+      "identity": "u:r:cros_shill:s0",
+      "own": [
+        "CrosPasspointService",
+        "CrosPortalService"
+      ]
+    },
+    {
+      "identity": "u:r:cros_browser:s0",
+      "request": [
+        "CrosPasspointService",
+        "CrosPortalService"
+      ]
+    }
+]

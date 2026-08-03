@@ -1,0 +1,13 @@
+# Bindgen dev-dependency list. Cargo vendor won't pull these in otherwise, and
+# `diff` isn't otherwise present (at least at the time of writing).
+[package]
+edition = "2018"
+name = "bindgen-deps"
+version = "0.69.4"
+
+[dependencies]
+bindgen = "0.69.4"
+
+[dev-dependencies]
+clap = "4"
+shlex = "1"

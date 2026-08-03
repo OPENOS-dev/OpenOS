@@ -1,0 +1,44 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option go_package = "go.chromium.org/chromiumos/feature_management/go/api/software";
+
+package chromiumos.feature_management.api.software;
+
+import "feature_management.proto";
+import "hwid_feature_requirement.proto";
+
+
+// Describe the feature_level/scope to assign to a given device by inspection its HWID.
+message DeviceSelection {
+  // Feature level
+  uint32 feature_level = 1;
+
+  // Scope for this device
+  Feature.Scope scope = 2;
+
+  repeated HwidProfile hwid_profiles = 3;
+}
+
+// A proto to contain several selections
+message SelectionBundle {
+  repeated DeviceSelection selections = 1;
+}
+
+message DeviceSelectionSample {
+  // The target feature level
+  uint32 expected_feature_level = 1;
+
+  // The target scope
+  Feature.Scope expected_scope = 2;
+
+  // Some sample HWIDs.
+  repeated string sample_hwids = 3;
+}
+
+message SelectionSampleBundle {
+  repeated DeviceSelectionSample selection_samples = 1;
+}

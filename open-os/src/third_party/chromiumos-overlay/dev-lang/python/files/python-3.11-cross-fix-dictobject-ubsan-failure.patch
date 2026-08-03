@@ -1,0 +1,16 @@
+This patch fixes the UBSan failure reported in b/383416753.
+
+This patch is based on
+https://github.com/python/cpython/pull/127568.
+
+--- a/Objects/dictobject.c
++++ b/Objects/dictobject.c
+@@ -453,7 +453,7 @@ estimate_log2_keysize(Py_ssize_t n)
+ static PyDictKeysObject empty_keys_struct = {
+         1, /* dk_refcnt */
+         0, /* dk_log2_size */
+-        0, /* dk_log2_index_bytes */
++        3, /* dk_log2_index_bytes */
+         DICT_KEYS_UNICODE, /* dk_kind */
+         1, /* dk_version */
+         0, /* dk_usable (immutable) */

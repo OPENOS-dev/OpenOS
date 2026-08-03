@@ -1,0 +1,15 @@
+[package]
+name = "protos"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+composite-disk = []
+registered_events = []
+
+[dependencies]
+protobuf = "3.2"
+
+[build-dependencies]
+proto_build_tools = { workspace = true }

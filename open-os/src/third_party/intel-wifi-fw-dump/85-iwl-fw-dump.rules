@@ -1,0 +1,2 @@
+DRIVER=="iwlwifi", ACTION=="change", RUN+="/opt/intel/fwdump"
+SUBSYSTEM=="devcoredump", ACTION=="add", RUN+="/opt/intel/fwdump"

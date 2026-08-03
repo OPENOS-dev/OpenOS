@@ -1,0 +1,1 @@
+handwriting-ar-20220203.ebuild

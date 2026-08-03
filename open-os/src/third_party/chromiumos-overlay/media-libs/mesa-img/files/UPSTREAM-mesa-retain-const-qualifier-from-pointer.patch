@@ -1,0 +1,70 @@
+From a7b360dd05b541d1c3c3885ea3250d7e7a576256 Mon Sep 17 00:00:00 2001
+From: Rudi Heitbaum <rudi@heitbaum.com>
+Date: Wed, 4 Feb 2026 21:39:10 +0000
+Subject: [PATCH 3/5] mesa: retain const qualifier from pointer
+
+Since glibc-2.43:
+
+For ISO C23, the functions bsearch, memchr, strchr, strpbrk, strrchr, strstr, wcschr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers into their input arrays now have definitions as macros that return a pointer to a const-qualified type when the input argument is a pointer to a const-qualified type.
+
+https://lists.gnu.org/archive/html/info-gnu/2026-01/msg00005.html
+
+Resolves the following warnings:
+    src/mesa/glapi/glapi/gen/enums.c: In function '_mesa_enum_to_string':
+    src/mesa/glapi/glapi/gen/enums.c:7799:8: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+     7799 |    elt = bsearch(& nr, enum_string_table_offsets,
+          |        ^
+
+    ../src/egl/main/egldispatchstubs.c: In function 'FindProcIndex':
+    ../src/egl/main/egldispatchstubs.c:52:7: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+       52 |       bsearch(name, __EGL_DISPATCH_FUNC_NAMES, __EGL_DISPATCH_COUNT,
+          |       ^~~~~~~
+
+Signed-off-by: Rudi Heitbaum <rudi@heitbaum.com>
+(cherry picked from commit 1acc96b8cb0c503368a512661e3d70e3542662d9)
+
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/39828>
+(cherry picked from commit 6de99bcc31e228ba227fe1c08f9f27da29b436d1)
+Change-Id: I938908c9cb0938b0336b632996446d76664559f5
+---
+ src/egl/main/egldispatchstubs.c |  2 +-
+ src/mapi/glapi/gen/gl_enums.py  | 10 ++++------
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/src/egl/main/egldispatchstubs.c b/src/egl/main/egldispatchstubs.c
+index ee9c8f5f68d..b58264ee639 100644
+--- a/src/egl/main/egldispatchstubs.c
++++ b/src/egl/main/egldispatchstubs.c
+@@ -46,7 +46,7 @@ static int Compare(const void *l, const void *r)
+ 
+ static int FindProcIndex(const char *name)
+ {
+-    const char **match = bsearch(name, __EGL_DISPATCH_FUNC_NAMES,
++    const char * const *match = bsearch(name, __EGL_DISPATCH_FUNC_NAMES,
+             __EGL_DISPATCH_COUNT, sizeof(const char *), Compare);
+ 
+     if (match == NULL)
+diff --git a/src/mapi/glapi/gen/gl_enums.py b/src/mapi/glapi/gen/gl_enums.py
+index 02cc2bf8a6b..36f72de237a 100644
+--- a/src/mapi/glapi/gen/gl_enums.py
++++ b/src/mapi/glapi/gen/gl_enums.py
+@@ -89,12 +89,10 @@ static char token_tmp[20];
+ const char *
+ _mesa_enum_to_string(int nr)
+ {
+-   enum_elt *elt;
+-
+-   elt = bsearch(& nr, enum_string_table_offsets,
+-                 ARRAY_SIZE(enum_string_table_offsets),
+-                 sizeof(enum_string_table_offsets[0]),
+-                 (cfunc) compar_nr);
++   const enum_elt *elt = bsearch(& nr, enum_string_table_offsets,
++                                 ARRAY_SIZE(enum_string_table_offsets),
++                                 sizeof(enum_string_table_offsets[0]),
++                                 (cfunc) compar_nr);
+ 
+    if (elt != NULL) {
+       return &enum_string_table[elt->offset];
+-- 
+2.51.0
+

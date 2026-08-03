@@ -1,0 +1,112 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_headers",
+    ":libmems",
+    ":libmems_pkg_config",
+    ":libmems_test_support",
+  ]
+  if (use.test) {
+    deps += [ ":libmems_testrunner" ]
+  }
+}
+
+pkg_config("target_defaults_pkg_deps") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libcros_config",
+    "libiio",
+    "libudev",
+  ]
+}
+
+shared_library("libmems") {
+  sources = [
+    "common_types.cc",
+    "iio_channel_impl.cc",
+    "iio_context_factory.cc",
+    "iio_context_impl.cc",
+    "iio_device.cc",
+    "iio_device_impl.cc",
+    "iio_device_trigger_impl.cc",
+    "iio_event.cc",
+    "iio_event_impl.cc",
+  ]
+  configs += [ ":target_defaults_pkg_deps" ]
+  install_path = "lib"
+}
+
+install_config("install_headers") {
+  sources = [
+    "common_types.h",
+    "export.h",
+    "iio_channel.h",
+    "iio_context.h",
+    "iio_context_factory.h",
+    "iio_device.h",
+    "iio_event.h",
+    "test_fakes.h",
+  ]
+  install_path = "/usr/include/chromeos/libmems"
+}
+
+generate_pkg_config("libmems_pkg_config") {
+  name = "libmems"
+  description = "MEMS support library"
+  version = "0.1"
+  libs = [ "-lmems" ]
+  install = true
+}
+
+shared_library("libmems_test_support") {
+  sources = [ "test_fakes.cc" ]
+  configs += [ ":target_defaults_pkg_deps" ]
+  install_path = "/build/lib"
+  deps = [
+    ":libmems",
+    ":libmems_test_support_pkg_config",
+  ]
+}
+
+generate_pkg_config("libmems_test_support_pkg_config") {
+  name = "libmems_test_support"
+  description = "MEMS support library test helpers"
+  version = "0.1"
+  libs = [ "-lmems_test_support" ]
+  install = true
+}
+
+if (use.test) {
+  pkg_config("libmems_testrunner_pkg_deps") {
+    pkg_deps = [
+      "libbrillo-test",
+      "libchrome-test",
+      "libiio",
+    ]
+  }
+
+  executable("libmems_testrunner") {
+    sources = [
+      "iio_device_test.cc",
+      "iio_event_impl_test.cc",
+      "iio_event_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":libmems_testrunner_pkg_deps",
+      ":target_defaults_pkg_deps",
+    ]
+    run_test = true
+    deps = [
+      ":libmems",
+      ":libmems_test_support",
+      "//common-mk/testrunner",
+    ]
+  }
+}

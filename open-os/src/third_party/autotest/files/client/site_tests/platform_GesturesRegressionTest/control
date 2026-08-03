@@ -1,0 +1,21 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "platform_GesturesRegressionTest"
+METADATA = {
+    "contacts": ["chromeos-tango@google.com"],
+    "bug_component": "b:167253",
+    "criteria": "N/A, test initiates other tests",
+    "hw_agnostic": False
+}
+#ATTRIBUTES = "suite:bvt-perbuild, suite:touch, suite:distributed_lab_qual_bvt_shard2"
+TEST_TYPE = "client"
+
+
+DOC = """
+This tests the regression of gestures library and stores the results in autotest
+db.
+"""
+
+job.run_test('platform_GesturesRegressionTest')

@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "20211027",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "20211027_debug",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "20211027_package_set",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "20211027_install",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "20211027_installed",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "20211027_install_list",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "crossdev",
+    actual = ":20211027",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":20211027_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "crossdev_debug",
+    actual = ":20211027_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":20211027_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "crossdev_package_set",
+    actual = ":20211027_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":20211027_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "crossdev_install",
+    actual = ":20211027_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":20211027_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "crossdev_installed",
+    actual = ":20211027_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":20211027_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "crossdev_install_list",
+    actual = ":20211027_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "20211027_test",
+    tests = [ "//internal/packages/stage2/host/chromiumos/sys-devel/crossdev:20211027_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":20211027_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "crossdev_test",
+    tests = [ ":20211027_test" ],
+    visibility = ["@//bazel:internal"],
+)

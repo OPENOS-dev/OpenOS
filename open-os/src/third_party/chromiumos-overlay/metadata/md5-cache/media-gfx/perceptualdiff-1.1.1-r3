@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=media-libs/freeimage
+DESCRIPTION=An image comparison utility
+EAPI=7
+HOMEPAGE=http://pdiff.sourceforge.net/
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=media-libs/freeimage
+SLOT=0
+SRC_URI=mirror://sourceforge/pdiff/perceptualdiff-1.1.1-src.tar.gz
+_eclasses_=multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=87acc16f97e57c67beb55fc5d5fc1cfa

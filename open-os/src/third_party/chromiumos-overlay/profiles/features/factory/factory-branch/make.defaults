@@ -1,0 +1,16 @@
+# Copyright 2025 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+USE=""
+
+# Enable customization like disable ap/ec/fingerprint firmware build
+USE="${USE} factory_branch"
+
+# Disable minios
+USE="${USE} -minios"
+
+# Disable ARC
+USE="${USE} -cheets"
+USE="${USE} -arcpp -arcvm"
+USE="${USE} -android-container-pi -android-container-rvc"
+USE="${USE} -android-vm-rvc -android-vm-sc -android-vm-master -android-vm-tm"

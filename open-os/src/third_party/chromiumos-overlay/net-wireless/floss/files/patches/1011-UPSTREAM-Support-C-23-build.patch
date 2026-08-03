@@ -1,0 +1,24 @@
+From 9a6408640427ffc6fca7be762afbace90091cf30 Mon Sep 17 00:00:00 2001
+From: Hidehiko Abe <hidehiko@google.com>
+Date: Mon, 5 Jan 2026 23:54:21 +0900
+Subject: [PATCH] UPSTREAM: Support C++23 build.
+
+Fix the type mismatching.
+
+Bug: 467924549
+Test: m com.android.bt
+Flag: EXEMPT TEST_ONLY
+Change-Id: Iec797542461c302768566c7a98d168fe3df3b3ee
+---
+ system/test/mock/mock_common_address_obfuscator.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system/test/mock/mock_common_address_obfuscator.cc b/system/test/mock/mock_common_address_obfuscator.cc
+index 11f0fa4e86d..c04a0e49fc3 100644
+--- a/system/test/mock/mock_common_address_obfuscator.cc
++++ b/system/test/mock/mock_common_address_obfuscator.cc
+@@ -42,3 +42,3 @@ std::string AddressObfuscator::Obfuscate(const RawAddress& address) {
+   inc_func_call_count(__func__);
+-  return 0;
++  return std::string();
+ }

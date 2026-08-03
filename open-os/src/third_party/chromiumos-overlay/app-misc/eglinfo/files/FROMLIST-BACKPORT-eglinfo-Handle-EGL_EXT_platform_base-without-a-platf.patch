@@ -1,0 +1,63 @@
+https://gitlab.freedesktop.org/mesa/demos/-/merge_requests/175
+
+From 22c4518331674c93d6082cb241e48caafe653cc7 Mon Sep 17 00:00:00 2001
+From: Matt Turner <mattst88@gmail.com>
+Date: Thu, 18 Apr 2024 15:42:29 -0400
+Subject: [PATCH] eglinfo: Handle EGL_EXT_platform_base without a platform ext
+
+The proprietary Mali drivers advertise EGL_EXT_platform_base without
+advertising a platform extension such as EGL_KHR_platform_gbm.
+
+This allows the eglinfo to fall back the the older code path in this
+case. Otherwise, eglinfo only prints the client extensions and nothing
+more.
+---
+ src/egl/opengl/eglinfo.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/egl/opengl/eglinfo.c b/src/egl/opengl/eglinfo.c
+index 30dbc8b2..56d29b04 100644
+--- a/src/egl/opengl/eglinfo.c
++++ b/src/egl/opengl/eglinfo.c
+@@ -31,6 +31,7 @@
+ #include <assert.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <stdbool.h>
+ #include <string.h>
+ #include "glinfo_common.h"
+ #include <glad/glad.h>
+@@ -833,6 +834,7 @@ main(int argc, char *argv[])
+            (PFNEGLGETPLATFORMDISPLAYEXTPROC)
+            eglGetProcAddress("eglGetPlatformDisplayEXT");
+ 
++      bool found_platform_ext = false;
+       for (int i = 0; i < ELEMENTS(platforms); i++) {
+          if (opts.platform != ALL && i != opts.platform)
+             continue;
+@@ -848,17 +850,22 @@ main(int argc, char *argv[])
+                                                 EGL_DEFAULT_DISPLAY,
+                                                 NULL);
+                ret += doOneDisplay(d, platforms[i].human_name, opts);
++               found_platform_ext = true;
+                break;
+             }
+          }
+       }
+ 
++      if (!found_platform_ext)
++         goto no_platform_ext;
++
+       if (strstr(clientext, "EGL_EXT_device_enumeration") &&
+           strstr(clientext, "EGL_EXT_platform_device") &&
+           opts.platform == ALL)
+          ret += doDevices("Device platform", opts);
+    }
+    else {
++no_platform_ext:
+       ret = doOneDisplay(eglGetDisplay(EGL_DEFAULT_DISPLAY), "Default display", opts);
+    }
+ 
+-- 
+2.43.2
+

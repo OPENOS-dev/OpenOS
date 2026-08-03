@@ -1,0 +1,12 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install
+DESCRIPTION=Install the upstart job that launches the openssh-server.
+EAPI=7
+HOMEPAGE=https://dev.chromium.org/chromium-os
+IUSE=systemd
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-sshd-init net-misc/openssh virtual/chromeos-firewall
+SLOT=0
+_eclasses_=systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=26935a0b174db3eb8b4b1d8bbd9f8db2

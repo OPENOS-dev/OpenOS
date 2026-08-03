@@ -1,0 +1,14 @@
+BDEPEND=doc? ( dev-util/gtk-doc dev-build/gtk-doc-am ) lzma? ( virtual/pkgconfig ) zlib? ( virtual/pkgconfig ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install postinst prepare
+DEPEND=!sys-apps/module-init-tools !sys-apps/modutils !<sys-apps/openrc-0.13.8 !<sys-apps/systemd-216-r3 lzma? ( >=app-arch/xz-utils-5.0.4-r1 ) pkcs7? ( >=dev-libs/openssl-1.1.0:= ) zlib? ( >=sys-libs/zlib-1.2.6 ) zstd? ( >=app-arch/zstd-1.5.2-r1:= )
+DESCRIPTION=Library and tools for managing linux kernel modules
+EAPI=7
+HOMEPAGE=https://git.kernel.org/?p=utils/kernel/kmod/kmod.git
+IUSE=debug doc +lzma pkcs7 split-usr static-libs +tools +zlib +zstd
+KEYWORDS=*
+LICENSE=LGPL-2
+RDEPEND=!sys-apps/module-init-tools !sys-apps/modutils !<sys-apps/openrc-0.13.8 !<sys-apps/systemd-216-r3 lzma? ( >=app-arch/xz-utils-5.0.4-r1 ) pkcs7? ( >=dev-libs/openssl-1.1.0:= ) zlib? ( >=sys-libs/zlib-1.2.6 ) zstd? ( >=app-arch/zstd-1.5.2-r1:= )
+SLOT=0
+SRC_URI=https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-32.tar.xz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	bash-completion-r1	47a7402d95930413ce25ba8d857339bb	libtool	f143db5a74ccd9ca28c1234deffede96	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=db5f20a27b9baa371394deb85468600b

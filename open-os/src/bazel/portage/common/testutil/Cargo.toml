@@ -1,0 +1,28 @@
+# AUTO GENERATED - DO NOT EDIT!
+# To update, run "bazel run @@//bazel/portage/common/testutil:generate_cargo_toml"
+[package]
+name = "testutil"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { package = "anyhow", workspace = true }
+fileutil = { package = "fileutil", path = "../fileutil" }
+hex = { package = "hex", workspace = true }
+itertools = { package = "itertools", workspace = true }
+libc = { package = "libc", workspace = true }
+runfiles = { package = "runfiles", workspace = true }
+serde = { package = "serde", workspace = true }
+sha2 = { package = "sha2", workspace = true }
+walkdir = { package = "walkdir", workspace = true }
+
+
+[dev-dependencies]
+nix = { package = "nix", workspace = true }
+once_cell = { package = "once_cell", workspace = true }
+tempfile = { package = "tempfile", workspace = true }
+
+
+[features]
+# For now, features are not supported. We can, at request, add support for them,
+# but for the time being, no-one actually needs them.

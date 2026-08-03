@@ -1,0 +1,38 @@
+From f31b9ffd968bc07e78826814da01e164e0bf6485 Mon Sep 17 00:00:00 2001
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Date: Tue, 19 Jan 2021 15:04:22 +0100
+Subject: [PATCH] media: v4l: Add new Colorimetry Class
+
+Add Colorimetry control class for colorimetry controls
+
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ include/uapi/linux/v4l2-controls.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index 833ad7eb..0cc89a6e 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -66,6 +66,7 @@
+ #define V4L2_CTRL_CLASS_RF_TUNER	0x00a20000	/* RF tuner controls */
+ #define V4L2_CTRL_CLASS_DETECT		0x00a30000	/* Detection controls */
+ #define V4L2_CTRL_CLASS_CODEC_STATELESS 0x00a40000	/* Stateless codecs controls */
++#define V4L2_CTRL_CLASS_COLORIMETRY	0x00a50000	/* Colorimetry controls */
+ 
+ /* User-class control IDs */
+ 
+@@ -1828,6 +1829,9 @@ struct v4l2_ctrl_fwht_params {
+ 	__u32 quantization;
+ };
+ 
++#define V4L2_CID_COLORIMETRY_CLASS_BASE	(V4L2_CTRL_CLASS_COLORIMETRY | 0x900)
++#define V4L2_CID_COLORIMETRY_CLASS	(V4L2_CTRL_CLASS_COLORIMETRY | 1)
++
+ /* MPEG-compression definitions kept for backwards compatibility */
+ #ifndef __KERNEL__
+ #define V4L2_CTRL_CLASS_MPEG            V4L2_CTRL_CLASS_CODEC
+-- 
+2.45.2

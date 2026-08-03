@@ -1,0 +1,13 @@
+BDEPEND=!<dev-perl/libwww-perl-6 virtual/perl-Exporter >=virtual/perl-Time-Local-1.280.0 dev-perl/TimeDate virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Date conversion for HTTP date formats
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/HTTP-Date
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=!<dev-perl/libwww-perl-6 virtual/perl-Exporter >=virtual/perl-Time-Local-1.280.0 dev-perl/TimeDate dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Date-6.05.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=7ad925b1654bb071cab51be679847119

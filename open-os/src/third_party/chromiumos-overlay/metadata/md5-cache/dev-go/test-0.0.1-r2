@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/logex
+DESCRIPTION=Small disk testing package
+EAPI=7
+HOMEPAGE=https://github.com/chzyer/test
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=dev-go/logex
+RESTRICT=binchecks strip
+SLOT=0
+SRC_URI=https://github.com/chzyer/test/archive/a1ea475d72b168a29f44221e0ad031a842642302.tar.gz -> github.com-chzyer-test-a1ea475d72b168a29f44221e0ad031a842642302.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c8f9d9dbf8049fb1e9c4f9819d61dc89

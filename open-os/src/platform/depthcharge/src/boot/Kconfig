@@ -1,0 +1,122 @@
+##
+## Copyright 2013 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+choice
+	prompt "Kernel format"
+	default KERNEL_DUMMY
+	help
+	  The format the kernel is stored in on disk.
+
+	config KERNEL_ZIMAGE
+	bool "zimage"
+	depends on ARCH_X86
+
+	config KERNEL_FIT
+	bool "FIT"
+
+	config KERNEL_DUMMY
+	bool "dummy"
+endchoice
+
+config KERNEL_LEGACY
+	bool "Allow alternative(legacy) kernels"
+	default n
+
+config KERNEL_MULTIBOOT
+	bool "Allow alternative(multiboot) kernels"
+	default n
+
+config KERNEL_MULTIBOOT_ZBI
+	bool "Allow alternative(multiboot-wrapped zbi) kernels"
+	default n
+
+config MACHID
+	hex "Machine ID to pass to the kernel"
+	depends on KERNEL_LEGACY
+	default 0x0
+	help
+	  On some platforms this value could be discovered at run time.
+
+config ATAG_BASE
+	hex "Address in DRAM where to place ATAGs"
+	depends on KERNEL_LEGACY
+	depends on ARCH_ARM
+	default 0x0
+
+config ARM64_SKIP_PHYS_KASLR
+	bool "Skip kernel physical address randomization"
+	depends on ARCH_ARM_V8
+	default n
+	help
+	  Disable kernel physical address randomization (KASLR) in the
+	  bootloader. By default, Depthcharge will select a random
+	  2MiB-aligned memory slot for the kernel using a seed from the TPM.
+	  Enabling this will force the kernel to be loaded at the first
+	  available valid physical address (Slot 0). This is safer than the
+	  legacy method as it always respects reserved memory regions.
+
+config KERNEL_FDT_ADDR
+	hex "Device tree load address."
+	default 0x0
+	help
+	  Where to put the updated device tree when booting the kernel. The
+	  area reserved by this is 8MB.
+
+	  ==== Placement guide (also see kernel/Documentation/<arch>/boot*) ====
+	  arm32: Somewhere between 128MB and 512MB from the start of RAM. Do not
+	  overlap DMA_COHERENT area (from coreboot memlayout)!
+	  arm64: Within the first 512MB of RAM, but as far away from the start
+	  of RAM as possible (i.e. ideally at 504MB).
+
+config BOOTCONFIG
+	bool "Support for bootconfig"
+	default n
+	help
+	  Enable support for bootconfig feature which is another way to provide
+	  key=value parameters to the kernel besides commandline.
+
+config ANDROID_PVMFW
+	bool "Support for loading pvmfw into memory"
+	default n
+	select CLEAR_DATA
+	help
+	  Enables loading pvmfw from AVB partition into memory and providing
+	  location and size information to Linux kernel.
+
+	  This option can be temporarily disabled for bring up purposes.
+
+config CLEAR_DATA
+	bool "Clear potentially sensitive data before jump to kernel"
+	default n
+	help
+	  Enable clearing .data, .bss, .stack sections and DMA heap before jumping
+	  to the kernel.
+
+config ANDROID_PKVM_DRNG_SEED
+	bool "Support for preparing seed for pKVM Deterministric TRNG"
+	default y
+	depends on ARCH_ARM
+	depends on ANDROID_PVMFW
+	help
+	  Enables preparation of initial seed for pKVM Deterministric TRNG
+	  implementation. The seed is generated using TPM GetRandom and stored
+	  in system memory.
+	  This option can be temporarily disabled for bring up purposes.
+
+config ANDROID_MTE
+	bool "MTE bootloader support"
+	depends on ARCH_ARM_V8
+	default n
+	help
+	  By enabling this option, depthcharge reads MTE control values from the
+	  the kernel command line and misc partition and sets the relevant
+	  kernel cmdline accordingly.

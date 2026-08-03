@@ -1,0 +1,55 @@
+When a cert is removed from a slot outside of the current instance of NSS,
+it is never automatically removed from an internal NSS' cache. There's an
+internal method to clear the cache, this patch exposes it as a public
+PK11_ClearCertsCache method. It's needed in ChromiumOS in case a certain
+migration doesn't go as planned and the data will need to be deleted from Chaps
+and from the cache (see the design doc in the bug for more details). After that
+the patch can be removed. Since it's temporary, a merge to the upstream was not
+requested.
+From: Michael Ershov <miersh@google.com>
+Bug: http://b/322957935
+
+--- a/lib/nss/nss.def
++++ b/lib/nss/nss.def
+@@ -1237,6 +1237,7 @@ PK11_ExportEncryptedPrivateKeyInfoV2;
+ PK11_ContextGetFIPSStatus;
+ PK11_ObjectGetFIPSStatus;
+ PK11_SlotGetLastFIPSStatus;
++PK11_ClearCertsCache;
+ ;+    local:
+ ;+       *;
+ ;+};
+--- a/lib/pk11wrap/pk11pub.h
++++ b/lib/pk11wrap/pk11pub.h
+@@ -42,6 +42,17 @@ PK11SlotInfo *PK11_GetInternalKeySlot(void);
+ PK11SlotInfo *PK11_GetInternalSlot(void);
+ SECStatus PK11_Logout(PK11SlotInfo *slot);
+ void PK11_LogoutAll(void);
++/*
++ * Clears the cache with certs for the slot. This is mainly needed when a cert
++ * is deleted from the slot outside of NSS (or using NSS in another process).
++ * Without clearing the cache the deleted cert will still be found by
++ * PK11_ListCerts* methods, even though the cert is not actually usable. Should
++ * be used carefully, certs returned from previous calls to PK11_ListCerts* are
++ * refcounted and will not cause use-after-free, but might not interact
++ * correctly with other methods (e.g. PK11_GetAllSlotsForCert might not return
++ * any slots for an old pointer).
++ */
++SECStatus PK11_ClearCertsCache(PK11SlotInfo *slot);
+
+ /************************************************************
+  *  Slot Password Management
+--- a/lib/pk11wrap/pk11slot.c
++++ b/lib/pk11wrap/pk11slot.c
+@@ -2744,3 +2744,11 @@ PK11_WaitForTokenEvent(PK11SlotInfo *slot, PK11TokenEvent event,
+     }
+     return waitForRemoval ? PK11TokenRemoved : PK11TokenPresent;
+ }
++
++SECStatus PK11_ClearCertsCache(PK11SlotInfo *slot) {
++    if (!slot || !slot->nssToken) {
++        return SECFailure;
++    }
++    PRStatus status =  nssToken_NotifyCertsNotVisible(slot->nssToken);
++    return status == PR_SUCCESS ? SECSuccess : SECFailure;
++}

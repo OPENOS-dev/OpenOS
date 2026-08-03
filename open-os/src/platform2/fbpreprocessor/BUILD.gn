@@ -1,0 +1,144 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/generate-dbus-adaptors.gni")
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+group("all") {
+  deps = [
+    ":fbpreprocessor-proto",
+    ":fbpreprocessord",
+    ":install_dbus_config",
+    ":install_init",
+    ":install_seccomp_policy",
+    ":install_tmpfiles_config",
+    ":libfbpreprocessord",
+  ]
+  if (use.test) {
+    deps += [ ":fbpreprocessord_test_runner" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  defines = []
+
+  # NOSORT
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libdebugd-client",
+    "libfeatures",
+    "libmetrics",
+    "libsession_manager-client",
+    "protobuf",
+    "system_api",
+  ]
+}
+
+generate_dbus_adaptors("fbpreprocessor-dbus-adaptors") {
+  dbus_service_config = "dbus_bindings/dbus-service-config.json"
+  dbus_adaptors_out_dir = "include/fbpreprocessor/dbus_adaptors"
+  sources = [ "dbus_bindings/org.chromium.FbPreprocessor.xml" ]
+}
+
+proto_library("fbpreprocessor-proto") {
+  proto_in_dir = "${sysroot}/usr/include/chromeos/dbus/fbpreprocessor"
+  proto_out_dir = "include"
+  sources = [ "${proto_in_dir}/fbpreprocessor.proto" ]
+}
+
+static_library("libfbpreprocessord") {
+  sources = [
+    "crash_reporter_dbus_adaptor.cc",
+    "dbus_adaptor.cc",
+    "fbpreprocessor_daemon.cc",
+    "firmware_dump.cc",
+    "input_manager.cc",
+    "manager_impl.cc",
+    "metrics.cc",
+    "output_manager.cc",
+    "platform_features_client.cc",
+    "pseudonymization_manager.cc",
+    "session_state_manager.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":fbpreprocessor-dbus-adaptors",
+    ":fbpreprocessor-proto",
+    "//common-mk/external_dependencies:policy-protos",
+    "//common-mk/external_dependencies:user_policy-protos",
+  ]
+}
+
+executable("fbpreprocessord") {
+  sources = [ "main.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "bin"
+  deps = [ ":libfbpreprocessord" ]
+}
+
+install_config("install_init") {
+  sources = [ "init/fbpreprocessord.conf" ]
+  install_path = "upstart"
+}
+
+install_config("install_seccomp_policy") {
+  sources = [ "seccomp/fbpreprocessord-" + getenv("ARCH") + ".policy" ]
+  install_path = "seccomp_policy"
+  outputs = [ "fbpreprocessord.policy" ]
+}
+
+install_config("install_tmpfiles_config") {
+  sources = [ "tmpfiles.d/fbpreprocessord.conf" ]
+  install_path = "tmpfilesd"
+}
+
+install_config("install_dbus_config") {
+  sources = [ "dbus/org.chromium.FbPreprocessor.conf" ]
+  install_path = "dbus_system_d"
+}
+
+#TODO(b/287451677): Stop disabling this linter warning once it's possible to
+# no longer depend on //metrics:metrics_test_support directly.
+#gnlint: disable=GnLintDepsOtherProjectDirectly
+
+if (use.test) {
+  pkg_config("libchrome_test_config") {
+    pkg_deps = [
+      "libchrome-test",
+      "libdebugd-client-test",
+      "libsession_manager-client-test",
+    ]
+  }
+  executable("fbpreprocessord_test_runner") {
+    sources = [
+      "fake_manager.cc",
+      "fake_platform_features_client.cc",
+      "fake_session_state_manager.cc",
+      "firmware_dump_test.cc",
+      "input_manager_test.cc",
+      "metrics_test.cc",
+      "output_manager_test.cc",
+      "platform_features_client_test.cc",
+      "pseudonymization_manager_test.cc",
+      "session_state_manager_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":libchrome_test_config",
+      ":target_defaults",
+    ]
+    run_test = true
+    deps = [
+      ":libfbpreprocessord",
+      "//common-mk/testrunner",
+      "//metrics:metrics_test_support",
+    ]
+    pkg_deps = [
+      "dbus-1",
+      "libfake_platform_features",
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+[package]
+name = "dsp_rust"
+version = "0.1.0"
+authors = ["The Chromium OS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+float-cmp = { workspace = true }
+libc = { workspace = true }
+nix = { workspace = true }
+num-traits = { workspace = true }
+itertools = { workspace = true }

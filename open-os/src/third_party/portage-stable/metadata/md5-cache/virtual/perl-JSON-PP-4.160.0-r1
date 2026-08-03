@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for JSON-PP
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* =dev-lang/perl-5.38* ~perl-core/JSON-PP-4.160.0 ) !<perl-core/JSON-PP-4.160.0 !>perl-core/JSON-PP-4.160.0-r999
+SLOT=0
+_md5_=cb64c2069cd57515d74c618eda7051af

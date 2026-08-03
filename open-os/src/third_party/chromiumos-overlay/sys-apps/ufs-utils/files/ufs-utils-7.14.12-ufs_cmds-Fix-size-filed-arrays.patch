@@ -1,0 +1,74 @@
+From 3b3c85a5473cb2c24e5f543b3ec4e4b9789d53c5 Mon Sep 17 00:00:00 2001
+From: Gwendal Grignou <gwendal@google.com>
+Date: Tue, 16 Sep 2025 16:03:13 -0700
+Subject: [PATCH] ufs_cmds: Fix size filed arrays
+
+Make sure fixed arrays (ufs_attrs and ufs_flags) have 256 entries.
+Remove comparison between (u8)x < 256, always true.
+---
+ ufs_cmds.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/ufs_cmds.c b/ufs_cmds.c
+index a6faa27..3c6eb3e 100644
+--- a/ufs_cmds.c
++++ b/ufs_cmds.c
+@@ -15,6 +15,8 @@
+ #include <stdbool.h>
+ #include <dirent.h>
+ 
++#define COMPILE_TIME_ARRAY_SIZE_ASSERT(cond) _Static_assert(cond, "Size mismatch")
++
+ #include "ufs.h"
+ #include "ufs_cmds.h"
+ #include "options.h"
+@@ -515,10 +517,11 @@ struct attr_fields ufs_attrs[] = {
+ 	{ATTR_VENDOR()},
+ 	{ATTR_VENDOR()},
+ 	{ATTR_VENDOR()},
+-	{ATTR_VENDOR()},
+ 	{ATTR_VENDOR()}
+ };
+ 
++COMPILE_TIME_ARRAY_SIZE_ASSERT(ARRAY_SIZE(ufs_attrs) == 256);
++
+ struct flag_fields ufs_flags[] = {
+ 	{"Reserved", ACC_INVALID, MODE_INVALID, LEVEL_INVALID},
+ 	{"fDeviceInit", (URD|UWRT), (READ_NRML|SET_ONLY), DEV},
+@@ -775,9 +778,12 @@ struct flag_fields ufs_flags[] = {
+ 	{FLAG_VENDOR()},
+ 	{FLAG_VENDOR()},
+ 	{FLAG_VENDOR()},
++	{FLAG_VENDOR()},
+ 	{FLAG_VENDOR()}
+ };
+ 
++COMPILE_TIME_ARRAY_SIZE_ASSERT(ARRAY_SIZE(ufs_flags) == 256);
++
+ static struct query_err_res query_err_status[] = {
+ 	{"Success", 0xF0},
+ 	{"Reserved1", 0xF1},
+@@ -1994,8 +2000,7 @@ static int read_single_attr(int fd, struct tool_options *opt, __u8 idn,
+ 		 * Some vendors is using the reserved or not Jedec spec
+ 		 * attributes. Therefore read the attribute in any case
+ 		 * */
+-		if (idn <= ARRAY_SIZE(ufs_attrs) &&
+-		    ufs_attrs[idn].acc_type != ACC_INVALID)
++		if (ufs_attrs[idn].acc_type != ACC_INVALID)
+ 			attr = &ufs_attrs[idn];
+ 
+ 		print_attribute(attr, output_attr_value);
+@@ -2127,8 +2132,8 @@ static int read_single_flag(int fd, struct tool_options *opt, __u8 idn,
+ int do_flags(struct tool_options *opt)
+ {
+ 	int fd;
+-	int rc = OK;
+-	__u8 opcode, flag_idn;
++	int rc = OK, flag_idn;
++	__u8 opcode;
+ 	struct flag_fields *tmp;
+ 	struct ufs_bsg_request bsg_req = {0};
+ 	struct ufs_bsg_reply bsg_rsp = {0};
+-- 
+2.51.0.384.g4c02a37b29-goog
+

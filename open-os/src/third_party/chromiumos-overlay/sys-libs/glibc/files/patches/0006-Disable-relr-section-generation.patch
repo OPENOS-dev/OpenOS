@@ -1,0 +1,28 @@
+From c60cb562af2bf95c7e3d364c17a5d52ce5d21647 Mon Sep 17 00:00:00 2001
+From: Adrian Ratiu <adrian.ratiu@collabora.corp-partner.google.com>
+Date: Tue, 13 Jun 2023 16:39:21 +0300
+Subject: [PATCH 6/7] Disable relr section generation
+
+b/320487146: coreboot-sdk's toolchain is too old to support relr sections; add
+a minimal bit of logic so that we can disable this feature through the
+environment.
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 674d1d7e4a..81d474fa90 100755
+--- a/configure
++++ b/configure
+@@ -7274,7 +7274,7 @@ then
+       | grep "warning: -z pack-relative-relocs ignored" > /dev/null 2>&1; then
+     true
+   else
+-    libc_linker_feature=yes
++    [[ -z "${cros_force_disable_relr:-}" ]] && libc_linker_feature=yes
+   fi
+ fi
+ rm -f conftest*
+-- 
+2.30.2
+

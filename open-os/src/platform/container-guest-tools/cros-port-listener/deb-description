@@ -1,0 +1,5 @@
+Port listener service from Chromium OS
+ This package provides configuration to start Chromium OS's port listener
+ service which tracks listening sockets and signals the host when they change.
+ This allows the Chromium browser within the host to connect to those sockets
+ as if they were local to the host.

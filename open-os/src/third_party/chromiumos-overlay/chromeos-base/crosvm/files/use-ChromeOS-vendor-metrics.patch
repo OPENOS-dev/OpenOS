@@ -1,0 +1,39 @@
+From 72d9c6626d1290f72f312591781fda35a2b6630a Mon Sep 17 00:00:00 2001
+From: David Stevens <stevensd@chromium.org>
+Date: Tue, 26 Mar 2024 19:56:00 +0900
+Subject: [PATCH] [CHROMEOS] use ChromeOS vendor metrics
+
+Switch from generic metrics to ChromeOS vendor metrics.
+
+Change-Id: Iab0a80fcefdb710ae8ab0b618f0767d0e3664abe
+---
+ Cargo.toml         | 1 +
+ metrics/Cargo.toml | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index 879a91bbe1b3..677229c3bbc8 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -584,4 +584,5 @@ tempfile = "3"
+ [patch.crates-io]
+ audio_streams = { path = "common/audio_streams" }
+ libcras = { path = "libcras_stub" } # ignored by ebuild
++metrics_rs = { path = "../../platform2/metrics/rust-client" } # ignored by ebuild
+ minijail = { path = "third_party/minijail/rust/minijail" } # ignored by ebuild
+diff --git a/metrics/Cargo.toml b/metrics/Cargo.toml
+index b4dc62daf007..aef255676ac7 100644
+--- a/metrics/Cargo.toml
++++ b/metrics/Cargo.toml
+@@ -12,7 +12,7 @@ protobuf = "3.2"
+ serde = { version = "1", features = ["derive"] }
+ sync = { workspace = true }
+ metrics_events = { workspace = true }
+-metrics_product = { path = "../vendor/generic/metrics", package = "metrics_generic" }
++metrics_product = { path = "../vendor/chromeos/metrics", package = "metrics_chromeos" }
+ 
+ [target.'cfg(windows)'.dependencies]
+ chrono = { version = "0.4.34", default-features = false, features = ["now"] }
+-- 
+2.44.0.396.g6e790dbe36-goog
+

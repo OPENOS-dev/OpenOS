@@ -1,0 +1,298 @@
+#!/bin/sh -x
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# /init script for use in recovery installer.  Note that this script uses the
+# busybox shell (not bash, not dash).
+
+. /lib/init.sh
+
+# Export PATH to make it available to child processes.
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+# USB card partition and mount point.
+USB_MNT=/usb
+REAL_USB_DEV=
+USB_DEV=
+
+STATEFUL_MNT=/stateful
+STATE_DEV=
+
+LOG_DEV=
+LOG_DIR=/log
+LOG_FILE=${LOG_DIR}/recovery.log
+
+TPM_B_LOCKED=
+TPM_PP_LOCKED=
+TPM_FAILED_SELFTEST=
+
+# Special file systems required in addition to the root file system.
+BASE_MOUNTS="/sys /proc /dev"
+
+. /lib/messages.sh
+
+# Load default settings, which may be overridden by board_recovery.sh.
+. /lib/defaults.sh
+. /lib/desktop_recovery_init.sh
+if [ -f /lib/board_recovery.sh ]; then
+  . /lib/board_recovery.sh
+fi
+
+# Look for a device with our GPT ID.
+wait_for_gpt_root() {
+  [ -z "$KERN_ARG_KERN_GUID" ] && return 1
+
+  dlog -n "Looking for device using kern_guid..."
+  local try=0
+  # Wait up to a minute to give devices & users time to respond.
+  while [ $(( try += 1 )) -lt 600 ]; do
+    dlogf " ."
+    kern=$(cgpt find -1 -u $KERN_ARG_KERN_GUID)
+    # We always try ROOT-A in recovery.
+    newroot="${kern%[0-9]*}"
+    if [ -b "$newroot" ]; then
+      USB_DEV="$newroot"
+      dlog "Found $USB_DEV"
+      return 0
+    fi
+    sleep 0.1
+  done
+  dlog "Failed waiting for kern_guid"
+  return 1
+}
+
+strip_partition() {
+  local dev="${1%[0-9]*}"
+  # handle mmcblk0p case as well
+  echo "${dev%p*}"
+}
+
+# Usage: save_log_files [log_dev] [log_fs]
+# Save log files stored in LOG_DIR in addition to demsg to the device specified.
+# Args:
+#  log_dev: The block device holding the filesystem where the logs should be
+#      copied to. By default the LOG_DEV device is used, which points to the
+#      stateful partition in the USB_DEV device.
+#  log_fs: The filesystem type (default: ext4).
+save_log_files() {
+  # The recovery stateful is usually too small for ext3.
+  # TODO(wad) We could also just write the data raw if needed.
+  #           Should this also try to save
+  local log_dev="${1:-$LOG_DEV}"
+  local log_fs="${2:-ext4}"
+
+  [ -z "${log_dev}" ] && return 0
+
+  if [ ! -b "${log_dev}" ]; then
+    dlog "Can't store logs on passed device '${log_dev}': not a block device."
+    return 1
+  fi
+
+  dlog "Dumping dmesg to ${LOG_DIR}"
+  dmesg > "${LOG_DIR}"/dmesg
+
+  if [ -e /sys/firmware/log ]; then
+    dlog "Copying firmware log to ${LOG_DIR}"
+    cp /sys/firmware/log "${LOG_DIR}/firmware.log"
+  else
+    dlog "No firmware log found on this platform"
+  fi
+
+  dlog "Saving log files from: ${LOG_DIR} -> ${log_dev}"
+  (
+    set -e
+    mount -n -t "${log_fs}" -o sync,rw "${log_dev}" /tmp
+
+    # Purge old recovery logs. This isn't 100% correct for cases where recovery
+    # media gets used across multiple devices that have their clocks set
+    # incorrectly, but it's hopefully good enough in practice.
+    local dir
+    for dir in $(ls -t /tmp/ | grep '^recovery_logs\.[0-9]*$' | tail -n +10); do
+      rm -rf "/tmp/${dir}" || :
+    done
+
+    # Make a new directory and store the logs from this run in it.
+    local log_dev_dir="recovery_logs.$(date '+%s')"
+    rm -rf "/tmp/${log_dev_dir}"
+    mkdir -p "/tmp/${log_dev_dir}"
+    cp "${LOG_DIR}"/* "/tmp/${log_dev_dir}/"
+    cp /proc/mounts "/tmp/${log_dev_dir}/"
+    rm -f /tmp/recovery_logs
+    ln -sf "${log_dev_dir}" /tmp/recovery_logs
+  )
+  local err=$?
+
+  # Attempt umount, even if there was an error to avoid leaking the mount.
+  umount -n /tmp || err=$?
+
+  if [ ${err} -eq 0 ] ; then
+    dlog "Successfully saved the log file"
+  else
+    dlog "Failures seen trying to save log file"
+  fi
+}
+
+is_nonchrome() {
+  crossystem "mainfw_type?nonchrome" || crossystem "mainfw_type?netboot"
+}
+
+lock_tpm() {
+  if [ -z "$TPM_B_LOCKED" ]; then
+    # Depending on the system, the tpm may need to be started.
+    # Don't fail if it doesn't work though.
+    tpmc startup >/dev/null 2>&1
+    tpmc ctest
+    tpmc block
+    case "$?" in
+      0)
+        TPM_B_LOCKED=y
+        ;;
+      28)
+        # TPM is in failed selftest mode, i.e. not operational. Continue so
+        # later code gets a chance to recover the TPM. Don't allow untrusted
+        # code to execute though.
+        TPM_FAILED_SELFTEST=y
+        ;;
+      *)
+        if is_nonchrome; then
+          dlog "No security chip appears to exist in this non-Chrome device."
+          dlog "The security of your experience will suffer."
+          # Forge onward.
+          TPM_B_LOCKED=y
+        else
+          dlog "Failed to lock bGlobalLock."
+          message security_module_failure
+          return 1  # Never reached.
+        fi
+        ;;
+    esac
+  fi
+  if [ -z "$TPM_PP_LOCKED" ]; then
+    # TODO: tpmc pplock if appropriate
+    TPM_PP_LOCKED=y
+  fi
+  return 0
+}
+
+# Extract and export kernel arguments
+export_args() {
+  # We trust our kernel command line explicitly.
+  local arg=
+  local key=
+  local val=
+  local acceptable_set='[A-Za-z0-9]_'
+  for arg in "$@"; do
+    key=$(echo "${arg%%=*}" | tr 'a-z' 'A-Z' | \
+                   tr -dc "$acceptable_set" '_')
+    val="${arg#*=}"
+    export "KERN_ARG_$key"="$val"
+    dlog "Exporting kernel argument $key as KERN_ARG_$key"
+  done
+}
+
+# Set panel brightness to maximum level
+set_brightness() {
+  local backlight_device=
+  local brightness=
+  local i=
+  for backlight_device in /sys/class/backlight/*; do
+
+    # In order to set a backlight to maximum brightness, we do the following:
+    # - Turn the backlight device on (using bl_power).
+    # - Read max_brightness and pipe that into the desired brightness.
+    # - Verify that the backlight's actual brightness matches our expectation.
+    #
+    # The hardware is particularly volatile during startup due to modeset and
+    # hw initialization. We want to give ourselves the best chance of success,
+    # so we'll try up to 5 times before continuing with recovery.
+    for i in $(seq 1 5); do
+      echo 0 > "${backlight_device}/bl_power" # 0 = FB_BLANK_UNBLANK (ie: on)
+      brightness=$(cat "${backlight_device}/max_brightness")
+      echo "${brightness}" > "${backlight_device}/brightness"
+      if [ "$(cat "${backlight_device}/actual_brightness")" = \
+           "${brightness}" ]; then
+        break
+      fi
+      sleep 0.5
+    done
+  done
+}
+
+# Checks if the logdev has a valid file system, otherwise it creates an ext4 fs.
+# The recovery images coming out of the Android builder don't initialize the
+# stateful partition.
+# Args:
+#   $1: Log block device
+setup_logdev() {
+  local log_dev="${1}"
+
+  mnt="$(mktemp -d)"
+
+  if mount -n -o rw "${log_dev}" "${mnt}"; then
+    umount "${mnt}"
+    rm -rf "${mnt}"
+    LOG_DEV="${log_dev}"
+    return 0
+  fi
+
+  rm -rf "${mnt}"
+
+  if ! mkfs.ext4 "${log_dev}"; then
+    echo "Failed to create ext4 partition on logging device ${log_dev}"
+    return 1
+  fi
+
+  LOG_DEV="${log_dev}"
+
+  return 0
+}
+
+main() {
+  exec >"${LOG_FILE}" 2>&1 </dev/null
+
+  initialize
+
+  # Now that /dev is up, mirror all logs to UART (if it's available).
+  (tail -f -n +1 "${LOG_FILE}" > /dev/console) &
+
+  # Export the kernel command line as a parsed blob prepending KERN_ARG_ to each
+  # argument.
+  export_args $(cat /proc/cmdline | sed -e 's/"[^"]*"/DROPPED/g')
+
+  # Always lock the TPM first.
+  lock_tpm || on_error
+
+  # Verify FW version.
+  verify_fw_version || handle_error $?
+
+  # We should select the locale before showing any messages.
+  select_locale
+
+  # Show a welcome page first.
+  message recovery_in_progress
+
+  wait_for_gpt_root || return 1
+  REAL_USB_DEV="${USB_DEV}"
+
+  # USB_DEV points to the rootfs partition of removable media. And its value
+  # can be one of /dev/sda3 (arm), /dev/sdb3 (x86, arm) and /dev/mmcblk1p3
+  # (arm). Get stateful partition by replacing partition number with "1".
+  if ! setup_logdev "${USB_DEV%[0-9]*}"1; then  # Default to stateful.
+    dlog "Failed to setup logdev"
+  fi
+
+  message validate
+  sleep 3
+
+  set_brightness
+
+  recovery_install
+}
+
+# Make this source-able for testing.
+if [ "$0" = "/init" ]; then
+  main "$@"
+  # Should never reach here.
+  exit 1
+fi

@@ -1,0 +1,15 @@
+BDEPEND=nls? ( sys-devel/gettext ) test? ( || ( >=dev-lang/python-3.11.0_p2:3.11 ) dev-util/dejagnu ) verify-sig? ( sec-keys/openpgp-keys-findutils ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install prepare setup test unpack
+DEPEND=selinux? ( sys-libs/libselinux ) nls? ( virtual/libintl )
+DESCRIPTION=GNU utilities for finding files
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/findutils/
+IUSE=nls selinux static test verify-sig
+KEYWORDS=*
+LICENSE=GPL-3+
+RDEPEND=selinux? ( sys-libs/libselinux ) nls? ( virtual/libintl )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://gnu/findutils/findutils-4.9.0.tar.xz verify-sig? ( mirror://gnu/findutils/findutils-4.9.0.tar.xz.sig )
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=faa8d86d29e3c82a1889a9b6e296d751

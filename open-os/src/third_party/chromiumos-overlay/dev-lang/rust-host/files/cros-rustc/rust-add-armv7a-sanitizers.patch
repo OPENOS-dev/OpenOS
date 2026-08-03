@@ -1,0 +1,16 @@
+diff --git a/compiler/rustc_target/src/spec/targets/armv7a_cros_linux_gnueabihf.rs b/compiler/rustc_target/src/spec/targets/armv7a_cros_linux_gnueabihf.rs
+index ad9fd773b8b..32a74a77fab 100644
+--- a/compiler/rustc_target/src/spec/targets/armv7_unknown_linux_gnueabi.rs
++++ b/compiler/rustc_target/src/spec/targets/armv7_unknown_linux_gnueabi.rs
+@@ -15,6 +15,11 @@ pub fn target() -> Target {
+             max_atomic_width: Some(64),
+             mcount: "\u{1}__gnu_mcount_nc".into(),
+             llvm_mcount_intrinsic: Some("llvm.arm.gnu.eabi.mcount".into()),
++            supported_sanitizers: crate::spec::SanitizerSet::ADDRESS
++                | crate::spec::SanitizerSet::LEAK
++                | crate::spec::SanitizerSet::MEMORY
++                | crate::spec::SanitizerSet::THREAD
++                | crate::spec::SanitizerSet::HWADDRESS,
+             ..base::linux_gnu::opts()
+         },
+     }

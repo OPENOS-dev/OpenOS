@@ -1,0 +1,10 @@
+DEFINED_PHASES=install preinst
+DEPEND=chromeos-base/chromeos-base sys-apps/baselayout
+DESCRIPTION=Ebuild which properly configures the Chrome OS enviornment for android tools.
+EAPI=7
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-base dev-util/android-tools sys-apps/baselayout
+SLOT=0
+_eclasses_=user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=bd4ec70dfe8e51b25c390ef69163f78a

@@ -1,0 +1,32 @@
+From 623588ddba4457fe9b56ab7e34995617963613fc Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Thu, 17 Jul 2025 18:02:23 -0600
+Subject: [PATCH] asan - free cups options
+
+---
+ src/wrapper.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/wrapper.c b/src/wrapper.c
+index 1657092..c2f7462 100644
+--- a/src/wrapper.c
++++ b/src/wrapper.c
+@@ -653,6 +653,7 @@ get_option_for_arg (const char *opt_str, filter_option_t *filter_opt_p)
+ 			num = strcspn (opt, ",");
+ 			if (num >= PPD_MAX_NAME)
+ 			{
++				cupsFreeOptions(opt_num, option_p);
+ 				return 1;
+ 			}
+ 
+@@ -701,6 +702,7 @@ get_option_for_arg (const char *opt_str, filter_option_t *filter_opt_p)
+ 	if (opt)
+ 		strcpy (filter_opt_p->quietmode, opt);
+ 
++	cupsFreeOptions(opt_num, option_p);
+ 	return 0;
+ }
+ 
+-- 
+2.50.0.727.gbf7dc18ff4-goog
+

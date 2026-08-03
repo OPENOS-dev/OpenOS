@@ -1,0 +1,18 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Allow sudo users to do package installs/removals
+polkit.addRule(function(action, subject) {
+    if (
+        (action.id === 'org.freedesktop.packagekit.package-install-untrusted' ||
+        action.id === 'org.freedesktop.packagekit.package-install' ||
+        action.id === 'org.freedesktop.packagekit.package-remove' ||
+        action.id === 'org.freedesktop.packagekit.system-sources-refresh')
+        && subject.isInGroup('sudo')
+    ) {
+        return polkit.Result.YES;
+    } else {
+        return polkit.Result.NOT_HANDLED;
+    }
+});

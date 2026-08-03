@@ -1,0 +1,262 @@
+// Copyright 2012 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "power_manager/common/metrics_constants.h"
+
+#include <base/time/time.h>
+
+namespace power_manager::metrics {
+
+const char kAcSuffix[] = "OnAC";
+const char kBatterySuffix[] = "OnBattery";
+
+extern const char kPrivacyScreenDisabled[] = "PrivacyScreenDisabled";
+extern const char kPrivacyScreenEnabled[] = "PrivacyScreenEnabled";
+
+const int kMaxPercent = 101;
+const int kDefaultBuckets = 50;
+const int kDefaultDischargeBuckets = 100;
+const int kDefaultExclusiveMax = 100;
+
+const char kSuspendAttemptsBeforeSuccessName[] =
+    "Power.SuspendAttemptsBeforeSuccess";
+const char kSuspendAttemptsBeforeCancelName[] =
+    "Power.SuspendAttemptsBeforeCancel";
+const int kSuspendAttemptsMin = 1;
+const int kSuspendAttemptsMax = 20;
+const int kSuspendAttemptsBuckets =
+    kSuspendAttemptsMax - kSuspendAttemptsMin + 1;
+
+const char kSuspendDelayName[] = "Power.SuspendDelay";
+const int kSuspendDelayMin = 0;
+const int kSuspendDelayMax = 60;
+
+const char kShutdownReasonName[] = "Power.ShutdownReason";
+
+const char kSuspendJourneyResultName[] = "Power.SuspendJourneyResult";
+
+const char kBacklightLevelName[] = "Power.BacklightLevel";
+const char kKeyboardBacklightLevelName[] = "Power.KeyboardBacklightLevel";
+const base::TimeDelta kBacklightLevelInterval = base::Seconds(30);
+
+const char kIdleAfterScreenOffName[] = "Power.IdleTimeAfterScreenOff";
+const int kIdleAfterScreenOffMin = 100;
+const int kIdleAfterScreenOffMax = 10 * 60 * 1000;
+
+const char kIdleName[] = "Power.IdleTime";
+const int kIdleMin = 60 * 1000;
+const int kIdleMax = 60 * 60 * 1000;
+
+const char kIdleAfterDimName[] = "Power.IdleTimeAfterDim";
+const int kIdleAfterDimMin = 100;
+const int kIdleAfterDimMax = 10 * 60 * 1000;
+
+const char kBatteryChargeHealthName[] = "Power.BatteryChargeHealth";  // %
+// >100% to account for new batteries which often charge above full
+const int kBatteryChargeHealthMax = 111;
+
+const char kBatteryCapacityActualSuffix[] = ".Actual";
+const char kBatteryCapacityDesignSuffix[] = ".Design";
+
+const char kBatteryCapacityName[] = "Power.BatteryCapacity";  // mWh
+const int kBatteryCapacityMin = 0;
+const int kBatteryCapacityMax = 200000;
+
+const char kBatteryDischargeRateName[] = "Power.BatteryDischargeRate";  // mW
+const int kBatteryDischargeRateMin = 1;
+const int kBatteryDischargeRateMax = 20000;
+const base::TimeDelta kBatteryDischargeRateInterval = base::Seconds(30);
+
+const char kBatteryDischargeRateWhileSuspendedName[] =
+    "Power.BatteryDischargeRateWhileSuspended";  // mW
+const int kBatteryDischargeRateWhileSuspendedMin = 1;
+const int kBatteryDischargeRateWhileSuspendedMax = 5000;
+const base::TimeDelta kBatteryDischargeRateWhileSuspendedMinSuspend =
+    base::Minutes(10);
+
+// Power.BatteryLife.* reports ChromeOS battery life at that instant using
+// Battery size divided by battery discharge rate sampling. This provides
+// the instantaneous battery life of the current workload.
+
+const char kBatteryLifeName[] = "Power.BatteryLife";  // minute
+const int kBatteryLifeMin = 1;
+const int kBatteryLifeMax = 48 * 60;
+
+// The middle buckets of Power.BatteryLife.* metrics are quite coarse because
+// these metrics design to capture almost all possible values which is 1 minute
+// to 48 hours. For example, the closest bucket to 9.65 hours are 9.07 & 10.3
+// hours, which make 9.65 hours bucket can be anywhere from 9.36 - 9.98 hours.
+//
+// Power.BatteryLife.Detail.* put the battery life data outside of 5-13 hours
+// range to the overflow and underflow buckets to provide better detail for data
+// near the median value of the range. The data resolution is now less than 5
+// minutes around 9-10 hours range.
+const char kBatteryLifeDetailSuffix[] = ".Detail";  // minute
+const int kBatteryLifeDetailMin = 5 * 60;
+const int kBatteryLifeDetailMax = 13 * 60;
+const int kBatteryLifeDetailBuckets = 200;
+
+// Power.BatteryLife.* only provide instantaneous battery life. This does not
+// work well with bursty workload like browsing where the power consumption is
+// higher when the web is loading and lower when users are reading the page.
+//
+// Power.BatteryLife.RollingAverage.* takes the average of last 10 samples of
+// Power.BatteryLife.* to provide data that is closer to what user would see.
+const char kBatteryLifeRollingAverageSuffix[] = ".RollingAverage";
+const int kBatteryLifeRollingAverageSampleSize = 10;
+
+const char kBatteryLifeWhileSuspendedName[] =
+    "Power.BatteryLifeWhileSuspended";  // hour
+const int kBatteryLifeWhileSuspendedMin = 1;
+const int kBatteryLifeWhileSuspendedMax = 60 * 24;
+
+const char kBatteryRemainingWhenChargeStartsName[] =
+    "Power.BatteryRemainingWhenChargeStarts";  // %
+const char kBatteryRemainingAtEndOfSessionName[] =
+    "Power.BatteryRemainingAtEndOfSession";  // %
+const char kBatteryRemainingAtStartOfSessionName[] =
+    "Power.BatteryRemainingAtStartOfSession";                               // %
+const char kBatteryRemainingAtBootName[] = "Power.BatteryRemainingAtBoot";  // %
+
+const char kAdaptiveChargingMinutesDeltaName[] =
+    "Power.AdaptiveChargingMinutesDelta";
+const char kAdaptiveChargingDelayDeltaName[] =
+    "Power.AdaptiveChargingDelayDelta";
+const char kAdaptiveChargingMinutesFullOnACName[] =
+    "power.AdaptiveChargingMinutesFullOnAC";
+
+const char kAdaptiveChargingStateActiveSuffix[] = ".Active";
+const char kAdaptiveChargingStateHeuristicDisabledSuffix[] =
+    ".HeuristicDisabled";
+const char kAdaptiveChargingStateUserCanceledSuffix[] = ".UserCanceled";
+const char kAdaptiveChargingStateUserDisabledSuffix[] = ".UserDisabled";
+const char kAdaptiveChargingStateShutdownSuffix[] = ".Shutdown";
+const char kAdaptiveChargingStateNotSupportedSuffix[] = ".NotSupported";
+
+const char kAdaptiveChargingTypeNormalChargingSuffix[] = ".NormalCharging";
+const char kAdaptiveChargingTypeSlowChargingSuffix[] = ".SlowCharging";
+const char kAdaptiveChargingTypeMixedChargingSuffix[] = ".MixedCharging";
+
+const char kAdaptiveChargingLateSuffix[] = ".Late";
+const char kAdaptiveChargingEarlySuffix[] = ".Early";
+
+// Sets the range to 0 to 12 hours. For would be negative values,
+// `kAdaptiveChargingLateSuffix` is appended to the metric name. Otherwise,
+// `kAdaptiveChargingEarlySuffix` is appended. We use the suffixes since UMA
+// doesn't support negative numbers. If too many reports hit the 12 hour limit,
+// the max should be increased.
+const int kAdaptiveChargingDeltaMin = 0;
+const int kAdaptiveChargingDeltaMax = 12 * 60;
+
+const char kAdaptiveChargingBatteryPercentageOnUnplugName[] =
+    "Power.AdaptiveChargingBatteryPercentageOnUnplug";  // %
+
+// For tracking how long it takes to charge from the hold percent to max.
+// Anything longer than 5 hours would be extremely abnormal, especially since we
+// don't report this metric when charging with a low power USB charger.
+const char kAdaptiveChargingMinutesToFullName[] =
+    "Power.AdaptiveChargingMinutesToFull";
+const int kAdaptiveChargingMinutesToFullMin = 0;
+const int kAdaptiveChargingMinutesToFullMax = 5 * 60;
+
+// Set the max limit for the delay time to 3 days. If we start hitting that
+// often, we can consider increasing it.
+const int kAdaptiveChargingMinutesBuckets = 100;
+const char kAdaptiveChargingMinutesDelayName[] =
+    "Power.AdaptiveChargingMinutes.Delay";
+const char kAdaptiveChargingMinutesAvailableName[] =
+    "Power.AdaptiveChargingMinutes.Available";
+const int kAdaptiveChargingMinutesMin = 0;
+const int kAdaptiveChargingMinutesMax = 3 * 24 * 60;
+
+const char kAdaptiveChargingBatteryStateName[] =
+    "Power.AdaptiveChargingBatteryState";
+
+const char kNumberOfAlsAdjustmentsPerSessionName[] =
+    "Power.NumberOfAlsAdjustmentsPerSession";
+const int kNumberOfAlsAdjustmentsPerSessionMin = 1;
+const int kNumberOfAlsAdjustmentsPerSessionMax = 10000;
+
+const char kUserBrightnessAdjustmentsPerSessionName[] =
+    "Power.UserBrightnessAdjustmentsPerSession";
+const int kUserBrightnessAdjustmentsPerSessionMin = 1;
+const int kUserBrightnessAdjustmentsPerSessionMax = 10000;
+
+const char kLengthOfSessionName[] = "Power.LengthOfSession";
+const int kLengthOfSessionMin = 1;
+const int kLengthOfSessionMax = 60 * 60 * 12;
+
+const char kNumOfSessionsPerChargeName[] = "Power.NumberOfSessionsPerCharge";
+const int kNumOfSessionsPerChargeMin = 1;
+const int kNumOfSessionsPerChargeMax = 10000;
+
+const char kPowerButtonAcknowledgmentDelayName[] =
+    "Power.PowerButtonAcknowledgmentDelay";  // ms
+const int kPowerButtonAcknowledgmentDelayMin = 1;
+const int kPowerButtonAcknowledgmentDelayMax = 8 * 1000;
+
+const char kPowerSupplyMaxVoltageName[] = "Power.PowerSupplyMaxVoltage";
+const int kPowerSupplyMaxVoltageMax = 21;
+
+const char kPowerSupplyMaxVoltageHPBChargerName[] =
+    "Power.PowerSupplyMaxVoltageHPBCharger";
+
+const char kPowerSupplyMaxPowerName[] = "Power.PowerSupplyMaxPower";
+const int kPowerSupplyMaxPowerMax = 101;
+
+const char kPowerSupplyTypeName[] = "Power.PowerSupplyType";
+
+const char kConnectedChargingPortsName[] = "Power.ConnectedChargingPorts";
+
+const char kDarkResumeWakeupsPerHourName[] = "Power.DarkResumeWakeupsPerHour";
+const int kDarkResumeWakeupsPerHourMin = 0;
+const int kDarkResumeWakeupsPerHourMax = 60 * 60;
+
+const char kDarkResumeWakeDurationMsName[] = "Power.DarkResumeWakeDurationMs";
+const int kDarkResumeWakeDurationMsMin = 0;
+const int kDarkResumeWakeDurationMsMax = 10 * 60 * 1000;
+
+const char kS0ixResidencyRateName[] = "Power.S0ixResidencyRate";  // %
+const char kPC10RuntimeResidencyRateName[] =
+    "Power.PC10RuntimeResidencyRate";  // %
+const char kPC10inS0ixRuntimeResidencyRateName[] =
+    "Power.PC10inS0ixRuntimeResidencyRate";  // %
+
+const char kDimEvent[] = "Power.DimEvent";
+const int kHpsEventDurationMin = 1;        // One second.
+const int kHpsEventDurationMax = 60 * 60;  // One Hour.
+const char kQuickDimDurationBeforeRevertedByHpsSec[] =
+    "Power.QuickDimRevertedByHps.DurationSeconds";
+const char kQuickDimDurationBeforeRevertedByUserSec[] =
+    "Power.QuickDimRevertedByUser.DurationSeconds";
+const char kStandardDimDurationBeforeRevertedByUserSec[] =
+    "Power.StandardDimRevertedByUser.DurationSeconds";
+const char kStandardDimDeferredByHpsSec[] =
+    "Power.StandardDimDeferredByHps.DurationSeconds";
+
+const char kLockEvent[] = "Power.LockEvent";
+
+const char kAmbientLightOnResumeName[] = "Power.AmbientLightOnResume";
+const int kAmbientLightOnResumeMin = 0;
+const int kAmbientLightOnResumeMax = 100000;
+
+const char kPeripheralReadLatencyMs[] = "Power.PeripheralReadLatencyMs";
+const char kPeripheralReadErrorLatencyMs[] =
+    "Power.PeripheralReadErrorLatencyMs";
+const int kPeripheralReadLatencyMsMin = 0;
+const int kPeripheralReadLatencyMsMax = 1000;
+
+const char kBatterySaverUserBrightenedSec[] =
+    "Power.BatterySaver.UserBrightenedSec";
+
+const char kDisplayAfterResumeDurationMsName[] =
+    "Power.DisplayAfterResumeDurationMs";
+const int kDisplayAfterResumeDurationMsMin = 0;
+const int kDisplayAfterResumeDurationMsMax = 60 * 1000;
+
+const int kFanSpeedRpmMax = 10 * 1000;
+const char kHighestFanSpeedName[] = "Power.HighestFanSpeed";
+const base::TimeDelta kFanTimerInterval = base::Seconds(30);
+
+}  // namespace power_manager::metrics

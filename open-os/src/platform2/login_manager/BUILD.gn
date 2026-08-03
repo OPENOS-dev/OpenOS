@@ -1,0 +1,350 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/generate-dbus-adaptors.gni")
+import("//common-mk/generate-dbus-proxies.gni")
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+group("all") {
+  deps = [
+    ":arc_manager",
+    ":install_dbus_config",
+    ":install_dbus_interface",
+    ":install_dev_conf",
+    ":install_init_scripts",
+    ":install_powerd_prefs",
+    ":libsession_manager",
+    ":session_manager",
+    ":session_manager-adaptors",
+  ]
+  if (!use.systemd) {
+    deps += [ ":install_upstart_scripts" ]
+  }
+  if (use.test) {
+    deps += [ ":session_manager_test" ]
+  }
+  if (use.fuzzer) {
+    deps += [
+      ":login_manager_validator_utils_fuzzer",
+      ":login_manager_validator_utils_policy_desc_fuzzer",
+    ]
+  }
+}
+
+pkg_config("target_defaults") {
+  # NOSORT
+  pkg_deps = [
+    "dbus-1",
+    "libbrillo",
+    "libchrome",
+    "libcontainer",
+    "libcros_config",
+    "libcrossystem",
+    "libmetrics",
+    "libminijail",
+    "libpasswordprovider",
+    "libsegmentation",
+    "libstorage_platform",
+    "nss",
+
+    # system_api depends on protobuf (or protobuf-lite). It must appear
+    # before protobuf here or the linker flags won't be in the right
+    # order.
+    "system_api",
+    "vboot_host",
+  ]
+
+  if (use.fuzzer) {
+    # Link against protobuf for fuzzers so we can use libprotobuf-mutator.
+    pkg_deps += [ "protobuf" ]
+  } else {
+    pkg_deps += [ "protobuf-lite" ]
+  }
+
+  defines = [
+    "OS_CHROMEOS",
+    "USE_ARC_ADB_SIDELOADING=${use.arc_adb_sideloading}",
+    "USE_CHEETS=${use.cheets}",
+    "USE_NSS_CERTS=1",
+    "USE_SYSTEMD=${use.systemd}",
+    "USE_APPLY_LANDLOCK_POLICY=${use.apply_landlock_policy}",
+    "USE_APPLY_NO_NEW_PRIVS=${use.login_apply_no_new_privs}",
+    "USE_ENABLE_CROSH_SUDO=${use.login_enable_crosh_sudo}",
+    "USE_USER_SESSION_ISOLATION=${use.user_session_isolation}",
+  ]
+}
+
+generate_dbus_adaptors("session_manager-adaptors") {
+  dbus_service_config = "dbus_bindings/dbus-service-config.json"
+  dbus_adaptors_out_dir = "include/login_manager/dbus_adaptors"
+  sources = [ "dbus_bindings/org.chromium.SessionManagerInterface.xml" ]
+}
+
+generate_dbus_adaptors("arc_manager-adaptors") {
+  dbus_service_config = "dbus_bindings/arc-dbus-service-config.json"
+  dbus_adaptors_out_dir = "include/login_manager/dbus_adaptors"
+  sources = [ "dbus_bindings/org.chromium.ArcManager.xml" ]
+}
+
+generate_dbus_proxies("arc_manager-proxies") {
+  dbus_service_config = "dbus_bindings/arc-dbus-service-config.json"
+  proxy_output_file =
+      "include/login_manager/dbus_proxies/org.chromium.ArcManager.h"
+  sources = [ "dbus_bindings/org.chromium.ArcManager.xml" ]
+}
+
+static_library("libsession_manager") {
+  sources = [
+    "android_oci_wrapper.cc",
+    "arc_dlc_hardware_filter_helper.cc",
+    "arc_dlc_hardware_filter_impl.cc",
+    "arc_dlc_platform_info_impl.cc",
+    "arc_manager.cc",
+    "arc_manager_proxy.cc",
+    "blob_util.cc",
+    "browser_job.cc",
+    "chrome_features_service_client.cc",
+    "chrome_setup.cc",
+    "chromium_command_builder.cc",
+    "container_manager_interface.cc",
+    "cumulative_use_time_metric.cc",
+    "dbus_util.cc",
+    "device_identifier_generator.cc",
+    "device_local_account_manager.cc",
+    "device_policy_service.cc",
+    "feature_flags_util.cc",
+    "file_checker.cc",
+    "landlock_policy.cc",
+    "liveness_checker_impl.cc",
+    "login_metrics.cc",
+    "login_screen_storage.cc",
+    "nss_util.cc",
+    "policy_key.cc",
+    "policy_service.cc",
+    "policy_service_util.cc",
+    "policy_store.cc",
+    "resilient_policy_store.cc",
+    "scheduler_util.cc",
+    "secret_util.cc",
+    "session_manager_impl.cc",
+    "session_manager_service.cc",
+    "siginfo_description.cc",
+    "subprocess.cc",
+    "system_utils_impl.cc",
+    "systemd_unit_starter.cc",
+    "upstart_signal_emitter.cc",
+    "user_policy_service.cc",
+    "user_policy_service_factory.cc",
+    "util.cc",
+    "validator_utils.cc",
+    "vpd_process_impl.cc",
+  ]
+  if (use.arc_adb_sideloading) {
+    sources += [ "arc_sideload_status.cc" ]
+  } else {
+    sources += [ "arc_sideload_status_stub.cc" ]
+  }
+  configs += [ ":target_defaults" ]
+  libs = [
+    "bootstat",
+    "installattributes",
+    "policy",
+    "vpd",
+  ]
+  deps = [
+    ":arc_manager-adaptors",
+    ":arc_manager-proxies",
+    ":login_manager-login_screen_storage-protos",
+    ":session_manager-adaptors",
+    "//common-mk/external_dependencies:install_attributes-proto",
+    "//common-mk/external_dependencies:policy-protos",
+  ]
+}
+
+executable("session_manager") {
+  sources = [ "session_manager_main.cc" ]
+  configs += [ ":target_defaults" ]
+  libs = [
+    "rootdev",
+    "container",
+  ]
+  deps = [ ":libsession_manager" ]
+
+  # See the comment at "keygen".
+  # gnlint: disable=GnLintInstallPathAlias
+  install_path = "/sbin"
+}
+
+executable("arc_manager") {
+  sources = [ "arc_manager_main.cc" ]
+  configs += [ ":target_defaults" ]
+  libs = [ "container" ]
+  deps = [ ":libsession_manager" ]
+
+  # See the comment at "keygen".
+  # gnlint: disable=GnLintInstallPathAlias
+  install_path = "/sbin"
+}
+
+install_config("install_dbus_config") {
+  sources = [
+    "ArcManager.conf",
+    "SessionManager.conf",
+  ]
+  install_path = "dbus_system_d"
+}
+
+install_config("install_dbus_interface") {
+  sources = [
+    "dbus_bindings/org.chromium.ArcManager.xml",
+    "dbus_bindings/org.chromium.SessionManagerInterface.xml",
+  ]
+  install_path = "/usr/share/dbus-1/interfaces"
+}
+
+install_config("install_dev_conf") {
+  sources = [ "chrome_dev.conf" ]
+  install_path = "/etc"
+}
+
+install_config("install_init_scripts") {
+  sources = [
+    "init/scripts/send-uptime-metrics",
+    "init/scripts/ui-collect-machine-info",
+    "init/scripts/ui-init-late",
+    "init/scripts/ui-killers-helper",
+    "init/scripts/ui-killers-helper_unittest",
+    "init/scripts/ui-post-stop",
+    "init/scripts/ui-pre-start",
+    "init/scripts/ui-respawn",
+    "init/scripts/write-machine-info",
+  ]
+  install_path = "/usr/share/cros/init"
+  type = "executable"
+}
+
+install_config("install_powerd_prefs") {
+  sources = [
+    "powerd_prefs/suspend_freezer_deps_session_manager_containers",
+    "powerd_prefs/suspend_freezer_deps_ui",
+  ]
+  install_path = "/usr/share/power_manager"
+}
+
+install_config("install_upstart_scripts") {
+  sources = [
+    "init/upstart/arc-manager.conf",
+    "init/upstart/login.conf",
+    "init/upstart/logout.conf",
+    "init/upstart/machine-info.conf",
+    "init/upstart/send-uptime-metrics.conf",
+    "init/upstart/ui-collect-machine-info.conf",
+    "init/upstart/ui-init-late.conf",
+    "init/upstart/ui-respawn.conf",
+    "init/upstart/ui.conf",
+  ]
+  install_path = "upstart"
+}
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [
+      "libbrillo-test",
+      "libchrome-test",
+      "libcros_config",
+      "libcrossystem-test",
+      "libsegmentation-test",
+    ]
+  }
+  executable("session_manager_test") {
+    sources = [
+      "android_oci_wrapper_test.cc",
+      "arc_dlc_hardware_filter_helper_test.cc",
+      "arc_dlc_hardware_filter_impl_test.cc",
+      "arc_manager_test.cc",
+      "browser_job_test.cc",
+      "chrome_setup_test.cc",
+      "chromium_command_builder_test.cc",
+      "cumulative_use_time_metric_test.cc",
+      "device_identifier_generator_test.cc",
+      "device_local_account_manager_test.cc",
+      "device_policy_service_test.cc",
+      "fake_browser_job.cc",
+      "fake_child_process.cc",
+      "fake_container_manager.cc",
+      "fake_secret_util.cc",
+      "fake_system_utils.cc",
+      "feature_flags_util_test.cc",
+      "landlock_policy_test.cc",
+      "liveness_checker_impl_test.cc",
+      "login_metrics_test.cc",
+      "login_screen_storage_test.cc",
+      "mock_constructors.cc",
+      "mock_nss_util.cc",
+      "nss_util_test.cc",
+      "policy_key_test.cc",
+      "policy_service_test.cc",
+      "policy_service_util_test.cc",
+      "policy_store_test.cc",
+      "resilient_policy_store_test.cc",
+      "scheduler_util_test.cc",
+      "session_manager_impl_test.cc",
+      "session_manager_process_test.cc",
+      "subprocess_test.cc",
+      "system_utils_test.cc",
+      "user_policy_service_test.cc",
+      "validator_utils_test.cc",
+    ]
+    if (use.arc_adb_sideloading) {
+      sources += [ "arc_sideload_status_test.cc" ]
+    }
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    defines = [ "UNIT_TEST" ]
+    libs = [
+      "keyutils",
+      "rootdev",
+    ]
+    deps = [
+      ":libsession_manager",
+      "//common-mk/testrunner",
+    ]
+  }
+}
+
+proto_library("login_manager-login_screen_storage-protos") {
+  proto_in_dir = "proto"
+  proto_out_dir = "include/login_manager/login_screen_storage"
+  sources = [ "${proto_in_dir}/login_screen_storage_index.proto" ]
+  standalone = true
+}
+
+if (use.fuzzer) {
+  pkg_config("run_fuzzer_config") {
+    pkg_deps = [ "libprotobuf-mutator" ]
+  }
+
+  executable("login_manager_validator_utils_policy_desc_fuzzer") {
+    sources = [ "fuzzers/validator_utils_policy_desc_fuzzer.cc" ]
+    configs += [
+      "//common-mk/common_fuzzer:common_fuzzer",
+      ":run_fuzzer_config",
+      ":target_defaults",
+    ]
+    deps = [ ":libsession_manager" ]
+  }
+
+  executable("login_manager_validator_utils_fuzzer") {
+    sources = [ "fuzzers/validator_utils_fuzzer.cc" ]
+    configs += [
+      "//common-mk/common_fuzzer:common_fuzzer",
+      ":target_defaults",
+    ]
+    deps = [ ":libsession_manager" ]
+  }
+}

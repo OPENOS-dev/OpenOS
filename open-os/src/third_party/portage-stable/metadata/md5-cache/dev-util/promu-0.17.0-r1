@@ -1,0 +1,12 @@
+BDEPEND=>=dev-lang/go-1.20:= app-arch/unzip
+DEFINED_PHASES=compile install unpack
+DESCRIPTION=Prometheus Utility Tool
+EAPI=7
+HOMEPAGE=https://github.com/prometheus/promu
+KEYWORDS=*
+LICENSE=Apache-2.0 BSD BSD-2 MIT
+RESTRICT=strip test
+SLOT=0
+SRC_URI=https://github.com/prometheus/promu/archive/v0.17.0.tar.gz -> promu-0.17.0.tar.gz https://github.com/rahilarious/gentoo-distfiles/releases/download/promu-0.17.0/deps.tar.xz -> promu-0.17.0-deps.tar.xz
+_eclasses_=go-env	96e1747610bbb2f5c5d3fb16f0f3a83a	go-module	83fd3ed1657cfc316c93d6a37018290d	multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=a4e17dbf88281375e51458e49e6a8eb5

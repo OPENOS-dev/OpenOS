@@ -1,0 +1,23 @@
+diff --git a/vendor/blazesym-0.2.0-rc.2/Cargo.toml b/vendor/blazesym-0.2.0-rc.2/Cargo.toml
+index 2513b2d17..4e32ddf78 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -150,7 +150,6 @@ default-features = false
+ [dependencies.miniz_oxide]
+ version = "0.8"
+ features = [
+-    "simd",
+     "with-alloc",
+ ]
+ optional = true
+@@ -220,10 +220,6 @@ tracing = ["dep:tracing"]
+ zlib = ["dep:miniz_oxide"]
+ zstd = ["dep:zstd"]
+ 
+-[target.'cfg(target_os = "linux")'.dev-dependencies._simd-adler32_unused]
+-version = "0.3.3"
+-package = "simd-adler32"
+-
+ [target.'cfg(target_os = "linux")'.dev-dependencies.libbpf-rs]
+ version = "0.24"
+ 

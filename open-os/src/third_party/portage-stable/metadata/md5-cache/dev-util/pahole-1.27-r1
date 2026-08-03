@@ -1,0 +1,15 @@
+BDEPEND=verify-sig? ( sec-keys/openpgp-keys-arnaldocarvalhodemelo ) >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5 verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=compile configure install prepare setup test unpack
+DEPEND=python_single_target_python3_12? ( dev-lang/python:3.12 ) python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) >=dev-libs/elfutils-0.178 sys-libs/zlib
+DESCRIPTION=pahole (Poke-a-Hole) and other DWARF utilities
+EAPI=7
+HOMEPAGE=https://git.kernel.org/cgit/devel/pahole/pahole.git/
+IUSE=debug python_single_target_python3_12 python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8 verify-sig
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=python_single_target_python3_12? ( dev-lang/python:3.12 ) python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) >=dev-libs/elfutils-0.178 sys-libs/zlib
+REQUIRED_USE=^^ ( python_single_target_python3_12 python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8 )
+SLOT=0
+SRC_URI=http://fedorapeople.org/~acme/dwarves/dwarves-1.27.tar.xz verify-sig? ( http://fedorapeople.org/~acme/dwarves/dwarves-1.27.tar.sign )
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	python-single-r1	a5747fe6dc0651d95cb78eddd5e160a8	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=a23a255558ecbaa9680379accf49a286

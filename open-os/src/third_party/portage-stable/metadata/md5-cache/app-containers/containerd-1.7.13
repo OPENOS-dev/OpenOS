@@ -1,0 +1,15 @@
+BDEPEND=dev-go/go-md2man virtual/pkgconfig >=dev-lang/go-1.20:= app-arch/unzip virtual/pkgconfig
+DEFINED_PHASES=compile install prepare unpack
+DEPEND=btrfs? ( sys-fs/btrfs-progs ) seccomp? ( sys-libs/libseccomp )
+DESCRIPTION=A daemon to control runC
+EAPI=7
+HOMEPAGE=https://containerd.io/
+IUSE=apparmor btrfs device-mapper +cri hardened +seccomp selinux test
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=btrfs? ( sys-fs/btrfs-progs ) seccomp? ( sys-libs/libseccomp ) ~app-containers/runc-1.1.12[apparmor?,seccomp?]
+RESTRICT=striptest
+SLOT=0
+SRC_URI=https://github.com/containerd/containerd/archive/v1.7.13.tar.gz -> containerd-1.7.13.tar.gz
+_eclasses_=go-env	96e1747610bbb2f5c5d3fb16f0f3a83a	go-module	83fd3ed1657cfc316c93d6a37018290d	multiprocessing	e5d48c933105327e0f826ce5108afc55	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=4497651c053624880a951ffaf4ac49bc

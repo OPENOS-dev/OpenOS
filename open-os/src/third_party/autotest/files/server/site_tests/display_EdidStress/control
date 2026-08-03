@@ -1,0 +1,30 @@
+# Copyright 2014 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.server import utils
+
+NAME = "display_EdidStress.daily"
+METADATA = {
+    "contacts": ["chromeos-gfx-display@google.com"],
+    "bug_component": "b:188154",
+    "criteria": "Fails if DUT does not see the emulated monitor."
+}
+ATTRIBUTES = "suite:chameleon_hdmi_perbuild"
+TEST_TYPE = "server"
+DEPENDENCIES = "chameleon"
+
+'''
+This test switches Chameleon EDID from among a large pool of EDIDs, tests
+DUT recognizes the emulated monitor and emits the correct video signal to
+Chameleon.
+'''
+
+args_dict = utils.args_to_dict(args)
+chameleon_args = hosts.CrosHost.get_chameleon_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, chameleon_args=chameleon_args)
+    job.run_test("display_EdidStress", host=host, edid_set="daily")
+
+parallel_simple(run, machines)

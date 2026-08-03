@@ -1,0 +1,59 @@
+From 1e52b1a8c72b338da05078ef6456804b8664c263 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Fri, 16 Jan 2026 00:30:39 +0800
+Subject: [PATCH] BACKPORT: Switch to C++23 and fix compiler error
+
+Adding extern for unique_ptr to only declare the variable without
+instantiating the destructor of std::unique_ptr<T>, so that clang c++23
+won't complain about that the size of T is unknown.
+See also http://b/429048222#comment1.
+
+BACKPORT notes: 2 files don't yet exist
+
+Bug: 476110515
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: emerge-cherry floss-upstream
+Test: emerge-cherry floss
+Test: bluetooth_AdapterQuickHealth.AVL.all_floss
+Flag: EXEMPT PURE_REFACTOR
+Change-Id: Iad13845dbdb08bd21d7e9fcfb974dd378ffa20c0
+---
+ system/BUILD.gn                      | 2 +-
+ system/bta/le_audio/le_audio_types.h | 3 +--
+ system/types/src/uuid.cc             | 1 +
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/system/BUILD.gn b/system/BUILD.gn
+index 34fccd1e48d..be74e94bf0c 100644
+--- a/system/BUILD.gn
++++ b/system/BUILD.gn
+@@ -113,3 +113,3 @@ config("target_defaults") {
+ 
+-  cflags_cc = [ "-std=c++20" ]
++  cflags_cc = [ "-std=c++23" ]
+ 
+diff --git a/system/bta/le_audio/le_audio_types.h b/system/bta/le_audio/le_audio_types.h
+index 0a69ebc6de4..77be64c5888 100644
+--- a/system/bta/le_audio/le_audio_types.h
++++ b/system/bta/le_audio/le_audio_types.h
+@@ -28,2 +28,3 @@
+ 
++#include <algorithm>
+ #include <bit>
+@@ -34,3 +35,2 @@
+ #include <string>
+-#include <variant>
+ #include <vector>
+@@ -38,3 +38,2 @@
+ #include "bta/include/bta_le_audio_uuids.h"
+-#include "osi/include/alarm.h"
+ #include "stack/include/bt_types.h"
+diff --git a/system/types/src/uuid.cc b/system/types/src/uuid.cc
+index ae8bde245c5..764e0dcfdb9 100644
+--- a/system/types/src/uuid.cc
++++ b/system/types/src/uuid.cc
+@@ -26,2 +26,3 @@
+ #include <sstream>
++#include <type_traits>
+ 

@@ -1,0 +1,172 @@
+<!-- Copyright 2026 The ChromiumOS Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<mat-toolbar color="primary">
+  <span>Servo V4.1 Manufacturing</span>
+</mat-toolbar>
+
+<diagnoseme-rework-card title="1. Data Collection">
+
+
+  <diagnoseme-rework-card-column column="1">Scan the top barcode on the servo white sticker:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <mat-form-field subscriptSizing="dynamic">
+      <input #servoSerialNumberInput matInput placeholder="SERVOV4P1_x_xxxxxxxxxx" [(ngModel)]="servoSerialNumber" (input)="onServoSerialNumberChange($event)" class="data-input">
+    </mat-form-field>
+    <test-pass-fail-button #serialNumberStatus></test-pass-fail-button>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="serial-label.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Scan the second barcode on the servo white sticker:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <mat-form-field subscriptSizing="dynamic">
+      <input #servoMacAddressInput matInput placeholder="88:54:1F:xx:xx:xx" [(ngModel)]="servoMacAddress" (input)="onServoMacAddressChange($event)" class="data-input">
+    </mat-form-field>
+    <test-pass-fail-button #macAddressStatus></test-pass-fail-button>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="mac-label.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Insert the three USB keys one into each of the type A ports on the servo:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+</diagnoseme-rework-card>
+
+<diagnoseme-rework-card title="2. Host Side Programming" [progress]="hostSideProgrammingInProgress" [disabled]="!canStartHostSideProgramming()">
+
+  <diagnoseme-rework-card-column column="1">Slide the switch on the side of the servo towards the ethernet port:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="dfu-switch-on.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Insert the host side programming cable to the port marked host on the servo - a blue LED should illuminate:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="host-cable-insert.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Start host side programming:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button #hostStartButton mat-raised-button color="primary" (click)="startHostSideProgramming()" [disabled]="!canStartHostSideProgramming() || hostSideProgrammingInProgress">Start</button>
+      <test-pass-fail-button #genesysHubStatus></test-pass-fail-button>
+      <test-pass-fail-button #mcuStatus></test-pass-fail-button>
+    </div>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+</diagnoseme-rework-card>
+
+<diagnoseme-rework-card title="3. Serial Number Programming" [progress]="serialNumberProgrammingInProgress" [disabled]="!hostSideProgrammingSuccessful">
+
+  <diagnoseme-rework-card-column column="1">Unplug the host side programming cable from the servo:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="remove-host.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Slide the switch on the side of the servo away from the ethernet port:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="dfu-left.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Insert the host side programming cable to the port marked host on the servo - a blue LED should NOT be illuminated:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="host-cable-insert.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Start serial number programming:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button #serialStartButton mat-raised-button color="primary" (click)="startSerialNumberProgramming()" [disabled]="!hostSideProgrammingSuccessful || serialNumberProgrammingInProgress">Start</button>
+      <test-pass-fail-button #serialStatus></test-pass-fail-button>
+    </div>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+</diagnoseme-rework-card>
+
+<diagnoseme-rework-card title="4. DUT Side Programming" [progress]="dutSideProgrammingInProgress" [disabled]="!serialNumberProgrammingSuccessful">
+
+  <diagnoseme-rework-card-column column="1">Plug the white captive cable into the server port marked DUT side programming:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="servo-to-dut-insert.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Start DUT side programming:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button #dutStartButton mat-raised-button color="primary" (click)="startDutSideProgramming()" [disabled]="!serialNumberProgrammingSuccessful || dutSideProgrammingInProgress">Start</button>
+      <test-pass-fail-button #ethStatus></test-pass-fail-button>
+      <test-pass-fail-button #atmegaStatus></test-pass-fail-button>
+    </div>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+
+</diagnoseme-rework-card>
+
+<diagnoseme-rework-card title="5. Functional Testing" [progress]="consoleTestingInProgress || functionalTestingInProgress" [disabled]="false">
+
+  <diagnoseme-rework-card-column column="1">Start functional hardware verification:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button #functionalTestStartButton mat-raised-button color="primary" (click)="runFunctionalTestingMerged()" [disabled]="consoleTestingInProgress || functionalTestingInProgress">Start</button>
+      <test-pass-fail-button #consoleTestingStatus></test-pass-fail-button>
+      <test-pass-fail-button #functionalTestingStatus></test-pass-fail-button>
+    </div>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+</diagnoseme-rework-card>
+
+<diagnoseme-rework-card title="6. Integration Testing" [progress]="integrationTestingInProgress" [disabled]="false">
+
+  <diagnoseme-rework-card-column column="1">Remove the captive (white cable) and insert into the chromeos device:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3">
+    <help-dialog-button image="servo-to-dut-insert.jpg"></help-dialog-button>
+  </diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">Start final integration verification:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button #integrationTestStartButton mat-raised-button color="primary" (click)="runIntegrationTests()" [disabled]="!functionalTestingSuccessful || integrationTestingInProgress">Start</button>
+      <test-pass-fail-button #integrationTestingStatus></test-pass-fail-button>
+    </div>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+</diagnoseme-rework-card>
+
+<!--  ************* CARD 7  *************** -->
+
+<diagnoseme-rework-card title="7. Complete Provisioning">
+
+  <diagnoseme-rework-card-column column="1">Remove all the USB devices from the servo and unplug from the fixture and server:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">If all checkmarks are green place the servo in the pass bin, otherwise place it into the fail bin:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2"></diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+  <diagnoseme-rework-card-column column="1">When you are complete press:</diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="2">
+    <button #completeProvisioningButton (click)="onReload()" mat-raised-button color="primary" [class.highlight-button]="integrationTestingSuccessful">
+      Complete Provisioning
+    </button>
+  </diagnoseme-rework-card-column>
+  <diagnoseme-rework-card-column column="3"></diagnoseme-rework-card-column>
+
+</diagnoseme-rework-card>

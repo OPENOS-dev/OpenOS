@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Build openssl package."""
+
+import logging
+import os
+from pathlib import Path
+import sys
+
+FILESDIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(FILESDIR.parent.parent / "bin"))
+
+import ssh_client  # pylint: disable=wrong-import-position
+
+
+ARCHIVES = ("%(p)s.tar.gz",)
+PATCHES = (
+    "openssl-1.1.1w-wasm-configure.patch",
+    "openssl-1.1.1w-wasm-random.patch",
+    "openssl-1.1.1w-wasm-syslog.patch",
+)
+
+
+def src_configure(metadata):
+    """Configure the source."""
+    tc = metadata["toolchain"]
+    machine = tc.chost.split("-")[0]
+
+    # See if configure passed.
+    try:
+        with open("Makefile", encoding="utf-8") as fp:
+            if machine in fp.read():
+                logging.info("Makefile exists; skipping ./configure step")
+                return
+    except FileNotFoundError:
+        pass
+
+    f = metadata["S"] / "Configurations" / "unix-Makefile.tmpl"
+    data = f.read_text()
+    new_data = data.replace(
+        "$(DESTDIR)$(INSTALLTOP)/include/openssl",
+        f"$(DESTDIR)$(INSTALLTOP)/{tc.relincdir}/openssl",
+    )
+    if data != new_data:
+        f.write_text(new_data)
+
+    env = os.environ.copy()
+    env.update(
+        {
+            "SYSTEM": tc.chost,
+            "MACHINE": machine,
+            "RELEASE": "0",
+        }
+    )
+
+    cmd = (
+        [
+            "./config",
+            "--prefix=/",
+            f"--libdir=/{tc.rellibdir}",
+            "no-asm",
+            "no-async",
+            "no-deprecated",
+            "no-dso",
+            "no-ec2m",
+            "no-egd",
+            "no-engine",
+            "no-fuzz-afl",
+            "no-fuzz-libfuzzer",
+            "no-gost",
+            "no-heartbeats",
+            "no-hw",
+            "no-rfc3779",
+            "no-scrypt",
+            "no-sctp",
+            "no-siphash",
+            "no-sock",
+            "no-srp",
+            "no-sse2",
+            "no-ssl2",
+            "no-ssl3",
+            "no-threads",
+            "no-unit-test",
+        ]
+        + env.get("CFLAGS", "").split()
+        + env["CPPFLAGS"].split()
+    )
+
+    ssh_client.run(cmd, env=env)
+    ssh_client.emake("depend", "DIRS=crypto ssl", env=env)
+
+
+def src_compile(_metadata):
+    """Compile the source."""
+    ssh_client.emake("build_libs")
+
+
+def src_install(metadata):
+    """Install the package."""
+    tc = metadata["toolchain"]
+    ssh_client.emake("install_dev", f"DESTDIR={tc.sysroot}")
+
+
+ssh_client.build_package(sys.modules[__name__], "wasm")

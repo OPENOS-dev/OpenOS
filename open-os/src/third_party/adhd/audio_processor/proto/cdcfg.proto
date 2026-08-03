@@ -1,0 +1,108 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+message Processor {
+  oneof processor_oneof {
+    MaybeWavDump maybe_wav_dump = 1;
+    Plugin plugin = 2;
+    DlcPlugin dlc_plugin = 3;
+    WrapChunk wrap_chunk = 4;
+    Resample resample = 5;
+    Pipeline pipeline = 6;
+    ShuffleChannels shuffle_channels = 7;
+    MaybeDuplicateChannel0 maybe_duplicate_channel_0 = 8;
+    CheckFormat check_format = 9;
+    Peer peer = 10;
+  };
+}
+
+// Conditionally dumps audio WAVE files if enabled in the pipeline context.
+message MaybeWavDump {
+  // The filename of the dump.
+  string filename = 1;
+}
+
+// Load an audio processor plugin from the file system.
+message Plugin {
+  // The path of the plugin.
+  oneof path_oneof {
+    string path = 1;
+    string path_var = 3;
+  }
+  // The name of the processor_create function.
+  // See also plugin_processor.h.
+  oneof constructor_oneof {
+    string constructor = 2;
+    string constructor_var = 4;
+  }
+}
+
+// Load an audio processor plugin from DLC.
+message DlcPlugin {
+  // The ID of the DLC.
+  // Also known as the `--id` option of `dlcservice_util`.
+  oneof dlc_id_oneof {
+    string dlc_id = 1;
+    string dlc_id_var = 4;
+  }
+  // The path within the DLC root.
+  oneof path_oneof {
+    string path = 2;
+    string path_var = 5;
+  }
+  // The name of the processor_create function.
+  // See also plugin_processor.h.
+  oneof constructor_oneof {
+    string constructor = 3;
+    string constructor_var = 6;
+  }
+}
+
+// Wrap the inner audio processor so that it always receives
+// `inner_block_size` audio frames on each process() call.
+message WrapChunk {
+  uint32 inner_block_size = 1;
+  Processor inner = 2;
+}
+
+// Resample to the given output_frame_rate.
+// Used when the next audio processor in the pipeline expects an exact
+// frame rate.
+message Resample {
+  uint32 output_frame_rate = 1;
+}
+
+// A pipeline of multiple processors.
+message Pipeline {
+  repeated Processor processors = 1;
+}
+
+// Shuffle audio channels.
+message ShuffleChannels {
+  repeated uint32 channel_indexes = 1;
+}
+
+// Duplicates channel 0 to other channels, if required by the pipeline context.
+// This is a workaround for CrasProcessor, which expects the pipeline input
+// and pipeline output to have the same audio format, including the channel
+// count.
+message MaybeDuplicateChannel0 {}
+
+// Check the audio format of the pipeline at the position
+// this virtual processor is inserted.
+// Checking is skipped if zero or negative.
+message CheckFormat {
+  int32 channels = 1;
+  int32 block_size = 2;
+  int32 frame_rate = 3;
+}
+
+// Run the processor in a peer.
+// Depending on the context, the peer may be in a separate thread, process
+// or a sandboxed process.
+message Peer {
+  Processor processor = 1;
+}

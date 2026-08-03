@@ -1,0 +1,44 @@
+# Copyright 2016 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+CROS_WORKON_COMMIT="366eea64d1d8cb97ab527f7de303fea8056acf35"
+CROS_WORKON_TREE="b4188693e827e91fc307c310555a15405eee7289"
+PYTHON_COMPAT=( python3_11 )
+
+CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+CROS_WORKON_LOCALNAME="third_party/autotest/files"
+
+inherit autotest cros-workon flag-o-matic python-any-r1
+
+DESCRIPTION="Public ARC autotests"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+
+COMMON_DEPEND="
+	chromeos-base/telemetry
+"
+
+RDEPEND="${COMMON_DEPEND}
+	dev-python/pyxattr
+	chromeos-base/autotest-chrome
+"
+
+DEPEND="${COMMON_DEPEND}"
+
+IUSE="
+	+autotest
+"
+
+src_prepare() {
+	# Telemetry tests require the path to telemetry source to exist in order to
+	# build. Copy the telemetry source to a temporary directory that is writable,
+	# so that file removals in Telemetry source can be performed properly.
+	export TMP_DIR="$(mktemp -d)"
+	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
+	export PYTHONPATH="${TMP_DIR}/telemetry/src/third_party/catapult/telemetry"
+	autotest_src_prepare
+}

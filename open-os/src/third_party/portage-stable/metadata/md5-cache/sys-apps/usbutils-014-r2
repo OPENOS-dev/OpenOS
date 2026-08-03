@@ -1,0 +1,15 @@
+BDEPEND=app-arch/xz-utils virtual/pkgconfig python? ( python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install prepare setup
+DEPEND=virtual/libusb:1= virtual/libudev:=
+DESCRIPTION=USB enumeration utilities
+EAPI=7
+HOMEPAGE=https://www.kernel.org/pub/linux/utils/usb/usbutils/ https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usbutils.git/
+IUSE=python python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=virtual/libusb:1= virtual/libudev:= python? ( python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8 ) sys-apps/hwdata )
+REQUIRED_USE=python? ( ^^ ( python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8 ) )
+SLOT=0
+SRC_URI=https://www.kernel.org/pub/linux/utils/usb/usbutils/usbutils-014.tar.xz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	libtool	f143db5a74ccd9ca28c1234deffede96	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-single-r1	a5747fe6dc0651d95cb78eddd5e160a8	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c0da0f4469ed0d4863bbaca618970a5e

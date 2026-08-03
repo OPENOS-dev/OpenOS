@@ -1,0 +1,77 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Metadata information for which CVEs do not affect ChromeOS or have been
+# patched in.
+#
+# For more information, see:
+#     http://go/third-party-package-remediation-playbook#special-case-back-ported-patches
+third_party {
+  security {
+    # This CVE was patched by Gentoo's glibc patchset, in
+    # 0133-posix-Reset-wordexp_t-fields-with-WRDE_REUSE-CVE-202.patch
+    mitigated_security_patch: "CVE-2025-15281"
+    # This CVE was patched by Gentoo's glibc patchset, in
+    # 0132-resolv-Fix-NSS-DNS-backend-for-getnetbyaddr-CVE-2026.patch
+    mitigated_security_patch: "CVE-2026-0915"
+    # This CVE was patched by Gentoo's glibc patchset, in
+    # 0131-memalign-reinstate-alignment-overflow-check-CVE-2026.patch
+    mitigated_security_patch: "CVE-2026-0861"
+    # CVE-2023-25139 is https://sourceware.org/bugzilla/show_bug.cgi?id=30068,
+    # which is fixed by Gentoo's upstream
+    # 0014-Account-for-grouping-in-printf-width-bug-30068.patch.
+    mitigated_security_patch: "CVE-2023-25139"
+    # CVE-2023-4527 is fixed by
+    # 0010-CVE-2023-4527-Stack-read-overflow-with-large-TCP-res.patch in files/.
+    mitigated_security_patch: "CVE-2023-4527"
+    # CVE-2023-4911 is fixed by
+    # 0012-tunables-Terminate-if-end-of-input-is-reached-CVE-20.patch in files/.
+    mitigated_security_patch: "CVE-2023-4911"
+    # Fixed in b/323376222.
+    mitigated_security_patch: "CVE-2023-6246"
+    # Fixed in b/323376222.
+    mitigated_security_patch: "CVE-2023-6779"
+    # Fixed in b/323376222.
+    mitigated_security_patch: "CVE-2023-6780"
+    # This CVE is only applicable to versions of glibc patched with the fix for
+    # CVE-2023-4813. CVE-2023-4813 only applied to glibc <2.36. Despite ChromeOS
+    # being on glibc 2.37, b/302242731 was reopened, so we'll presumably have to
+    # carry this line for a while.
+    mitigated_security_patch: "CVE-2023-5156"
+    # This CVE was patched by Gentoo's glibc patchset, in
+    # 0026-gmon-Fix-allocated-buffer-overflow-bug-29444.patch.
+    mitigated_security_patch: "CVE-2023-0687"
+    # While this was assigned a CVE number, glibc does not consider it to be a
+    # security issue, and has not provided a fix.
+    # tl;dr: stack protectors can be bypassed, but making that bypass harder
+    # would take quite a bit of effort. Bypassing this mitigation
+    # technique requires a separate (and serious) vulnerability.
+    mitigated_security_patch: "CVE-2019-1010022"
+    # These were mitigated as part of upstream Gentoo's PATCH_VER=12 of glibc
+    # 2.41. They're both PowerPC-specific, so no-op for ChromeOS.
+    mitigated_security_patch: "CVE-2025-5702"
+    mitigated_security_patch: "CVE-2025-5745"
+    # b/497990315: for some reason, this old (WONTFIX) CVE is alerting.
+    # Suppress it.
+    mitigated_security_patch: "CVE-2010-4756"
+    # b/500983144: 0010-resolv-count-records-check-hostname.patch
+    # fixes these.
+    mitigated_security_patch: "CVE-2026-4437"
+    mitigated_security_patch: "CVE-2026-4438"
+    # b/500983144: This is an assertion failure in glibc <= 2.43 in very odd
+    # cases, and the charsets that lead to those failures are not shipped to
+    # CrOS devices. Mitigation wasn't trivial, so this is ignored.
+    mitigated_security_patch: "CVE-2026-4046"
+    # b/506339153: FROMLIST of a fix for CVE-2026-5450, probably needs to be
+    # kept until 2.44.
+    mitigated_security_patch: "CVE-2026-5450"
+    # b/500983144: Fix for buffer underreads. At the time of writing, this
+    # has not landed upstream, so will probably need to be carried up to
+    # 2.44?
+    mitigated_security_patch: "CVE-2026-5928"
+
+    # ChromeOS > Infra > Toolchain
+    tag: "vuln_reporting:buganizer_component:1034879"
+  }
+}

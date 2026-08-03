@@ -1,0 +1,74 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+services:
+  ##############################################################################
+  ui:
+    container_name: ui
+    image: ui
+    pull_policy: if_not_present
+    hostname: ui
+    restart: unless-stopped
+
+    networks:
+      diagnoseme:
+        ipv4_address: 192.168.100.10
+
+    volumes:
+      - logs:/var/log/nginx
+
+  ##############################################################################
+  server:
+    container_name: server
+    image: server
+    pull_policy: if_not_present
+    hostname: server
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - TEST_DUT=brya
+      - TEST_MODEL=banshee
+      - RESULTS_SERVER=${RESULTS_SERVER:-}
+
+    volumes:
+      - logs:/var/log/rpcserver
+      - /dev:/dev
+      - /sys:/sys
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  #############################################################################
+  envoy:
+    container_name: envoy
+    image: envoy
+    pull_policy: if_not_present
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      ENVOY_UID: 0
+
+    hostname: envoy-proxy
+    volumes:
+      - logs:/var/log/envoy
+
+  #############################################################################
+  watchtower:
+    container_name: watchtower
+    image: nickfedor/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 3600 --include-restarting ui server envoy
+  #############################################################################
+
+volumes:
+  logs: {}
+
+networks:
+  diagnoseme:
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.100.0/24"

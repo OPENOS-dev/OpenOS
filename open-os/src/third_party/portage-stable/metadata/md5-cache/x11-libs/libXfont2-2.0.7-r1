@@ -1,0 +1,14 @@
+BDEPEND=>=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 ppc-aix? ( >=dev-build/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) x86-winnt? ( >=dev-build/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) virtual/pkgconfig doc? ( doc? ( || ( app-text/asciidoc dev-ruby/asciidoctor ) app-text/xmlto app-doc/doxygen app-text/docbook-xml-dtd:4.1.2 app-text/docbook-xml-dtd:4.2 app-text/docbook-xml-dtd:4.3 ) )
+DEFINED_PHASES=compile configure install postinst postrm prepare unpack
+DEPEND=sys-libs/zlib elibc_glibc? ( || ( >=sys-libs/glibc-2.38 dev-libs/libbsd ) ) x11-libs/libfontenc bzip2? ( app-arch/bzip2 ) truetype? ( >=media-libs/freetype-2 ) x11-base/xorg-proto x11-libs/xtrans
+DESCRIPTION=X.Org Xfont library
+EAPI=7
+HOMEPAGE=https://www.x.org/wiki/ https://gitlab.freedesktop.org/xorg/lib/libxfont
+IUSE=bzip2 truetype static-libs doc
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=sys-libs/zlib elibc_glibc? ( || ( >=sys-libs/glibc-2.38 dev-libs/libbsd ) ) x11-libs/libfontenc bzip2? ( app-arch/bzip2 ) truetype? ( >=media-libs/freetype-2 )
+SLOT=0
+SRC_URI=https://www.x.org/releases/individual/lib/libXfont2-2.0.7.tar.xz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xorg-3	508132aa798db8bebd0849a9a0b57d0e
+_md5_=17853405261c63e1e9d842556717fffb

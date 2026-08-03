@@ -1,0 +1,26 @@
+From a76d91ce56382821f2d4d522aee3689ba6828a69 Mon Sep 17 00:00:00 2001
+From: Andrew Moylan <amoylan@google.com>
+Date: Fri, 27 Mar 2026 23:37:11 +1100
+Subject: [PATCH] Fix heap OOB write in EGifGCBToSavedExtension
+
+---
+ egif_lib.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/egif_lib.c b/egif_lib.c
+index 1526868..8160560 100644
+--- a/egif_lib.c
++++ b/egif_lib.c
+@@ -678,6 +678,9 @@ int EGifGCBToSavedExtension(const GraphicsControlBlock *GCB,
+ 		ExtensionBlock *ep =
+ 		    &GifFile->SavedImages[ImageIndex].ExtensionBlocks[i];
+ 		if (ep->Function == GRAPHICS_EXT_FUNC_CODE) {
++			if (ep->ByteCount < 4) {
++				return GIF_ERROR;
++			}
+ 			EGifGCBToExtension(GCB, ep->Bytes);
+ 			return GIF_OK;
+ 		}
+-- 
+2.53.0.1018.g2bb0e51243-goog
+

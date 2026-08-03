@@ -1,0 +1,11 @@
+DEFINED_PHASES=install
+DEPEND=sys-auth/pambase
+DESCRIPTION=ChromiumOS-specific configuration files for pambase
+EAPI=7
+HOMEPAGE=http://www.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=sys-auth/pambase chromeos-base/vboot_reference
+SLOT=0
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=ac17caeb9d3b96ab66e7860d5c333fbb

@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+  Copyright 2024 The ChromiumOS Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Camera</title>
+    <link rel="stylesheet" href="index.css" />
+    <script type="module" src="index.js"></script>
+  </head>
+  <body>
+    <div id="video-container">
+      <video autoplay></video>
+    </div>
+    <div id="side-panel">
+      <div id="resolution-stat">Resolution: ?</div>
+      <div id="fps-counter">FPS: ?</div>
+      <div class="turbostat" id="pkg-watt">PkgWatt: ?</div>
+      <div class="turbostat" id="cor-watt">CorWatt: ?</div>
+      <div class="turbostat" id="gfx-watt">GFXWatt: ?</div>
+      <div>
+        Camera:
+        <select id="camera-device"></select>
+      </div>
+      <button id="play-pause">Pause</button>
+    </div>
+  </body>
+</html>

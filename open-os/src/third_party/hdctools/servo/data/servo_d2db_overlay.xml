@@ -1,0 +1,93 @@
+<!-- This module allows to attach servod to a servo-v2 connected to the D2
+     daugtherboard.
+
+See details on how to spiflash the D2 in
+https://chromium.googlesource.com/chromiumos/third_party/hdctools/+/refs/heads/main/docs/servo_v2.md#Recovery-Of-Corrupted-D2-Chips-On-D2DB
+-->
+
+<root>
+  <include>
+    <name>servoflex_v2_r0_p50.xml</name>
+  </include>
+  <!-- cpu_fw_spi_pp1800.xml was previously included by default in servo_v2 and
+       servo_micro configs.  Since this board config lacks its own cpu_fw_spi
+       implementation, this include has been added as part of removing it from
+       servo configs. -->
+  <include>
+    <name>cpu_fw_spi_pp1800.xml</name>
+  </include>
+  <control>
+    <name>uart4_pty</name>
+    <alias>raw_d2_uart_pty,raw_usbpd_uart_pty</alias>
+    <doc>Pseudo-terminal (pty) thats connected to d2 uart console</doc>
+    <params cmd="get" subtype="pty" interface="1" drv="uart" clobber_ok="full"
+    ></params>
+  </control>
+  <control>
+    <name>usbpd_uart_routing</name>
+    <doc>enable pd uart routing</doc>
+    <params clobber_ok="patch" init="glados"></params>
+  </control>
+  <control>
+    <name>d2_loglevel</name>
+    <doc>d2 console loglevel</doc>
+    <params interface="GSC_CONSOLE" drv="ec3po_driver" input_type="str"
+    subtype="loglevel" ></params>
+  </control>
+  <control>
+    <name>d2_uart_raw_debug</name>
+    <doc>Turn on per-message-received logs to the D2 console messages.</doc>
+    <params interface="GSC_CONSOLE" drv="ec3po_driver" map="onoff" init="off"
+    subtype="raw_debug" ></params>
+  </control>
+  <control>
+    <name>d2_uart_timestamp</name>
+    <doc>Add timestamps to the D2 console messages</doc>
+    <params interface="GSC_CONSOLE" drv="ec3po_driver" map="onoff" init="off"
+    subtype="timestamp" ></params>
+  </control>
+  <control>
+    <name>ec3po_d2_uart</name>
+    <alias>ec3po_usbpd_uart_pty,d2_uart_pty,usbpd_uart_pty</alias>
+    <doc>d2 UART console provided via EC-3PO console interpreter.</doc>
+    <params cmd="get" subtype="pty" interface="GSC_CONSOLE" drv="uart" >
+    </params>
+  </control>
+  <control>
+    <name>d2_ec3po_interp_connect</name>
+    <alias>usbpd_ec3po_interp_connect</alias>
+    <doc>State indicating if interpreter is listening to the D2 UART.</doc>
+    <params interface="GSC_CONSOLE" drv="ec3po_driver" map="onoff" init="on"
+    subtype="interp_connect" clobber_ok="full" ></params>
+  </control>
+  <control>
+    <name>jtag_buf_on_flex_en</name>
+    <alias>uart4_on_flex_en,d2_uart_on_flex_en,usbpd_uart_on_flex_en</alias>
+    <doc>Enables JTAG buffer on servo flex ... repurposed to uart4.</doc>
+    <params clobber_ok="patch" init="on"></params>
+  </control>
+  <control>
+    <name>jtag_buf_en</name>
+    <alias>d2_uart_en,usbpd_uart_en</alias>
+    <doc>Enabled JTAG buffer on servo ... re-purposed to uart4.</doc>
+    <params clobber_ok="patch" init="on"></params>
+  </control>
+  <control>
+    <name>jtag_vref_sel0</name>
+    <params clobber_ok="patch" init="pp3300"></params>
+  </control>
+  <control>
+    <name>jtag_vref_sel1</name>
+    <params clobber_ok="patch" init="pp3300"></params>
+  </control>
+  <control>
+    <name>dev_mode</name>
+    <alias>d2_bootstrap</alias>
+    <params clobber_ok="patch" od="PU" map="onoff" init="off"></params>
+  </control>
+  <control>
+    <name>pch_disable</name>
+    <alias>d2_reset</alias>
+    <params clobber_ok="patch"></params>
+  </control>
+</root>

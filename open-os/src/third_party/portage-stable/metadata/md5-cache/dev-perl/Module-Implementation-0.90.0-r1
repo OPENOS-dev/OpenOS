@@ -1,0 +1,14 @@
+BDEPEND=virtual/perl-Carp >=dev-perl/Module-Runtime-0.12.0 dev-perl/Try-Tiny virtual/perl-ExtUtils-MakeMaker test? ( virtual/perl-File-Spec virtual/perl-IO dev-perl/Test-Requires >=dev-perl/Test-Fatal-0.6.0 >=virtual/perl-Test-Simple-0.880.0 ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Loads one of several alternate underlying implementations for a module
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Module-Implementation
+IUSE=test
+KEYWORDS=*
+LICENSE=Artistic-2
+RDEPEND=virtual/perl-Carp >=dev-perl/Module-Runtime-0.12.0 dev-perl/Try-Tiny dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/D/DR/DROLSKY/Module-Implementation-0.09.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=4847e6d02b912c2d6b150171d7d61f68

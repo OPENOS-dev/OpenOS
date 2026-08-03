@@ -1,0 +1,11 @@
+DEFINED_PHASES=install
+DEPEND=sys-firmware/edk2-ovmf-crosvm
+DESCRIPTION=UEFI FW packaged as a DLC
+EAPI=7
+IUSE=dlc
+KEYWORDS=*
+LICENSE=openssl LICENSE.edk2-ovmf-dlc
+REQUIRED_USE=dlc
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	dlc	768f1474a752d1b824c04c5695593433
+_md5_=a3989b0adbb6e097e889dd051281020a

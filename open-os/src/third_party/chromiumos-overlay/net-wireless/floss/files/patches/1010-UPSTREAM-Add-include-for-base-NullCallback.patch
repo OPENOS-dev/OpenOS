@@ -1,0 +1,22 @@
+From d611ae196099ddff952a495b878594628d534c14 Mon Sep 17 00:00:00 2001
+From: Byron Lee <byronlee@google.com>
+Date: Wed, 17 Dec 2025 19:32:03 -0800
+Subject: [PATCH] UPSTREAM: Add include for base::NullCallback
+
+Bug: 469885510
+Test: m .
+Flag: EXEMPT PURE_REFACTOR
+
+Change-Id: I1421a1eeb3bd4962010dc139a43952fee60d85c3
+---
+ system/common/repeating_timer.cc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/system/common/repeating_timer.cc b/system/common/repeating_timer.cc
+index 656d7e5ee7c..8f3f8c4039f 100644
+--- a/system/common/repeating_timer.cc
++++ b/system/common/repeating_timer.cc
+@@ -19,2 +19,3 @@
+ #include <base/functional/callback.h>
++#include <base/functional/callback_helpers.h>
+ #include <bluetooth/log.h>

@@ -1,0 +1,12 @@
+# Copyright 2011 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+cros_post_src_install_install_mask() {
+	# chromeos-base/chromeos-auth-config installs these files.
+	if use pam; then
+		rm -v "${ED}"/etc/pam.d/sudo{,-i} || die
+	fi
+
+	# We don't need to init these dirs.
+	rm -v "${ED}"/usr/lib/tmpfiles.d/sudo.conf || die
+}

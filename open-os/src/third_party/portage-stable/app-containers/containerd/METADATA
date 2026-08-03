@@ -1,0 +1,14 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Metadata information for which CVEs have been patched in.
+#
+# For more information, see:
+#     http://go/third-party-package-remediation-playbook#special-case-back-ported-patches
+third_party {
+  security {
+    # ChromeOS > Platform > Enablement > PVS Framework
+    tag: "vuln_reporting:buganizer_component:1110659"
+  }
+}

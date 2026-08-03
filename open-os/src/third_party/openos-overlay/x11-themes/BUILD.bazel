@@ -1,0 +1,40 @@
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+
+# ── OPENOS Branding Assets (placeholders — add wallpapers/icons/cursors) ──
+
+pkg_files(
+    name = "openos_wallpapers_files",
+    srcs = glob(["wallpapers/**/*"]),
+    prefix = "/usr/share/backgrounds",
+)
+
+pkg_tar(
+    name = "openos_wallpapers",
+    srcs = [":openos_wallpapers_files"],
+    visibility = ["//visibility:public"],
+)
+
+pkg_files(
+    name = "openos_cursor_files",
+    srcs = glob(["cursors/**/*"]),
+    prefix = "/usr/share/icons",
+)
+
+pkg_tar(
+    name = "openos_cursor",
+    srcs = [":openos_cursor_files"],
+    visibility = ["//visibility:public"],
+)
+
+pkg_files(
+    name = "openos_icons_files",
+    srcs = glob(["icons/**/*"]),
+    prefix = "/usr/share/icons",
+)
+
+pkg_tar(
+    name = "openos_icons",
+    srcs = [":openos_icons_files"],
+    visibility = ["//visibility:public"],
+)

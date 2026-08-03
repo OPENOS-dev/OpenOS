@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/go-image dev-go/go-fonts-liberation dev-go/go-latex dev-go/gonum dev-go/golang-freetype dev-go/fogleman-gg dev-go/rsc-io-pdf dev-go/svgo
+DESCRIPTION=Provides an API for setting up plots, and primitives for drawing on plots
+EAPI=7
+HOMEPAGE=https://www.gonum.org/
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD MIT
+RDEPEND=dev-go/go-image dev-go/go-fonts-liberation dev-go/go-latex dev-go/gonum dev-go/golang-freetype dev-go/fogleman-gg dev-go/rsc-io-pdf dev-go/svgo
+RESTRICT=binchecks strip
+SLOT=0
+SRC_URI=https://github.com/gonum/plot/archive/v0.10.0.tar.gz -> github.com-gonum-plot-v0.10.0.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c0b24d05653782b7ff267f6631ffdb30

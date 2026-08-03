@@ -1,0 +1,80 @@
+Make stressapptest somewhat reasonably handle native 4k blocksize.
+It is a gross hack anyway because there is no way to make it nicer without
+significant re-write of the logic.
+
+diff --git a/src/worker.cc b/src/worker.cc
+index c4abc87..d9a6487 100644
+--- a/src/worker.cc
++++ b/src/worker.cc
+@@ -2818,6 +2818,12 @@ bool DiskThread::GetDiskSize(int fd) {
+       return false;
+     }
+ 
++    if (ioctl(fd, BLKSSZGET, &logical_block_size_) == -1) {
++      logprintf(0, "Process Error: Unable to get block size for disk %s (thread %d).\n",
++                device_name_.c_str(), thread_num_);
++      return false;
++    }
++
+     // Zero size indicates nonworking device..
+     if (block_size == 0) {
+       os_->ErrorReport(device_name_.c_str(), "device-size-zero", 1);
+@@ -2830,6 +2836,7 @@ bool DiskThread::GetDiskSize(int fd) {
+ 
+   } else if (S_ISREG(device_stat.st_mode)) {
+     device_sectors_ = device_stat.st_size / kSectorSize;
++    logical_block_size_ = device_stat.st_blksize;
+ 
+   } else {
+     logprintf(0, "Process Error: %s is not a regular file or block "
+@@ -2838,6 +2845,15 @@ bool DiskThread::GetDiskSize(int fd) {
+     return false;
+   }
+ 
++  if (write_block_size_ == kSectorSize) {
++    write_block_size_ = logical_block_size_;
++    queue_size_ = ((cache_size_ / write_block_size_) * 3) / 2;
++  }
++
++  if (read_block_size_ == kSectorSize) {
++    read_block_size_ = logical_block_size_;
++  }
++
+   logprintf(12, "Log: Device sectors: %lld on disk %s (thread %d).\n",
+             device_sectors_, device_name_.c_str(), thread_num_);
+ 
+@@ -3235,10 +3251,10 @@ bool DiskThread::Work() {
+   // Allocate a block buffer aligned to 512 bytes since the kernel requires it
+   // when using direct IO.
+ #ifdef HAVE_POSIX_MEMALIGN
+-  int memalign_result = posix_memalign(&block_buffer_, kBufferAlignment,
++  int memalign_result = posix_memalign(&block_buffer_, logical_block_size_,
+                                        sat_->page_length());
+ #else
+-  block_buffer_ = memalign(kBufferAlignment, sat_->page_length());
++  block_buffer_ = memalign(logical_block_size_, sat_->page_length());
+   int memalign_result = (block_buffer_ == 0);
+ #endif
+   if (memalign_result) {
+diff --git a/src/worker.h b/src/worker.h
+index c96c04c..9491720 100644
+--- a/src/worker.h
++++ b/src/worker.h
+@@ -696,8 +696,6 @@ class DiskThread : public WorkerThread {
+ 
+  protected:
+   static const int kSectorSize = 512;       // Size of sector on disk.
+-  static const int kBufferAlignment = 512;  // Buffer alignment required by the
+-                                            // kernel.
+   static const int kBlockRetry = 100;       // Number of retries to allocate
+                                             // sectors.
+ 
+@@ -728,6 +726,7 @@ class DiskThread : public WorkerThread {
+   // Main work loop.
+   virtual bool DoWork(int fd);
+ 
++  int logical_block_size_;   // Logical block size of the device.
+   int read_block_size_;       // Size of blocks read from disk, in bytes.
+   int write_block_size_;      // Size of blocks written to disk, in bytes.
+   int64 blocks_read_;         // Number of blocks read in work loop.
+

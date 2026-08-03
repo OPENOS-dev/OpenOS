@@ -1,0 +1,15 @@
+BDEPEND=net-misc/rsync
+DEFINED_PHASES=compile configure install prepare setup unpack
+DEPEND=net-print/cups x11-libs/libdrm
+DESCRIPTION=The ICU library copied from chrome/third_party
+EAPI=7
+HOMEPAGE=https://cs.chromium.org/chromium/src/third_party/icu/
+IUSE=asan chrome_internal component_build cups +libcxx msan neon thinlto ubsan verbose xkbcommon chrome_internal asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=icu-58
+RDEPEND=!dev-libs/icu !<chromeos-base/chromeos-chrome-83.0.4098.4 xkbcommon? ( x11-libs/libxkbcommon x11-misc/xkeyboard-config )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+RESTRICT=network-sandbox mirror
+SLOT=0/151.0.7920.0_pre1653789_rc-r1
+_eclasses_=binutils-funcs	c47b476da5a526b9a6bff8ec8798a1aa	chromium-source	32c51c9faefc2680f9c1a30e5af9e6a5	cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=8707e37a9d66bcf8b9b56e40b9412b6d

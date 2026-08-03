@@ -1,0 +1,28 @@
+From 39e659dab16d555db1a438848509a11ba5c55d93 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Wed, 17 Sep 2025 17:41:22 +0800
+Subject: [PATCH] UPSTREAM: Fix the prop len of
+ BT_PROPERTY_ADAPTER_BONDED_DEVICES
+
+This issue was introduced by http://ag/33020682
+
+Bug: 432412937
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: bluetooth_AdapterSRHealth.sr_reconnect_multiple_classic_hid.floss
+Test: bluetooth_AdapterQuickHealth.AVL.all_floss
+Flag: EXEMPT BUGFIX
+Change-Id: I1c31f1c9394e9b30803a2ad8d04bae0fce5c4e75
+---
+ system/btif/src/btif_storage.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system/btif/src/btif_storage.cc b/system/btif/src/btif_storage.cc
+index 3ea2c956737..0f0c36beea7 100644
+--- a/system/btif/src/btif_storage.cc
++++ b/system/btif/src/btif_storage.cc
+@@ -652,3 +652,3 @@ bt_status_t btif_storage_get_adapter_property(bt_property_t* property) {
+     }
+-    property->len = bonded_devices.num_devices * bonded_devices_serialized.size();
++    property->len = bonded_devices_serialized.size() * sizeof(tBLE_BD_ADDR_SERIALIZED);
+     memcpy(property->val, bonded_devices_serialized.data(), property->len);

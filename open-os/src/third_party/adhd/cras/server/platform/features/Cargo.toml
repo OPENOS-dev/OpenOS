@@ -1,0 +1,25 @@
+[package]
+name = "cras_features_backend"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+cfg-if = { workspace = true }
+dbus = { workspace = true }
+dbus-tokio = { workspace = true }
+featured = { workspace = true, optional = true }
+fixedbitset = { workspace = true }
+futures = { workspace = true }
+libc = { workspace = true }
+log = { workspace = true }
+once_cell = { workspace = true }
+tokio = { workspace = true }
+
+[build-dependencies]
+bindgen = { workspace = true }
+regex = { workspace = true }
+
+[features]
+chromiumos = ["featured"]

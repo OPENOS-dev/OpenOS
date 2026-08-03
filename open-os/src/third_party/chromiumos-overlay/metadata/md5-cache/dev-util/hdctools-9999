@@ -1,0 +1,15 @@
+BDEPEND=dev-libs/protobuf dev-python/grpcio-tools[python_targets_python3_11(-)?] test? ( dev-python/pytest[python_targets_python3_11(-)?] ) dev-vcs/git app-misc/jq python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) >=dev-python/setuptools-65.5.1[python_targets_python3_11(-)?] virtual/pkgconfig
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=>=dev-embedded/libftdi-0.18:= dev-python/numpy[python_targets_python3_11(-)?] >=dev-python/pexpect-3.0[python_targets_python3_11(-)?] dev-python/pyserial[python_targets_python3_11(-)?] >=dev-python/pyusb-1.0.2[python_targets_python3_11(-)?] dev-python/packaging[python_targets_python3_11(-)?] virtual/libusb:1= chromeos-base/ec-devutils:=[python_targets_python3_11(-)?] chromeos-base/pigweed-utils[python_targets_python3_11(-)?] dev-python/backoff[python_targets_python3_11(-)?]
+DESCRIPTION=Software to communicate with servo/miniservo debug boards
+EAPI=7
+HOMEPAGE=https://www.chromium.org/chromium-os/servo
+IUSE=cros_host test cros_host cros_workon_tree_ python_targets_python3_11 asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=~*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=>=dev-embedded/libftdi-0.18:= dev-python/numpy[python_targets_python3_11(-)?] >=dev-python/pexpect-3.0[python_targets_python3_11(-)?] dev-python/pyserial[python_targets_python3_11(-)?] >=dev-python/pyusb-1.0.2[python_targets_python3_11(-)?] dev-python/packaging[python_targets_python3_11(-)?] virtual/libusb:1= chromeos-base/ec-devutils:=[python_targets_python3_11(-)?] chromeos-base/pigweed-utils[python_targets_python3_11(-)?] dev-python/backoff[python_targets_python3_11(-)?] !<chromeos-base/ec-devutils-0.0.3 virtual/servo-config-dut-usb3:* python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 )
+REQUIRED_USE=|| ( python_targets_python3_11 ) cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0/9999
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-protobuf	0688bf4a334e3c7a71b2631e853db242	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	distutils-r1	fc8d51ffaf532da88283691b0ed10932	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=3992b74d7efc2d6c2de9185bf7ff3d45

@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of packages that are needed inside the SDK, but after we've built all the toolchain packages that we install separately via binpkgs. This avoids circular dependencies when bootstrapping.
+EAPI=7
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=virtual/target-chromium-os-sdk-post-cross
+SLOT=0
+_md5_=dbb03447d4b2832637fbadd1b5e5197d

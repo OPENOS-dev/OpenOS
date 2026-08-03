@@ -1,0 +1,25 @@
+[package]
+name = "run_in_container"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cliutil = { path = "../../common/cliutil" }
+fileutil = { path = "../../common/fileutil" }
+processes = { path = "../../common/processes" }
+run_in_container_lib = { path = "../../common/run_in_container_lib" }
+
+anyhow.workspace = true
+clap.workspace = true
+itertools.workspace = true
+libc.workspace = true
+nix.workspace = true
+path_absolutize.workspace = true
+runfiles.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+shell_escape.workspace = true
+tracing.workspace = true
+tracing_subscriber.workspace = true

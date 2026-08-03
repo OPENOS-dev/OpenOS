@@ -1,0 +1,15 @@
+diff --git a/scheds/meson.build b/scheds/meson.build
+index 3d08595..7854278 100644
+--- a/scheds/meson.build
++++ b/scheds/meson.build
+@@ -4,6 +4,10 @@ bpf_includes = ['-I', join_paths(meson.current_source_dir(), 'include'),
+                 '-I', join_paths(meson.current_source_dir(), 'include/vmlinux'),
+                 '-I', join_paths(meson.current_source_dir(), 'include/bpf-compat'),]
+ 
++foreach h : libbpf_local_h
++  bpf_includes += ['-I', h]
++endforeach
++
+ # Common include paths for user C compilation. The following should be
+ # passed in as executable::include_directories.
+ user_c_includes = include_directories('include')

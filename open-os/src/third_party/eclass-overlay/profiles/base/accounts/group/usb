@@ -1,0 +1,7 @@
+group:usb
+gid:85
+# mtp for access to media on phones/tablets; brltty for braille.
+# dlm for DisplayLinkManager daemon access to usb.
+# modem for modemfwd access to update modem devices.
+# fwupd: For fwupd firmware updates that use usb devices.
+users:brltty,dlm,fwupd,modem,mtp

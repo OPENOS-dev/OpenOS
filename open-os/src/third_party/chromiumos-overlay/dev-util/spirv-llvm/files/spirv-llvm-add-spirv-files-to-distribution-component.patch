@@ -1,0 +1,23 @@
+If these aren't in the LLVMSPIRVLib component, they aren't installed unless we
+install _all available components_. This wastes space and time.
+
+diff --git a/llvm/projects/SPIRV-LLVM-Translator/CMakeLists.txt b/llvm/projects/SPIRV-LLVM-Translator/CMakeLists.txt
+index bb183f0e5..0df3a0d1b 100644
+--- a/llvm/projects/SPIRV-LLVM-Translator/CMakeLists.txt
++++ b/llvm/projects/SPIRV-LLVM-Translator/CMakeLists.txt
+@@ -144,6 +144,8 @@ install(
+     ${LLVM_SPIRV_INCLUDE_DIRS}/LLVMSPIRVExtensions.inc
+   DESTINATION
+     ${CMAKE_INSTALL_PREFIX}/include/LLVMSPIRVLib
++  COMPONENT
++    LLVMSPIRVLib
+ )
+ 
+ configure_file(LLVMSPIRVLib.pc.in ${CMAKE_BINARY_DIR}/LLVMSPIRVLib.pc @ONLY)
+@@ -152,4 +154,6 @@ install(
+     ${CMAKE_BINARY_DIR}/LLVMSPIRVLib.pc
+   DESTINATION
+     ${CMAKE_INSTALL_PREFIX}/lib${LLVM_LIBDIR_SUFFIX}/pkgconfig
++  COMPONENT
++    LLVMSPIRVLib
+ )

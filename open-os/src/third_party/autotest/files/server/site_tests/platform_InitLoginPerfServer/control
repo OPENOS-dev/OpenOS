@@ -1,0 +1,29 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "platform_InitLoginPerfServer"
+METADATA = {
+    "contacts": ["cros-hwsec@google.com", "zuan@chromium.org"],
+    "bug_component": "b:1188704",
+    "criteria": ("Server side test to measures the first boot initialization "
+                 "and login performance. This test clears the tpm owner, then "
+                 "goes through OOBE and verifies that the user logs in, the "
+                 "tpm is initialized, and the device is prepared for "
+                 "enrollment. It captures the performance data for tpm "
+                 "initialization, as well as first-boot and normal logins."),
+    "hw_agnostic": False
+}
+TEST_TYPE = "server"
+
+NUM_ITERATIONS = 7
+PRE_INIT_DELAY = 10
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test("platform_InitLoginPerfServer", host=host,
+                 iterations=NUM_ITERATIONS,
+                 pre_init_delay=PRE_INIT_DELAY,
+                 upload_perf=True)
+
+parallel_simple(run, machines)

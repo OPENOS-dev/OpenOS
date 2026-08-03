@@ -1,0 +1,14 @@
+BDEPEND=app-arch/unzip
+DEFINED_PHASES=install unpack
+DESCRIPTION=Proprietary plugins and firmware for HPLIP
+EAPI=7
+HOMEPAGE=https://developers.hp.com/hp-linux-imaging-and-printing/plugins
+IUSE=dlc orblite
+KEYWORDS=*
+LICENSE=LICENSE.hplip-plugin
+RDEPEND=net-print/hplip:= virtual/udev orblite? ( media-gfx/sane-backends >=sys-libs/glibc-2.26 virtual/libusb:0 )
+REQUIRED_USE=dlc
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/hplip-3.23.121-plugin.zip
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	dlc	768f1474a752d1b824c04c5695593433	multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	unpacker	aa6a4e924009232d8b78b31e932c30b5
+_md5_=f1578badbe42d6a36af4f55705babe76

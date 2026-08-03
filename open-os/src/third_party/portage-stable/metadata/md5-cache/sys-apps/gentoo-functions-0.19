@@ -1,0 +1,11 @@
+DEFINED_PHASES=configure
+DESCRIPTION=Base functions required by all Gentoo systems
+EAPI=7
+HOMEPAGE=https://gitweb.gentoo.org/proj/gentoo-functions.git
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=>=sys-apps/findutils-4.9
+SLOT=0
+SRC_URI=https://gitweb.gentoo.org/proj/gentoo-functions.git/snapshot/gentoo-functions-0.19.tar.bz2
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=7f48e113f05e17206863174203423ecb

@@ -1,0 +1,352 @@
+/* NOTHING UI v1.0 — Open-OS System Pages (WebUI)
+ * Settings, Files, Downloads, History, Extensions, etc.
+ * Dark-first, 4px grid, 300px sidebar + flex main layout
+ */
+@import './tokens.css';
+
+/* ============================================================
+   Base Layout (all system pages)
+   ============================================================ */
+body {
+  background: var(--nothing-surface-0) !important;
+  color: var(--nothing-text-primary) !important;
+  font-family: var(--nothing-font-ui) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+/* Two-panel layout: sidebar + main */
+.settings-page,
+.page-container,
+.system-page {
+  display: flex !important;
+  height: 100vh !important;
+  background: var(--nothing-surface-0) !important;
+}
+
+/* Sidebar */
+#sidebar,
+.settings-nav,
+.page-sidebar,
+nav.sidebar {
+  width: 300px !important;
+  min-width: 240px !important;
+  background: var(--nothing-surface-1) !important;
+  border-right: 1px solid var(--nothing-border-subtle) !important;
+  padding: var(--nothing-space-4) 0 !important;
+  overflow-y: auto !important;
+}
+
+/* Sidebar items */
+.sidebar-item,
+.settings-nav-item,
+nav.sidebar a,
+nav.sidebar button {
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
+  padding: 0 var(--nothing-space-3) 0 var(--nothing-space-4) !important;
+  color: var(--nothing-text-secondary) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  border-left: 2px solid transparent !important;
+  border-radius: 0 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 100ms ease !important;
+}
+
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.04) !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+.sidebar-item.active,
+.sidebar-item[selected] {
+  background: var(--nothing-accent-bg) !important;
+  color: var(--nothing-accent) !important;
+  border-left-color: var(--nothing-accent) !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================================
+   Main Content Area
+   ============================================================ */
+#main,
+.main-content,
+.page-content,
+.content-area {
+  flex: 1 !important;
+  padding: var(--nothing-space-6) !important;
+  overflow-y: auto !important;
+  max-width: 800px !important;
+  background: var(--nothing-surface-0) !important;
+}
+
+/* ============================================================
+   Cards & Sections
+   ============================================================ */
+.card,
+.settings-section,
+.content-card {
+  background: var(--nothing-surface-2) !important;
+  border: 1px solid var(--nothing-border-subtle) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  padding: var(--nothing-space-4) !important;
+  margin-bottom: var(--nothing-space-4) !important;
+  box-shadow: var(--nothing-shadow-2) !important;
+}
+
+/* Section headers */
+h1, .page-title {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  line-height: 32px !important;
+  color: var(--nothing-text-primary) !important;
+  margin-bottom: var(--nothing-space-5) !important;
+}
+
+h2, .section-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  line-height: 26px !important;
+  color: var(--nothing-text-primary) !important;
+  margin-bottom: var(--nothing-space-3) !important;
+}
+
+h3, .subsection-title {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 22px !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+/* ============================================================
+   Lists
+   ============================================================ */
+.list-item,
+.settings-list-item,
+.list-row {
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
+  padding: 0 var(--nothing-space-3) !important;
+  color: var(--nothing-text-primary) !important;
+  font-size: 13px !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  cursor: pointer !important;
+}
+
+.list-item:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.list-item .secondary-text,
+.list-row .description {
+  color: var(--nothing-text-secondary) !important;
+  font-size: 12px !important;
+}
+
+/* Compact list (Downloads, History) */
+.list-item.compact {
+  height: 28px !important;
+  padding: 0 var(--nothing-space-2) !important;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+button,
+.btn {
+  font-family: var(--nothing-font-ui) !important;
+  font-size: 13px !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  height: 32px !important;
+  padding: 0 var(--nothing-space-4) !important;
+  cursor: pointer !important;
+  transition: all 150ms var(--nothing-ease-standard) !important;
+}
+
+/* Primary */
+button.primary,
+.btn-primary,
+.submit-button,
+.action-button {
+  background: var(--nothing-accent) !important;
+  color: #000000 !important;
+  border: none !important;
+  font-weight: 500 !important;
+}
+button.primary:hover { background: var(--nothing-accent-hover) !important; }
+button.primary:active { background: var(--nothing-accent-active) !important; }
+
+/* Secondary */
+button.secondary,
+.btn-secondary {
+  background: transparent !important;
+  color: var(--nothing-text-primary) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  font-weight: 500 !important;
+}
+button.secondary:hover {
+  border-color: var(--nothing-accent) !important;
+  background: var(--nothing-accent-bg) !important;
+  color: var(--nothing-accent) !important;
+}
+
+/* Danger */
+button.danger,
+.btn-danger {
+  background: var(--nothing-color-error) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+}
+
+/* ============================================================
+   Forms & Inputs
+   ============================================================ */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+select,
+textarea {
+  background: var(--nothing-surface-2) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+  color: var(--nothing-text-primary) !important;
+  font-family: var(--nothing-font-ui) !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  padding: 0 var(--nothing-space-3) !important;
+  outline: none !important;
+  transition: border-color 150ms var(--nothing-ease-standard) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--nothing-accent) !important;
+  background: var(--nothing-surface-3) !important;
+}
+
+label, .form-label {
+  color: var(--nothing-text-secondary) !important;
+  font-size: 12px !important;
+  margin-bottom: var(--nothing-space-1) !important;
+}
+
+/* Toggle / Checkbox */
+input[type="checkbox"],
+toggle-button {
+  accent-color: var(--nothing-accent) !important;
+}
+
+toggle-button[checked] {
+  background: var(--nothing-accent) !important;
+}
+
+/* ============================================================
+   Progress & Loading
+   ============================================================ */
+progress,
+.progress-bar {
+  height: 4px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: var(--nothing-radius-sm) !important;
+}
+
+progress::-webkit-progress-value,
+.progress-bar-fill {
+  background: var(--nothing-accent) !important;
+}
+
+.spinner,
+.loading-spinner {
+  width: 16px !important;
+  height: 16px !important;
+  border: 1.5px solid rgba(255,255,255,0.12) !important;
+  border-top-color: var(--nothing-accent) !important;
+  border-radius: 50% !important;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+table, .data-table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+  font-size: 13px !important;
+}
+
+th, .table-header {
+  height: 28px !important;
+  padding: 0 var(--nothing-space-3) !important;
+  color: var(--nothing-text-tertiary) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  text-align: left !important;
+  border-bottom: 1px solid var(--nothing-border-subtle) !important;
+}
+
+td {
+  height: 28px !important;
+  padding: 0 var(--nothing-space-3) !important;
+  color: var(--nothing-text-primary) !important;
+  border-bottom: 1px solid var(--nothing-border-subtle) !important;
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+/* ============================================================
+   Dialog / Modal
+   ============================================================ */
+.dialog,
+.modal,
+.dialog-container {
+  background: var(--nothing-surface-4) !important;
+  border: 1px solid var(--nothing-border-default) !important;
+  border-radius: var(--nothing-radius-md) !important;
+  box-shadow: var(--nothing-shadow-5) !important;
+}
+
+.dialog-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--nothing-text-primary) !important;
+}
+
+.dialog-body {
+  color: var(--nothing-text-secondary) !important;
+  font-size: 14px !important;
+}
+
+/* ============================================================
+   Global: Scrollbar, Focus, Selection
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
+
+*:focus { outline: none; }
+*:focus-visible {
+  outline: 2px solid var(--nothing-accent) !important;
+  outline-offset: -2px !important;
+}
+
+::selection {
+  background: var(--nothing-accent-bg) !important;
+  color: var(--nothing-accent) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

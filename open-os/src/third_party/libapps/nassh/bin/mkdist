@@ -1,0 +1,424 @@
+#!/usr/bin/env python3
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Utility code for creating and maintaining extension zip files."""
+
+import datetime
+import fnmatch
+import gzip
+import json
+import logging
+import os
+from pathlib import Path
+import re
+import shutil
+import sys
+from typing import Callable, Iterator
+
+import nassh  # pylint: disable=wrong-import-order
+import libdot
+
+
+# List of files to be included in the zip file as globs.
+INCLUDE_PATTERNS = (
+    "css/*.css",
+    "fonts/*.woff2",
+    "html/*.html",
+    "images/*/*.png",
+    "images/mosh-*.png",
+    "js/*.js",
+    "third_party/*/*.css",
+    "third_party/*/*.js",
+    "_locales",
+    "_platform_specific",
+    "plugin/*/*",
+    "wassh/js/*",
+)
+
+# List of files to be excluded from the zip as fnmatch globs.
+EXCLUDE_PATTERNS = (
+    "*_test.html",
+    "*_test.js",
+    "*_tests.js",
+    "js/deps_*.shim.js",
+)
+
+# List of additionall files to be excluded when building crosh archive.
+EXCLUDE_PATTERNS_CROSH = (
+    # go/keep-sorted start
+    "css/nassh_popup.css",
+    "css/nassh_preferences_editor.css",
+    "html/changelog.html",
+    "html/nassh_background.html",
+    "html/nassh_popup.html",
+    "html/nassh_preferences_editor.html",
+    "images/*/icon-fullsize.png",
+    "images/mosh*",
+    "js/nassh_background_main.js",
+    "js/nassh_extension_popup_main.js",
+    "manifest.json",
+    "plugin/wasm-*",
+    "plugin/wasm/mosh-client*",
+    "plugin/wasm/scp*",
+    "plugin/wasm/sftp*",
+    "plugin/wasm/ssh-keygen*",
+    # go/keep-sorted end
+)
+
+
+DIST_DIR = nassh.DIR / "dist"
+TMP_DIR = DIST_DIR / "tmp"
+
+
+def iterdir(path: Path) -> Iterator[Path]:
+    """Yield all files found under |path|."""
+    for root, _, files in os.walk(path):
+        root = Path(root)
+        for name in files:
+            yield root / name
+
+
+def minify_css(path):
+    """Minify CSS |path| in place."""
+    ret = libdot.node.run(
+        ["csso", "-i", os.path.relpath(path, nassh.DIR), "--stat"],
+        capture_output=True,
+        cwd=nassh.DIR,
+    )
+    logging.info(ret.stderr.strip().decode("utf-8"))
+    path.write_bytes(ret.stdout)
+
+
+def minify_js(path):
+    """Minify JS |path| in place."""
+    ret = libdot.node.run(
+        ["terser", os.path.relpath(path, nassh.DIR), "--compress", "--mangle"],
+        capture_output=True,
+        cwd=nassh.DIR,
+    )
+    path.write_bytes(ret.stdout)
+
+
+def minify_json_data(data, path):
+    """Write JSON |data| as minified output to |path|."""
+    with path.open("w", encoding="utf-8") as fp:
+        json.dump(data, fp, separators=(",", ":"), sort_keys=True)
+
+
+def minify_json(path):
+    """Minify JSON |path| in place."""
+    with path.open(encoding="utf-8") as fp:
+        data = json.load(fp)
+    minify_json_data(data, path)
+
+
+def minify_translations(tmpdir):
+    """Minimize translation files."""
+    libdot.minify_translations.minify_many(
+        (tmpdir / "_locales").glob("*/messages.json"), True
+    )
+
+
+def minify(tmpdir):
+    """Run various minification steps."""
+    for path in iterdir(tmpdir):
+        if path.name != "messages.json":
+            if path.name.suffix == ".json":
+                minify_json(path)
+            elif path.name.suffix == ".css":
+                minify_css(path)
+            elif path.name.suffix == ".js":
+                minify_js(path)
+
+    minify_translations(tmpdir)
+
+
+def gzip_all(tmpdir):
+    """Run gzip on all files."""
+    for path in iterdir(tmpdir):
+        with path.open("rb") as infp:
+            # Set the filetimes to the epoch for reproducibility.
+            outfp = gzip.GzipFile(filename=f"{path}.gz", mode="wb", mtime=0)
+            shutil.copyfileobj(infp, outfp)
+            outfp.close()
+        path.unlink()
+
+
+def copyfiles(tmpdir, extra_exclude=()):
+    """Copy the files to |tmpdir| so we can minify/gzip them."""
+    shutil.rmtree(tmpdir, ignore_errors=True)
+    tmpdir.mkdir(parents=True, exist_ok=True)
+
+    def excluded(path):
+        """See if |path| should be ignored."""
+        for exc in EXCLUDE_PATTERNS + extra_exclude:
+            if fnmatch.fnmatch(path, exc):
+                return True
+        return False
+
+    for inc in INCLUDE_PATTERNS:
+        for path in nassh.DIR.glob(inc):
+            subpath = Path(os.path.relpath(path, nassh.DIR))
+            if not excluded(subpath):
+                dst = tmpdir / subpath
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                if path.is_dir():
+                    shutil.copytree(path, dst)
+                else:
+                    shutil.copy(path, dst)
+
+    dst = tmpdir / "libdot" / "index.js"
+    dst.parent.mkdir(exist_ok=True)
+    shutil.copy(DIST_DIR / "libdot.js", dst)
+
+    dst = tmpdir / "hterm" / "index.js"
+    dst.parent.mkdir(exist_ok=True)
+    shutil.copy(DIST_DIR / "hterm.js", dst)
+
+    dst = tmpdir / "wasi-js-bindings" / "index.js"
+    dst.parent.mkdir(exist_ok=True)
+    shutil.copy(DIST_DIR / "wjb.js", dst)
+
+
+def create_zip(
+    archive: Path,
+    tmpdir: Path,
+    enable_zip: bool = True,
+) -> None:
+    """Create |archive| zip of |tmpdir|."""
+    libdot.unlink(archive)
+    paths = []
+    for path in iterdir(tmpdir):
+        # Set the filetimes to the epoch for reproducibility.
+        os.utime(path, times=(0, 0))
+        paths.append(os.path.relpath(path, tmpdir))
+    # Sort the file list for reproducibility.
+    if enable_zip:
+        libdot.run(
+            ["zip", "-@q", os.path.relpath(archive, tmpdir)],
+            cwd=tmpdir,
+            encoding="utf-8",
+            input="\n".join(str(x) for x in sorted(paths)),
+        )
+
+
+def mkzip(
+    stable: bool,
+    archive_suffix: str,
+    version_mangle: Callable = lambda x: x,
+    version_name: str = "",
+    enable_zip: bool = True,
+):
+    """Build the nassh extension archive.
+
+    Args:
+      stable: Whether to mark the manifest as stable or dev [channel].
+      archive_suffix: String to append to the archive name.  Every build needs
+          to have a unique name in order to be archived/signed correctly.
+      version_mangle: Callback to mangle the manifest's version field.
+    """
+    logging.info("Processing ...")
+    manifest = nassh.DIR / "manifest.json"
+
+    with manifest.open(encoding="utf-8") as fp:
+        data = json.load(fp)
+
+    name = data["name"]
+
+    version = data["version"]
+    version = version_mangle(version)
+    data["version"] = version
+
+    # NB: The version_name must be cleared for the stable version as our
+    # CommandInstance.prototype.isDevVersion API relies on it.
+    if version_name:
+        data["version_name"] = version_name
+        assert not stable, "Non-stable versions must set version_name"
+    else:
+        data.pop("version_name", None)
+        assert stable, "Stable versions must not set version_name"
+
+    # Hack up localized name for the filesystem.
+    def _hack_localize(s: str) -> str:
+        """Careful: not for use with user visible content."""
+        return s.replace("__MSG_nassh_product_name__", "Secure Shell")
+
+    basename = _hack_localize(name).replace(" ", "")
+
+    if stable:
+        # Point the icons to the stable version.
+        def _update_icons(icons):
+            for size in icons.keys():
+                icons[size] = re.sub(r"/dev/", "/stable/", icons[size])
+
+        _update_icons(data["icons"])
+        if "action" in data:
+            _update_icons(data["action"]["default_icon"])
+
+    basename += archive_suffix + "-" + version
+    zipfile = f"{basename}.zip"
+    archive = DIST_DIR / zipfile
+
+    logging.info("Name: %s", _hack_localize(name))
+    logging.info("Version: %s", version)
+    logging.info("Archive: %s", zipfile)
+
+    tmpdir = TMP_DIR / basename
+    copyfiles(tmpdir)
+    minify_translations(tmpdir)
+
+    if stable:
+        # Point the icons to the stable version.
+        for file in ("nassh.html", "nassh_connect_dialog.html"):
+            path = tmpdir / "html" / file
+            if path.exists():
+                html = re.sub(
+                    r"images/dev/",
+                    "images/stable/",
+                    path.read_text(encoding="utf-8"),
+                    flags=re.M,
+                )
+                path.write_text(html, encoding="utf-8")
+
+    del data["key"]
+    minify_json_data(data, tmpdir / "manifest.json")
+
+    create_zip(archive, tmpdir, enable_zip)
+
+
+def mkcrosh(enable_minify, enable_gzip, enable_zip: bool = True) -> None:
+    """Build the crosh archive."""
+    logging.info("Processing crosh/terminal")
+
+    basename = "crosh"
+    zipfile = f"{basename}.zip"
+    archive = DIST_DIR / zipfile
+    logging.info("Name: %s", basename)
+    logging.info("Archive: %s", zipfile)
+
+    tmpdir = TMP_DIR / basename
+    copyfiles(tmpdir, extra_exclude=EXCLUDE_PATTERNS_CROSH)
+
+    # Copy over the Terminal project.
+    terminal = libdot.LIBAPPS_DIR / "terminal"
+    for subdir in ("css", "html", "images", "js"):
+        for path in (terminal / subdir).glob("*"):
+            # terminal/js might have temporary symlink files from nassh for
+            # linting and testing.
+            if not path.is_symlink() and not path.match("*_test*"):
+                shutil.copy(path, tmpdir / subdir)
+    shutil.copy(
+        libdot.LIBAPPS_DIR / "node_modules/xterm/css/xterm.css", tmpdir / "css"
+    )
+
+    if enable_minify:
+        minify(tmpdir)
+    if enable_gzip:
+        gzip_all(tmpdir)
+    create_zip(archive, tmpdir, enable_zip)
+
+
+def get_stamp():
+    """Get the timestamp as a version.
+
+    CWS limits each dotted field to 16-bits (65535), and allows only 4 fields.
+    That means we have to pack the year/month/day and hour/minutes/seconds.
+      https://developer.chrome.com/extensions/manifest/version
+    If we're creative, we can pack these so the version is always increasing.
+
+    We're really just worried about two consecutive builds not decreasing.
+    Keep in mind that we hand maintain the first two components of the version
+    in the manifest.json.
+    """
+    now = datetime.datetime.now()
+    tm = now.timetuple()
+
+    # This will be shown to humans to read.
+    stamp_human = now.strftime("%e %b %Y %H:%M")
+
+    # The first field is the date.
+    # - last two digits of the year [0..99]
+    # - day of the year [1..366] -- we subtract 1 to get [0..365]
+    #
+    # Field = (year * 366) + day_of_year
+    # This is OK because (99 * 366) + 366 = 36600 < 65535.
+    stamp_date = ((tm.tm_year % 100) * 366) + (tm.tm_yday - 1)
+
+    # The second field is the time.
+    # - hour [0..23]
+    # - minute [0..59]
+    # - seconds [0..60] -- includes leap second
+    #
+    # But 23 * 60 * 60 = 82800 which exceeds 65535.
+    # If we divide seconds by 2, then everything fits.
+    #
+    # Field = (hour * 60 * 30) + (minute * 30) + (second / 2)
+    # This is OK because (23 * 60 * 30) + (59 * 30) + 30 = 43200 < 65535.
+    stamp_time = (tm.tm_hour * 60 * 30) + (tm.tm_min * 30) + tm.tm_sec // 2
+
+    return (stamp_human, str(stamp_date), str(stamp_time))
+
+
+def get_parser():
+    """Get a command line parser."""
+    parser = libdot.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--skip-mkdeps",
+        dest="run_mkdeps",
+        action="store_false",
+        default=True,
+        help="Skip (re)building of dependencies.",
+    )
+    parser.add_argument(
+        "--crosh-only",
+        action="store_true",
+        help="Only build crosh (and Terminal).",
+    )
+    parser.add_argument(
+        "--skip-minify",
+        dest="minify",
+        action="store_false",
+        default=True,
+        help="Skip minify/gzip steps on files.",
+    )
+    parser.add_argument(
+        "--skip-zip",
+        dest="zip",
+        action="store_false",
+        default=True,
+        help="Skip creating final zip archive.",
+    )
+    return parser
+
+
+def main(argv):
+    """The main func!"""
+    parser = get_parser()
+    opts = parser.parse_args(argv)
+    libdot.node_and_npm_setup()
+
+    # Setup source & output paths.
+    DIST_DIR.mkdir(parents=True, exist_ok=True)
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
+
+    if opts.run_mkdeps:
+        libdot.run([str(nassh.BIN_DIR / "mkdeps")])
+
+    stamps = get_stamp()
+    if not opts.crosh_only:
+        # Build the dev channel variants.
+        def _stamp_dev(version):
+            return ".".join([version] + list(stamps[1:]))
+
+        mkzip(False, "-dev", _stamp_dev, stamps[0], enable_zip=opts.zip)
+        # Build the stable channel variants.
+        mkzip(True, "", enable_zip=opts.zip)
+
+    # Never minify, maybe gzip.
+    mkcrosh(False, True, enable_zip=opts.zip)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

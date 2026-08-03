@@ -1,0 +1,44 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//dist:cras_rules_cc.bzl", "cras_shared_library")
+
+cc_library(
+    name = "plugin_processor",
+    hdrs = ["plugin_processor.h"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "headers",
+    srcs = glob(["*.h"]),
+    visibility = ["//audio_processor:__pkg__"],
+)
+
+cc_library(
+    name = "test_plugins_cc",
+    srcs = [
+        "abs_plugin.c",
+        "abs_plugin.h",
+        "bad_plugin.c",
+        "bad_plugin.h",
+        "echo_plugin.cc",
+        "echo_plugin.h",
+        "negate_plugin.c",
+        "negate_plugin.h",
+        "plugin_processor.h",
+    ],
+    visibility = ["//audio_processor:__pkg__"],
+)
+
+cras_shared_library(
+    name = "test_plugins",
+    roots = [":test_plugins_cc"],
+    static_deps = [":test_plugins_cc"],
+    visibility = [
+        "//audio_processor:__pkg__",
+        "//dist:__pkg__",
+    ],
+)

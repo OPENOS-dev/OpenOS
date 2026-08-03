@@ -1,0 +1,62 @@
+# Copyright 2025 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+load("@rules_rust//rust:defs.bzl", "rust_library")
+load("//pw_kernel/tooling:rust_app.bzl", "rust_app")
+
+rust_app(
+    name = "test_interrupts",
+    srcs = [
+        "main.rs",
+    ],
+    codegen_crate_name = "test_interrupts_codegen",
+    edition = "2024",
+    tags = ["kernel"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":test_messages",
+        "//pw_kernel/lib/unittest:test_logger",
+        "//pw_kernel/userspace",
+        "//pw_status/rust:pw_status",
+    ],
+)
+
+rust_app(
+    name = "test_interrupt_listener",
+    srcs = [
+        "interrupt_listener.rs",
+    ],
+    codegen_crate_name = "test_interrupt_listener_codegen",
+    edition = "2024",
+    tags = ["kernel"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":test_messages",
+        "//pw_assert/rust:pw_assert",
+        "//pw_kernel/lib/unittest:test_logger",
+        "//pw_kernel/syscall:syscall_user",
+        "//pw_kernel/userspace",
+        "//pw_status/rust:pw_status",
+    ],
+)
+
+rust_library(
+    name = "test_messages",
+    srcs = ["test_messages.rs"],
+    edition = "2024",
+    tags = ["kernel"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pw_status/rust:pw_status",
+    ],
+)

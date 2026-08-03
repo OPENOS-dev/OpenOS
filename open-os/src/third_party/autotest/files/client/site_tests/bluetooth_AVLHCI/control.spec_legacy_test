@@ -1,0 +1,41 @@
+# Lint as: python3
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This class can be called to run bluetooth_AVLHCI.spec_legacy_test
+#
+# This test contains these subtests:
+#     test_flushable_data_packets()
+#     test_erroneous_data_reporting()
+#     test_event_filter_size()
+#     test_acl_min_buffer_number()
+#     test_acl_min_buffer_size()
+#     test_sco_min_buffer_number()
+#     test_sco_min_buffer_size()
+#
+#
+# Purpose: Tests the legacy standard specifications of bluetooth AVL
+# requirements
+
+# Deprecated variables:
+#     TIME = 'SHORT'
+#     TEST_CATEGORY = 'Functional'
+
+NAME = 'bluetooth_AVLHCI.spec_legacy_test'
+METADATA = {
+    'contacts': ['chromeos-bt-team@google.com'],
+    # ChromeOS > Platform > Connectivity > Bluetooth
+    'bug_component': 'b:167317',
+    'criteria': 'all subtests passed',
+    'hw_agnostic': False,
+    'requirements': ['bt-spec-0002-v01', 'bt-spec-0003-v01', 'bt-spec-0004-v01',
+                     'bt-spec-0005-v01', 'bt-spec-0007-v01', 'bt-spec-0008-v01',
+                     'bt-spec-0009-v01']
+}
+
+ATTRIBUTES = 'suite:bluetooth_fw'
+TEST_TYPE = 'client'
+
+
+job.run_test('bluetooth_AVLHCI', test_name=NAME.split('.')[1], tag='.'.join(NAME.split('.')[1:]))

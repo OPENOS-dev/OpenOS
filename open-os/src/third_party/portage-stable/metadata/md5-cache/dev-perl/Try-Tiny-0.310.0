@@ -1,0 +1,14 @@
+BDEPEND=!<=dev-perl/Try-Tiny-Except-0.10.0 !minimal? ( || ( >=virtual/perl-Scalar-List-Utils-1.400.0 dev-perl/Sub-Name ) ) virtual/perl-Carp >=virtual/perl-Exporter-5.570.0 virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Minimal try/catch with proper localization of $@
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Try-Tiny
+IUSE=minimal
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=!<=dev-perl/Try-Tiny-Except-0.10.0 !minimal? ( || ( >=virtual/perl-Scalar-List-Utils-1.400.0 dev-perl/Sub-Name ) ) virtual/perl-Carp >=virtual/perl-Exporter-5.570.0 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/E/ET/ETHER/Try-Tiny-0.31.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=ccfa9fea0dc3a1db5ba7abf8ae6efd09

@@ -1,0 +1,24 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+filegroup(
+    name = "srcs",
+    srcs = glob(["**"]),
+)
+
+py_library(
+    name = "py_deps",
+    deps = [
+        "@hdctools_py_deps_numpy//:pkg",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "dut_control",
+    srcs = [":srcs"],
+    deps = [":py_deps"],
+    main = "//:servo/dut_control.py",
+    visibility = ["//visibility:public"],
+)

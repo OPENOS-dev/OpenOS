@@ -1,0 +1,98 @@
+// Copyright 2025 The Pigweed Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not
+// use this file except in compliance with the License. You may obtain a copy of
+// the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations under
+// the License.
+{
+  arch: {
+    type: "riscv",
+  },
+  kernel: {
+    flash_start_address: 0x80000000,
+    flash_size_bytes: 261120,
+    ram_start_address: 0x81000000,
+    ram_size_bytes: 65536,
+  },
+  apps: [
+    {
+      name: "test_uart",
+      flash_size_bytes: 261120,
+      processes: [
+        {
+          name: "test_uart",
+          ram_size_bytes: 65536,
+          objects: [
+            {
+              name: "ipc",
+              type: "channel_handler",
+            },
+            {
+              name: "uart_thread",
+              // Generous stacks size pending kernel stack size optimization.
+              kernel_stack_size_bytes: 2048,
+              type: "thread",
+            },
+          ],
+          memory_mappings: [
+            {
+              name: "uart0",
+              type: "device",
+              start_address: 0x10000000,
+              size_bytes: 0x2000,
+            }
+          ],
+        },
+      ],
+    },
+    {
+      name: "test_uart_listener",
+      flash_size_bytes: 261120,
+      processes: [
+        {
+          name: "test_uart_listener",
+          ram_size_bytes: 65536,
+          objects: [
+            {
+              name: "uart_interrupts",
+              type: "interrupt",
+              irqs: [
+                {
+                  name: "uart0",
+                  number: 10
+                }
+              ],
+            },
+            {
+              name: "ipc",
+              type: "channel_initiator",
+              handler_process: "test_uart",
+              handler_object_name: "ipc",
+            },
+            {
+              name: "uart_listener_thread",
+              // Generous stacks size pending kernel stack size optimization.
+              kernel_stack_size_bytes: 2048,
+              type: "thread",
+            },
+          ],
+          memory_mappings: [
+            {
+              name: "uart0",
+              type: "device",
+              start_address: 0x10000000,
+              size_bytes: 0x2000,
+            }
+          ],
+        },
+      ],
+    },
+  ],
+}

@@ -1,0 +1,86 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef DIAGNOSTICS_CROS_HEALTHD_ROUTINES_CROS_HEALTHD_ROUTINE_FACTORY_IMPL_H_
+#define DIAGNOSTICS_CROS_HEALTHD_ROUTINES_CROS_HEALTHD_ROUTINE_FACTORY_IMPL_H_
+
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "diagnostics/cros_healthd/routines/cros_healthd_routine_factory.h"
+
+namespace diagnostics {
+class Context;
+
+// Production implementation of the CrosHealthdRoutineFactory interface.
+class CrosHealthdRoutineFactoryImpl final : public CrosHealthdRoutineFactory {
+ public:
+  explicit CrosHealthdRoutineFactoryImpl(Context* context);
+  CrosHealthdRoutineFactoryImpl(const CrosHealthdRoutineFactoryImpl&) = delete;
+  CrosHealthdRoutineFactoryImpl& operator=(
+      const CrosHealthdRoutineFactoryImpl&) = delete;
+  ~CrosHealthdRoutineFactoryImpl() override;
+
+  // CrosHealthdRoutineFactory overrides:
+  std::unique_ptr<DiagnosticRoutine> MakeBatteryCapacityRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeBatteryHealthRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeSmartctlCheckRoutine(
+      org::chromium::debugdProxyInterface* debugd_proxy,
+      ash::cros_healthd::mojom::NullableUint32Ptr percentage_used_threshold)
+      override;
+  std::unique_ptr<DiagnosticRoutine> MakeAcPowerRoutine(
+      ash::cros_healthd::mojom::AcPowerStatusEnum expected_status,
+      const std::optional<std::string>& expected_power_type) override;
+  std::unique_ptr<DiagnosticRoutine> MakeNvmeSelfTestRoutine(
+      org::chromium::debugdProxyInterface* debugd_proxy,
+      ash::cros_healthd::mojom::NvmeSelfTestTypeEnum nvme_self_test_type)
+      override;
+  std::unique_ptr<DiagnosticRoutine> MakeBatteryDischargeRoutine(
+      base::TimeDelta exec_duration,
+      uint32_t maximum_discharge_percent_allowed) override;
+  std::unique_ptr<DiagnosticRoutine> MakeBatteryChargeRoutine(
+      base::TimeDelta exec_duration,
+      uint32_t minimum_charge_percent_required) override;
+  std::unique_ptr<DiagnosticRoutine> MakeLanConnectivityRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeSignalStrengthRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeGatewayCanBePingedRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeHasSecureWiFiConnectionRoutine()
+      override;
+  std::unique_ptr<DiagnosticRoutine> MakeDnsResolverPresentRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeDnsLatencyRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeDnsResolutionRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeCaptivePortalRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeHttpFirewallRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeHttpsFirewallRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeHttpsLatencyRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeVideoConferencingRoutine(
+      const std::optional<std::string>& stun_server_hostname) override;
+  std::unique_ptr<DiagnosticRoutine> MakeArcHttpRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeArcPingRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeArcDnsResolutionRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeFingerprintRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeFingerprintAliveRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakePrivacyScreenRoutine(
+      bool target_state) override;
+  std::unique_ptr<DiagnosticRoutine> MakeEmmcLifetimeRoutine(
+      org::chromium::debugdProxyInterface* debugd_proxy) override;
+  std::unique_ptr<DiagnosticRoutine> MakeBluetoothPowerRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeBluetoothDiscoveryRoutine() override;
+  std::unique_ptr<DiagnosticRoutine> MakeBluetoothScanningRoutine(
+      const std::optional<base::TimeDelta>& exec_duration) override;
+  std::unique_ptr<DiagnosticRoutine> MakeBluetoothPairingRoutine(
+      const std::string& peripheral_id) override;
+  std::unique_ptr<DiagnosticRoutine> MakePowerButtonRoutine(
+      uint32_t timeout_seconds) override;
+
+ private:
+  // Unowned pointer that should outlive this instance.
+  Context* const context_ = nullptr;
+};
+
+}  // namespace diagnostics
+
+#endif  // DIAGNOSTICS_CROS_HEALTHD_ROUTINES_CROS_HEALTHD_ROUTINE_FACTORY_IMPL_H_

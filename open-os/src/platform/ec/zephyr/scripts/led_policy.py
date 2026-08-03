@@ -1,0 +1,408 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Configure-time checks for the led-policy node."""
+
+import collections
+import logging
+import sys
+from typing import List, Optional
+
+from scripts import util
+
+
+def check_policy(
+    charge_state,
+    charge_port,
+    chipset_state,
+    board_led_alt_policy_label,
+    batt_lvl,
+    policies,
+    led_id,
+):
+    """Checks if a given state has valid policy coverage
+
+    Args:
+        charge_state: charge state to be tested
+        charge_port: charge port to be tested
+        chipset_state: chipset state to be tested
+        board_led_alt_policy_label: label of board led alt policy to be tested
+        batt_lvl: battery level to be tested
+        led_id: ID of the LED to be tested
+
+    Return:
+        ret: number of policies covering this state. Any value other than 1 is an error.
+    """
+
+    ret = 0
+
+    for node in policies.children.values():
+        # check_policy is a replica of the match_node() function in led.c
+        if "charge-state" in node.props:
+            match = False
+
+            for state in node.props["charge-state"].val:
+                if charge_state == state:
+                    match = True
+                    break
+
+            if not match:
+                continue
+
+            if "charge-port" in node.props:
+                if charge_port != node.props["charge-port"].val:
+                    continue
+
+        if "chipset-state" in node.props:
+            match = False
+
+            for state in node.props["chipset-state"].val:
+                if chipset_state == state:
+                    match = True
+                    break
+
+            if not match:
+                continue
+
+        if "board-led-alt-policy-label" in node.props:
+            if (
+                board_led_alt_policy_label
+                != node.props["board-led-alt-policy-label"].val
+            ):
+                continue
+
+        if "batt-lvl" in node.props:
+            if (
+                batt_lvl < node.props["batt-lvl"].val[0]
+                or batt_lvl > node.props["batt-lvl"].val[1]
+            ):
+                continue
+
+        for led_node in node.children.values():
+            if led_node.props["led-id"].val == led_id:
+                ret += 1
+                break
+
+    return ret
+
+
+def log_state(
+    project_name,
+    charge_state,
+    charge_port,
+    chipset_state,
+    board_led_alt_policy_label,
+    batt_min,
+    batt_range,
+    led_id,
+    coverage,
+):
+    """Checks if current state is missing coverage and logs error if it is
+
+    Args:
+        project_name: A string containing the project/test name
+        charge_state: current charge state being tested
+        charge_port: current charge port being tested
+        chipset_state: current chipset state being tested
+        board_led_alt_policy_label: current label of board led alt policy being tested
+        batt_min: lower bound of battery level range being tested
+        batt_range: range of battery level that is missing coverage, 0 for state
+                    is covered
+        led_id: ID of the LED being tested
+        coverage: how many policies cover this state. if batt_range is 0 coverage must be 1
+
+    Returns:
+        A boolean: true if error is logged, false if not
+    """
+
+    if batt_range == 0:
+        return False
+    if batt_range == 101:
+        logging.error(
+            "%s: %s LED policies found for %s%s%s%s%s",
+            project_name,
+            f"{coverage} overlapping" if coverage > 1 else "No",
+            (charge_state + ", ") if charge_state else "",
+            f"port {charge_port}, " if charge_port is not None else "",
+            (chipset_state + ", ") if chipset_state else "",
+            (
+                f"board_led_alt_policy_label {board_led_alt_policy_label}, "
+                if board_led_alt_policy_label
+                else ""
+            ),
+            led_id + ", ",
+        )
+    else:
+        logging.error(
+            "%s: %s LED policies for battery range %i%% to %i%% for %s%s%s%s%s",
+            project_name,
+            f"{coverage} overlapping" if coverage > 1 else "No",
+            batt_min,
+            batt_min + batt_range - 1,
+            (charge_state + ", ") if charge_state else "",
+            f"port {charge_port}, " if charge_port is not None else "",
+            (chipset_state + ", ") if chipset_state else "",
+            (
+                f"board_led_alt_policy_label {board_led_alt_policy_label}, "
+                if board_led_alt_policy_label
+                else ""
+            ),
+            led_id + ", ",
+        )
+    return True
+
+
+def iterate_power_states(edt, project_name, policies):
+    """Iterate all combinations of states and test the led policy coverage.
+
+    Args:
+        edt: EDT object representation of a devicetree
+        project_name: Name of the board that is being built
+        policies: The specific led-policy node instance to check
+
+    Returns:
+        num_errors: Number of missing or overcoverage policies detected.
+    """
+    charge_state_list = [None]
+
+    charge_port_list = [None]
+
+    chipset_state_list = [None]
+
+    board_led_alt_policy_label_list = []
+
+    board_led_alt_policy_label_sum = 1
+
+    led_id_list = []
+
+    # no Zephyr project currently uses batt_state to determine LED policy
+
+    # Try to figure out which states this LED policy scheme doesn't care about
+    # to minimize the number of error messages.
+    care_about = {
+        "charge-state": False,
+        "charge-port": False,
+        "chipset-state": False,
+        "board-led-alt-policy-label": False,
+        "batt-lvl": False,
+    }
+    for node in policies.children.values():
+        if "charge-state" in node.props:
+            care_about["charge-state"] = True
+            if "charge-port" in node.props:
+                care_about["charge-port"] = True
+        if "chipset-state" in node.props:
+            care_about["chipset-state"] = True
+        if "board-led-alt-policy-label" in node.props:
+            care_about["board-led-alt-policy-label"] = True
+        if "batt-lvl" in node.props:
+            care_about["batt-lvl"] = True
+
+        # not all LEDs may appear in led policy.
+        # Filter for only the LEDs that appear in the policy.
+        for led_node in node.children.values():
+            if led_node.props["led-id"].val not in led_id_list:
+                led_id_list.append(led_node.props["led-id"].val)
+
+    if care_about["charge-state"]:
+        charge_state_list = [
+            "LED_PWRS_CHARGE",
+            "LED_PWRS_DISCHARGE",
+            "LED_PWRS_ERROR",
+            "LED_PWRS_IDLE",
+            "LED_PWRS_FORCED_IDLE",
+            "LED_PWRS_CHARGE_NEAR_FULL",
+        ]
+
+    if care_about["charge-port"]:
+        usbc_nodes = edt.compat2okay["named-usbc-port"]
+        if len(usbc_nodes) == 0:
+            logging.error(
+                "LED policy found for charge ports \
+                but board has no named usbc ports."
+            )
+            return 1
+        charge_port_list = range(len(usbc_nodes))
+
+    if care_about["chipset-state"]:
+        chipset_state_list = [
+            "POWER_S0",
+            "POWER_S3",
+            "POWER_S5",
+        ]
+
+    if care_about["board-led-alt-policy-label"]:
+        for node in policies.children.values():
+            if "board-led-alt-policy-label" in node.props:
+                board_led_alt_policy_label_list.append(
+                    node.props["board-led-alt-policy-label"].val
+                )
+        if len(board_led_alt_policy_label_list) > 0:
+            board_led_alt_policy_label_sum = (
+                max(board_led_alt_policy_label_list) + 1
+            )
+
+    num_errors = 0
+    for led_id in led_id_list:  # pylint:disable=too-many-nested-blocks
+        for charge_state in charge_state_list:
+            for charge_port in charge_port_list:
+                for chipset_state in chipset_state_list:
+                    for board_led_alt_policy_label in range(
+                        board_led_alt_policy_label_sum
+                    ):
+                        policy_batt_lvl_min = 0
+                        policy_batt_range = 0
+                        prev_coverage = 1
+                        for batt_lvl in range(101):
+                            coverage = check_policy(
+                                charge_state,
+                                charge_port,
+                                chipset_state,
+                                board_led_alt_policy_label,
+                                batt_lvl,
+                                policies,
+                                led_id,
+                            )
+                            if coverage == 1:
+                                num_errors += log_state(
+                                    project_name,
+                                    charge_state,
+                                    charge_port,
+                                    chipset_state,
+                                    board_led_alt_policy_label,
+                                    policy_batt_lvl_min,
+                                    policy_batt_range,
+                                    led_id,
+                                    prev_coverage,
+                                )
+                                policy_batt_range = 0
+                                policy_batt_lvl_min = batt_lvl + 1
+                            else:
+                                policy_batt_range += 1
+                            prev_coverage = coverage
+
+                        num_errors += log_state(
+                            project_name,
+                            charge_state,
+                            charge_port,
+                            chipset_state,
+                            board_led_alt_policy_label,
+                            policy_batt_lvl_min,
+                            policy_batt_range,
+                            led_id,
+                            prev_coverage,
+                        )
+    return num_errors
+
+
+def check_pattern_durations(project_name, policies):
+    """Checks if all patterns sharing the same ID have the same total duration.
+
+    Args:
+        project_name: Name of the board that is being built
+        policies: The led-policy node instance to check
+
+    Returns:
+        num_errors: Number of mismatched duration policies detected.
+    """
+    num_errors = 0
+
+    for state_node in policies.children.values():
+        # Use defaultdict to group durations by led-id
+        led_id_durations = collections.defaultdict(dict)
+
+        for pattern_node in state_node.children.values():
+            led_id = pattern_node.props["led-id"].val
+
+            sum_period = sum(
+                color_node.props["period-ms"].val
+                for color_node in pattern_node.children.values()
+                if "period-ms" in color_node.props
+            )
+
+            cycle_count = 0
+            if "cycle-count" in pattern_node.props:
+                cycle_count = pattern_node.props["cycle-count"].val
+
+            # Use a tuple for numerical comparison.
+            # Tuple format: (is_infinite, total_period_ms)
+            if cycle_count == 0:
+                total_duration = (True, sum_period)
+            else:
+                total_duration = (False, sum_period * cycle_count)
+
+            led_id_durations[led_id][pattern_node.name] = total_duration
+
+        # Check for mismatches within each led-id group
+        for led_id, durations in led_id_durations.items():
+            if len(durations) > 1:
+                unique_durations = set(durations.values())
+                if len(unique_durations) > 1:
+                    readable_durations = {
+                        name: (
+                            f"Infinite (loop: {dur[1]}ms)"
+                            if dur[0]
+                            else f"{dur[1]}ms"
+                        )
+                        for name, dur in durations.items()
+                    }
+                    logging.error(
+                        "%s: Policy '%s' has mismatched total durations for %s: %s",
+                        project_name,
+                        state_node.name,
+                        led_id,
+                        readable_durations,
+                    )
+                    num_errors += 1
+
+    return num_errors
+
+
+def parse_args(argv: Optional[List[str]] = None):
+    """Returns parsed command-line arguments"""
+    parser = util.EdtArgumentParser(
+        prog="led_policy_check",
+        description="Zephyr EC specific devicetree checks",
+    )
+
+    return parser.parse_args(argv)
+
+
+def main(argv: Optional[List[str]] = None) -> Optional[int]:
+    """The main function.
+
+    Args:
+        argv: Optionally, the command-line to parse, not including argv[0].
+
+    Returns:
+        Zero upon success, or non-zero upon failure.
+    """
+    args = parse_args(argv)
+
+    log_format = "%(levelname)s: %(message)s"
+
+    logging.basicConfig(format=log_format, level=args.log_level)
+
+    edtlib, edt, project_dir = util.load_edt(args.zephyr_base, args.edt_pickle)
+
+    if edtlib is None:
+        return 0
+
+    # not all tests will want to test a fully covered policy
+    if util.is_test(args.edt_pickle):
+        return 0
+
+    num_errors = 0
+    for policy in edt.compat2okay["cros-ec,led-policy"]:
+        num_errors += iterate_power_states(edt, project_dir.name, policy)
+        num_errors += check_pattern_durations(project_dir.name, policy)
+
+    if num_errors:
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

@@ -1,0 +1,15 @@
+<root>
+  <!-- ******** Includes ******** -->
+  <include>
+    <name>servo_brya_overlay.xml</name>
+  </include>
+  <include>
+    <name>chromebox.xml</name>
+  </include>
+  <!-- ******** Controls ******** -->
+  <control>
+    <name>power_state</name>
+    <doc>Used to turn the DUT off and on</doc>
+    <params clobber_ok="" pb_init_idle="yes" reset_delay="3"/>
+  </control>
+</root>

@@ -1,0 +1,51 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = 'Chromium OS team'
+NAME = 'tast.cellular-callbox-cmw-handover'
+METADATA = {
+    "contacts": ["chromeos-cellular-team@google.com"],
+    "bug_component": "b:167157", # ChromeOS > Platform > Connectivity > Cellular
+    }
+TIME = 'MEDIUM'
+TEST_TYPE = 'Server'
+ATTRIBUTES = 'suite:cellular_callbox'
+MAX_RESULT_SIZE_KB = 1024 * 1024
+PY_VERSION = 3
+DEPENDENCIES = "carrier:cmw500"
+
+DOC = '''
+Run the Tast tests designed specifically for CMW500.
+
+"group:cellular" indicates that the test runs on DUTs with a Cellular modem.
+"cellular_cmw_callbox": Attribute used to select tests that specifically run on DUTs with CMW500 callbox.
+"cellular_handover": Indicates that test involves a cellular handover.
+'''
+import json
+import tempfile
+import yaml
+from autotest_lib.server.site_tests.tast import tast
+
+def run(machine):
+    host = hosts.create_host(machine)
+    # companion_hosts will only be available in control file if testbed contains
+    # them, else we will get a NameError.
+    try:
+        companions = hosts.create_companion_hosts(companion_hosts)
+    except NameError:
+        companions = []
+
+    command_args, varslist = tast.split_arguments(args)
+    varslist.append("companionCount=%d" % len(companions))
+
+    host.reboot()
+    job.run_test('tast',
+                host=host,
+                test_exprs=['(("group:cellular" && "cellular_cmw_callbox" && "cellular_handover"))'],
+                ignore_test_failures=True, max_run_sec=20000,
+                companion_duts={f'cd{i+1}' : c for i, c in enumerate(companions)},
+                command_args=command_args,
+                varslist=varslist)
+
+parallel_simple(run, machines)

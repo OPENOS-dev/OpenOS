@@ -1,0 +1,252 @@
+# SPDX-License-Identifier: GPL-2.0
+
+# This file contains common definitions, macros and targets for depthcharge
+# unit-tests and screenshot utility. It requires list of defined variables:
+# - src - source directory
+# - testobj - build directory of tests
+# - objutil - utility programs/libraries output directory
+# - objext - external programs/libraries output directory
+
+# Set default path for EC_HEADERS if provided does not contain ec_headers.h
+EC_HEADERS ?= ../../src/ec/google/chromeec
+ifeq ($(wildcard $(EC_HEADERS)/ec_commands.h),)
+EC_HEADERS := ../ec/include
+endif
+ifeq ($(wildcard $(EC_HEADERS)/ec_commands.h),)
+$(error Please set EC_HEADERS= to directory containing ec_commands.h!)
+endif
+
+# At first, test if we're in a Chromium OS SDK
+CB_SOURCE ?= ../../third_party/coreboot
+ifeq ($(wildcard $(CB_SOURCE)),)
+# Otherwise, we may be in an upstream coreboot source tree
+CB_SOURCE := ../../../..
+ifeq ($(wildcard $(CB_SOURCE)/payloads/external/depthcharge/depthcharge),)
+$(error Please set CB_SOURCE= to directory containing coreboot sources!)
+endif
+endif
+
+# Libpayload source directory in the coreboot project
+LP_SOURCE ?= ../../../libpayload
+ifeq ($(wildcard $(LP_SOURCE)),)
+# If directory pointed by LP_SOURCE is empty then assume libpayload
+# is in the Chromium OS SDK coreboot directory
+LP_SOURCE := ../../third_party/coreboot/payloads/libpayload
+endif
+ifeq ($(wildcard $(LP_SOURCE)),)
+$(error Please set LP_SOURCE= to directory containing libpayload sources!)
+endif
+
+# Path for depthcharge in coreboot/payloads
+VB_SOURCE ?= ../../../../3rdparty/vboot
+ifeq ($(wildcard $(VB_SOURCE)),)
+# Path for depthcharge in Chromium OS SDK src/platform
+VB_SOURCE = ../vboot_reference
+endif
+ifeq ($(wildcard $(VB_SOURCE)),)
+$(error Please set VB_SOURCE= to the vboot source directory!)
+endif
+VB_SOURCE := $(abspath $(VB_SOURCE))
+
+testsrc := $(src)/tests
+
+corebootsrc := $(CB_SOURCE)
+libpayloadsrc := $(LP_SOURCE)
+libpayloadobj := $(objext)/libpayload
+
+LIBPAYLOAD_DESTDIR := $(abspath $(libpayloadobj)/install)
+LIBPAYLOAD_ROOT := $(LIBPAYLOAD_DESTDIR)/libpayload
+LIBPAYLOAD_LIB := $(LIBPAYLOAD_ROOT)/lib/libpayload.a
+
+LIBPAYLOAD_DEFCONFIG := $(libpayloadsrc)/configs/defconfig
+LIBPAYLOAD_DOTCONFIG := $(libpayloadobj)/.config
+LIBPAYLOAD_KCONFIG_AUTOHEADER := $(libpayloadobj)/config.h
+LIBPAYLOAD_KCONFIG_AUTOCONFIG := $(libpayloadobj)/auto.conf
+LIBPAYLOAD_KCONFIG_DEPENDENCIES := $(libpayloadobj)/auto.conf.cmd
+LIBPAYLOAD_KCONFIG_RUSTCCFG := $(libpayloadobj)/rustc_cfg
+LIBPAYLOAD_KCONFIG_SPLITCONFIG := $(libpayloadobj)/config/
+LIBPAYLOAD_KCONFIG_TRISTATE := $(libpayloadobj)/tristate.conf
+LIBPAYLOAD_CONFIG := $(libpayloadobj)/libpayload-config.h
+
+CMAKE := cmake
+OBJCOPY ?= objcopy
+OBJDUMP ?= objdump
+
+TEST_CFLAGS :=
+TEST_LDFLAGS :=
+
+# Include generic test mock headers, before original ones
+TEST_CFLAGS += -I$(testsrc)/include/mocks -I$(testsrc)/include
+
+# Depthcharge includes
+TEST_CFLAGS += -I$(testobj) -I$(src)/src
+
+# vboot_reference and ec-headers
+TEST_CFLAGS += -I$(LIBPAYLOAD_ROOT)/vboot/include -I$(EC_HEADERS)
+
+# Libpayload flags
+TEST_CFLAGS += -D__LIBPAYLOAD__=1
+TEST_CFLAGS += -I$(libpayloadobj)
+TEST_CFLAGS += -I$(LIBPAYLOAD_ROOT)/include -I $(LIBPAYLOAD_ROOT)/include/mock
+TEST_CFLAGS += -I$(corebootsrc)/src/commonlib/bsd/include
+TEST_CFLAGS += -include $(LIBPAYLOAD_ROOT)/include/kconfig.h
+TEST_CFLAGS += -include $(corebootsrc)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
+
+# Note: This is intentionally just a subset of the warnings in the toplevel
+# Makefile.inc. We don't need to be as strict with test code, and things like
+# -Wmissing-prototypes just make working with the test framework cumbersome.
+# Only put conservative warnings here that really detect code that's obviously
+# unintentional.
+TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes -Wno-format-zero-length
+
+TEST_CFLAGS += -std=gnu11
+TEST_CFLAGS += -ffunction-sections -fdata-sections -fno-builtin
+
+ifneq ($(filter-out 0,$(DEBUG)),)
+TEST_CFLAGS += -Og -ggdb3
+else
+TEST_CFLAGS += -Os
+endif
+
+ifneq ($(filter-out 0,$(TEST_PRINT)),)
+TEST_CFLAGS += -D__TEST_PRINT__=1
+endif
+
+TEST_LDFLAGS += -Wl,--gc-sections -no-pie
+
+# Extra attributes for unit tests, declared per test
+attributes := srcs cflags config mocks
+
+# Copy attributes of one test to another.
+# $1 - input test name
+# $2 - output test name
+copy-test = $(foreach attr,$(attributes), \
+		$(eval $(strip $(2))-$(attr) := $($(strip $(1))-$(attr))))
+
+default_mocks-srcs := src/vboot/callbacks/debug.c \
+	tests/mocks/libpayload/console.c \
+	tests/mocks/libpayload/halt.c \
+	tests/mocks/vboot/context.c \
+	tests/stubs/libpayload/heap.c \
+	tests/stubs/libpayload/timer.c
+default_mocks := console_write halt vb2ex_abort vb2ex_printf vboot_get_context
+
+# Create actual targets for unit test binaries
+# $1 - test name
+#
+# Generate config file using values provided in $(1)-config property.
+# Add required libraries if requested by $(1)-props.
+# Enable wrapping of mocked symbols
+define TEST_CC_template
+
+$(1)-libpayload := $(testobj)/$(1)/$$(notdir $(LIBPAYLOAD_LIB))
+$$($(1)-libpayload): $(LIBPAYLOAD_LIB)
+	mkdir -p $$(dir $$@)
+	$(OBJCOPY) $$^ $$(foreach mock,$$($(1)-mocks), \
+		--globalize-symbol=$$(mock) --weaken-symbol=$$(mock)) $$@
+
+$(1)-config-file := $(testobj)/$(1)/config.h
+$$($(1)-config-file): $$($(1)-libpayload)
+	mkdir -p $$(dir $$@)
+	printf '// File generated by tests/Makefile.inc\n// Do not change\n\n' > $$@;
+	printf '#ifndef TEST_DEPTHCHARGE_CONFIG_H_\n' >> $$@;
+	printf '#define TEST_DEPTHCHARGE_CONFIG_H_\n' >> $$@;
+	for kv in $$($(1)-config); do \
+		key="`echo $$$$kv | cut -d '=' -f -1`"; \
+		value="`echo $$$$kv | cut -d '=' -f 2-`"; \
+		printf '#undef %s\n' "$$$$key" >> $$@; \
+		printf '#define %s %s\n\n' "$$$$key" "$$$$value" >> $$@; \
+	done
+	printf '#ifdef __clang__\n' >> $$@;
+	printf '#pragma clang system_header\n' >> $$@;
+	printf '#endif\n' >> $$@;
+	printf '#ifdef __TEST_SRCOBJ__\n' >> $$@;
+	for m in $$($(1)-mocks); do \
+		printf '#pragma weak %s\n' "$$$$m" >> $$@; \
+	done
+	printf '#endif\n' >> $$@;
+	printf '#endif\n' >> $$@;
+
+$(1)-mocks += $(default_mocks)
+
+# Weaken symbols listed as mocks to enable overriding in the code
+$($(1)-srcobjs): TEST_CFLAGS += -D__TEST_SRCOBJ__
+
+# Compile sources and apply mocking/wrapping of selected symbols.
+# For each listed mock add new symbol with prefix `__real_`,
+# and pointing to the same section:address.
+$($(1)-objs): TEST_CFLAGS += -include $$($(1)-config-file)
+$($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file) $(LIBPAYLOAD_CONFIG)
+	@printf "    CC       $$(subst $$(testobj)/,,$$(@))\n"
+	mkdir -p $$(dir $$@)
+	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags) -MMD \
+		-MF $$(basename $$@).d -MT $$@ -c $$< -o $$@.orig
+	@printf "    OBJCOPY  $$(subst $$(testobj)/,,$$(@))\n"
+	$(OBJCOPY) $$@.orig $$(OBJCOPY_FLAGS) $$@.orig2
+	objcopy_wrap_flags=''; \
+	for sym in $$($(1)-mocks); do \
+		sym_line="$$$$($(OBJDUMP) -t $$@.orig2 | grep -E "[0-9a-fA-F]+\\s+w\\s+F\\s+.*\\s$$$$sym$$$$")"; \
+		if [ ! -z "$$$$sym_line" ] ; then \
+			addr="$$$$(echo "$$$$sym_line" | awk '{ print $$$$1 }')"; \
+			section="$$$$(echo "$$$$sym_line" | awk '{ print $$$$(NF - 2) }')"; \
+			objcopy_wrap_flags="$$$$objcopy_wrap_flags --add-symbol __real_$$$${sym}=$$$${section}:0x$$$${addr},function,global"; \
+		fi \
+	done ;\
+	$(OBJCOPY) $$@.orig2 $$$$objcopy_wrap_flags $$@
+
+$($(1)-bin): $($(1)-objs) $$($(1)-libpayload)
+	@printf "    CC       $$(subst $$(testobj)/,,$$(@))\n"
+	mkdir -p $$(dir $$@)
+	$(HOSTCC) $$(TEST_LDFLAGS) -lcmocka $$^ \
+		-Wl,--exclude-libs,ALL -lc $($(1)-cflags) -o $$@
+endef
+
+# Configure and build libpayload from sources
+$(LIBPAYLOAD_DOTCONFIG):
+	mkdir -p $(dir $@)
+	cp $(LIBPAYLOAD_DEFCONFIG) $@
+	printf '\nCONFIG_LP_CHROMEOS=y\n' >> $@;
+	printf '\nCONFIG_LP_ARCH_MOCK=y\n' >> $@;
+	printf '\nCONFIG_LP_VBOOT_LIB=y\n' >> $@;
+	printf '\nCONFIG_LP_VBOOT_TPM2_MODE=y\n' >> $@;
+	byte_order="x`python -c 'import sys; print(sys.byteorder)' 2>&1`"; \
+	if [ "$$byte_order" == "xbig" ] ; then \
+		printf '\nCONFIG_LP_ARCH_MOCK_BIG_ENDIAN=y\n' >> $@; \
+	elif [ "$$byte_order" == "xlittle" ] ; then \
+		printf '\nCONFIG_LP_ARCH_MOCK_BIG_ENDIAN=n\n' >> $@; \
+	else \
+		echo 'Failed to get machine byte order'; \
+		exit 1; \
+	fi
+
+$(LIBPAYLOAD_KCONFIG_AUTOHEADER): LIBPAYLOAD_KCONFIG_FLAGS := \
+	DOTCONFIG=$(LIBPAYLOAD_DOTCONFIG) \
+	KCONFIG_AUTOHEADER=$(LIBPAYLOAD_KCONFIG_AUTOHEADER) \
+	KCONFIG_AUTOCONFIG=$(LIBPAYLOAD_KCONFIG_AUTOCONFIG) \
+	KCONFIG_DEPENDENCIES=$(LIBPAYLOAD_KCONFIG_DEPENDENCIES) \
+	KCONFIG_RUSTCCFG=$(LIBPAYLOAD_KCONFIG_RUSTCCFG) \
+	KCONFIG_SPLITCONFIG=$(LIBPAYLOAD_KCONFIG_SPLITCONFIG) \
+	KCONFIG_TRISTATE=$(LIBPAYLOAD_KCONFIG_TRISTATE) \
+	KBUILD_DEFCONFIG=$(LIBPAYLOAD_DEFCONFIG)
+
+$(LIBPAYLOAD_KCONFIG_AUTOHEADER): $(LIBPAYLOAD_DOTCONFIG)
+	mkdir -p $(dir $@)
+	+$(MAKE) $(LIBPAYLOAD_KCONFIG_FLAGS) -C $(libpayloadsrc) \
+		obj=$(libpayloadobj) olddefconfig
+	+$(MAKE) $(LIBPAYLOAD_KCONFIG_FLAGS) -C $(libpayloadsrc) \
+		obj=$(libpayloadobj) oldconfig
+
+$(LIBPAYLOAD_LIB): $(LIBPAYLOAD_KCONFIG_AUTOHEADER)
+	@printf "    MAKE       $(subst $(testobj)/,,$(@))\n"
+	+unset CFLAGS CXXFLAGS LDFLAGS COV && $(MAKE) -C $(libpayloadsrc) \
+		HOSTCC=$(HOSTCC) CC=$(HOSTCC) CXX=$(HOSTCXX) AR=$(HOSTAR) AS=$(HOSTAS) \
+		obj=$(libpayloadobj) DOTCONFIG=$(LIBPAYLOAD_DOTCONFIG) V=$(V) \
+		VBOOT_SOURCE=$(VB_SOURCE) \
+		EXTRA_CFLAGS="-Wno-address-of-packed-member"
+	$(MAKE) -C $(libpayloadsrc) obj=$(libpayloadobj) install \
+		DESTDIR=$(LIBPAYLOAD_DESTDIR) V=$(V) VBOOT_SOURCE=$(VB_SOURCE) \
+		DOTCONFIG=$(LIBPAYLOAD_DOTCONFIG)
+
+$(LIBPAYLOAD_CONFIG): $(LIBPAYLOAD_KCONFIG_AUTOHEADER)
+	mkdir -p $(dir $@)
+	cp $< $@

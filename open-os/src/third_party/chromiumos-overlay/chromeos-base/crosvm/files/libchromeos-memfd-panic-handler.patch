@@ -1,0 +1,47 @@
+commit 0dcaa0845d376d6d1f73541789e48861c1b3b9d4
+Author:     Daniel Verkamp <dverkamp@chromium.org>
+AuthorDate: Fri Feb 16 11:51:22 2024 -0800
+Commit:     Chromeos LUCI <chromeos-scoped@luci-project-accounts.iam.gserviceaccount.com>
+CommitDate: Sat Feb 17 19:26:01 2024 +0000
+
+    [CHROMEOS] switch to libchromeos panic-memfd
+    
+    Depend on the memfd panic handler from libchromeos-rs instead of the one
+    in upstream crosvm. This will help keep the panic handler behavior
+    consistent across all ChromeOS Rust apps.
+    
+    BUG=b:325081271
+    BUG=b:309651697
+    TEST=emerge-hatch chromeos-base/crosvm
+    
+    Cq-Depend: chromium:5293201
+    Change-Id: I60acb775335d5769e0e819c3097eec81be58cfd6
+    Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/5303033
+    Tested-by: Daniel Verkamp <dverkamp@chromium.org>
+    Reviewed-by: Zihan Chen <zihanchen@google.com>
+    Commit-Queue: Daniel Verkamp <dverkamp@chromium.org>
+
+diff --git a/Cargo.toml b/Cargo.toml
+index 3e2c9496d..26bacc7c9 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -608,6 +608,7 @@ acpi_tables = { workspace = true }
+ vm_memory = { workspace = true }
+ vmm_vhost = { workspace = true }
+ uuid = { workspace = true, optional = true }
++libchromeos = { path = "../../platform2/libchromeos-rs" } # provided by ebuild
+ 
+ [target.'cfg(target_arch = "riscv64")'.dependencies]
+ riscv64 = { workspace = true }
+diff --git a/src/sys/linux/panic_hook.rs b/src/sys/linux/panic_hook.rs
+index c64b9e051..09063ad6c 100644
+--- a/src/sys/linux/panic_hook.rs
++++ b/src/sys/linux/panic_hook.rs
+@@ -124,4 +124,7 @@ pub fn set_panic_hook() {
+         // Abort to trigger the crash reporter so that a minidump is generated.
+         abort();
+     }));
++
++    // Install the memfd handler last so it will run before the panic hook above that calls abort().
++    libchromeos::panic_handler::install_memfd_handler();
+ }

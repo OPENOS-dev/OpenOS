@@ -1,0 +1,124 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+default_install_hook_types:
+- pre-commit
+- commit-msg
+default_stages:
+- pre-commit
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: check-yaml
+  - id: end-of-file-fixer
+    exclude: .*\.svg
+  - id: trailing-whitespace
+    exclude: ^(.*\.svg|.*\.md)$
+  - id: check-toml
+  - id: check-merge-conflict
+- repo: local
+  hooks:
+  - id: black
+    name: Black (Docker)
+    entry: pyfound/black:25.9.0 black
+    language: docker_image
+    exclude: ^(servo/data/.*|servo/drv/.*)$
+    types:
+    - python
+  - id: commit-msg-length
+    name: Check commit message formatting
+    entry: development_environment/hooks/commit_msg_length.py
+    language: python
+    stages:
+    - commit-msg
+- repo: local
+  hooks:
+  - id: isort
+    name: isort (Docker)
+    entry: xcgd/isort isort
+    language: docker_image
+    exclude: ^(servo/data/.*|servo/drv/.*)$
+    types:
+    - python
+- repo: https://github.com/koalaman/shellcheck-precommit
+  rev: v0.10.0
+  hooks:
+  - id: shellcheck
+- repo: local
+  hooks:
+  - id: pylint
+    name: Pylint (Docker)
+    entry: -e 'XDG_CACHE_HOME=/tmp' servod:devtest python3 -m pylint
+    language: docker_image
+    types:
+    - python
+    args:
+    - -rn
+    - -sn
+- repo: local
+  hooks:
+  - id: banned-words
+    stages:
+    - pre-commit
+    - commit-msg
+    name: banned-words
+    entry: development_environment/hooks/banned-words.py
+    language: python
+    types:
+    - text
+- repo: local
+  hooks:
+  - id: copyright
+    name: copyright
+    entry: development_environment/hooks/copyright.py
+    language: python
+    types:
+    - text
+    exclude: |
+        (?x)^(
+            servo/data/.*xml|
+            servo/tests/unit/testdata/test_system_config/.*xml|
+            docs/.*|
+            .*md|
+            .*\.hex|
+            .gitignore|
+            LICENSE|
+            DIR_METADATA|
+            PRESUBMIT.cfg|
+            .*json|
+            .*requirements.*|
+            servo/drv/.*|
+            .*\.version
+        )$
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.11.2
+  hooks:
+  - id: mypy
+    name: mypy (Static Type Checker)
+    args:
+    - --config-file=pyproject.toml
+    additional_dependencies:
+    - types-protobuf
+    files: |
+        (?x)^(
+            servo/utils/sys_interface\.py|
+            servo/common/grpc_client\.py|
+            servo/core/servo_dev\.py|
+            servo/core/servo_server\.py|
+            servo/core/servod\.py
+        )$
+- repo: local
+  hooks:
+  - id: forbid-hardcoded-interfaces
+    name: Forbid hardcoded interface IDs (use RAW_CPU_CONSOLE, etc)
+    entry: 'interface=(["''])(8|9|10|11|12)\\1'
+    language: pygrep
+    types: [xml]
+    files: ^servo/data/
+  - id: check-api-version
+    name: check API version on core changes
+    entry: development_environment/hooks/check_api_version.py
+    language: python
+    pass_filenames: false
+    always_run: true

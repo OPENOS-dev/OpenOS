@@ -1,0 +1,30 @@
+# We don't care to run the performance or stress tests from dEQP-GLES on
+# any boards -- they're very slow but don't generally fail.
+dEQP-GLES.*.performance.*
+dEQP-GLES.*.stress.*
+
+# This set of tests may emit warnings, but is not required for
+# conformance and I've never seen anyone pay attention to it.
+dEQP-GLES.*.accuracy.*
+
+# Fails whenever a Vulkan driver exposes an extension deqp is not aware of,
+# which happens often when a driver is newer than deqp. Just skip it.
+dEQP-VK.info.device_extensions
+
+# These tests are invalid and have been removed from 1.3.8.3
+dEQP-VK.pipeline.fast_linked_library.misc.unused_shader_stages
+dEQP-VK.pipeline.fast_linked_library.misc.unused_shader_stages_include_geom
+dEQP-VK.pipeline.fast_linked_library.misc.unused_shader_stages_include_tess
+dEQP-VK.pipeline.fast_linked_library.misc.unused_shader_stages_include_tess_include_geom
+dEQP-VK.pipeline.pipeline_library.misc.unused_shader_stages
+dEQP-VK.pipeline.pipeline_library.misc.unused_shader_stages_include_geom
+dEQP-VK.pipeline.pipeline_library.misc.unused_shader_stages_include_tess
+dEQP-VK.pipeline.pipeline_library.misc.unused_shader_stages_include_tess_include_geom
+
+# Commonly times out on various boards
+dEQP-VK.memory.mapping.dedicated_alloc.buffer.full.variable.implicit_unmap
+dEQP-VK.memory.mapping.dedicated_alloc.buffer.full.variable.implicit_unmap_map2
+dEQP-VK.memory.mapping.dedicated_alloc.image.full.variable.implicit_unmap
+dEQP-VK.memory.mapping.dedicated_alloc.image.full.variable.implicit_unmap_map2
+dEQP-VK.memory.mapping.suballocation.full.variable.implicit_unmap
+dEQP-VK.memory.mapping.suballocation.full.variable.implicit_unmap_map2

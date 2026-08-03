@@ -1,0 +1,327 @@
+/*
+ * Copyright 2021 Google LLC
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <libpayload.h>
+#include <lp_vboot.h>
+#include <stdlib.h>
+#include <vboot/ui.h>
+
+#include "die.h"
+#include "drivers/ec/cros/ec.h"
+#include "drivers/input/mkbp/buttons.h"
+#include "fastboot/cmd.h"
+#include "fastboot/fastboot.h"
+#include "fastboot/log.h"
+#include "fastboot/tcp.h"
+#include "fastboot/usb.h"
+#include "image/symbols.h"
+#include "stdarg.h"
+
+static const char CMD_LOG_PREFIX[] = "FB recv CMD";
+
+static void fastboot_send_v(struct FastbootOps *fb, enum fastboot_response_type t,
+			    int print_msg, const char *fmt, va_list ap)
+{
+	static const char response_prefix[][FASTBOOT_PREFIX_LEN] = {
+		[FASTBOOT_RES_OKAY] = "OKAY",
+		[FASTBOOT_RES_FAIL] = "FAIL",
+		[FASTBOOT_RES_DATA] = "DATA",
+		[FASTBOOT_RES_INFO] = "INFO",
+		[FASTBOOT_RES_TEXT] = "TEXT",
+	};
+	char msg_buf[FASTBOOT_MSG_MAX];
+	memcpy(msg_buf, response_prefix[t], FASTBOOT_PREFIX_LEN);
+	int len = FASTBOOT_PREFIX_LEN + vsnprintf(&msg_buf[FASTBOOT_PREFIX_LEN],
+						  FASTBOOT_MSG_LEN_WO_PREFIX, fmt, ap);
+	if (len < FASTBOOT_PREFIX_LEN) {
+		/* For some reason vsnprintf failed, send response prefix anyway */
+		printf("fastboot send vsnprintf failed (%d)\n", len - FASTBOOT_PREFIX_LEN);
+		len = FASTBOOT_PREFIX_LEN;
+		/* Make sure that message is ended with NULL char */
+		msg_buf[len] = '\0';
+	} else if (len >= FASTBOOT_MSG_MAX) {
+		printf("fastboot send message truncated\n");
+		/* vsnprintf sets msg_buf[FASTBOOT_MSG_MAX - 1] to '\0' in that case */
+		len = FASTBOOT_MSG_MAX - 1;
+	}
+
+	if (print_msg)
+		printf("FB send %.4s: %s\n", msg_buf, msg_buf + 4);
+	fb->send_packet(fb, msg_buf, len + 1);
+}
+
+void fastboot_send_fmt(struct FastbootOps *fb, enum fastboot_response_type t, int print_msg,
+		       const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	fastboot_send_v(fb, t, print_msg, fmt, ap);
+	va_end(ap);
+}
+
+void fastboot_fail_with_logs(struct FastbootOps *fb, const char *fmt, ...)
+{
+	va_list ap;
+	char *snapshot = cbmem_console_snapshot();
+
+	if (snapshot && *snapshot) {
+		char *found = snapshot;
+
+		/* Find last occurrence of CMD_LOG_PREFIX */
+		for (char *str = snapshot; str != NULL; str = strstr(str + 1, CMD_LOG_PREFIX))
+			found = str;
+
+		fastboot_multiline_info(fb, found);
+	}
+	free(snapshot);
+
+	va_start(ap, fmt);
+	fastboot_send_v(fb, FASTBOOT_RES_FAIL, 1, fmt, ap);
+	va_end(ap);
+}
+
+void fastboot_multiline_info(struct FastbootOps *fb, const char *msg)
+{
+	size_t line_len;
+
+	do {
+		line_len = strcspn(msg, "\n");
+		do {
+			const size_t to_print = MIN(line_len, FASTBOOT_MSG_LEN_WO_PREFIX - 1);
+			fastboot_send_fmt(fb, FASTBOOT_RES_INFO, 0, "%.*s", (int)to_print, msg);
+			line_len -= to_print;
+			msg += to_print;
+		} while (line_len);
+	} while (*msg++);
+}
+
+void fastboot_prepare_download(struct FastbootOps *fb, uint32_t bytes) {
+	fb->memory_buffer_len = bytes;
+	fb->download_progress = 0;
+	fb->has_staged_data = false;
+	fb->state = DOWNLOAD;
+}
+
+bool fastboot_is_finished(struct FastbootOps *fb)
+{
+	return fb->state == FINISHED || fb->state == REBOOT || fb->state == DISCONNECTED;
+}
+
+void *fastboot_get_memory_buffer(struct FastbootOps *fb, uint64_t *len)
+{
+	if (len)
+		*len = fb->memory_buffer_len;
+	return &_kernel_start;
+}
+
+/***************************** PROTOCOL HANDLING *****************************/
+
+static void fastboot_handle_download(struct FastbootOps *fb, void *data,
+				     uint64_t len)
+{
+	uint64_t left = fb->memory_buffer_len - fb->download_progress;
+	if (len > left) {
+		fastboot_fail(fb, "Too much data");
+		fb->state = COMMAND;
+		return;
+	}
+
+	void *buf = fastboot_get_memory_buffer(fb, NULL);
+	memcpy(buf + fb->download_progress, data, len);
+	fb->download_progress += len;
+	if (len == left) {
+		fb->has_staged_data = true;
+		fb->download_progress = 0;
+		fb->state = COMMAND;
+		fastboot_succeed(fb);
+	}
+}
+
+static void fastboot_handle_command(struct FastbootOps *fb, void *data,
+				    uint64_t len)
+{
+	// "data" contains a command, which is essentially freeform text.
+	char *cmd = (char *)data;
+
+	if (len < FASTBOOT_MSG_MAX)
+		printf("%s: %.*s\n", CMD_LOG_PREFIX, (int)len, cmd);
+	else
+		printf("%s (%lld): %.*s...\n", CMD_LOG_PREFIX, len, FASTBOOT_MSG_MAX, cmd);
+
+	for (int i = 0; fastboot_cmds[i].name != NULL; i++) {
+		fastboot_cmd_t *cur = &fastboot_cmds[i];
+		// See if the command's name matches.
+		int name_strlen = strlen(cur->name);
+		if (name_strlen > len)
+			continue;
+		if (strncmp(cur->name, cmd, name_strlen))
+			continue;
+
+		// Name matched - move past the name, and check arguments (if
+		// any are expected). At this point the string will start with
+		// the separator (e.g. "flash:kern-a" would match the "flash"
+		// command above, and so after this we have ":kern-a" left in
+		// `cmd`).
+		cmd += name_strlen;
+		len -= name_strlen;
+
+		if (cur->has_args) {
+			if (len < 1 || cmd[0] != cur->sep) {
+				// Command expected arguments, but has none.
+				// Try and see if there is a better match.
+				cmd -= name_strlen;
+				len += name_strlen;
+				continue;
+			}
+			// Move past the separator, so that the command doesn't
+			// see a leading separator in its arguments. This takes
+			// ":kern-a" from above and makes it just "kern-a".
+			cmd++;
+			len--;
+		}
+		/* Move arguments to the beginning of the buffer */
+		memmove(data, cmd, len);
+		((char *)data)[len] = '\0';
+
+		cur->fn(fb, data);
+		return;
+	}
+	fastboot_fail(fb, "Unknown command");
+}
+
+void fastboot_handle_packet(struct FastbootOps *fb, void *data, uint64_t len)
+{
+	switch (fb->state) {
+	case COMMAND:
+		fastboot_handle_command(fb, data, len);
+		break;
+	case DOWNLOAD:
+		fastboot_handle_download(fb, data, len);
+		break;
+	case FINISHED:
+	case REBOOT:
+	case DISCONNECTED:
+		break;
+	default:
+		die("Unknown state %d\n", fb->state);
+	}
+}
+
+void fastboot_reset_session(struct FastbootOps *fb)
+{
+	/* Reset common fastboot session */
+	fb->state = COMMAND;
+	fb->download_progress = 0;
+
+	/* Reset transport layer specific data */
+	if (fb->reset)
+		fb->reset(fb);
+}
+
+void fastboot_reset_staging(struct FastbootOps *fb)
+{
+	fb->has_staged_data = false;
+	fb->memory_buffer_len = 0;
+}
+
+struct FastbootOps *fastboot_init(void)
+{
+	struct FastbootOps *fb_session = NULL;
+
+	if (CONFIG(FASTBOOT_USB_ALINK))
+		fb_session = fastboot_setup_usb();
+
+	if (CONFIG(FASTBOOT_TCP) && fb_session == NULL)
+		fb_session = fastboot_setup_tcp();
+
+	if (fb_session != NULL) {
+		if (CONFIG(DRIVER_EC_CROS))
+			cros_ec_print("Fastboot %s\n", fb_session->serial);
+		fastboot_reset_staging(fb_session);
+		fastboot_reset_session(fb_session);
+		printf("fastboot starting.\n");
+		fastboot_log_init(fb_session);
+	}
+
+	return fb_session;
+}
+
+enum fastboot_state fastboot_release(struct FastbootOps *fb_session)
+{
+	enum fastboot_state final_state;
+
+	printf("fastboot done.\n");
+	final_state = fb_session->state;
+	fastboot_log_release(fb_session);
+	if (fb_session->release)
+		fb_session->release(fb_session);
+
+	if (final_state == REBOOT)
+		reboot();
+
+	return final_state;
+}
+
+void fastboot_poll(struct FastbootOps *fb_session, uint32_t timeout_ms)
+{
+	enum fastboot_transport_state transport_state = FASTBOOT_TRANSPORT_IDLE;
+	uint32_t start_time_ms = vb2ex_mtime();
+
+	do {
+		transport_state = fb_session->poll(fb_session);
+		/*
+		 * Continue to poll if fastboot isn't finished yet, timer hasn't expired and
+		 * we expect more work because of protocol or transport layer state.
+		 */
+	} while (!fastboot_is_finished(fb_session) &&
+		 (transport_state != FASTBOOT_TRANSPORT_IDLE ||
+		  fb_session->state == DOWNLOAD) &&
+		 vb2ex_mtime() - start_time_ms < timeout_ms);
+}
+
+static bool fastboot_exit_on_key(void)
+{
+	uint32_t ch = ui_keyboard_read(NULL);
+
+	return ch == UI_KEY_ENTER || ch == UI_BUTTON_POWER_SHORT_PRESS;
+}
+
+/* Minimum time to poll before doing side tasks like checking key presses */
+#define FASTBOOT_MIN_POLL_TIME_US (300 * USECS_PER_MSEC)
+
+void fastboot(void)
+{
+	struct vb2_context *ctx = vboot_get_context();
+	struct FastbootOps *fb_session;
+
+	if (!(ctx->flags & VB2_CONTEXT_FASTBOOT_ALLOWED)) {
+		printf("ERROR: %s(): Fastboot is not allowed by vboot.\n", __func__);
+		return;
+	}
+
+	do {
+		do {
+			if (fastboot_exit_on_key())
+				return;
+
+			fb_session = fastboot_init();
+		} while (fb_session == NULL);
+
+		while (!fastboot_is_finished(fb_session) && !fastboot_exit_on_key())
+			fastboot_poll(fb_session, FASTBOOT_MIN_POLL_TIME_US);
+	} while (fastboot_release(fb_session) == DISCONNECTED);
+}

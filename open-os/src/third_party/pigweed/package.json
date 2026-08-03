@@ -1,0 +1,17 @@
+{
+  "name": "pigweedjs",
+  "version": "0.0.22",
+  "description": "An open source collection of embedded-targeted libraries",
+  "author": "The Pigweed Authors",
+  "license": "Apache-2.0",
+  "types": "./pw_web/dist/types/ts/index.d.ts",
+  "exports": {
+    ".": "./pw_web/dist/index.mjs",
+    "./protos": "./pw_web/dist/protos/collection.umd.js",
+    "./protos/*": "./pw_web/dist/protos/*",
+    "./logging": "./pw_web/dist/logging.mjs"
+  },
+  "bin": {
+    "pw_protobuf_compiler": "./pw_web/dist/bin/pw_protobuf_compiler.js"
+  }
+}

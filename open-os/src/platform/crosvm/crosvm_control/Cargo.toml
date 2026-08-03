@@ -1,0 +1,30 @@
+[package]
+name = "crosvm_control"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+# STOP: You probably don't want to add a feature here. The ABI of this lib
+# shouldn't vary based on features. The socket protocol, while not stable,
+# doesn't have a good reason to vary either.
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+balloon_control = { workspace = true }
+base = { workspace = true }
+libc = { workspace = true }
+swap = { path = "../swap", default-features = false }
+vm_control = { workspace = true, features = [ "balloon" ] }
+zerocopy = { version = "0.8.13", features = ["derive"] }
+
+[build-dependencies]
+anyhow = { workspace = true }
+cbindgen = "0.24.3"
+cc = "1"
+tempfile = "3"
+
+[dev-dependencies]
+tempfile = "3"

@@ -1,0 +1,31 @@
+From 8810edefcba9e11339ba6cfc04a5810f31c0e345 Mon Sep 17 00:00:00 2001
+From: Denys Fedoryshchenko <denys.f@collabora.com>
+Date: Wed, 27 May 2026 12:50:13 +0300
+Subject: [PATCH] boringssl: Fix C23 memchr const-correctness in C wrapper
+
+Modern glibc versions (2.43+) define memchr as a generic macro under
+C23 to preserve const qualification. When s is const void *, the
+result of memchr(s, c, n) is typed const void *, which discards
+qualifiers when returned from OPENSSL_memchr (which returns void *).
+
+Add an explicit cast to (void *) to remain compatible with both C23
+and older standards, matching the approach taken by AWS-LC.
+
+This patch can be dropped on the next arc-keymint boringssl vendored
+pkg uprev.
+---
+
+diff --git a/crypto/internal.h b/crypto/internal.h
+index a77102d..badff4b 100644
+--- a/crypto/internal.h
++++ b/crypto/internal.h
+@@ -1024,7 +1024,8 @@
+     return NULL;
+   }
+ 
+-  return memchr(s, c, n);
++  // C23 makes memchr const-correct, returning const void *.
++  return (void *)memchr(s, c, n);
+ }
+ 
+ #endif  // __cplusplus

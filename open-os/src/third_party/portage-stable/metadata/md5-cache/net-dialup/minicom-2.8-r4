@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig nls? ( sys-devel/gettext ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install prepare
+DEPEND=sys-libs/ncurses:=
+DESCRIPTION=Serial Communication Program
+EAPI=7
+HOMEPAGE=https://salsa.debian.org/minicom-team/minicom
+IUSE=nls
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-libs/ncurses:= net-dialup/lrzsz
+SLOT=0
+SRC_URI=https://salsa.debian.org/minicom-team/minicom/-/archive/2.8/minicom-2.8.tar.gz https://dev.gentoo.org/~ceamac/net-dialup/minicom/minicom-m4-2.8.tar.bz2
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=2826305e9f1ba8ca54965fb5e190c75a

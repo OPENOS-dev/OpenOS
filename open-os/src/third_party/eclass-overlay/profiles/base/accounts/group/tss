@@ -1,0 +1,4 @@
+group:tss
+gid:207
+# Only certain users are allowed to talk to the TPM via tcsd.
+users:attestation,bootlockboxd,chaps,oobe_config_restore,oobe_config_save,root,tpm_manager,trunks,tss,u2f

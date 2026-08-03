@@ -1,0 +1,8 @@
+load(
+    "@cros_firmware//platform/rules_cros_firmware/cros_firmware:coreboot_toolchain.bzl",
+    "filemaps",
+)
+
+filemaps()
+
+exports_files(["coreboot_sdk_root"])

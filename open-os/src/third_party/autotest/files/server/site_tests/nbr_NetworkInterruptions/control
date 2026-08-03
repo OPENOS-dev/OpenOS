@@ -1,0 +1,47 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "hbarnor, ChromiumOS"
+NAME = "nbr_NetworkInterruptions"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+  ],
+  "bug_component": "b:1341743",
+  "criteria": "Test an NBR N-to-N recovery with network interruptions."
+}
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+DEPENDENCIES = "servo_state:WORKING"
+HW_DEPS = ['minios']
+ATTRIBUTES = "suite:nbr"
+
+DOC = """
+This tests an N-to-N recovery with a persistent network failure during the
+download step. The recovery is attempted a second time after the failure.
+
+In the lab, a job_repo_url will be passed directly to the test. It contains
+information about the build to use and the IP address of lab cache server to
+download update payloads from. Local runs can use cache servers as well but
+the setup is fairly complicated.
+
+Instead you can use the `running_at_desk` arg when running tests locally to
+avoid the extra setup needed to access cache servers from your workstation.
+`running_at_desk` will copy payloads from gs://chromeos-image-archive/ to a
+public bucket that is accessible without additional configuration.
+
+Example usage:
+test_that nbr_NetworkInterruptions <DUT> --board=<board> --args="running_at_desk=True build=RXX-XXXXX.X.X"
+
+"""
+
+from autotest_lib.client.common_lib import utils
+args_dict = utils.args_to_dict(args)
+servo_args = hosts.CrosHost.get_servo_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, servo_args=servo_args, **args_dict)
+    job.run_test("nbr_NetworkInterruptions", host=host, **args_dict)
+
+job.parallel_simple(run, machines)

@@ -1,0 +1,14 @@
+BDEPEND=dev-vcs/git app-misc/jq
+DEFINED_PHASES=info setup unpack
+DESCRIPTION=Chrome OS Kernel virtual package
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=kernel-6_6 kernel-6_1 kernel-5_4 kernel-6_10-enablement kernel-6_12 kernel-upstream-mainline kernel-upstream-next kernel-5_10 kernel-5_15 kernel-upstream cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=metapackage
+PROPERTIES=live
+RDEPEND=kernel-6_6? ( sys-kernel/chromeos-kernel-6_6 ) kernel-6_1? ( sys-kernel/chromeos-kernel-6_1 ) kernel-5_4? ( sys-kernel/chromeos-kernel-5_4 ) kernel-6_10-enablement? ( sys-kernel/chromeos-kernel-6_10-enablement ) kernel-6_12? ( sys-kernel/chromeos-kernel-6_12 ) kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline ) kernel-upstream-next? ( sys-kernel/upstream-kernel-next ) kernel-5_10? ( sys-kernel/chromeos-kernel-5_10 ) kernel-5_15? ( sys-kernel/chromeos-kernel-5_15 ) kernel-upstream? ( sys-kernel/chromeos-kernel-upstream ) !kernel-6_6? ( !sys-kernel/chromeos-kernel-6_6 ) !kernel-6_1? ( !sys-kernel/chromeos-kernel-6_1 ) !kernel-5_4? ( !sys-kernel/chromeos-kernel-5_4 ) !kernel-6_10-enablement? ( !sys-kernel/chromeos-kernel-6_10-enablement ) !kernel-6_12? ( !sys-kernel/chromeos-kernel-6_12 ) !kernel-upstream-mainline? ( !sys-kernel/upstream-kernel-mainline ) !kernel-upstream-next? ( !sys-kernel/upstream-kernel-next ) !kernel-5_10? ( !sys-kernel/chromeos-kernel-5_10 ) !kernel-5_15? ( !sys-kernel/chromeos-kernel-5_15 ) !kernel-upstream? ( !sys-kernel/chromeos-kernel-upstream ) !kernel-6_6? ( !kernel-6_1? ( !kernel-5_4? ( !kernel-6_10-enablement? ( !kernel-6_12? ( !kernel-upstream-mainline? ( !kernel-upstream-next? ( !kernel-5_10? ( !kernel-5_15? ( !kernel-upstream? ( sys-kernel/chromeos-kernel-5_4 ) ) ) ) ) ) ) ) ) )
+REQUIRED_USE=^^ ( kernel-6_6 kernel-6_1 kernel-5_4 kernel-6_10-enablement kernel-6_12 kernel-upstream-mainline kernel-upstream-next kernel-5_10 kernel-5_15 kernel-upstream )
+SLOT=0/9999
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-kernel-versions	3959074f4c4833fe64f70449d3f5fe63	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c68eb44ae79fccfc8d180d6523fbf810

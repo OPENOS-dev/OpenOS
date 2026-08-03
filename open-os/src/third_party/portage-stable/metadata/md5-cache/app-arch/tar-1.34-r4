@@ -1,0 +1,15 @@
+BDEPEND=nls? ( sys-devel/gettext ) verify-sig? ( sec-keys/openpgp-keys-tar ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure install postinst unpack
+DEPEND=acl? ( virtual/acl ) selinux? ( sys-libs/libselinux ) xattr? ( elibc_glibc? ( sys-apps/attr ) )
+DESCRIPTION=Use this to make tarballs :)
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/tar/
+IUSE=acl minimal nls selinux xattr verify-sig
+KEYWORDS=*
+LICENSE=GPL-3+
+PDEPEND=app-alternatives/tar
+RDEPEND=acl? ( virtual/acl ) selinux? ( sys-libs/libselinux )
+SLOT=0
+SRC_URI=mirror://gnu/tar/tar-1.34.tar.xz https://alpha.gnu.org/gnu/tar/tar-1.34.tar.xz verify-sig? ( mirror://gnu/tar/tar-1.34.tar.xz.sig https://alpha.gnu.org/gnu/tar/tar-1.34.tar.xz.sig )
+_eclasses_=verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=a3dafd4d05f2d2c815b7e420fb1504cb

@@ -1,0 +1,20 @@
+# Copyright 2011 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# This test verify that either mem or freeze suspend mode is supported
+
+NAME = "power_SuspendType"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "bbrotherton,chromeos-pvs-dev",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a functional test",
+    "hw_agnostic": False,
+    "requirements": ["boot-perf-0003-v01"]
+}
+ATTRIBUTES = ("")
+TEST_TYPE = "client"
+
+job.run_test('power_SuspendType')

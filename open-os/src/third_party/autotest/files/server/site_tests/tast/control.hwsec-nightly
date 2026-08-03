@@ -1,0 +1,30 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'tast.hwsec-nightly'
+METADATA = {
+    "contacts": ["cros-hwsec@google.com", "zuan@chromium.org"],
+    "bug_component": "b:1188704",
+    "criteria": ("Run the nightly hwsec-related tests. Tests in the nightly "
+                 "hwsec-related group are usually tests that are too heavy "
+                 "to be in the mainline group."),
+    "hw_agnostic": False
+}
+TEST_TYPE = 'Server'
+ATTRIBUTES = 'suite:cros-hwsec_nightly, suite:faft_ti50_qual'
+MAX_RESULT_SIZE_KB = 1024 * 1024
+
+# tast.py uses binaries installed from autotest_server_package.tar.bz2.
+REQUIRE_SSP = True
+
+def run(machine):
+    host=hosts.create_host(machine)
+    host.reboot()
+    job.run_test('tast',
+                 host=hosts.create_host(machine),
+                 test_exprs=['("group:hwsec" && hwsec_nightly)'],
+                 max_run_sec=21600,
+                 command_args=args)
+
+parallel_simple(run, machines)

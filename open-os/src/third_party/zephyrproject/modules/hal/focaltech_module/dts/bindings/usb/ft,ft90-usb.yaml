@@ -1,0 +1,26 @@
+# Copyright (c) 2025 Focaltech Systems CO.,Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+description: OTGFS controller
+
+compatible: "ft,ft90-usb"
+
+include: [usb-ep.yaml, reset-device.yaml, pinctrl-device.yaml]
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  resets:
+    required: false
+
+  clocks:
+    required: true
+
+  pinctrl-names:
+    required: false
+
+

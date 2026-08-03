@@ -1,0 +1,29 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "platform_BootDevice.BootDevice"
+METADATA = {
+    'contacts': ['chromeos-storage@google.com'],
+    'bug_component': 'b:974567',
+    'criteria': 'Reboot stress.',
+    'hw_agnostic': False
+}
+AUTHOR = "ChromeOS Team"
+ATTRIBUTES = "suite:kernel_daily_regression"
+TIME = "LONG"
+TEST_CATEGORY = "Stress"
+TEST_CLASS = "platform"
+TEST_TYPE = "server"
+PY_VERSION = 3
+
+DOC = """
+This test reboots the device continuously for a spedified number of iterations.
+This is useful for testing firmware.
+"""
+
+def run_bootdevice(machine):
+    host = hosts.create_host(machine)
+    job.run_test("platform_BootDevice", host=host, reboot_iterations=10)
+
+parallel_simple(run_bootdevice, machines)

@@ -1,0 +1,1 @@
+ti-tps6699x-GOOG0Q01-firmware-19.32.4.ebuild

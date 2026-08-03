@@ -1,0 +1,11 @@
+BDEPEND=|| ( >=dev-lang/python-3.11.0_p2:3.11 ) dev-lang/perl sys-devel/llvm sys-devel/gnuconfig || ( ( >=dev-lang/python-3.11.0_p2:3.11 dev-python/sphinx[python_targets_python3_11(-)] ) ) >=dev-libs/libxml2-2.9.6 >=dev-lang/perl-5.0
+DEFINED_PHASES=compile install prepare setup unpack
+DEPEND=sys-libs/zlib >=sys-libs/ncurses-5.9-r3 sys-devel/binutils
+DESCRIPTION=Ebuild that installs Ti50's SDK
+EAPI=7
+KEYWORDS=*
+LICENSE=|| ( MIT Apache-2.0 ) BSD-1 BSD-2 BSD-4 UoI-NCSA
+SLOT=0
+SRC_URI=https://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/llvm-87f0227cb601-src.tar.xz https://static.rust-lang.org/dist/rustc-1.90.0-src.tar.gz -> rustc-1.90.0-src.tar.gz https://static.rust-lang.org/dist/2025-08-07/cargo-1.89.0-x86_64-unknown-linux-gnu.tar.xz -> cargo-1.89.0-x86_64-unknown-linux-gnu.tar.xz https://static.rust-lang.org/dist/2025-08-07/rustc-1.89.0-x86_64-unknown-linux-gnu.tar.xz -> rustc-1.89.0-x86_64-unknown-linux-gnu.tar.xz https://static.rust-lang.org/dist/2025-08-07/rust-std-1.89.0-x86_64-unknown-linux-gnu.tar.xz -> rust-std-1.89.0-x86_64-unknown-linux-gnu.tar.xz https://static.rust-lang.org/dist/2025-08-07/rustfmt-1.89.0-x86_64-unknown-linux-gnu.tar.xz -> rustfmt-1.89.0-x86_64-unknown-linux-gnu.tar.xz
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3cd67dfd6e5e03fcda8434823984bdd4

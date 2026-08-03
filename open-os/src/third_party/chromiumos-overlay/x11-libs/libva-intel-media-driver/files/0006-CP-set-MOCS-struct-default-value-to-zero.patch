@@ -1,0 +1,29 @@
+From d492db3481d69c99f8abc4af376e0501bb652335 Mon Sep 17 00:00:00 2001
+From: Li_Xin6 <xin6.li@intel.com>
+Date: Fri, 12 Sep 2025 16:02:37 +0800
+Subject: [PATCH] [CP] set MOCS struct default value to zero
+
+set default cacheability object value to 0 explicitly to avoid different compiler(clang/gcc msvc) behaviors in initializing union/structure bitfield array.
+---
+ media_softlet/agnostic/common/hw/mhw_utilities_next.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/media_softlet/agnostic/common/hw/mhw_utilities_next.h b/media_softlet/agnostic/common/hw/mhw_utilities_next.h
+index 7013e5f51..1ad25798e 100644
+--- a/media_softlet/agnostic/common/hw/mhw_utilities_next.h
++++ b/media_softlet/agnostic/common/hw/mhw_utilities_next.h
+@@ -517,6 +517,11 @@ typedef union _MHW_MEMORY_OBJECT_CONTROL_PARAMS
+         uint32_t : 25;
+     } Gen9, Gen10, Gen11, Gen12, Gen12_5, Gen12_7;
+     uint32_t       Value;
++
++    _MHW_MEMORY_OBJECT_CONTROL_PARAMS()
++    {
++        Value = 0;
++    }
+ } MHW_MEMORY_OBJECT_CONTROL_PARAMS, * PMHW_MEMORY_OBJECT_CONTROL_PARAMS;
+ 
+ typedef struct _MHW_RENDER_PWR_CLK_STATE_PARAMS
+-- 
+2.51.0.536.g15c5d4f767-goog
+

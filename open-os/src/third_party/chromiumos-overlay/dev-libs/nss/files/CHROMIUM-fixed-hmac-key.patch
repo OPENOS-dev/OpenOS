@@ -1,0 +1,98 @@
+dev-libs/nss: Make shslibsign use fixed HMAC key
+
+shslibsign is generating a random HMAC key on every invocation. This
+causes the .chk files to never be reproducible. Since this package
+generates the .chk files as a post install hook, it means that any
+package that pulls in this dependency will always cache bust.
+
+This change makes it so we use a fixed HMAC key when generating the .chk
+files. The fixed key is only used if the hash isn't explicitly
+specified.
+
+This is OK because authenticity is handled by verified boot, so these
+become more of a redundant integrity check since the HMAC key is
+predictable. Think of it like a salted digest.
+
+BUG=b:346636077
+TEST=shlibsign -v -i /usr/lib64/libfreebl3.so -o /tmp/1.chk
+TEST=shlibsign -v -i /usr/lib64/libfreebl3.so -o /tmp/2.chk
+TEST=diff /tmp/1.chk /tmp/2.chk
+
+diff -u -r a/cmd/shlibsign/shlibsign.c b/cmd/shlibsign/shlibsign.c
+--- a/cmd/shlibsign/shlibsign.c	2024-06-12 16:28:31.268559080 -0600
++++ b/cmd/shlibsign/shlibsign.c	2024-06-14 11:05:39.451846599 -0600
+@@ -453,6 +453,13 @@
+ static const unsigned int counter2=210;
+  */
+ 
++static const unsigned char fixed_hmac_key[] = {
++    0x11, 0x94, 0x8a, 0xac, 0xee, 0x93, 0xc6, 0x6f,
++    0xf5, 0xfe, 0x77, 0x7f, 0x52, 0xfd, 0xf1, 0xc4,
++    0x8b, 0xa7, 0x08, 0x42, 0x7a, 0xd2, 0x9b, 0x65,
++    0x2b, 0x79, 0xa8, 0xc1, 0xfd, 0xbb, 0x09, 0x94
++};
++
+ struct tuple_str {
+     CK_RV errNum;
+     const char *errString;
+@@ -1090,7 +1097,10 @@
+     CK_ATTRIBUTE hmacKeyValue;
+     CK_OBJECT_HANDLE hHMACKey = CK_INVALID_HANDLE;
+ 
++    int use_fixed_key = 0;
+     if (hash == NULL) {
++        // Use the fixed key if no hash algorithm is specified.
++        use_fixed_key = 1;
+         hash = findHash("sha256");
+     }
+     if (hash == NULL) {
+@@ -1122,12 +1132,43 @@
+     hmacKeyGenMech.mechanism = CKM_GENERIC_SECRET_KEY_GEN;
+     hmacMech.mechanism = hash->hmac;
+ 
+-    /* Generate a DSA key pair */
+-    logIt("Generate an HMAC key ... \n");
+-    crv = pFunctionList->C_GenerateKey(hRwSession, &hmacKeyGenMech,
+-                                       hmacKeyTemplate,
+-                                       PR_ARRAY_SIZE(hmacKeyTemplate),
+-                                       &hHMACKey);
++    if (!use_fixed_key) {
++        /* Generate a DSA key pair */
++        logIt("Generate an HMAC key ... \n");
++        crv = pFunctionList->C_GenerateKey(hRwSession, &hmacKeyGenMech,
++                                           hmacKeyTemplate,
++                                           PR_ARRAY_SIZE(hmacKeyTemplate),
++                                           &hHMACKey);
++    } else {
++        CK_OBJECT_CLASS secret_key_obj_class = CKO_SECRET_KEY;
++        CK_ATTRIBUTE hmacKeyObjectTemplate[] = {
++            {
++                .type = CKA_CLASS,
++                .pValue = &secret_key_obj_class,
++                .ulValueLen = sizeof(CK_OBJECT_CLASS),
++            },
++            {
++                .type = CKA_KEY_TYPE,
++                .pValue = (void *)&hash->keyType,
++                .ulValueLen = sizeof(hash->keyType),
++            },
++            {
++                .type = CKA_VALUE,
++                .pValue = fixed_hmac_key,
++                .ulValueLen = sizeof(fixed_hmac_key),
++            },
++            {
++                .type = CKA_SIGN,
++                .pValue = &cktrue,
++                .ulValueLen = sizeof(cktrue),
++            },
++        };
++        logIt("Using static HMAC key ... \n");
++        crv = pFunctionList->C_CreateObject(hRwSession,
++                                           hmacKeyObjectTemplate,
++                                           PR_ARRAY_SIZE(hmacKeyObjectTemplate),
++                                           &hHMACKey);
++    }
+     if (crv != CKR_OK) {
+         pk11error("HMAC key generation failed", crv);
+         return crv;

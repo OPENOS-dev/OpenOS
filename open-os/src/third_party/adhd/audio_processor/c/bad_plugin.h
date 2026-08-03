@@ -1,0 +1,65 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef AUDIO_PROCESSOR_C_BAD_PLUGIN_H_
+#define AUDIO_PROCESSOR_C_BAD_PLUGIN_H_
+
+#include "plugin_processor.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+enum status bad_plugin_oom_create(struct plugin_processor** out,
+                                  const struct plugin_processor_config* config);
+
+enum status bad_plugin_null_processor_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_null_ops_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_missing_run_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_missing_destroy_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_missing_get_output_frame_rate_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_failing_run_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_failing_get_output_frame_rate_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_abort_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_abort_run_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_hanging_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+enum status bad_plugin_hanging_run_create(
+    struct plugin_processor** out,
+    const struct plugin_processor_config* config);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

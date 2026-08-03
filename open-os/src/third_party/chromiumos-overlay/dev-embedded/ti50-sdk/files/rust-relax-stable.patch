@@ -1,0 +1,26 @@
+From d2829e64446b74510ffc71446d5b0a53ea7e8fc4 Mon Sep 17 00:00:00 2001
+From: Marcin Szymczyk <marcinszymczyk@google.com>
+Date: Tue, 12 May 2026 12:31:20 +0000
+Subject: [PATCH] Make relax feature stable on RISC-V
+
+Signed-off-by: Marcin Szymczyk <marcinszymczyk@google.com>
+---
+ compiler/rustc_target/src/target_features.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/compiler/rustc_target/src/target_features.rs b/compiler/rustc_target/src/target_features.rs
+index b2af99228fe..de87d0605d4 100644
+--- a/compiler/rustc_target/src/target_features.rs
++++ b/compiler/rustc_target/src/target_features.rs
+@@ -531,7 +531,7 @@ pub fn toggle_allowed(&self) -> Result<(), &'static str> {
+         &[],
+     ),
+     ("m", Stable, &[]),
+-    ("relax", Unstable(sym::riscv_target_feature), &[]),
++    ("relax", Stable, &[]),
+     ("unaligned-scalar-mem", Unstable(sym::riscv_target_feature), &[]),
+     ("unaligned-vector-mem", Unstable(sym::riscv_target_feature), &[]),
+     ("v", Unstable(sym::riscv_target_feature), &["zvl128b", "zve64d"]),
+--
+2.54.0.563.g4f69b47b94-goog
+

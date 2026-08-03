@@ -1,0 +1,32 @@
+diff --git a/options.c b/options.c
+index b3bb8f3..ec98847 100644
+--- a/options.c
++++ b/options.c
+@@ -649,7 +649,7 @@ static int verify_arg_and_set_default(struct tool_options *options)
+ 
+ 	if (options->config_type_inx == FFU_TYPE) {
+ 		if (options->size == INVALID)
+-			options->size = MAX_IOCTL_BUF_SIZE;
++			options->size = DEFAULT_IOCTL_BUF_SIZE;
+ 		if (options->idn == INVALID)
+ 			/*Default operation*/
+ 			options->idn = UFS_FFU;
+diff --git a/ufs.h b/ufs.h
+index 0321c54..9c05564 100644
+--- a/ufs.h
++++ b/ufs.h
+@@ -11,10 +11,11 @@
+ 
+ /*
+  * Generally the max HW max chunk is 512KB,
+- * but in order to be in safe side tool using 256KB as max chunk size
+- * between user and kernel space
++ * Default chunk size is 256KB
+ */
+-#define MAX_IOCTL_BUF_SIZE (256L * 1024)
++#define MAX_IOCTL_BUF_SIZE (512L * 1024)
++
++#define DEFAULT_IOCTL_BUF_SIZE (256L * 1024)
+ 
+ enum sg_struct_type {
+ 	SG4_TYPE = 0,

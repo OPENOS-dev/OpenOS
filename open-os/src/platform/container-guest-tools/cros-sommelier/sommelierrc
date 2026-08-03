@@ -1,0 +1,28 @@
+#!/bin/sh
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Startup hook for the sommelier service.  You should not need to modify this
+# file as customizations may be placed in ~/.sommelierrc instead.
+#
+# For documentation, see:
+# https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/vm_tools/sommelier/
+
+set -e
+
+# Set Xft.dpi. Some applications (e.g. Chrome) use this to detect HiDPI.
+if command -v xdpyinfo >/dev/null && command -v xrdb >/dev/null; then
+  DPI=$(xdpyinfo | sed -n -E "/dots per inch/{s|^.* ([0-9]+)x.*$|\1|g; p}")
+  echo "Xft.dpi: ${DPI}" | xrdb -merge
+fi
+
+if command -v xsetroot >/dev/null; then
+  xsetroot -cursor_name left_ptr
+fi
+
+if [ -f ~/.sommelierrc ]; then
+  . ~/.sommelierrc
+fi
+
+exit 0

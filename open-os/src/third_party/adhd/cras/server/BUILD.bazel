@@ -1,0 +1,77 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+package(
+    # Allow legacy packages to see //cras/server.
+    default_visibility = [
+        "//cras/server/platform:__subpackages__",  # Allow platform dependencies to send notifications.
+        "//cras/src/server:__pkg__",
+        "//cras/src/tests:__pkg__",
+    ],
+)
+
+cc_library(
+    name = "main_message",
+    srcs = ["main_message.c"],
+    hdrs = ["main_message.h"],
+    deps = [
+        "//cras/include",
+        "//cras/src/common:cras_util",
+        "//third_party/utlist",
+    ],
+)
+
+cc_library(
+    name = "cras_thread",
+    srcs = [
+        "cras_thread.c",
+        "cras_thread_testonly.h",
+    ],
+    hdrs = ["cras_thread.h"],
+    deps = ["//cras/common:check"],
+)
+
+cc_library(
+    name = "cras_thread_testonly",
+    testonly = True,
+    hdrs = ["cras_thread_testonly.h"],
+    deps = [":cras_thread"],
+)
+
+cc_test(
+    name = "cras_thread_test",
+    srcs = ["cras_thread_test.cc"],
+    deps = [
+        ":cras_thread",
+        "@pkg_config//gtest",
+        "@pkg_config//gtest_main",
+    ],
+)
+
+cc_library(
+    name = "cras_trace",
+    srcs = ["cras_trace.c"],
+    hdrs = ["cras_trace.h"],
+    visibility = [
+        "//cras/src/server:__pkg__",
+        "//cras/src/tests:__pkg__",
+    ],
+    deps = [
+        "//cras/src/common:cras_types",
+    ] + select({
+        "@adhd//:system_percetto_build": ["@pkg_config//percetto"],
+        "//conditions:default": ["@percetto"],
+    }),
+)
+
+cc_test(
+    name = "cras_trace_test",
+    srcs = ["cras_trace_test.cc"],
+    deps = [
+        ":cras_trace",
+        "@pkg_config//gtest",
+    ],
+)

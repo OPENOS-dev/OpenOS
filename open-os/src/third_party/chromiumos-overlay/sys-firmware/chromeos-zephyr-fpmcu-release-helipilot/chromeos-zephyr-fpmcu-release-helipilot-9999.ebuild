@@ -1,0 +1,41 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+EAPI=7
+
+ZEPHYR_PROGRAM="helipilot"
+export FIRMWARE_RELEASE_REPLACE_RO="yes"
+
+CROS_WORKON_PROJECT=(
+	"chromiumos/third_party/zephyrproject"
+	"external/gob/boringssl/boringssl"
+	"external/github.com/google/googletest"
+	"chromiumos/platform/ec"
+)
+
+CROS_WORKON_LOCALNAME=(
+	"../platform/release-firmware/fpmcu-helipilot/zephyrproject"
+	"boringssl"
+	"googletest"
+	"../platform/release-firmware/fpmcu-helipilot/ec"
+)
+
+CROS_WORKON_DESTDIR=(
+	"${S}/zephyrproject"
+	"${S}/zephyrproject/modules/boringssl"
+	"${S}/zephyrproject/modules/googletest"
+	"${S}/zephyrproject/modules/ec"
+)
+
+CROS_WORKON_EGIT_BRANCH=(
+	"firmware-fpmcu-helipilot-release"
+	"upstream/master"
+	"main"
+	"firmware-fpmcu-helipilot-release"
+)
+
+inherit cros-workon cros-zephyr-fpmcu
+
+DESCRIPTION="Zephyr based Fingerprint MCU firmware for ${ZEPHYR_PROGRAM}."
+KEYWORDS="~*"

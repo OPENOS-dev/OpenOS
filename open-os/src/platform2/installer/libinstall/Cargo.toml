@@ -1,0 +1,15 @@
+[package]
+name = "libinstall"
+
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[features]
+test_util = ["dep:mockall"]
+
+[dependencies]
+mockall = { workspace = true, optional = true}
+nix.workspace = true
+anyhow.workspace = true
+log.workspace = true

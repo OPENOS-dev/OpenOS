@@ -1,0 +1,19 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "telemetry_ScrollingActionTests"
+METADATA = {
+    "contacts": ["cros-sw-perf@google.com"],
+    "bug_component": "b:1045832",  # ChromeOS > Software > Performance > TPS
+    "criteria": "Executes the Telemetry Scrolling Benchmark.",
+    "hw_agnostic": False
+}
+TEST_TYPE = 'server'
+
+def run_test(machine):
+    host = hosts.create_host(machine)
+    job.run_test("telemetry_ScrollingActionTests", host=host)
+
+
+parallel_simple(run_test, machines)

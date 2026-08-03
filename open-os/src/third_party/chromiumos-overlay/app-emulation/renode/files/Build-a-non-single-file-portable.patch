@@ -1,0 +1,46 @@
+From d041efd94e30f4805d3b45d2cea8efada9b3a0c0 Mon Sep 17 00:00:00 2001
+From: Jan Malek <jmalek@antmicro.com>
+Date: Thu, 28 Nov 2024 10:22:36 +0100
+Subject: [PATCH] Build a non-single file portable
+
+---
+ src/Renode/Renode_NET.csproj                  | 1 -
+ tools/packaging/make_linux_portable_dotnet.sh | 8 ++++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/Renode/Renode_NET.csproj b/src/Renode/Renode_NET.csproj
+index 8f8ca89a7..68926618d 100644
+--- a/src/Renode/Renode_NET.csproj
++++ b/src/Renode/Renode_NET.csproj
+@@ -14,7 +14,6 @@
+   </PropertyGroup>
+   <PropertyGroup Condition=" $(PORTABLE) == 'true' ">
+     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+-    <PublishSingleFile>true</PublishSingleFile>
+     <UseAppHost>true</UseAppHost>
+     <IncludeNativeLibrariesInSingleFile>true</IncludeNativeLibrariesInSingleFile>
+     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+diff --git a/tools/packaging/make_linux_portable.sh b/tools/packaging/make_linux_portable.sh
+index cd27f5dfe..201d62961 100755
+--- a/tools/packaging/make_linux_portable.sh
++++ b/tools/packaging/make_linux_portable.sh
+@@ -34,8 +34,16 @@ cp \
+    $RENODE_OUTPUT_DIR/libcoreclrtraceptprovider.so \
+    $RENODE_OUTPUT_DIR/libmscordaccore.so \
+    $RENODE_OUTPUT_DIR/libmscordbi.so \
++   $RENODE_OUTPUT_DIR/Renode.deps.json \
++   $RENODE_OUTPUT_DIR/Renode.runtimeconfig.json \
+    $DESTINATION
+ 
++# Copy mamanged assemblies
++find "$RENODE_OUTPUT_DIR" \( -iname '*.dll' -o -iname '*.dll.config' \) -exec cp '{}' "$DESTINATION" \;
++
++# Copy Lib directory which contains dependencies for IronPython
++cp -r $RENODE_OUTPUT_DIR/Lib $DIR/Lib
++
+ # Handle a very rare case where the binary doesn't have the execute permission after building.
+ chmod +x $DESTINATION/renode
+ 
+-- 
+2.39.5
+

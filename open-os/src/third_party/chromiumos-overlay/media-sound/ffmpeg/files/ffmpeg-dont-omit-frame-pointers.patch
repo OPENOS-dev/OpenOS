@@ -1,0 +1,15 @@
+frame-pointers are desirable for debugging and performance analysis: b/388599716
+
+ffmpeg doesn't provide a targeted flag to keep them enabled, so a patch is
+necessary.
+--- b/configure
++++ a/configure
+@@ -5956,7 +5956,7 @@ set_default libdir
+ set_default $PATHS_LIST
+ set_default nm
+ 
+-disabled optimizations || enabled ossfuzz || check_cflags -fomit-frame-pointer
++#disabled optimizations || enabled ossfuzz || check_cflags -fomit-frame-pointer
+ 
+ enable_weak_pic() {
+     disabled pic && return

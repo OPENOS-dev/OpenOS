@@ -1,0 +1,51 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+load("//bazel/portage/build_defs:extract_interface.bzl", "extract_interface")
+
+rust_binary(
+    name = "extract_interface",
+    srcs = glob(["src/**/*.rs"]),
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["@portage//:__subpackages__"],
+    deps = [
+        "//bazel/portage/common/cliutil",
+        "//bazel/portage/common/extract_tarball",
+        "//bazel/portage/common/portage/binarypackage",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:clap",
+    ],
+)
+
+rust_test(
+    name = "extract_interface_test",
+    size = "small",
+    crate = ":extract_interface",
+    data = ["//bazel/portage/common/testdata:nano"],
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "//bazel/portage/common/fileutil",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+# A demo of how you can extract a binary from a tarball.
+extract_interface(
+    name = "extract_interface_nano",
+    executable = True,
+    files = {
+        "/bin/nano": "nano",
+    },
+    pkg = "//bazel/portage/common/testdata:nano",
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":extract_interface",
+    enabled = False,
+    tests = [":extract_interface_test"],
+)

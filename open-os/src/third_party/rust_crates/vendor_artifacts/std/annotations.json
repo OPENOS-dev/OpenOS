@@ -1,0 +1,431 @@
+{
+  "bindgen": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:bindgen-0.59.2/a04acc684e136505f926739a0a89d797309857eb.patch"
+      ],
+      "version": "0.59.2"
+    }
+  ],
+  "blazesym": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:blazesym/0000-remove-adler32.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "blazesym-c": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:blazesym-c/0001-cargo.toml-Remove-optional-build-dependencies.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "chrono": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:chrono/remove-old-time-feature.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "clang-sys": [
+    {
+      "build_script_rustc_env": {
+        "LIBCLANG_PATH_OVERRIDE": "/usr/lib64"
+      },
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:clang-sys/add_libclang_path_override_env_var.patch"
+      ],
+      "rustc_env": {
+        "LIBCLANG_PATH_OVERRIDE": "/usr/lib64"
+      },
+      "version": "*"
+    }
+  ],
+  "clap_conf": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:clap_conf/add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "dbus-crossroads": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:dbus-crossroads-0.4.0/0001-crossroads-Remove-requirement-of-having-properties-f.patch"
+      ],
+      "version": "0.4.0"
+    }
+  ],
+  "derive-into-owned": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:derive-into-owned/0001-add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "drm-fourcc": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:drm-fourcc-2.2.0/add_license.patch"
+      ],
+      "version": "2.2.0"
+    }
+  ],
+  "filedescriptor": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:filedescriptor/0001-add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "ftdi": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:ftdi/add-license-file.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "grpcio-compiler": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:grpcio-compiler-0.13.0/0001-remove-prost.patch"
+      ],
+      "version": "0.13.0"
+    }
+  ],
+  "grpcio-sys": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0001-use-bindgen-0.63.patch",
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0002-grpc-unused-protos.patch",
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0003-fix-uncommon-linux-build.patch",
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0004-fix-Wmissing-template-arg-list-after-template-kw.patch",
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0005-fix-missing-includes.patch",
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0006-PR-1739-container-internal-Explicitly-include-cstdin.patch",
+        "@@//third_party/rust_crates/patches:grpcio-sys-0.13.0+1.56.2-patched/0007-cares-update-CMAKE_MINIMUM_REQUIRED-to-3.8.patch"
+      ],
+      "version": "0.13.0+1.56.2-patched"
+    }
+  ],
+  "hmac-sha256": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:hmac-sha256-0.1.7/add-license.patch"
+      ],
+      "version": "0.1.7"
+    }
+  ],
+  "include_dir": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:include_dir/0001-add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "include_dir_impl": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:include_dir_impl/0001-add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "jsonschema": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:jsonschema/add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "kernlog": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:kernlog-0.3.1/0001-add-license.patch"
+      ],
+      "version": "0.3.1"
+    }
+  ],
+  "libusb1-sys": [
+    {
+      "gen_build_script": false,
+      "rustc_flags": [
+        "-l",
+        "usb-1.0",
+        "-L",
+        "native=/usr/lib64"
+      ],
+      "version": "*"
+    }
+  ],
+  "memmap2": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:memmap2-0.8.0/bounds-checks.patch"
+      ],
+      "version": "0.8.0"
+    }
+  ],
+  "number_prefix": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:number_prefix/add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "png": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:png-0.16.8/png-0.16.8-update-to-miniz_oxide-0.4.1.patch"
+      ],
+      "version": "0.16.8"
+    }
+  ],
+  "protoc-grpcio": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:protoc-grpcio/remove-failures-crate.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "rand": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:rand-0.7.3/remove-log-from-reseed.patch"
+      ],
+      "version": "0.7.3"
+    },
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:rand-0.8.5/remove-log-from-reseed.patch"
+      ],
+      "version": "0.8.5"
+    }
+  ],
+  "riscv-rt-macros": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:riscv-rt-macros/riscv-rt-macros-0.1.6-update-dependencies.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "rtt-target": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:rtt-target/add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "rustix": [
+    {
+      "additive_build_file_content": "load(\"@@//bazel/module_extensions/private:symlink.bzl\", \"symlink_without_target\")\n\nconfig_setting(\n  name = \"is_release\",\n  values = {\"compilation_mode\": \"opt\"}\n)\n\nsymlink_without_target(\n    name = \"static_libs\",\n    actual = select({\n        \":is_release\": \"src/backend/linux_raw/arch/outline/release\",\n        \"//conditions:default\": \"src/backend/linux_raw/arch/outline/debug\",\n    }),\n    out = \"static_libs\",\n)\n",
+      "data": [
+        ":static_libs"
+      ],
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:rustix/disable-features.patch"
+      ],
+      "rustc_flags": [
+        "-L$(location :static_libs)"
+      ]
+    },
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:rustix-1.0.8/0001-build-Use-temporary-file-for-can_compile.patch"
+      ],
+      "version": "1.0.8"
+    }
+  ],
+  "simple_logger": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:simple_logger/simple_logger-1.13.0-use-colored-2.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "stderrlog": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:stderrlog-0.5.3/0001-Do-not-panic-in-the-log-statement-when-the-tty-close.patch"
+      ],
+      "version": "0.5.3"
+    }
+  ],
+  "structopt": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:structopt-0.3.26/structopt-dont-use-lint.patch"
+      ],
+      "version": "0.3.26"
+    }
+  ],
+  "uhidrs-sys": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:uhidrs-sys/add-license.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "void": [
+    {
+      "patch_args": [
+        "-p1"
+      ],
+      "patch_tool": "patch",
+      "patches": [
+        "@@//third_party/rust_crates/patches:void/relicense-to-dual-mit-apache.patch"
+      ],
+      "version": "*"
+    }
+  ],
+  "zstd-sys": [
+    {
+      "build_script_env": {
+        "FORCE_C_COMPILER": "1"
+      }
+    }
+  ]
+}

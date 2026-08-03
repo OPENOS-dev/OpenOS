@@ -1,0 +1,38 @@
+From fcc88658710916f10d66453167cb30986f5f3a1a Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Tue, 16 Sep 2025 16:33:34 +0800
+Subject: [PATCH] UPSTREAM: Wire BT_PROPERTY_UUIDS_LE and convert it to
+ BT_PROPERTY_UUIDS
+
+The Classic and LE UUIDs are separated in LibBluetooth after the flag
+separate_service_storage. For now there's no request to separate them
+from Floss API so let's just merge them back together.
+
+Bug: 443753863
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: Test FP HID device
+Test: bluetooth_AdapterQuickHealth.AVL.all_floss.unstable_aflags
+Flag: NONE Floss only change
+Change-Id: I6b56847bfd50012c4725daff5d89999c95790325
+---
+ floss/rust/topshim/src/btif.rs | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/floss/rust/topshim/src/btif.rs b/floss/rust/topshim/src/btif.rs
+index 4258a883d39..a0d9ae7511d 100644
+--- a/floss/rust/topshim/src/btif.rs
++++ b/floss/rust/topshim/src/btif.rs
+@@ -171,2 +171,7 @@ pub enum BtPropertyType {
+     RemoteAddrType = 0x18,
++    // Unimplemented:
++    // BT_PROPERTY_REMOTE_HOST_SECURE_CONNECTIONS_SUPPORTED,
++    // BT_PROPERTY_REMOTE_MAX_SESSION_KEY_SIZE,
++    // BT_PROPERTY_LPP_OFFLOAD_FEATURES,
++    UuidsLe = 0x1C,
+ 
+@@ -818,3 +823,3 @@ impl From<bindings::bt_property_t> for BluetoothProperty {
+             }
+-            BtPropertyType::Uuids => {
++            BtPropertyType::Uuids | BtPropertyType::UuidsLe => {
+                 let count = len / mem::size_of::<Uuid>();

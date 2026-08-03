@@ -1,0 +1,20 @@
+# Board: kukui, jacuzzi
+
+# Became flaky in M124 b/329303679
+dEQP-GLES31.functional.texture.gather.offset_dynamic.implementation_offset.2d.rgba8.size_pot.repeat_mirrored_repeat
+dEQP-GLES31.functional.texture.gather.offset_dynamic.min_required_offset.2d.depth32f.size_pot.compare_less.repeat_mirrored_repeat
+dEQP-GLES31.functional.texture.gather.offset.implementation_offset.2d.depth32f.size_pot.compare_greater.repeat_mirrored_repeat
+dEQP-GLES31.functional.texture.gather.offset.implementation_offset.2d.depth32f.size_pot.compare_less.repeat_mirrored_repeat
+dEQP-GLES31.functional.texture.gather.offset.implementation_offset.2d.rgba8.size_pot.repeat_mirrored_repeat
+dEQP-GLES31.functional.texture.gather.offset.implementation_offset.2d_array.rgba8.size_pot.repeat_mirrored_repeat
+
+# Times out at 60 seconds
+dEQP-VK.ssbo.phys.layout.random.16bit.scalar.13
+dEQP-VK.api.device_init.create_instance_device_intentional_alloc_fail
+
+# The flush_finish tests throw warnings when behavior doesn't match
+# their expectations, except that tiling GPUs don't behave the way they
+# expect in their timing setup so the tests take exceptionally long
+# while just wasting developer time.  Not required to be warnings-free
+# for conformance.
+dEQP-GLES.*.functional.flush_finish.*

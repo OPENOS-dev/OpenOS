@@ -1,0 +1,116 @@
+tpm-keychain
+Copyright (c) 2009,2010 The Chromium OS Authors. All rights reserved.
+
+tpm-keychain is a command-line program for managing Trusted Platform Module
+(TPM) keys.
+
+Using tpm-keychain, you can create an on-disk keychain and add or remove TPM
+keys to it. The keys, which are usable only in conjunction with the specific
+TPM, can be used for signing or encryption. Optionally, each key can also be
+individually password protected. The keychain can have a main password as
+well. Moreover, at creation time, each key can optionally be bound to one or
+more Platform Configuration Registers (PCRs). Such a key will be usable only
+if the PCR values on the platform match those specified at creation time.
+
+Each user can have a default keychain that can be managed through tpm-keychain.
+The default keychain resides in $HOME/.trousers/user.data, which is the User
+Persistent Store file for the TrouSerS software stack. tpm-keychain manages a
+sub-hierarchy of keys within this store. You can point TrouSeS, and in turn
+tpm-keychain, to a different store by setting the TSS_USER_PS_FILE environement
+variable.
+
+* Creating the Keychain
+
+  --create [--srk_password SRK_PASSWORD] \
+      [--keychain_password KEYCHAIN_PASSWORD]
+
+  SRK_PASSWORD    The TPM's Storage Root Key password; tpm-keychain translates
+                  the empty string (that is, "") to a password whose hash is
+                  all zeros (the so called "well known secret" in the TSS
+                  specification)
+  KEYCHAIN_PASSWORD
+                  Specify the keychain's main password (by default, a newly
+                  created keychain will not use a main password)
+
+  Note that although the keychain password or the individual key passwords may
+  be changed, it is not permitted to start off with the keychain or a key
+  having no password and later remove password protection altogether on the
+  keychain or the key in question. At most, the password may be set to the
+  empty passsword. Conversely, it is also not permitted to start off with no
+  password protection on the keychain or a key and later set a password on
+  the keychain or the key in question.
+
+* Destroying the Keychain
+
+  --destroy [--srk_password SRK_PASSWORD] \
+      [--keychain_password KEYCHAIN_PASSWORD]
+
+  This operation will destroy the keychain along with all its constituent
+  keys. If the User Persistent Store contains keys or key hierarchies other
+  than those created by tpm-keychain, they will be unaffected.
+
+* Adding a Key to the Keychain
+
+  --add KEY_TYPE [--pcr PCR] [--key_password KEY_PASSWORD] [--uuid UUID] \
+      [--srk_password SRK_PASSWORD] [--keychain_password KEYCHAIN_PASSWORD]
+
+  KEY_TYPE        One of "bind", "legacy", "signing", "ssh", and "storage"
+  PCR             A PCR whose value will be required to use the key; multiple
+                  PCRs can be specified by multiple instances of this argument
+  KEY_PASSWORD    If specified, this password will be required to authorize
+                  the key's use; by default, the key will not be password
+                  protected
+  UUID            Specific UUID to use for the key; by default, the key is
+                  assigned a randomly generated UUID
+
+* Removing a Key from the Keychain
+
+  --remove --uuid UUID \
+      [--srk_password SRK_PASSWORD] [--keychain_password KEYCHAIN_PASSWORD]
+
+* Listing Keys in the Keychain
+
+  --list [--uuid UUID] [--verbose] \
+      [--srk_password SRK_PASSWORD] [--keychain_password KEYCHAIN_PASSWORD]
+
+  By default, all keys in the keychain will be listed; if a UUID is specified,
+  only that UUID, if found, will be displayed.
+
+* Changing the Password on a Password-Protected Key
+
+  --new_password NEW_PASSWORD --uuid UUID [--key_password KEY_PASSWORD] \
+      [--srk_password SRK_PASSWORD] [--keychain_password KEYCHAIN_PASSWORD]
+
+  As a special case, UUID can be the literal string "keychain", in which
+  case the keychain's main password will be changed.
+
+* Retrieving the Public Component of a Signing Key in a Form Usable by OpenSSH
+
+  --ssh --uuid UUID \
+      [--srk_password SRK_PASSWORD] [--keychain_password KEYCHAIN_PASSWORD]
+
+  Given a signing key (or a legacy key that can be used for signing), the
+  information displayed by --ssh can be used for TPM-based public key
+  authentication in OpenSSH. You will additionally need the "tpm_openssh"
+  loadable module that's part of tpm-keychain.
+
+* Retrieving Key Information as a Binary Blob
+
+  --blob --uuid UUID \
+      [--srk_password SRK_PASSWORD] [--keychain_password KEYCHAIN_PASSWORD]
+
+* Resetting the TPM's Anti-Dictionary-Attack Lock
+
+  --resetlock --owner_password OWNER_PASSWORD
+
+  OWNER_PASSWORD  The TPM owner password
+
+tpm-keychain also accepts the following arguments:
+
+  --server SERVER Instead of using local TPM resources, connect to the remote
+                  machine specified by SERVER; this argument overrides the
+                  TSS_SERVER environment variable if the latter is set
+  --v1.1          Use version 1.1 structures (default)
+  --v1.2          Use version 1.2 structures
+  --verbose       Be verbose (for example, when listing keys)
+

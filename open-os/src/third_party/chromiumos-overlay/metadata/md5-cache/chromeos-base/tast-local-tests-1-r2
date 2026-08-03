@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/tast-local-tests-cros virtual/tast-local-tests
+DESCRIPTION=All Tast local test bundles
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/tast/
+KEYWORDS=*
+LICENSE=Apache-2.0 BSD-Google
+RDEPEND=chromeos-base/tast-local-tests-cros virtual/tast-local-tests
+SLOT=0
+_md5_=4f66f9715e229c0e4bf2ce597a7029e8

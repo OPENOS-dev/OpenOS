@@ -1,0 +1,20 @@
+# Copyright 2011 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a helper test that will succeed.
+NAME = "stub_Pass.actionable"
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': "b:1284375", # ChromeOS > Test > Harness > Tauto > Examples
+    'criteria': 'This test will always succeed'
+}
+ATTRIBUTES = (
+        "suite:stub, suite:stubclientretries, suite:push_to_prod,"
+        " suite:skylab_staging_test, suite:something_else"
+)
+TEST_TYPE = "client"
+DEPENDENCIES = "cleanup-reboot"
+
+
+job.run_test('stub_Pass', tag='actionable')

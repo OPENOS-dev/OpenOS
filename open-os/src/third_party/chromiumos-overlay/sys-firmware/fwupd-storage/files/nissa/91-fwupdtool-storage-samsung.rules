@@ -1,0 +1,13 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# udev rules to start firmware update for Samsung UFS memory device stuck in Production State
+# Awarness (PSA) 0x2.
+SUBSYSTEM=="scsi", \
+ATTR{vendor}=="SAMSUNG ", \
+ATTR{model}=="KLUDG4UHGC-B0E1 ", \
+ATTR{rev}=="1001", \
+ATTRS{attributes/psa_state}=="0x00000002", \
+ACTION=="add", \
+RUN+="/sbin/initctl emit fwupdtool-update PLUGIN=scsi GUID=41a057a2-a1ff-5764-bc6f-71aa045706ff AT_BOOT=true"

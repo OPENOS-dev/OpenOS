@@ -1,0 +1,14 @@
+BDEPEND=nls? ( >=sys-devel/gettext-0.19.6 )
+DEFINED_PHASES=configure prepare
+DEPEND=!=app-text/tetex-2* >=sys-libs/ncurses-5.2-r2:0= standalone? ( dev-lang/perl ) !standalone? ( dev-lang/perl:= ) nls? ( virtual/libintl )
+DESCRIPTION=The GNU info program and utilities
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/texinfo/
+IUSE=nls +standalone static
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=!=app-text/tetex-2* >=sys-libs/ncurses-5.2-r2:0= standalone? ( dev-lang/perl ) !standalone? ( dev-lang/perl:= ) nls? ( virtual/libintl )
+SLOT=0
+SRC_URI=mirror://gnu/texinfo/texinfo-6.8.tar.xz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=17b1f84807d2988866f4657411fcd0ad

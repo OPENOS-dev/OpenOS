@@ -1,0 +1,120 @@
+From 132f7f9eeec9f8be914bbce5f479d6c6f3b6fba6 Mon Sep 17 00:00:00 2001
+From: Ryan Beltran <ryanbeltran@chromium.org>
+Date: Tue, 6 Feb 2024 01:27:57 +0000
+Subject: [PATCH] Use function IDs instead of names
+
+This patch applies fixes to autofdo to not use function names but
+instead function IDs for lookups.
+---
+ llvm_profile_reader.cc      |  8 ++++----
+ llvm_profile_writer.cc      | 21 ++++++++++++---------
+ llvm_profile_writer_test.cc |  5 +++--
+ 3 files changed, 19 insertions(+), 15 deletions(-)
+
+diff --git a/llvm_profile_reader.cc b/llvm_profile_reader.cc
+index eb4edf5..43fdb06 100644
+--- a/llvm_profile_reader.cc
++++ b/llvm_profile_reader.cc
+@@ -73,7 +73,7 @@ bool LLVMProfileReader::ReadFromFile(const std::string &filename) {
+ 
+ void LLVMProfileReader::ReadFromFunctionSamples(
+     const SourceStack &stack, const llvm::sampleprof::FunctionSamples &fs) {
+-  const char *func_name = GetName(fs.getName());
++  const char *func_name = GetName(fs.getFuncName());
+ 
+   if (stack.empty() && !shouldMergeProfileForSym(func_name)) return;
+ 
+@@ -94,9 +94,9 @@ void LLVMProfileReader::ReadFromFunctionSamples(
+     symbol_map_->AddSourceCount(top_func_name, new_stack,
+                                 loc_sample.second.getSamples(), 1);
+     for (const auto &target_count : loc_sample.second.getCallTargets()) {
+-      symbol_map_->AddIndirectCallTarget(top_func_name, new_stack,
+-                                         GetName(target_count.getKey()),
+-                                         target_count.getValue());
++      symbol_map_->AddIndirectCallTarget(
++          top_func_name, new_stack, GetName(target_count.first.stringRef()),
++          target_count.second);
+     }
+   }
+   for (const auto &loc_fsmap : fs.getCallsiteSamples()) {
+diff --git a/llvm_profile_writer.cc b/llvm_profile_writer.cc
+index 9dd1dcf..c1c25c1 100644
+--- a/llvm_profile_writer.cc
++++ b/llvm_profile_writer.cc
+@@ -22,6 +22,7 @@
+ #include "third_party/abseil/absl/flags/flag.h"
+ #include "third_party/abseil/absl/strings/match.h"
+ #include "llvm/Config/llvm-config.h"
++#include "llvm/ProfileData/FunctionId.h"
+ 
+ ABSL_DECLARE_FLAG(bool, debug_dump);
+ 
+@@ -85,7 +86,7 @@ void LLVMProfileBuilder::VisitTopSymbol(const std::string &name,
+     LOG(FATAL) << "Error updating total samples for '" << name
+                << "': " << EC.message();
+ 
+-  profile.setName(name_ref);
++  profile.setFunction(llvm::sampleprof::FunctionId(name_ref));
+   inline_stack_.clear();
+   inline_stack_.push_back(&profile);
+ }
+@@ -99,11 +100,12 @@ void LLVMProfileBuilder::VisitCallsite(const Callsite &callsite) {
+     inline_stack_.pop_back();
+   }
+   auto &caller_profile = *(inline_stack_.back());
+-  auto CalleeName = GetNameRef(Symbol::Name(callsite.second));
++  llvm::sampleprof::FunctionId Callee(
++      GetNameRef(Symbol::Name(callsite.second)));
+   auto &callee_profile =
+       caller_profile.functionSamplesAt(llvm::sampleprof::LineLocation(
+-          line, discriminator))[std::string(CalleeName)];
+-  callee_profile.setName(CalleeName);
++          line, discriminator))[llvm::sampleprof::FunctionId(Callee)];
++  callee_profile.setFunction(Callee);
+   inline_stack_.push_back(&callee_profile);
+ }
+ 
+@@ -137,11 +139,12 @@ void LLVMProfileBuilder::Visit(const Symbol *node) {
+     const auto &target_map = pos_count.second.target_map;
+     for (const auto &target_count : target_map) {
+       if (std::error_code EC = llvm::MergeResult(
+-              result_, profile.addCalledTargetSamples(
+-                           line, discriminator,
+-                           llvm::StringRef(target_count.first.data(),
+-                                           target_count.first.size()),
+-                           target_count.second)))
++              result_,
++              profile.addCalledTargetSamples(
++                  line, discriminator,
++                  llvm::sampleprof::FunctionId(llvm::StringRef(
++                      target_count.first.data(), target_count.first.size())),
++                  target_count.second)))
+         LOG(FATAL) << "Error updating called target samples for '"
+                    << node->info.func_name << "': " << EC.message();
+     }
+diff --git a/llvm_profile_writer_test.cc b/llvm_profile_writer_test.cc
+index 7ac57e7..4f7183e 100644
+--- a/llvm_profile_writer_test.cc
++++ b/llvm_profile_writer_test.cc
+@@ -8,6 +8,7 @@
+ #include "gmock/gmock.h"
+ #include "third_party/abseil/absl/flags/flag.h"
+ #include "third_party/abseil/absl/strings/str_cat.h"
++#include "llvm/ProfileData/FunctionId.h"
+ #include "llvm/Config/llvm-config.h"
+ 
+ #define FLAGS_test_tmpdir std::string(testing::UnitTest::GetInstance()->original_working_dir())
+@@ -81,8 +82,8 @@ TEST(LlvmProfileWriterTest, ReadProfile) {
+ 
+   const auto& call_targets = indirect_call_record.getCallTargets();
+   ASSERT_EQ(call_targets.size(), 2);
+-  ASSERT_EQ(call_targets.lookup("_Z3fooi"), 3336);
+-  ASSERT_EQ(call_targets.lookup("_Z3bari"), 8045);
++  ASSERT_EQ(call_targets.at(llvm::FunctionId{"_Z3fooi"}), 3336);
++  ASSERT_EQ(call_targets.at(llvm::FunctionId{"_Z3bari"}), 8045);
+ }
+ 
+ TEST(LlvmProfileWriterTest, ConvertProfile) {
+-- 
+2.43.0.594.gd9cf4e227d-goog
+

@@ -1,0 +1,30 @@
+{
+  "delay_reboot_to_ping": 80,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "ec_watchdog_period": 2.1,
+  "firmware_screen_rec_mode": 75,
+  "gsc_can_wake_ec_with_reset": false,
+  "hold_pwr_button_poweroff": 6,
+  "max_charging_power": 45.0,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "keyboard_dev_switcher",
+  "models": {
+    "liara": {
+      "usbc_voltage_on_shutdown_and_full_batt": 5
+    }
+  },
+  "platform": "grunt",
+  "rec_invalid_screen": 5,
+  "servo_prog_state_delay": 10,
+  "smm_store": false,
+  "usb_a_port_count": -1
+}

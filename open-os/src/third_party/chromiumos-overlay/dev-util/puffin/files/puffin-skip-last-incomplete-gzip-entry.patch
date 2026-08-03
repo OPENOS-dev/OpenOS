@@ -1,0 +1,35 @@
+From 50d03c5e9c87d1054a0900042b16722f4a6b3f2b Mon Sep 17 00:00:00 2001
+From: Jae Hoon Kim <kimjae@chromium.org>
+Date: Thu, 11 Apr 2024 22:39:15 +0000
+Subject: [PATCH] Skip last incomplete gzip entry
+
+Add a patch for commit: 3353fd4997cc5af9d759037afe648083eddcc8b7
+
+BUG=b:333899904
+TEST=emerge + builders
+
+Change-Id: Ib23f9c87e8a853e66702c52b07f4c2fbb0ed35ec
+---
+ src/utils.cc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/utils.cc b/src/utils.cc
+index b9b06c1..08e2567 100644
+--- a/src/utils.cc
++++ b/src/utils.cc
+@@ -240,10 +240,10 @@ bool LocateDeflatesInGzip(const Buffer& data, vector<BitExtent>* deflates) {
+     offset += compressed_size;
+ 
+     // Ignore CRC32 and uncompressed size.
+-    TEST_AND_RETURN_FALSE(offset + 8 <= data.size());
+     offset += 8;
+     member_start = offset;
+-  } while (IsValidGzipHeader(&data[member_start], data.size() - member_start));
++  } while (member_start < data.size() &&
++           IsValidGzipHeader(&data[member_start], data.size() - member_start));
+   return true;
+ }
+ 
+-- 
+2.44.0.683.g7961c838ac-goog
+

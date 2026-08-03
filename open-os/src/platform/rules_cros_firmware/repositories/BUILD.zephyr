@@ -1,0 +1,28 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+filegroup(
+    name = "src",
+    srcs = glob(["**/*"]),
+    visibility = ["//visibility:public"],
+)
+
+py_library(
+    name = "py_deps",
+    deps = [
+        "@zephyr_py_deps_colorama//:pkg",
+        "@zephyr_py_deps_packaging//:pkg",
+        "@zephyr_py_deps_pyelftools//:pkg",
+        "@zephyr_py_deps_pykwalify//:pkg",
+        "@zephyr_py_deps_pyyaml//:pkg",
+        "@zephyr_py_deps_ruamel-yaml//:pkg",
+        "@zephyr_py_deps_ruamel-yaml-clib//:pkg",
+        # Twister
+        "@zephyr_py_deps_psutil//:pkg",
+        "@zephyr_py_deps_anytree//:pkg",
+        "@zephyr_py_deps_ply//:pkg",
+        "@zephyr_py_deps_natsort//:pkg",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,56 @@
+# Maintainer: David Riley <davdriley@chromium.org>
+# Maintainer: Chad Versace <chadversary@chromium.org>
+
+_pkgbasename=waffle
+pkgname=lib32-${_pkgbasename}
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='waffle library (32-bit)'
+arch=('x86_64')
+url='http://www.waffle-gl.org'
+license=('BSD')
+
+depends=('lib32-libx11' 'lib32-libxcb' 'lib32-systemd' 'lib32-libgl'
+         'lib32-libgles' "${_pkgbasename}=${pkgver}")
+optdepends=('lib32-libegl: for gbm, surfaceless, x11_egl or wayland support'
+            'lib32-mesa: for gbm support'
+            'lib32-wayland: for wayland support')
+makedepends=('meson' 'xcb-proto' 'lib32-mesa' 'gcc-multilib' 'cmake' 
+             'wayland-protocols')
+
+source=(https://storage.googleapis.com/chromeos-localmirror/distfiles/waffle-${pkgver}.tar.xz{,.asc})
+sha256sums=('69e42d15d08f63e7a54a8b8770295a6eb04dfd1c6f86c328b6039dbe7de28ef3'
+            '7a7e064395551ce20a694be7ecb4795effc3fd6f614943e50445469631677f6e')
+validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D')
+
+build() {
+	export CC='gcc -m32'
+	export CXX='g++ -m32'
+	export PKG_CONFIG_PATH='/usr/lib32/pkgconfig'
+
+	arch-meson "${_pkgbasename}-$pkgver" build \
+		--buildtype release \
+		--libdir=/usr/lib32 \
+		-D gbm=enabled \
+		-D glx=enabled \
+		-D surfaceless_egl=enabled \
+		-D x11_egl=enabled \
+		-D wayland=enabled \
+		-D build-manpages=false \
+		-D build-htmldocs=false \
+		-D build-examples=false
+
+	meson configure build
+	ninja -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C build install
+
+	mv "$pkgdir/usr/bin/wflinfo" "$pkgdir/usr/bin/wflinfo32"
+	rm -rf "$pkgdir/usr/include"
+	rm -rf "$pkgdir/usr/share"
+
+	install -m755 -d "$pkgdir/usr/share/licenses"
+	ln -s "${_pkgbasename}" "$pkgdir/usr/share/licenses/$pkgname"
+}

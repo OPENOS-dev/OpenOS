@@ -1,0 +1,34 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "custom_usb_enable_pins": [
+    {
+      "ioex": true,
+      "name": "EN_PP5000_USB_A0_VBUS"
+    },
+    {
+      "ioex": true,
+      "name": "EN_PP5000_USB_A1_VBUS_DB"
+    }
+  ],
+  "delay_powerinfo_stable": 5,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "firmware_screen": 15,
+  "gsc_update_wait_for_reboot": 60,
+  "hold_pwr_button_poweroff": 4,
+  "max_charging_power": 100.0,
+  "minidiag_capability": {
+    "cbmem_preserved_by_ap_reset": false
+  },
+  "platform": "guybrush",
+  "s3_override_to_unsupported": true,
+  "servo_prog_state_delay": 1.0,
+  "smm_store": false
+}

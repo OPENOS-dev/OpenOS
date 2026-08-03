@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+mkdir -p /etc/systemd/user/default.target.wants
+ln -s /usr/lib/systemd/user/sommelier@.service \
+      /etc/systemd/user/default.target.wants/sommelier@0.service
+ln -s /usr/lib/systemd/user/sommelier@.service \
+      /etc/systemd/user/default.target.wants/sommelier@1.service
+ln -s /usr/lib/systemd/user/sommelier-x@.service \
+   /etc/systemd/user/default.target.wants/sommelier-x@0.service
+ln -s /usr/lib/systemd/user/sommelier-x@.service \
+   /etc/systemd/user/default.target.wants/sommelier-x@1.service
+update-alternatives --install /usr/bin/sommelier sommelier /opt/google/cros-containers/bin/sommelier 1

@@ -1,0 +1,11 @@
+DEFINED_PHASES=configure install
+DEPEND=>=sys-apps/sg3_utils-1.45:0=
+DESCRIPTION=Utility to output and modify parameters on a SCSI device, like hdparm
+EAPI=7
+HOMEPAGE=http://sg.danny.cz/sg/sdparm.html
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=>=sys-apps/sg3_utils-1.45:0=
+SLOT=0
+SRC_URI=http://sg.danny.cz/sg/p/sdparm-1.12.tgz
+_md5_=daa891b3d0087d88fa47f80d76be5684

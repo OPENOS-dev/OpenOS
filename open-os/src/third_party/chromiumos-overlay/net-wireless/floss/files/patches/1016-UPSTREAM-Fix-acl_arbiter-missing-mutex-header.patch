@@ -1,0 +1,23 @@
+From b5224f69c658f32baec08d6042d191220aa8d0f8 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Tue, 19 Aug 2025 10:43:04 +0800
+Subject: [PATCH] UPSTREAM: Fix acl_arbiter missing <mutex> header
+
+Bug: 369703686
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Flag: EXEMPT, Floss only change
+Change-Id: I361e3a478e15f40213977efe3326a954796b404e
+---
+ system/stack/arbiter/acl_arbiter.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/system/stack/arbiter/acl_arbiter.h b/system/stack/arbiter/acl_arbiter.h
+index 199ea083fc6..8420e13133e 100644
+--- a/system/stack/arbiter/acl_arbiter.h
++++ b/system/stack/arbiter/acl_arbiter.h
+@@ -29,2 +29,4 @@
+ 
++#include <mutex>
++
+ #include "rust/cxx.h"

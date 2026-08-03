@@ -1,0 +1,17 @@
+diff --git a/prnt/hpcups/HPCupsFilter.cpp b/prnt/hpcups/HPCupsFilter.cpp
+index 0176bc8..047d873 100644
+--- a/prnt/hpcups/HPCupsFilter.cpp
++++ b/prnt/hpcups/HPCupsFilter.cpp
+@@ -854,7 +854,11 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+         // Iterating through the raster per page
+         bool is_ljmono = strcmp(m_JA.printer_language, "ljmono");
+         for (int y = 0; y < (int) cups_header.cupsHeight; y++) {
+-            cupsRasterReadPixels (cups_raster, m_pPrinterBuffer, cups_header.cupsBytesPerLine);
++            if (cupsRasterReadPixels (cups_raster, m_pPrinterBuffer, cups_header.cupsBytesPerLine) != cups_header.cupsBytesPerLine) {
++                dbglog("DEBUG: cupsRasterReadPixels failed; incorrect input file ?\n");
++                ret_status = err = SYSTEM_ERROR;
++                break;
++            }
+             color_raster = rgbRaster;
+             black_raster = kRaster;
+             #ifndef DISABLE_IMAGEPROCESSOR 

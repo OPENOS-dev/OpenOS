@@ -1,0 +1,30 @@
+{
+  "custom_usb_enable_pins": [
+    {
+      "ioex": false,
+      "name": "EN_PP5000_USB_VBUS"
+    }
+  ],
+  "ec_capability": {
+    "arm": false,
+    "battery": false,
+    "cbi": true,
+    "charging": false,
+    "keyboard": false,
+    "lid": false,
+    "x86": true
+  },
+  "firmware_screen": 15,
+  "has_keyboard": false,
+  "has_lid": false,
+  "hibernate": false,
+  "hold_pwr_button_nopowerd_shutdown": 14,
+  "hold_pwr_button_poweron": 3,
+  "max_charging_power": 45.0,
+  "minios_enabled": false,
+  "platform": "shotzo",
+  "rec_button_dev_switch": true,
+  "smm_store": false,
+  "spi_voltage": "pp3300",
+  "usbc_input_voltage_limit": 15
+}

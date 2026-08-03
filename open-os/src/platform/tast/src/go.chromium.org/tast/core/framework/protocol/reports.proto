@@ -1,0 +1,55 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/tast/core/framework/protocol";
+
+// Reports service is invoked by Tast CLI for reporting its test results and
+// logs.
+service Reports {
+  // LogStream accepts a stream of log data.
+  // The request should be called only once per client.
+  rpc LogStream(stream LogStreamRequest) returns (google.protobuf.Empty) {}
+
+  // ReportResults accepts test results from a client.
+  // This request can be called multiple times per client.
+  rpc ReportResult(ReportResultRequest) returns (ReportResultResponse) {}
+}
+
+message LogStreamRequest {
+  string test = 1;     // test name of this log message
+  string log_path = 2; // test log file path relative to the result directory
+  bytes data = 3;
+}
+
+message ReportResultRequest {
+  string test = 1; // test name of this test result
+  // errors contain errors encountered while running the test.
+  repeated ErrorReport errors = 2;
+  // skip_reason tells why the test is skipped.
+  string skip_reason = 3;
+  // start_time tells the start running time of the test.
+  google.protobuf.Timestamp start_time = 4;
+  // duration tells the duration of the test run.
+  google.protobuf.Duration duration = 5;
+}
+
+message ReportResultResponse {
+  bool terminate = 1; // If set, the tast should, skipping remaining tests.
+}
+
+message ErrorReport {
+  google.protobuf.Timestamp time = 1;
+  string reason = 2;
+  string file = 3;
+  int32 line = 4;
+  string stack = 5;
+}

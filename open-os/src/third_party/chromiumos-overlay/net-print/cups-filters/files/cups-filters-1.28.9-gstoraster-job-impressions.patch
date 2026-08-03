@@ -1,0 +1,26 @@
+From ec89219791b806a26b68044cbc0a5f48037f6bce Mon Sep 17 00:00:00 2001
+From: Sean Kau <skau@chromium.org>
+Date: Thu, 8 Jul 2021 16:00:28 -0700
+Subject: [PATCH] Set the counted pages for PDFs as job-impressions
+
+---
+ filter/gstoraster.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/filter/gstoraster.c b/filter/gstoraster.c
+index 8bdfa9b9c..731e5bc0a 100644
+--- a/filter/gstoraster.c
++++ b/filter/gstoraster.c
+@@ -762,9 +762,6 @@ main (int argc, char **argv, char *envp[])
+       fprintf(stderr, "DEBUG: Unexpected page count\n");
+       goto out;
+     }
+-  }
+-
+-  if (pwgraster) {
+     // Set job-impressions for later embedding as TotalPageCount.
+     num_options = cupsAddIntegerOption("job-impressions", pagecount, num_options, &options);
+   }
+-- 
+2.45.2
+

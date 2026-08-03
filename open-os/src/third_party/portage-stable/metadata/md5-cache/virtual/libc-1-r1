@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for the C library
+EAPI=7
+KEYWORDS=*
+RDEPEND=!prefix-guest? ( elibc_glibc? ( sys-libs/glibc:2.2 ) elibc_musl? ( sys-libs/musl ) elibc_uclibc? ( sys-libs/uclibc-ng ) ) prefix-guest? ( elibc_Cygwin? ( sys-libs/cygwin-crypt ) !sys-libs/glibc !sys-libs/musl !sys-libs/uclibc-ng )
+SLOT=0
+_md5_=50b20ffc0eb8dae026a55babf9756933

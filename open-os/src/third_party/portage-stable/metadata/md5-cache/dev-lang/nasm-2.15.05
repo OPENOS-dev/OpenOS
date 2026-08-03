@@ -1,0 +1,12 @@
+BDEPEND=dev-lang/perl doc? ( app-text/ghostscript-gpl dev-perl/Font-TTF dev-perl/Sort-Versions media-fonts/source-pro virtual/perl-File-Spec )
+DEFINED_PHASES=compile configure install
+DESCRIPTION=groovy little assembler
+EAPI=7
+HOMEPAGE=https://www.nasm.us/
+IUSE=doc
+KEYWORDS=*
+LICENSE=BSD-2
+SLOT=0
+SRC_URI=https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.xz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=0f180d463afa25e845162fc6050ed8f0

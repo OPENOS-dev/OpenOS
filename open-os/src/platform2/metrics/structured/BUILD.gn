@@ -1,0 +1,246 @@
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+_event_output_dir = "${root_gen_dir}/include/metrics/structured"
+_xml_file = "sync/structured.xml"
+
+pkg_config("target_defaults_pkg_deps") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "protobuf-lite",
+  ]
+}
+
+proto_library("storage") {
+  proto_in_dir = "./proto"
+  proto_out_dir = "include/metrics/structured/proto"
+  sources = [
+    "${proto_in_dir}/storage.proto",
+    "${proto_in_dir}/structured_data.proto",
+  ]
+  use_pic = true
+}
+
+proto_library("libsm_proto") {
+  proto_in_dir = "lib/proto"
+  proto_out_dir = "include/metrics/structured/lib/proto"
+  sources = [ "${proto_in_dir}/metrics_key.proto" ]
+  use_pic = true
+}
+
+action("gen_metrics_client_structured_events") {
+  script = "gen_metrics_client_events.py"
+  inputs = [
+    "gen_metrics_client_events.py",
+    "codegen.py",
+    "sync/model.py",
+    "sync/model_util.py",
+    "templates_metrics_client.py",
+  ]
+  sources = [ _xml_file ]
+  outputs = [ _event_output_dir + "/metrics_client_structured_events.cc" ]
+  args = [
+    "--input",
+    rebase_path(_xml_file, root_build_dir),
+    "--output",
+    _event_output_dir,
+  ]
+}
+
+action("gen_structured_events") {
+  script = "gen_events.py"
+
+  inputs = [
+    "gen_events.py",
+    "codegen.py",
+    "sync/model.py",
+    "sync/model_util.py",
+    "templates.py",
+  ]
+  sources = [ _xml_file ]
+
+  outputs = [
+    _event_output_dir + "/structured_events.cc",
+    _event_output_dir + "/structured_events.h",
+  ]
+
+  args = [
+    "--input",
+    rebase_path(_xml_file, root_build_dir),
+    "--output",
+    _event_output_dir,
+  ]
+}
+
+# Library imported from Chromium. Only to be used for building the shared
+# "libstructuredmetrics" library.
+source_set("libsm") {
+  sources = [
+    "lib/event_storage.h",
+    "lib/histogram_util.cc",
+    "lib/histogram_util.h",
+    "lib/key_data.cc",
+    "lib/key_data.h",
+    "lib/key_data_file_delegate.cc",
+    "lib/key_data_file_delegate.h",
+    "lib/key_data_provider.cc",
+    "lib/key_data_provider.h",
+    "lib/key_util.cc",
+    "lib/key_util.h",
+    "lib/persistent_proto.h",
+    "lib/persistent_proto_internal.cc",
+    "lib/persistent_proto_internal.h",
+  ]
+
+  configs += [ ":target_defaults_pkg_deps" ]
+
+  deps = [ ":libsm_proto" ]
+}
+
+source_set("structured_metrics") {
+  sources = [
+    "batch_event_storage.cc",
+    "batch_event_storage.h",
+    "c_structured_metrics.cc",
+    "event_base.cc",
+    "event_base.h",
+    "key_data.cc",
+    "key_data.h",
+    "persistent_proto.cc",
+    "persistent_proto.h",
+    "recorder.h",
+    "recorder_impl.cc",
+    "recorder_impl.h",
+    "recorder_singleton.cc",
+    "recorder_singleton.h",
+  ]
+
+  configs += [
+    ":target_defaults_pkg_deps",
+
+    # -fPIC flag needed for linking to shared library.
+    "//common-mk:pic",
+  ]
+
+  deps = [
+    ":gen_structured_events",
+    ":libsm_proto",
+    ":storage",
+    "//metrics:libmetrics",
+  ]
+}
+
+static_library("libmetricsclientstructuredmetrics") {
+  sources = get_target_outputs(":gen_metrics_client_structured_events")
+
+  configs += [ ":target_defaults_pkg_deps" ]
+
+  deps = [
+    ":gen_metrics_client_structured_events",
+    ":libstructuredmetrics",
+  ]
+}
+
+source_set("test_support") {
+  sources = [
+    "fake_recorder.cc",
+    "fake_recorder.h",
+  ]
+
+  configs += [ ":target_defaults_pkg_deps" ]
+
+  deps = [
+    ":structured_metrics",
+    "//metrics:libmetrics",
+  ]
+}
+
+if (use.test) {
+  pkg_config("libchrome_test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+  executable("structured_metrics_test") {
+    sources = [
+      "batch_event_storage_test.cc",
+      "lib/key_data_file_delegate_test.cc",
+      "lib/persistent_proto_test.cc",
+      "recorder_impl_test.cc",
+    ]
+
+    sources += get_target_outputs(":gen_structured_events")
+
+    configs += [
+      "//common-mk:test",
+      ":libchrome_test_config",
+      ":target_defaults_pkg_deps",
+    ]
+    run_test = true
+    deps = [
+      ":gen_structured_events",
+      ":libsm",
+      ":libsm_proto",
+      ":storage",
+      ":structured_metrics",
+      ":test_support",
+      "//common-mk/testrunner:testrunner",
+      "//metrics:metrics_test_support",
+    ]
+  }
+  executable("metrics_client_structured_metrics_test") {
+    sources = [ "metrics_client_structured_metrics_test.cc" ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults_pkg_deps",
+    ]
+    run_test = true
+    deps = [
+      ":libmetricsclientstructuredmetrics",
+      "//common-mk/testrunner:testrunner",
+      "//metrics:metric_client_util",
+    ]
+  }
+}
+
+shared_library("libstructuredmetrics") {
+  sources = get_target_outputs(":gen_structured_events")
+
+  configs += [ ":target_defaults_pkg_deps" ]
+
+  deps = [
+    ":gen_structured_events",
+    ":structured_metrics",
+  ]
+}
+
+# Install missing headers using new approach to be able to use mock recorder
+# outside of platform2. TODO(crbug/1184602): Move install logic of all other
+# include files from ebuild to here.
+install_config("libstructuredmetrics_install_headers") {
+  sources = [
+    "mock_recorder.h",
+    "recorder.h",
+    "recorder_singleton.h",
+  ]
+  install_path = "/usr/include/metrics/structured"
+}
+
+generate_pkg_config("libstructuredmetrics_pkg_config") {
+  name = "libstructuredmetrics"
+  deps = [ ":libstructuredmetrics" ]
+  description = "Chrome OS structured metrics library"
+  version = "${libbase_ver}"
+  requires_private = [ "libmetrics" ]
+  cflags = [ "-I/usr/include/metrics" ]
+  libs = [ "-lstructuredmetrics" ]
+}
+
+executable("update_reset_counter") {
+  pkg_deps = [ "libchrome" ]
+  sources = [ "reset_counter_updater.cc" ]
+  install_path = "bin"
+}

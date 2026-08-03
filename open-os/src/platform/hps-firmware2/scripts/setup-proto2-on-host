@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Set up configuration for using HPS proto2 boards on a developer workstation.
+# This script is for the host environment, that is, *not* inside the
+# ChromeOS chroot, because it manipulates udev rules and kernel modules.
+
+set -e
+
+if [ -e /etc/make.conf ] ; then
+    echo "This script must be run outside the ChromeOS chroot environment." >&2
+    exit 1
+fi
+
+MCP_UDEV_RULES=/etc/udev/rules.d/71-mcp.rules
+if [ ! -f "${MCP_UDEV_RULES}" ]; then
+    echo -n "OK to create ${MCP_UDEV_RULES} [y]/n? " >&2
+    read -r answer
+    if [ "${answer}" == "y" ] || [ -z "${answer}" ]; then
+        (
+            cat <<'EOF'
+# MCP2221A rules
+SUBSYSTEM=="usb", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="00dd", GROUP="plugdev", TAG+="uaccess", RUN="/bin/sh -c 'echo -n $kernel > /sys/bus/usb/drivers/usbhid/unbind'"
+EOF
+        ) | sudo tee "${MCP_UDEV_RULES}"
+
+        # Trigger the rule to avoid replugging.
+        sudo udevadm trigger --action=add --attr-match=idVendor=04d8 --attr-match=idProduct=00dd
+    fi
+fi
+
+MCP_MODPROBE_RULES=/etc/modprobe.d/mcp-hid.conf
+if [ ! -f "${MCP_MODPROBE_RULES}" ]; then
+    echo -n "OK to create ${MCP_MODPROBE_RULES} [y]/n? " >&2
+    read -r answer
+    if [ "${answer}" == "y" ] || [ -z "${answer}" ]; then
+        (
+            cat <<'EOF'
+blacklist hid_mcp2221
+EOF
+        ) | sudo tee "${MCP_MODPROBE_RULES}"
+
+        # Remove the module as well to avoid the need to reboot.
+        sudo rmmod hid_mcp2221 2>/dev/null || true
+    fi
+fi
+
+FT4232_UDEV_RULES=/etc/udev/rules.d/60-ft4232.rules
+if [ ! -f "${FT4232_UDEV_RULES}" ]; then
+    echo -n "OK to create ${FT4232_UDEV_RULES} [y]/n? " >&2
+    read -r answer
+    if [ "${answer}" == "y" ] || [ -z "${answer}" ]; then
+        (
+            cat <<'EOF'
+# 0403:6011 is FT4232
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="660", GROUP="plugdev", TAG+="uaccess"
+EOF
+        ) | sudo tee "${FT4232_UDEV_RULES}"
+
+        # Trigger the rule to avoid replugging.
+        sudo udevadm trigger --action=add --attr-match=idVendor=0403 --attr-match=idProduct=6011
+    fi
+fi
+
+AVR_UDEV_RULES=/etc/udev/rules.d/60-avr-dfu.rules
+if [ ! -f "${AVR_UDEV_RULES}" ]; then
+    echo -n "OK to create ${AVR_UDEV_RULES} [y]/n? " >&2
+    read -r answer
+    if [ "${answer}" == "y" ] || [ -z "${answer}" ]; then
+        (
+            cat <<'EOF'
+# atmega16u4 DFU bootloader
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2ff3", MODE="660", GROUP="plugdev", TAG+="uaccess"
+EOF
+        ) | sudo tee "${AVR_UDEV_RULES}"
+
+        # Trigger the rule to avoid replugging.
+        sudo udevadm trigger --action=add --attr-match=idVendor=03eb --attr-match=idProduct=2ff3
+    fi
+fi

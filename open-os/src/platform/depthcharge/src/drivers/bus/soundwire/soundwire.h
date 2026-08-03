@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2020, Intel Corporation.
+ * Copyright 2020-2026 Google LLC.
+ */
+
+#ifndef __DRIVERS_BUS_SOUNDWIRE_SOUNDWIRE_H__
+#define __DRIVERS_BUS_SOUNDWIRE_SOUNDWIRE_H__
+
+#include "drivers/bus/soundwire/cavs_2_5-sndwregs.h"
+#include "drivers/bus/soundwire/mipi-sndwregs.h"
+
+#define RETRY_COUNT		1000
+#define DEBUG_SNDW		0
+
+/*
+ * Soundwire ops
+ * sndw_enable() - Enables the HDA/DSP/SNDW.
+ * sndw_sendwack() - Send the txcmds and receive the response.
+ * sndw_disable() - Disable the soundwire interface by resetting the DSP.
+ */
+typedef struct SndwOps {
+	int (*sndw_enable)(struct SndwOps *me, sndw_codec_info *codecinfo);
+	int (*sndw_sendwack)(void *sndwlinkaddr, sndw_cmd txcmd,
+			     uint32_t deviceindex, uint8_t *val);
+	int (*sndw_disable)(struct SndwOps *me);
+} SndwOps;
+
+typedef struct {
+	/* Soundwire ops structure.*/
+	SndwOps ops;
+	/* Intel HD Audio Lower Base Address.*/
+	void *hdabar;
+	/* Audio DSP Lower Base Address.*/
+	void *dspbar;
+	/* Sndw Link Number */
+	int sndwlinkindex;
+	/* Sndw Link address */
+	void *sndwlinkaddr;
+} Soundwire;
+
+/*
+ * new_soundwire - Allocate new Soundwire data structures.
+ * @sndwlinkindex: Sndw Link Number
+ * @sndwlinkaddr: Sndw Link Address
+ */
+Soundwire *new_soundwire(int sndwlinkindex, void *sndwlinkaddr);
+
+/* Initializes SoundWire bus and probes/enables a codec. */
+int sndw_probe_and_enable_codec(Soundwire *sndwbus, sndw_codec_info *codecinfo);
+
+#endif

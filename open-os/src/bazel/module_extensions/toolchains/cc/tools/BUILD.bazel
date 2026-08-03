@@ -1,0 +1,84 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc/toolchains:directory_tool.bzl", "cc_directory_tool")
+
+package(default_visibility = ["//bazel/module_extensions/toolchains:__subpackages__"])
+
+cc_directory_tool(
+    name = "ar",
+    data = ["bin/llvm-ar.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/llvm-ar",
+)
+
+cc_directory_tool(
+    name = "clang",
+    data = ["usr/bin/clang.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "usr/bin/clang",
+)
+
+cc_directory_tool(
+    name = "clang++",
+    data = ["usr/bin/clang.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "usr/bin/clang++",
+)
+
+cc_directory_tool(
+    name = "dwp",
+    data = ["bin/llvm-dwp.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/llvm-dwp",
+)
+
+cc_directory_tool(
+    name = "ld",
+    data = ["bin/lld.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/lld",
+)
+
+cc_directory_tool(
+    name = "nm",
+    data = ["bin/llvm-nm.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/llvm-nm",
+)
+
+cc_directory_tool(
+    name = "objcopy",
+    data = ["bin/llvm-objcopy.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/llvm-objcopy",
+)
+
+cc_directory_tool(
+    name = "objdump",
+    data = ["bin/llvm-objdump.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/llvm-objdump",
+)
+
+cc_directory_tool(
+    name = "strip",
+    data = ["bin/llvm-strip.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "bin/llvm-strip",
+)
+
+cc_directory_tool(
+    name = "cpp",
+    data = ["usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/gcc-bin/10.2.0/x86_64-cros-linux-gnu-cpp.real.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/gcc-bin/10.2.0/x86_64-cros-linux-gnu-cpp.real",
+)
+
+cc_directory_tool(
+    name = "gcov",
+    data = ["usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/gcc-bin/10.2.0/x86_64-cros-linux-gnu-gcov.elf"],
+    directory = "//bazel/module_extensions/toolchains/files:sysroot",
+    executable = "usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/gcc-bin/10.2.0/x86_64-cros-linux-gnu-gcov",
+)

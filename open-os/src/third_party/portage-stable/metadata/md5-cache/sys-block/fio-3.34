@@ -1,0 +1,16 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=compile configure install prepare
+DEPEND=!static? ( aio? ( dev-libs/libaio ) curl? ( net-misc/curl:= dev-libs/openssl:0= ) nfs? ( net-fs/libnfs:= ) glusterfs? ( sys-cluster/glusterfs ) gtk? ( dev-libs/glib:2 ) io-uring? ( sys-libs/liburing:= ) numa? ( sys-process/numactl ) rbd? ( sys-cluster/ceph ) rdma? ( sys-cluster/rdma-core ) tcmalloc? ( dev-util/google-perftools:= ) zbc? ( >=sys-block/libzbc-5 ) zlib? ( sys-libs/zlib ) ) gtk? ( x11-libs/gtk+:2 ) static? ( aio? ( dev-libs/libaio[static-libs(+)] ) curl? ( net-misc/curl:=[static-libs(+)] dev-libs/openssl:0=[static-libs(+)] ) nfs? ( net-fs/libnfs:=[static-libs(+)] ) glusterfs? ( sys-cluster/glusterfs[static-libs(+)] ) gtk? ( dev-libs/glib:2[static-libs(+)] ) io-uring? ( sys-libs/liburing:=[static-libs(+)] ) numa? ( sys-process/numactl[static-libs(+)] ) rbd? ( sys-cluster/ceph[static-libs(+)] ) rdma? ( sys-cluster/rdma-core[static-libs(+)] ) tcmalloc? ( dev-util/google-perftools:=[static-libs(+)] ) zbc? ( >=sys-block/libzbc-5 ) zlib? ( sys-libs/zlib[static-libs(+)] ) ) test? ( dev-util/cunit ) valgrind? ( dev-util/valgrind )
+DESCRIPTION=Jens Axboe's Flexible IO tester
+EAPI=7
+HOMEPAGE=https://brick.kernel.dk/snaps/
+IUSE=aio curl glusterfs gnuplot gtk io-uring nfs numa python rbd rdma static tcmalloc test valgrind zbc zlib python_targets_python3_11 python_targets_python3_10 python_targets_python3_9
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!static? ( aio? ( dev-libs/libaio ) curl? ( net-misc/curl:= dev-libs/openssl:0= ) nfs? ( net-fs/libnfs:= ) glusterfs? ( sys-cluster/glusterfs ) gtk? ( dev-libs/glib:2 ) io-uring? ( sys-libs/liburing:= ) numa? ( sys-process/numactl ) rbd? ( sys-cluster/ceph ) rdma? ( sys-cluster/rdma-core ) tcmalloc? ( dev-util/google-perftools:= ) zbc? ( >=sys-block/libzbc-5 ) zlib? ( sys-libs/zlib ) ) gtk? ( x11-libs/gtk+:2 ) python? ( python_targets_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11 ) python_targets_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10 ) python_targets_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9 ) dev-python/pandas[python_targets_python3_11(-)?,python_targets_python3_10(-)?,python_targets_python3_9(-)?] ) gnuplot? ( sci-visualization/gnuplot )
+REQUIRED_USE=python? ( || ( python_targets_python3_11 python_targets_python3_10 python_targets_python3_9 ) ) gnuplot? ( python ) io-uring? ( aio )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://brick.kernel.dk/snaps/fio-3.34.tar.bz2
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multibuild	40fe59465edacd730c644ec2bc197809	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-r1	2d51fd03931e743811ce30d198e4dcfd	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=fd12eb377010b75c236e6c700f801262

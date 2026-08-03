@@ -1,0 +1,10 @@
+prefix=@prefix@
+libdir=${prefix}/@lib@
+includedir=${prefix}/include
+
+Name: boringssl
+Description: BoringSSL's crypto library
+Version: @version@
+
+Cflags: -I${includedir}
+Libs: -L${libdir} -lboringcrypto

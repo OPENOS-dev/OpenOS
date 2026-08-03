@@ -1,0 +1,110 @@
+helper {
+  modem_name: "em060"
+  exe {
+    filename: "/usr/local/bin/qlog"
+    extra_argument: "-f"
+    extra_argument: "/usr/local/usr/share/qlog/default.cfg"
+    output_dir_argument: "-s"
+  }
+}
+helper {
+  modem_name: "fm101"
+  exe {
+    filename: "/usr/local/opt/fibocom/diaggrabpro"
+    extra_argument: "-p"
+    extra_argument: "/dev/ttyUSB2"
+    extra_argument: "-logsize"
+    extra_argument: "1000"
+    extra_argument: "-c"
+    extra_argument: "/usr/local/usr/share/qlog/default.cfg"
+    extra_argument: "-start"
+    output_dir_argument: "-logdir"
+  }
+  enable_exe {
+    filename: "/usr/bin/mmcli"
+    extra_argument: "-m"
+    extra_argument: "any"
+    extra_argument: "--command"
+    extra_argument: "+GTDIAGEN=1,1"
+  }
+  disable_exe {
+    filename: "/usr/bin/mmcli"
+    extra_argument: "-m"
+    extra_argument: "any"
+    extra_argument: "--command"
+    extra_argument: "+GTDIAGEN=0,1"
+  }
+}
+helper {
+  modem_name: "rw101"
+  exe {
+    filename: "/usr/local/opt/fibocom/diaggrabpro"
+    extra_argument: "-p"
+    extra_argument: "/dev/ttyUSB2"
+    extra_argument: "-logsize"
+    extra_argument: "1000"
+    extra_argument: "-c"
+    extra_argument: "/usr/local/usr/share/qlog/default.cfg"
+    extra_argument: "-start"
+    output_dir_argument: "-logdir"
+  }
+  enable_exe {
+    filename: "/usr/local/libexec/modemloggerd/rw101_set_usbmode.sh"
+  }
+  enable_exe {
+    filename: "/usr/bin/mmcli"
+    extra_argument: "-m"
+    extra_argument: "any"
+    extra_argument: "--command"
+    extra_argument: "+GTDIAGEN=1,1"
+  }
+  disable_exe {
+    filename: "/usr/bin/mmcli"
+    extra_argument: "-m"
+    extra_argument: "any"
+    extra_argument: "--command"
+    extra_argument: "+GTDIAGEN=0,1"
+  }
+}
+helper {
+  modem_name: "nl668"
+  exe {
+    filename: "/usr/local/opt/fibocom/diaggrabpro"
+    extra_argument: "-p"
+    extra_argument: "/dev/ttyUSB2"
+    extra_argument: "-logsize"
+    extra_argument: "1000"
+    extra_argument: "-c"
+    extra_argument: "/usr/local/usr/share/qlog/default.cfg"
+    extra_argument: "-start"
+    output_dir_argument: "-logdir"
+  }
+  enable_exe {
+    filename: "/usr/bin/mmcli"
+    extra_argument: "-m"
+    extra_argument: "any"
+    extra_argument: "--command"
+    extra_argument: "+DISK=0,0,0"
+  }
+  disable_exe {
+    filename: "/usr/bin/mmcli"
+    extra_argument: "-m"
+    extra_argument: "any"
+    extra_argument: "--command"
+    extra_argument: "+DISK=0,1,0"
+  }
+}
+helper {
+  modem_name: "fm350"
+  exe {
+    filename: "/usr/local/opt/fibocom/modemlogger"
+    output_dir_argument: "-o"
+  }
+}
+helper {
+  modem_name: "rw350"
+  exe {
+    filename: "/usr/local/opt/fibocom/modemlogger"
+    output_dir_argument: "-o"
+  }
+}

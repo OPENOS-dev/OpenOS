@@ -1,0 +1,134 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+module cros.camera_diag.mojom;
+
+enum AnalyzerStatus {
+  kNotRun = 0,
+  kPassed = 1,
+  kFailed = 2,
+};
+
+[Extensible]
+enum AnalyzerType {
+  [Default] kUnknown = 0,
+  kPrivacyShutterSwTest = 1,
+  kDirtyLens = 2,
+};
+
+[Extensible]
+enum CameraIssue {
+  [Default] kNone = 0,
+  kPrivacyShutterOn = 1,
+  kDirtyLens = 2,
+  kCameraServiceDown = 3,
+};
+
+[Extensible]
+enum ClientType {
+  [Default] kUnknown = 0,
+  kHealthd = 1,
+  kTest = 2,
+};
+
+// Data source of frames and errors.
+[Extensible]
+enum DataSource {
+  [Default] kCameraService = 0,
+  kCameraDiagnostics = 1,
+};
+
+// All status and errors of various camera diagnostics operations.
+[Extensible]
+enum ErrorCode {
+  [Default] kUnknown = 0,
+  kCameraClosed = 1,
+  kAlreadyRunningAnalysis = 2,
+  kInvalidDuration = 3,
+  kCrosCameraControllerNotRegistered = 4,
+  kDiagnosticsInternal = 5,
+};
+
+[Extensible]
+enum PixelFormat {
+  [Default] kYuv420 = 0,
+  kJpeg = 1,
+};
+
+struct AnalyzerResult {
+  AnalyzerType type;
+  AnalyzerStatus status;
+};
+
+struct DiagnosticsResult {
+  uint32 num_analyzed_frames;
+  array<AnalyzerResult> analyzer_results;
+  CameraIssue suggested_issue;
+};
+
+union FrameAnalysisResult {
+  ErrorCode error;
+  DiagnosticsResult res;
+};
+
+struct FrameAnalysisConfig {
+  const uint32 kMinDurationMs = 5000;
+  const uint32 kMaxDurationMs = 60000;
+
+  ClientType client_type;
+  uint32 duration_ms;  // In range [kMinDurationMs, kMaxDurationMs]
+};
+
+struct CameraFrameBuffer {
+  uint32 size;
+  handle<shared_buffer> shm_handle;
+};
+
+struct CameraStream {
+  uint32 width;
+  uint32 height;
+  PixelFormat pixel_format;
+};
+
+struct CameraFrame {
+  CameraStream stream;
+  uint32? frame_number;
+  DataSource source;
+  CameraFrameBuffer buffer;
+  bool is_empty;
+};
+
+struct StreamingConfig {
+  uint32 frame_interval;
+};
+
+union StartStreamingResult {
+  ErrorCode error;
+  CameraStream stream;
+};
+
+// Consumer facing interface.
+interface CameraDiagnostics {
+  RunFrameAnalysis@0(FrameAnalysisConfig config) => (FrameAnalysisResult res);
+};
+
+// For internal data source services.
+interface CrosCameraDiagnosticsService {
+  SendFrame@0(CameraFrame frame);
+};
+
+// Camera service implements this interface.
+interface CrosCameraController {
+  // TODO(imranziad): Add a callback to notify when selected stream
+  // resolution changes during diagnosis. Diagnostics will need to reconfigure
+  // the buffers.
+  // Overrides a running session when called again. Drops the requested frames.
+  StartStreaming@0(StreamingConfig config) => (StartStreamingResult res);
+
+  StopStreaming@1();
+
+  // Camera diagnostics sends an empty frame for camera service to fill in.
+  RequestFrame@2(CameraFrame frame);
+};

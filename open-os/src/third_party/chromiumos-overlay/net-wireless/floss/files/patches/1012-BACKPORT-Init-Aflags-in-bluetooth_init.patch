@@ -1,0 +1,124 @@
+From 675c8c5408fcc76e57328d08b106e1add89bade8 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Mon, 12 Jan 2026 06:56:41 +0800
+Subject: [PATCH] BACKPORT: Init Aflags in bluetooth_init
+
+SyspropsModule is currently initialized in GD, which means all flags
+that are queried before GD is up would become false. This patch makes
+the module a singleton and initialized in bluetooth_init.
+
+Also removing them from bp as Android is not using them.
+
+BACKPORT note: Ignore the #else parts that only exist in upstream
+               system/main/shim/stack.cc
+
+Bug: 472955452
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: emerge-cherry floss-upstream
+Flag: NONE Floss only change
+Change-Id: Ia02d1a7ce18990b9099d2306ff1d1c153c6097b4
+---
+ system/btif/src/bluetooth.cc          |  9 +++++++++
+ system/gd/Android.bp                  |  2 --
+ system/gd/hci/controller_impl.cc      |  3 ---
+ system/gd/sysprops/sysprops_module.cc |  9 +++++++++
+ system/gd/sysprops/sysprops_module.h  |  2 ++
+ system/main/shim/stack.cc             | 13 -------------
+ 6 files changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/system/btif/src/bluetooth.cc b/system/btif/src/bluetooth.cc
+index 4e9f61ee721..aed5393b19e 100644
+--- a/system/btif/src/bluetooth.cc
++++ b/system/btif/src/bluetooth.cc
+@@ -138,2 +138,6 @@
+ 
++#ifdef TARGET_FLOSS
++#include "sysprops/sysprops_module.h"
++#endif
++
+ using namespace bluetooth;
+@@ -421,2 +425,7 @@ static int init(bt_callbacks_t* callbacks, bool start_restricted, bool is_common
+ 
++#ifdef TARGET_FLOSS
++  // Floss queries Aflags from this module, thus this needs to be called before anything.
++  sysprops::InitSyspropsModule();
++#endif
++
+   set_hal_cbacks(callbacks);
+diff --git a/system/gd/Android.bp b/system/gd/Android.bp
+index d515a497a0a..cc8148569e1 100644
+--- a/system/gd/Android.bp
++++ b/system/gd/Android.bp
+@@ -53,3 +53,2 @@ cc_defaults {
+                 "os/host/wakelock_native.cc",
+-                "sysprops/sysprops_module.cc",
+             ],
+@@ -411,3 +410,2 @@ cc_test {
+                 "hal/hci_hal_impl_host_rootcanal_test.cc",
+-                "sysprops/sysprops_module_test.cc",
+             ],
+diff --git a/system/gd/hci/controller_impl.cc b/system/gd/hci/controller_impl.cc
+index e05cdcd523f..65d303e9818 100644
+--- a/system/gd/hci/controller_impl.cc
++++ b/system/gd/hci/controller_impl.cc
+@@ -33,5 +33,2 @@
+ #include "stack/include/hcidefs.h"
+-#if TARGET_FLOSS
+-#include "sysprops/sysprops_module.h"
+-#endif
+ 
+diff --git a/system/gd/sysprops/sysprops_module.cc b/system/gd/sysprops/sysprops_module.cc
+index 0573fdba2b0..b8d14be44a0 100644
+--- a/system/gd/sysprops/sysprops_module.cc
++++ b/system/gd/sysprops/sysprops_module.cc
+@@ -27,2 +27,11 @@ namespace sysprops {
+ 
++static SyspropsModule* g_sysprops_module;
++
++void InitSyspropsModule() {
++  if (g_sysprops_module) {
++    std::abort();
++  }
++  g_sysprops_module = new SyspropsModule();
++}
++
+ static const size_t kDefaultCapacity = 10000;
+diff --git a/system/gd/sysprops/sysprops_module.h b/system/gd/sysprops/sysprops_module.h
+index 32776c1e44f..d1fd6fa3db7 100644
+--- a/system/gd/sysprops/sysprops_module.h
++++ b/system/gd/sysprops/sysprops_module.h
+@@ -38,2 +38,4 @@ private:
+ 
++void InitSyspropsModule();
++
+ }  // namespace sysprops
+diff --git a/system/main/shim/stack.cc b/system/main/shim/stack.cc
+index e83b51eca7e..13d2e1ae4c5 100644
+--- a/system/main/shim/stack.cc
++++ b/system/main/shim/stack.cc
+@@ -58,6 +58,2 @@
+ 
+-#if TARGET_FLOSS
+-#include "sysprops/sysprops_module.h"
+-#endif
+-
+ using ::bluetooth::os::Handler;
+@@ -73,5 +69,2 @@ struct Stack::impl {
+         snoop_logger_(handler),
+-#ifdef TARGET_FLOSS
+-        sysprops_module_(),
+-#endif
+         link_clocker_(),
+@@ -103,5 +96,2 @@ struct Stack::impl {
+         snoop_logger_(new os::Handler(thread)),
+-#ifdef TARGET_FLOSS
+-        sysprops_module_(),
+-#endif
+         link_clocker_(),
+@@ -143,5 +133,2 @@ struct Stack::impl {
+   hal::SnoopLogger snoop_logger_;
+-#if TARGET_FLOSS
+-  sysprops::SyspropsModule sysprops_module_;
+-#endif
+   std::unique_ptr<hal::SocketHal> socket_hal_ = nullptr;

@@ -1,0 +1,22 @@
+[package]
+name = "libcras"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[lib]
+path = "src/libcras.rs"
+
+[dependencies]
+anyhow = "1.0"
+async-trait = "0.1.36"
+audio_streams = "*"
+cras-sys = "*"
+data_model = "*"
+futures = "*"
+libc = "*"
+libchromeos = "*"
+log = "0.4"
+nix = { version = "0.28", features = ["socket", "fs"] }
+serde = "1.0.125"
+tokio = { version = "1.19.2", features = ["rt", "net", "time"]}

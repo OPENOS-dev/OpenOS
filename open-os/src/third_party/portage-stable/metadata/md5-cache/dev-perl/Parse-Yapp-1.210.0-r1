@@ -1,0 +1,14 @@
+BDEPEND=!<net-fs/samba-4.10.6 virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Compiles yacc-like LALR grammars to generate Perl OO parser modules
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Parse-Yapp
+IUSE=examples
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=!<net-fs/samba-4.10.6 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/W/WB/WBRASWELL/Parse-Yapp-1.21.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=8fe0dc360ac3a2cc030a389534f026e4

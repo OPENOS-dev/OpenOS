@@ -1,0 +1,21 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'audio_CrasDevSwitchStress'
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "Fail if device buffer drifts too high."
+}
+# ATTRIBUTES = "suite:audio, suite:bvt-perbuild, suite:distributed_lab_qual_bvt_shard1"
+TEST_TYPE = 'client'
+
+"""
+Test device buffer can stay at reasonable level under repeated switching.
+"""
+
+job.run_test('audio_CrasDevSwitchStress',
+             type_a='HEADPHONE',
+             type_b='INTERNAL_SPEAKER',
+             pinned_type=None)

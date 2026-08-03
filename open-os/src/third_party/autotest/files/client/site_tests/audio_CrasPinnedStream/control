@@ -1,0 +1,26 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'audio_CrasPinnedStream'
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": """
+                Check if the internal mic can record samples while the headset
+                is also recording.
+                """
+}
+ATTRIBUTES = ""
+TEST_TYPE = 'client'
+DEPENDENCIES = 'audio_loopback_dongle'
+
+"""
+Test that we can record from multiple devices simultaneously.
+
+NOTE: For this test to pass you need to have the line out looped back to mic-in.
+This can be through a 3.5mm male-to-male cable or a loopback dongle depending on
+your device.
+"""
+
+job.run_test('audio_CrasPinnedStream', constraints=['rms_value > 0.05'])

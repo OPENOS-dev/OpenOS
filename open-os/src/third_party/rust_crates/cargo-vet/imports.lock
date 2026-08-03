@@ -1,0 +1,103 @@
+
+# cargo-vet imports lock
+
+[audits.fuchsia.criteria.ub-risk-0]
+description = """
+No unsafe code.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-0
+"""
+
+[audits.fuchsia.criteria.ub-risk-1]
+description = """
+Excellent soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1
+"""
+
+[audits.fuchsia.criteria.ub-risk-2]
+description = """
+Negligible unsoundness or average soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2
+"""
+
+[audits.fuchsia.criteria.ub-risk-3]
+description = """
+Mild unsoundness or suboptimal soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-3
+"""
+
+[audits.fuchsia.criteria.ub-risk-4]
+description = """
+Extreme unsoundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4
+"""
+
+[[audits.fuchsia.audits.nix]]
+who = "David Koloski <dkoloski@google.com>"
+criteria = ["safe-to-run", "ub-risk-3"]
+version = "0.26.2"
+notes = """
+Reviewed on https://fxrev.dev/780283
+Issues:
+- https://github.com/nix-rust/nix/issues/1975
+- https://github.com/nix-rust/nix/issues/1977
+- https://github.com/nix-rust/nix/pull/1978
+- https://github.com/nix-rust/nix/pull/1979
+- https://github.com/nix-rust/nix/issues/1980
+- https://github.com/nix-rust/nix/issues/1981
+- https://github.com/nix-rust/nix/pull/1983
+- https://github.com/nix-rust/nix/issues/1990
+- https://github.com/nix-rust/nix/pull/1992
+- https://github.com/nix-rust/nix/pull/1993
+"""
+
+[audits.google3.criteria.ub-risk-0]
+description = """
+No unsafe code.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-0
+"""
+
+[audits.google3.criteria.ub-risk-1]
+description = """
+Excellent soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1
+"""
+
+[audits.google3.criteria.ub-risk-2]
+description = """
+Negligible unsoundness or average soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2
+"""
+
+[audits.google3.criteria.ub-risk-3]
+description = """
+Mild unsoundness or suboptimal soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-3
+"""
+
+[audits.google3.criteria.ub-risk-4]
+description = """
+Extreme unsoundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4
+"""
+
+[audits.google3.audits]

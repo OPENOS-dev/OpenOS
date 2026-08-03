@@ -1,0 +1,77 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_dbus",
+    ":install_init",
+    ":install_seccomp",
+    ":ml_core_cacher",
+  ]
+
+  if (use.intel_openvino_delegate || use.mtk_neuron_delegate) {
+    deps += [ ":install_stable_delegate_settings" ]
+  }
+
+  if (use.test) {
+    deps += []
+  }
+  if (use.fuzzer) {
+    deps += []
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+  ]
+}
+
+executable("ml_core_cacher") {
+  sources = [
+    "main.cc",
+    "utils.cc",
+  ]
+  configs += [ ":target_defaults" ]
+  defines = [
+    "USE_INTEL_OPENVINO_DELEGATE=${use.intel_openvino_delegate}",
+    "USE_MTK_NEURON_DELEGATE=${use.mtk_neuron_delegate}",
+  ]
+  deps = [
+    "//ml_core:libcros_ml_core",
+    "//ml_core/dlc:dlc_client",
+  ]
+  install_path = "bin"
+}
+
+install_config("install_init") {
+  sources = [ "init/ml-core-cacher.conf" ]
+  install_path = "upstart"
+}
+
+install_config("install_dbus") {
+  sources = [ "dbus/ml-core-cacher-dbus.conf" ]
+  install_path = "dbus_system_d"
+}
+
+install_config("install_seccomp") {
+  arch = getenv("ARCH")
+  sources = [ "seccomp_filter/ml-core-cacher-${arch}.policy" ]
+  outputs = [ "ml-core-cacher-seccomp.policy" ]
+  install_path = "seccomp_policy"
+}
+
+install_config("install_stable_delegate_settings") {
+  sources = []
+  if (use.mtk_neuron_delegate) {
+    sources += [ "cacher_mtk_neuron_delegate_settings.json" ]
+  } else if (use.intel_openvino_delegate) {
+    sources += [ "cacher_intel_openvino_delegate_settings.json" ]
+  }
+  outputs = [ "cacher_stable_delegate_settings.json" ]
+  install_path = "/etc/ml_core"
+}

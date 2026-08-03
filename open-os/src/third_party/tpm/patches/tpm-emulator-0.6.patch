@@ -1,0 +1,246 @@
+diff -Naur old/Makefile new/Makefile
+--- old/Makefile	2010-01-15 23:19:25.000000000 -0800
++++ new/Makefile	2010-01-15 23:19:51.000000000 -0800
+@@ -10,7 +10,13 @@
+ VERSION_BUILD  := $(shell date +"%s")
+ VERSION_SUFFIX := 
+ 
++OSNAME := $(shell uname)
++
++ifeq ($(OSNAME), Darwin)
++SUBDIRS := tpmd tddl
++else
+ SUBDIRS := tpmd tpmd_dev tddl
++endif
+ 
+ all: version all-recursive
+ 
+diff -Naur old/tddl/Makefile new/tddl/Makefile
+--- old/tddl/Makefile	2010-01-15 23:19:25.000000000 -0800
++++ new/tddl/Makefile	2010-01-15 23:22:31.000000000 -0800
+@@ -9,21 +9,40 @@
+            -Wwrite-strings -Wsign-compare -Wno-multichar
+ #WFLAGS += -Wextra -Wcast-qual -Wmissing-prototypes -Wmissing-declarations -Wstrict-aliasing
+ CFLAGS += $(WFLAGS) -O2
++OSNAME := $(shell uname)
+ 
++ifeq ($(OSNAME), Darwin)
++TDDL_NAME := libtddl
++TDDL    := $(TDDL_NAME).dylib
++TDDLSO1 := $(TDDL_NAME).1.2.dylib
++TDDLSO2 := $(TDDL_NAME).1.2.0.dylib
++
++LIBDIR := /usr/local/lib/
++INCDIR := /usr/local/include/
++else
+ TDDL    := libtddl.so
+ TDDLSO1 := $(TDDL).1.2
+ TDDLSO2 := $(TDDL).1.2.0
+ 
+-LIBDIR := /usr/lib/
+-INCDIR := /usr/include/
++LIBDIR := /usr/local/lib/
++INCDIR := /usr/local/include/
++endif
+ 
+ all: $(TDDL)
+ 
++ifeq ($(OSNAME), Darwin)
++$(TDDL): tddl.c tddl.h
++	$(CC) $(CFLAGS) -c -o tddl.o tddl.c
++	$(CC) -dynamiclib -o $(TDDLSO2) -install_name $(LIBDIR)/$(TDDLSO1) tddl.o
++	test -s $(TDDLSO1) || ln -s $(TDDLSO2) $(TDDLSO1)
++	test -s $(TDDL) || ln -s $(TDDLSO1) $(TDDL)
++else
+ $(TDDL): tddl.c tddl.h
+ 	$(CC) $(CFLAGS) -fPIC -c -o tddl.o tddl.c
+ 	$(CC) -shared -o $(TDDLSO2) -Wl,-soname,$(TDDLSO1) tddl.o
+ 	test -s $(TDDLSO1) || ln -s $(TDDLSO2) $(TDDLSO1)
+ 	test -s $(TDDL) || ln -s $(TDDLSO1) $(TDDL)
++endif
+ 
+ test_tddl: test_tddl.c
+ 	$(CC) $(CFLAGS) -I. -L. test_tddl.c -ltddl -o test_tddl
+@@ -32,16 +51,31 @@
+ 	rm -rf $(TDDL) $(TDDLSO1) $(TDDLSO2) *.o test_tddl
+ 
+ INSTALL ?= install
++MKDIR ?= mkdir
+ 
++ifeq ($(OSNAME), Darwin)
++install: $(TDDL)
++	$(MKDIR) -p $(DESTDIR)/$(INCDIR)
++	$(INSTALL) -m 644 tddl.h $(DESTDIR)/$(INCDIR)
++	$(MKDIR) -p $(DESTDIR)/$(LIBDIR)
++	$(INSTALL) -m 644 $(TDDLSO2) $(DESTDIR)/$(LIBDIR)
++	cd $(DESTDIR)/$(LIBDIR); ln -s $(TDDLSO2) $(TDDLSO1); ln -s $(TDDLSO1) $(TDDL); cd -
++else
+ install: $(TDDL)
+ 	$(INSTALL) -D -d $(DESTDIR)/$(INCDIR)
+ 	$(INSTALL) -m 644 tddl.h $(DESTDIR)/$(INCDIR)
+ 	$(INSTALL) -D -d $(DESTDIR)/$(LIBDIR)
+ 	$(INSTALL) -m 644 $(TDDLSO2) $(DESTDIR)/$(LIBDIR)
+ 	cd $(DESTDIR)/$(LIBDIR); ln -s $(TDDLSO2) $(TDDLSO1); ln -s $(TDDLSO1) $(TDDL); cd -
++endif
+ 
++ifeq ($(OSNAME), Darwin)
++test: test_tddl
++	DYLD_LIBRARY_PATH=. ./test_tddl
++else
+ test: test_tddl
+ 	LD_LIBRARY_PATH=. ./test_tddl
++endif
+ 
+ .PHONY: all clean install test
+ 
+diff -Naur old/tddl/tddl.c new/tddl/tddl.c
+--- old/tddl/tddl.c	2010-01-15 23:19:25.000000000 -0800
++++ new/tddl/tddl.c	2010-01-15 23:19:51.000000000 -0800
+@@ -27,7 +27,11 @@
+ 
+ /* device and socket names */
+ static const char *tpm_device_name = "/dev/tpm";
++#if __APPLE__
++static const char *tpmd_socket_name = "/tmp/tpm/tpmd_socket:0";
++#else
+ static const char *tpmd_socket_name = "/var/run/tpm/tpmd_socket:0";
++#endif
+ 
+ /* TPM device handle */
+ static int tddli_dh = -1;
+diff -Naur old/tpm/tpm_deprecated.c new/tpm/tpm_deprecated.c
+--- old/tpm/tpm_deprecated.c	2010-01-15 23:19:25.000000000 -0800
++++ new/tpm/tpm_deprecated.c	2010-01-15 23:19:51.000000000 -0800
+@@ -416,7 +416,7 @@
+   buf = ptr = tpm_malloc(len);
+   if (buf == NULL) return TPM_NOSPACE;
+   if (tpm_rsa_decrypt(&ephKey->key, scheme, encNewAuth, newAuthSize, 
+-    buf, &size)
++    buf, (size_t*)&size)
+     || (len = size) == 0
+     || tpm_unmarshal_TPM_CHANGEAUTH_VALIDATE(&ptr, &len, &a1)) {
+     debug("TPM_ChangeAuthAsymFinish(): tpm_rsa_decrypt() failed.");
+diff -Naur old/tpmd/Makefile new/tpmd/Makefile
+--- old/tpmd/Makefile	2010-01-15 23:19:25.000000000 -0800
++++ new/tpmd/Makefile	2010-01-15 23:19:51.000000000 -0800
+@@ -10,7 +10,8 @@
+ CFLAGS  += $(WFLAGS) -g -I.. -I. -O2 -fno-strict-aliasing
+ LDFLAGS += -lgmp
+ 
+-BINDIR  := /usr/sbin/
++DESTTOP := /usr/local/
++BINDIR  := $(DESTTOP)/sbin
+ 
+ TPMD    := tpmd
+ DIRS    := ../tpm ../crypto
+@@ -30,11 +31,13 @@
+ TPMD_USER  ?= tss
+ TPMD_GROUP ?= tss
+ INSTALL    ?= install
++MKDIR      ?= mkdir
+ 
+ install: $(TPMD)
+-	$(INSTALL) -m 755 -o $(TPMD_USER) -g $(TPMD_GROUP) -d $(DESTDIR)/var/lib/tpm
+-	$(INSTALL) -m 755 -o $(TPMD_USER) -g $(TPMD_GROUP) -d $(DESTDIR)/var/run/tpm
+-	$(INSTALL) -D -d $(DESTDIR)/$(BINDIR)
++	/bin/sh ./platform_useradd_tss
++	$(INSTALL) -m 755 -o $(TPMD_USER) -g $(TPMD_GROUP) -d $(DESTDIR)/$(DESTTOP)/var/lib/tpm
++	$(INSTALL) -m 755 -o $(TPMD_USER) -g $(TPMD_GROUP) -d $(DESTDIR)/$(DESTTOP)/var/run/tpm
++	$(MKDIR) -p $(DESTDIR)/$(BINDIR)
+ 	$(INSTALL) -m 755 $(TPMD) $(DESTDIR)/$(BINDIR)
+ 
+ .PHONY: all clean install
+diff -Naur old/tpmd/platform_useradd_tss new/tpmd/platform_useradd_tss
+--- old/tpmd/platform_useradd_tss	1969-12-31 16:00:00.000000000 -0800
++++ new/tpmd/platform_useradd_tss	2010-01-15 23:19:51.000000000 -0800
+@@ -0,0 +1,42 @@
++#! /bin/bash
++
++PATH=/bin:/sbin:/usr/bin:/usr/sbin:
++
++OSNAME=`uname`
++if [ "$OSNAME" == "Darwin" ] 
++then
++
++    LAST_USED_UID=`sudo dscl . -list /Users UniqueID | sort -n  -k2 | tail -1 | awk '{print $2}'`
++    if [ "$?" != 0 ]
++    then
++        exit 1
++    fi
++    NEXT_UID=$[$LAST_USED_UID + 1000]
++
++    LAST_USED_GID=`sudo dscl . -list /Groups PrimaryGroupID | sort -n  -k2 | tail -1 | awk '{print $2}'`
++    if [ "$?" != 0 ]
++    then
++        exit 1
++    fi
++    NEXT_GID=$[$LAST_USED_GID + 1000]
++
++    sudo dscl . -create /Groups/tss PrimaryGroupID $NEXT_GID || exit 1
++
++    sudo dscl . -create /Users/tss UniqueID $NEXT_UID
++    if [ "$?" != 0 ]
++    then
++        sudo dscl . -delete /Groups/tss
++        exit 1
++    fi
++
++    sudo dscl . -append /Users/tss PrimaryGroupID $NEXT_GID
++    if [ "$?" != 0 ]
++    then
++        sudo dscl . -delete /Groups/tss
++        sudo dscl . -delete /Users/tss
++        exit 1
++    fi
++
++else
++    useradd -r -U tss || true # hope that failure means tss already exists
++fi
+diff -Naur old/tpmd/tpm_emulator_config.h new/tpmd/tpm_emulator_config.h
+--- old/tpmd/tpm_emulator_config.h	2010-01-15 23:19:25.000000000 -0800
++++ new/tpmd/tpm_emulator_config.h	2010-01-15 23:19:51.000000000 -0800
+@@ -131,6 +131,24 @@
+ #define BE16_TO_CPU(x) be16toh(x)
+ #define LE16_TO_CPU(x) le16toh(x)
+ 
++#elif defined (__APPLE__)
++
++#include <libkern/OSByteOrder.h>
++
++#define CPU_TO_BE64(x) OSSwapHostToBigInt64(x)
++#define CPU_TO_LE64(x) OSSwapHostToLittleInt64(x)
++#define CPU_TO_BE32(x) OSSwapHostToBigInt32(x)
++#define CPU_TO_LE32(x) OSSwapHostToLittleInt32(x)
++#define CPU_TO_BE16(x) OSSwapHostToBigInt16(x)
++#define CPU_TO_LE16(x) OSSwapHostToLittleInt16(x)
++
++#define BE64_TO_CPU(x) OSSwapBigToHostInt64(x)
++#define LE64_TO_CPU(x) OSSwapLittleToHostInt64(x)
++#define BE32_TO_CPU(x) OSSwapBigToHostInt32(x)
++#define LE32_TO_CPU(x) OSSwapLittleToHostInt32(x)
++#define BE16_TO_CPU(x) OSSwapBigToHostInt16(x)
++#define LE16_TO_CPU(x) OSSwapLittleToHostInt16(x)
++
+ #endif
+ 
+ #endif /* _TPM_EMULATOR_CONFIG_H_ */
+diff -Naur old/tpmd/tpmd.c new/tpmd/tpmd.c
+--- old/tpmd/tpmd.c	2010-01-15 23:19:25.000000000 -0800
++++ new/tpmd/tpmd.c	2010-01-15 23:19:51.000000000 -0800
+@@ -42,9 +42,15 @@
+ static int is_daemon = 0;
+ static int opt_debug = 0;
+ static int opt_foreground = 0;
++#if defined (__APPLE__)
++static const char *opt_socket_name = "/tmp/tpm/" TPM_DAEMON_NAME "_socket:0";
++static const char *opt_storage_file = "/tmp/tpm/tpm_emulator-1.2."
++                                      TPM_STR(VERSION_MAJOR) "." TPM_STR(VERSION_MINOR);
++#else
+ static const char *opt_socket_name = "/var/run/tpm/" TPM_DAEMON_NAME "_socket:0";
+-static const char *opt_storage_file = "/var/lib/tpm/tpm_emulator-1.2."
++static const char *opt_storage_file = "/var/run/tpm/tpm_emulator-1.2."
+                                       TPM_STR(VERSION_MAJOR) "." TPM_STR(VERSION_MINOR);
++#endif
+ static uid_t opt_uid = 0;
+ static gid_t opt_gid = 0;
+ static int tpm_startup = 2;

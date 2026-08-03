@@ -1,0 +1,39 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+pkg_config("audio_pkg_config") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libmojo",
+    "system_api",
+  ]
+}
+
+source_set("audio") {
+  sources = [ "audio_driver.cc" ]
+  configs += [ ":audio_pkg_config" ]
+  public_deps = [ "//diagnostics/cros_healthd/routines:utils" ]
+  deps = [
+    "//diagnostics/base",
+    "//diagnostics/cros_healthd/system",
+    "//diagnostics/dbus_bindings",
+    "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+  ]
+}
+
+if (use.test) {
+  source_set("audio_test") {
+    sources = [ "audio_driver_test.cc" ]
+    configs += [ ":audio_pkg_config" ]
+    deps = [
+      ":audio",
+      "//diagnostics/base",
+      "//diagnostics/base:healthd_testrunner",
+      "//diagnostics/cros_healthd/routines:libroutine_test_utils",
+      "//diagnostics/cros_healthd/system:test_support",
+      "//diagnostics/dbus_bindings",
+    ]
+  }
+}

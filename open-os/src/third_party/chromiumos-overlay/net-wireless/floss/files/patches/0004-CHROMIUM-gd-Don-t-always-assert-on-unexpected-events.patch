@@ -1,0 +1,82 @@
+From 9fb3581b98d4b81f9807fd553ea58d08566e0eac Mon Sep 17 00:00:00 2001
+From: Abhishek Pandit-Subedi <abhishekpandit@google.com>
+Date: Fri, 5 Aug 2022 15:53:58 -0700
+Subject: [PATCH] CHROMIUM: gd: Don't always assert on unexpected events
+
+On Linux, we need to support injecting hci commands directly to the
+controller and getting back responses, bypassing the stack. Thus, change
+the asserts here to simply logging and returning instead.
+
+This change is a temporary change to enable landing Floss and needs to
+be replaced once tooling that depends on injecting into the kernel is
+gone.
+
+BUG=b:233764522
+TEST=run `hcitool cmd 4 1` while stack is running on ChromeOS
+
+Change-Id: Ic7e87393f44515065949b57f77c5f58aea106f65
+---
+ system/gd/hci/hci_layer.cc | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/system/gd/hci/hci_layer.cc b/system/gd/hci/hci_layer.cc
+index 0ab2036af18..4f7ab82505c 100644
+--- a/system/gd/hci/hci_layer.cc
++++ b/system/gd/hci/hci_layer.cc
+@@ -242,4 +242,13 @@ struct HciLayer::impl {
+ 
++#ifdef TARGET_FLOSS
++    if (command_queue_.empty()) {
++      log::info("Unexpected {} event with OpCode 0x{:02x} ({})", logging_id, op_code,
++                OpCodeText(op_code));
++      return;
++    }
++#else
+     log::assert_that(!command_queue_.empty(), "Unexpected {} event with OpCode {}", logging_id,
+                      OpCodeText(op_code));
++#endif
++
+     if (waiting_command_ == OpCode::CONTROLLER_DEBUG_INFO &&
+@@ -250,4 +259,12 @@ struct HciLayer::impl {
+     }
++#ifdef TARGET_FLOSS
++    if (waiting_command_ != op_code) {
++      log::info("Waiting for 0x{:02x} ({}), got 0x{:02x} ({})", waiting_command_,
++                OpCodeText(waiting_command_), op_code, OpCodeText(op_code));
++      return;
++    }
++#else
+     log::assert_that(waiting_command_ == op_code, "Waiting for {}, got {}",
+                      OpCodeText(waiting_command_), OpCodeText(op_code));
++#endif
+ 
+@@ -466,2 +483,10 @@ struct HciLayer::impl {
+         auto op_code = view.GetCommandOpCode();
++#ifdef TARGET_FLOSS
++        if (op_code != OpCode::NONE) {
++          log::info("Received {} event with OpCode 0x{:02x} ({}) without a waiting command"
++                    "(is the HAL sending commands, but not handling the events?)",
++                    EventCodeText(event_code), op_code, OpCodeText(op_code));
++          return;
++        }
++#else
+         log::assert_that(op_code == OpCode::NONE,
+@@ -470,2 +495,3 @@ struct HciLayer::impl {
+                          EventCodeText(event_code), OpCodeText(op_code));
++#endif
+       }
+@@ -475,2 +501,10 @@ struct HciLayer::impl {
+         auto op_code = view.GetCommandOpCode();
++#ifdef TARGET_FLOSS
++        if (op_code != OpCode::NONE) {
++          log::info("Received {} event with OpCode 0x{:02x} ({}) without a waiting command"
++                    "(is the HAL sending commands, but not handling the events?)",
++                    EventCodeText(event_code), op_code, OpCodeText(op_code));
++          return;
++        }
++#else
+         log::assert_that(op_code == OpCode::NONE,
+@@ -479,2 +513,3 @@ struct HciLayer::impl {
+                          EventCodeText(event_code), OpCodeText(op_code));
++#endif
+       }

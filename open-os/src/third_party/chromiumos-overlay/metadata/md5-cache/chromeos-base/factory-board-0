@@ -1,0 +1,12 @@
+DEFINED_PHASES=-
+DESCRIPTION=Board-specific file for factory software (chromeos-base/factory).
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=cheets factory_branch
+KEYWORDS=*
+LICENSE=BSD-Google
+REQUIRED_USE=factory_branch? ( !cheets )
+RESTRICT=mirror strip
+SLOT=0
+_eclasses_=cros-cpfe	13a59b60b1046eac434b64e4aed31d3a	cros-factory	f5a7380f81df176c7e1c0258643e7843
+_md5_=6a6e76273238dacd0a735e7ad1a5f6d3

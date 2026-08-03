@@ -1,0 +1,3 @@
+SUBSYSTEM=="usb", ACTION=="add", ENV{ID_VENDOR_ID}=="17e9", ENV{ID_MODEL_ID}=="416d|016b|8060", \
+  OWNER="cfm-firmware-updaters", GROUP="cfm-peripherals", MODE="0664" \
+  RUN+="/sbin/minijail0 -u cfm-firmware-updaters -g cfm-peripherals -e -i -l -N -v -r -n -p -- /usr/sbin/mimo-updater /lib/firmware/displaylink/mimofw_0x416D_0x00000002.bin"

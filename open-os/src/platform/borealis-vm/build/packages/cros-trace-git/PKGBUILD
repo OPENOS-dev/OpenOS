@@ -1,0 +1,43 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Maintainer: David Riley <davidriley@chromium.org>
+# Maintainer: Ryan Neph <ryanneph@google.com>
+# Maintainer: Chia-I Wu <olv@google.com>
+
+pkgname=cros-trace
+pkgver=VERSION
+pkgrel=1
+pkgdesc="A utility for capturing and merging multiple Perfetto traces"
+arch=('x86_64')
+url="https://gitlab.freedesktop.org/olv/cros-trace.git"
+license=('custom')
+
+depends=('protobuf')
+makedepends=('git' 'meson' 'ninja')
+provides=("${pkgname}")
+conflicts=("${pkgname}")
+
+pinned_ref='64d04f6c9a4a4eb7b12e69ad0d4312f92acbb373'
+source=("${pkgname}::git+https://gitlab.freedesktop.org/olv/cros-trace.git#commit=${pinned_ref}")
+sha512sums=('SKIP')
+
+pkgver() {
+        cd "${srcdir}/${pkgname}"
+        printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+        cd "${srcdir}/${pkgname}"
+        meson setup _build --buildtype=release --prefix="/usr"
+        ninja -C _build
+}
+
+package() {
+        cd "${srcdir}/${pkgname}"
+        DESTDIR="${pkgdir}" ninja -C _build install
+
+        install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" \
+                "${srcdir}/${pkgname}/LICENSE"
+}

@@ -1,0 +1,5604 @@
+
+# cargo-vet audits file
+
+[criteria.crypto-safe]
+description = """
+All crypto algorithms in this crate have been reviewed by a relevant expert.
+
+**Note**: If a crate does not implement crypto, use `does-not-implement-crypto`,
+which implies `crypto-safe`, but does not require expert review in order to
+audit for."""
+
+[criteria.does-not-implement-crypto]
+description = """
+Inspection reveals that the crate in question does not attempt to implement any
+cryptographic algorithms on its own.
+
+Note that certification of this does not require an expert on all forms of
+cryptography: it's expected for crates we import to be \"good enough\" citizens,
+so they'll at least be forthcoming if they try to implement something
+cryptographic. When in doubt, please ask an expert."""
+implies = "crypto-safe"
+
+[criteria.rule-of-two-safe-to-deploy]
+description = """
+This is a stronger requirement than the built-in safe-to-deploy criteria,
+motivated by Chromium's rule-of-two related requirements:
+https://chromium.googlesource.com/chromium/src/+/master/docs/security/rule-of-2.md#unsafe-code-in-safe-languages
+
+This crate will not introduce a serious security vulnerability to production
+software exposed to untrusted input.
+
+Auditors are not required to perform a full logic review of the entire crate.
+Rather, they must review enough to fully reason about the behavior of all unsafe
+blocks and usage of powerful imports. For any reasonable usage of the crate in
+real-world software, an attacker must not be able to manipulate the runtime
+behavior of these sections in an exploitable or surprising way.
+
+Ideally, ambient capabilities (e.g. filesystem access) are hardened against
+manipulation and consistent with the advertised behavior of the crate. However,
+some discretion is permitted. In such cases, the nature of the discretion should
+be recorded in the `notes` field of the audit record.
+
+Any unsafe code in this crate must, in general, be kept well-contained, and
+documentation must exist to describe how Rust's invariants are being upheld
+despite the unsafe block(s). Nontrivial uses of unsafe must be reviewed by an
+expert in Rust's unsafety guarantees/non-guarantees.
+
+For crates which generate deployed code (e.g. build dependencies or procedural
+macros), reasonable usage of the crate should output code which meets the above
+criteria."""
+implies = "safe-to-deploy"
+
+[criteria.ub-risk-0]
+description = """
+No unsafe code.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-0
+"""
+implies = "ub-risk-1"
+
+[criteria.ub-risk-1]
+description = """
+Excellent soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1
+"""
+implies = "ub-risk-2"
+
+[criteria.ub-risk-1-thorough]
+description = """
+Excellent soundness (established in a thorough review).
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1-thorough
+"""
+implies = "ub-risk-1"
+
+[criteria.ub-risk-2]
+description = """
+Negligible unsoundness or average soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2
+"""
+implies = "ub-risk-3"
+
+[criteria.ub-risk-2-thorough]
+description = """
+Negligible unsoundness or average soundness (established in a thorough review).
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2-thorough
+"""
+implies = "ub-risk-2"
+
+[criteria.ub-risk-3]
+description = """
+Mild unsoundness or suboptimal soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-3
+"""
+implies = "ub-risk-4"
+
+[criteria.ub-risk-4]
+description = """
+Extreme unsoundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4
+"""
+
+[[audits.addr2line]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.19.0"
+
+[[audits.addr2line]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.19.0 -> 0.20.0"
+
+[[audits.addr2line]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.20.0 -> 0.21.0"
+
+[[audits.adler]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.2"
+notes = """
+Fast checksum'ing algos like the one implemented by this crate don't qualify as
+crypto. Hence, this crate does-not-implement-crypto.
+"""
+
+[[audits.ahash]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.3"
+notes = """
+Note on does-not-implement-crypto: the aHash documentation explicitly
+states it is not a cryptographically secure hash.
+"""
+
+[[audits.ahash]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.8.3 -> 0.7.7"
+
+[[audits.ahash]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.8.3 -> 0.8.5"
+
+[[audits.ahash]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.8.5 -> 0.8.11"
+
+[[audits.aho-corasick]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.7.18"
+
+[[audits.aho-corasick]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.20"
+
+[[audits.aho-corasick]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.3"
+
+[[audits.alsa-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.1"
+notes = """
+The vast majority of the LOC of this package is decls that mirror alsa's.
+Auditing alsa itself is out of scope, but these bindings look fine.
+"""
+
+[[audits.ansi_term]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.12.1"
+
+[[audits.anstream]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.13"
+
+[[audits.anstyle]]
+who = "Yu-An Wang <wyuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.4"
+
+[[audits.anstyle-parse]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.3"
+
+[[audits.anstyle-query]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.2"
+
+[[audits.anyhow]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.68"
+
+[[audits.anyhow]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.68 -> 1.0.70"
+
+[[audits.anyhow]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.70 -> 1.0.71"
+
+[[audits.anyhow]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.71 -> 1.0.72"
+
+[[audits.anyhow]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.72 -> 1.0.75"
+
+[[audits.arbitrary]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.6"
+
+[[audits.arbitrary]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.2"
+
+[[audits.arbitrary]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.3"
+
+[[audits.arbitrary]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.2.3 -> 1.3.0"
+
+[[audits.argh]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.10"
+
+[[audits.argh]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.10 -> 0.1.12"
+
+[[audits.argh_derive]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.10"
+
+[[audits.argh_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.10 -> 0.1.12"
+
+[[audits.argh_shared]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.10"
+
+[[audits.argh_shared]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.10 -> 0.1.12"
+
+[[audits.arrayvec]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.4"
+
+[[audits.ascii]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.0"
+
+[[audits.ash]]
+who = "Chia-I Wu <olv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.38.0+1.3.281"
+notes = "Vulkan binding mostly generated from vk.xml"
+
+[[audits.assert_matches]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+
+[[audits.async-stream]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.3"
+
+[[audits.async-stream]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.4"
+
+[[audits.async-stream]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.4 -> 0.3.5"
+
+[[audits.async-stream-impl]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.3"
+
+[[audits.async-stream-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.4"
+
+[[audits.async-stream-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.4 -> 0.3.5"
+
+[[audits.async-task]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.4.0"
+
+[[audits.async-trait]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.48"
+
+[[audits.async-trait]]
+who = "Android Legacy"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.61"
+
+[[audits.async-trait]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.64"
+
+[[audits.async-trait]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.66"
+
+[[audits.async-trait]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.66 -> 0.1.68"
+
+[[audits.async-trait]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.68 -> 0.1.69"
+
+[[audits.async-trait]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.69 -> 0.1.73"
+
+[[audits.atomic-polyfill]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.11"
+
+[[audits.atomic-polyfill]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.11 -> 1.0.3"
+
+[[audits.atty]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.14"
+
+[[audits.atty]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.14"
+
+[[audits.autocfg]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.8"
+
+[[audits.autocfg]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.8 -> 1.1.0"
+
+[[audits.axum]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.5.16"
+
+[[audits.axum]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.17"
+
+[[audits.axum-core]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.8"
+
+[[audits.axum-core]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.9"
+
+[[audits.backtrace]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.67"
+
+[[audits.backtrace]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.67 -> 0.3.68"
+
+[[audits.backtrace]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.68 -> 0.3.69"
+
+[[audits.bare-metal]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.5"
+
+[[audits.bare-metal]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.5 -> 1.0.0"
+
+[[audits.base64]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.13.0"
+
+[[audits.base64]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.13.1"
+
+[[audits.base64]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.1 -> 0.10.1"
+
+[[audits.bayer]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.5"
+
+[[audits.bincode]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.bindgen]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.57.0"
+
+[[audits.bindgen]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.60.1"
+
+[[audits.bindgen]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.63.0"
+
+[[audits.bindgen]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.70.1"
+
+[[audits.bindgen]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.60.1 -> 0.59.2"
+
+[[audits.bindgen]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.63.0 -> 0.64.0"
+
+[[audits.bindgen]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.64.0 -> 0.68.1"
+
+[[audits.bindgen]]
+who = "Bob Haarman <inglorion@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.68.1 -> 0.69.4"
+
+[[audits.bit-set]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.3"
+
+[[audits.bit-vec]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.3"
+
+[[audits.bit-vec]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.3"
+
+[[audits.bit_field]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.10.2"
+
+[[audits.bit_field]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.10.2"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.bitfield]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.13.2"
+
+[[audits.bitflags]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.2.1"
+
+[[audits.bitflags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.3.2"
+
+[[audits.bitflags]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.6.0"
+
+[[audits.bitflags]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.3.2 -> 2.2.1"
+
+[[audits.bitflags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.2.1 -> 2.3.1"
+
+[[audits.bitflags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.3.1 -> 2.3.2"
+
+[[audits.bitflags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.3.2 -> 2.4.0"
+
+[[audits.bitreader]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.6"
+
+[[audits.bitreader]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.3.7"
+
+[[audits.bitreader]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.3.7"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.bitvec]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.19.5"
+
+[[audits.blazesym]]
+who = "Hidenori Kobayashi <hidenorik@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.0-rc.0"
+
+[[audits.blazesym-c]]
+who = "Hidenori Kobayashi <hidenorik@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.0-rc.0"
+
+[[audits.block-buffer]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.10.4"
+
+[[audits.built]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.2"
+
+[[audits.bytecount]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.3"
+
+[[audits.bytemuck]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.13.0"
+
+[[audits.bytemuck]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.13.1"
+
+[[audits.bytemuck_derive]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+
+[[audits.bytes]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.6"
+
+[[audits.bytes]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.1"
+
+[[audits.bytes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.4.0"
+
+[[audits.capnp]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.14.11"
+
+[[audits.cargo-lock]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "8.0.3"
+
+[[audits.cast]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.cbindgen]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.24.5"
+
+[[audits.cbindgen]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.24.5 -> 0.27.0"
+
+[[audits.cc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.79"
+
+[[audits.cc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.79 -> 1.0.82"
+
+[[audits.cc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.82 -> 1.0.83"
+
+[[audits.cexpr]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.4.0"
+
+[[audits.cexpr]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.0"
+
+[[audits.cexpr]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.5.0"
+
+[[audits.cexpr]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.0 -> 0.6.0"
+
+[[audits.cfg-if]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.0"
+
+[[audits.cfg-if]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.0"
+
+[[audits.cfg-if]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.cfg_aliases]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.cfg_aliases]]
+who = "Hsin-chen Chuang <chharry@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.1 -> 0.2.1"
+
+[[audits.chrono]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.23"
+
+[[audits.chrono]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.23 -> 0.4.24"
+
+[[audits.chrono]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.24 -> 0.4.26"
+
+[[audits.chrono]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.26 -> 0.4.34"
+
+[[audits.chunked_transfer]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.4.1"
+
+[[audits.chunked_transfer]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.4.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.ciborium]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.ciborium-io]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.ciborium-ll]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.clang-sys]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.2.0"
+
+[[audits.clang-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.6.0"
+notes = "No attempt was made to audit the DSO(s) this links to; only the Rust code was looked at."
+
+[[audits.clang-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.6.0 -> 1.6.1"
+
+[[audits.clap]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "2.33.3"
+
+[[audits.clap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.34.0"
+
+[[audits.clap]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.22"
+
+[[audits.clap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.23"
+
+[[audits.clap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.0.32"
+
+[[audits.clap]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.5.4"
+
+[[audits.clap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.0.32 -> 4.1.14"
+
+[[audits.clap_builder]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.1.14"
+notes = """
+This was a diff audit between clap 4.0.32 sources, and sources in clap_builder
+4.1.14. clap_builder is primarily stuff refactored out of `clap`.
+"""
+
+[[audits.clap_builder]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.5.2"
+
+[[audits.clap_conf]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.5"
+
+[[audits.clap_derive]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.18"
+
+[[audits.clap_derive]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.5.4"
+
+[[audits.clap_derive]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.2.18 -> 4.0.18"
+
+[[audits.clap_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.0.18 -> 4.0.21"
+
+[[audits.clap_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.0.21 -> 4.1.14"
+
+[[audits.clap_lex]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.4"
+
+[[audits.clap_lex]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.1"
+
+[[audits.clap_lex]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.0"
+
+[[audits.clap_lex]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+delta = "0.4.1 -> 0.2.4"
+
+[[audits.cmake]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.45"
+
+[[audits.cmake]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.48"
+
+[[audits.cmake]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.49"
+
+[[audits.cmake]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.49"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.cmake]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.49 -> 0.1.50"
+
+[[audits.color_quant]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.1.0"
+
+[[audits.color_quant]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.1.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.colorchoice]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.0"
+
+[[audits.colored]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.4"
+
+[[audits.colored]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.4 -> 2.0.0"
+
+[[audits.com_logger]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.command-fds]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+notes = "Already used in AOSP."
+
+[[audits.configparser]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "3.0.0"
+
+[[audits.configparser]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "3.0.2"
+
+[[audits.configparser]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "3.0.2"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.configparser]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.0.2 -> 3.1.0"
+
+[[audits.console]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.15.5"
+
+[[audits.console]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.15.5 -> 0.15.7"
+
+[[audits.cortex-m]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.7"
+
+[[audits.cortex-m-rt-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.15"
+
+[[audits.cortex-m-rtic]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.4"
+
+[[audits.cortex-m-rtic-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.6"
+
+[[audits.cpp_demangle]]
+who = "Hidenori Kobayashi <hidenorik@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.3"
+
+[[audits.cpufeatures]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.8"
+
+[[audits.cpufeatures]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.8 -> 0.2.9"
+
+[[audits.crc]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "crypto-safe"]
+delta = "2.1.0 -> 3.0.1"
+
+[[audits.crc-catalog]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.1"
+notes = """
+crc-catalog has no actual functions or logic implementing crypto; it's just a
+few types and `const`s that outline different CRC configurations. Hence, this
+doesn't implement crypto.
+"""
+
+[[audits.crc-catalog]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = "does-not-implement-crypto"
+delta = "1.1.1 -> 2.2.0"
+notes = "This crate exposes a catalog of types that represent read-only versions of algorithms. There is no line of code that actually does something within this crate, but rather information about the algorithms as Rust types-"
+
+[[audits.crc-catalog]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.1.1 -> 2.2.0"
+
+[[audits.crc32fast]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.3.2"
+notes = """
+This package implements CRC, which is not intended to be cryptographically
+secure. Hence, this crate does-not-implement-crypto.
+"""
+
+[[audits.critical-section]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.1"
+
+[[audits.critical-section]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.1.1 -> 1.1.2"
+
+[[audits.critical-section]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.1.2 -> 1.2.0"
+
+[[audits.cros-codecs]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = "does-not-implement-crypto"
+version = "0.0.2"
+
+[[audits.cros-codecs]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = "safe-to-run"
+version = "0.0.2"
+
+[[audits.cros-codecs]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.0.2 -> 0.0.3"
+
+[[audits.cros-codecs]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.0.3 -> 0.0.4"
+
+[[audits.cros-libva]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = "does-not-implement-crypto"
+version = "0.0.3"
+
+[[audits.cros-libva]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = "safe-to-run"
+version = "0.0.3"
+
+[[audits.cros-libva]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.7"
+
+[[audits.cros-libva]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.11"
+
+[[audits.cros-libva]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.12"
+
+[[audits.cros-libva]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.0.3 -> 0.0.4"
+
+[[audits.crossbeam-channel]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.7"
+
+[[audits.crossbeam-channel]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.5.7 -> 0.5.8"
+
+[[audits.crossbeam-deque]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.3"
+
+[[audits.crossbeam-epoch]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.14"
+
+[[audits.crossbeam-epoch]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.9.14 -> 0.9.15"
+
+[[audits.crossbeam-utils]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.15"
+
+[[audits.crossbeam-utils]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.8.15 -> 0.8.16"
+
+[[audits.cstr_core]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.6"
+
+[[audits.ctor]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.26"
+
+[[audits.ctrlc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.4"
+
+[[audits.ctrlc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.2.4 -> 3.3.0"
+
+[[audits.ctrlc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.3.0 -> 3.4.0"
+
+[[audits.ctrlc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.4.0 -> 3.4.1"
+
+[[audits.cty]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.cxx]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.42"
+
+[[audits.cxx]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.92"
+notes = """
+There is an implementation of SipHash in cxx/ at src/sip.rs. This hash is not
+considered cryptographically secure, and is not used within a context where
+cryptographic security is critical. Hence, it's not considered to be an
+\"implementation of crypto\".
+
+More directly, its current usage is just in HashMap, and its purposes are:
+- randomness and speed suitable for use as a HashMap hasher
+- difficult to DoS with attacker-controlled inputs
+
+For more, see comments on https://crrev.com/c/4411368 .
+"""
+
+[[audits.cxx]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.92 -> 1.0.94"
+
+[[audits.cxx]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.94 -> 1.0.97"
+
+[[audits.cxx]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.97 -> 1.0.106"
+
+[[audits.cxx]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.106 -> 1.0.107"
+
+[[audits.cxx-build]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.97"
+
+[[audits.cxx-build]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.121"
+
+[[audits.cxxbridge-flags]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.42"
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.92"
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.92"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.94"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.107"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "1.0.92 -> 1.0.94"
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.94 -> 1.0.97"
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.97 -> 1.0.106"
+
+[[audits.cxxbridge-flags]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "1.0.106 -> 1.0.107"
+
+[[audits.cxxbridge-macro]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.42"
+
+[[audits.cxxbridge-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.92"
+
+[[audits.cxxbridge-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.92 -> 1.0.94"
+
+[[audits.cxxbridge-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.94 -> 1.0.97"
+
+[[audits.cxxbridge-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.97 -> 1.0.106"
+
+[[audits.cxxbridge-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.106 -> 1.0.107"
+
+[[audits.dashmap]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "5.4.0"
+
+[[audits.dasp_frame]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.0"
+
+[[audits.dasp_interpolate]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.0"
+
+[[audits.dasp_ring_buffer]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.0"
+
+[[audits.dasp_sample]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.0"
+
+[[audits.data-encoding]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.6.0"
+
+[[audits.dbus]]
+who = "ChromeOS Legacy"
+criteria = "safe-to-run"
+version = "0.9.5"
+
+[[audits.dbus]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.7"
+
+[[audits.dbus-codegen]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.10.0"
+
+[[audits.dbus-crossroads]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.4.0"
+
+[[audits.dbus-crossroads]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.2"
+
+[[audits.dbus-crossroads]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+delta = "0.5.2 -> 0.4.0"
+
+[[audits.dbus-tokio]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.7.3"
+
+[[audits.dbus-tokio]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.7.5"
+
+[[audits.dbus-tokio]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.6"
+
+[[audits.dbus-tree]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.2"
+
+[[audits.defmt-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.3"
+
+[[audits.defmt-parser]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.deqp-runner]]
+who = "Matt Turner <msturner@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.1 -> 0.18.0"
+
+[[audits.derive-getters]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.derive-into-owned]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.0"
+
+[[audits.difflib]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.dirs-next]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "2.0.0"
+
+[[audits.dirs-next]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "2.0.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.dirs-sys-next]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.2"
+
+[[audits.displaydoc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.5"
+
+[[audits.document-features]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.6"
+
+[[audits.document-features]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.2.7"
+
+[[audits.document-features]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.2.7"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.downcast]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.0"
+
+[[audits.downcast-rs]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.0"
+
+[[audits.drm]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.12.0"
+
+[[audits.drm-ffi]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.0"
+
+[[audits.drm-fourcc]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.2.0"
+
+[[audits.drm-sys]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.0"
+
+[[audits.ed25519-compact]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "safe-to-run"
+version = "1.0.16"
+
+[[audits.either]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.8.1"
+
+[[audits.either]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.8.1 -> 1.9.0"
+
+[[audits.embedded-hal-mock]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.0"
+
+[[audits.endian-type]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.2"
+
+[[audits.endian-type]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.2"
+
+[[audits.enumflags2]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.7.7"
+
+[[audits.enumflags2]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "safe-to-run"
+version = "0.7.7"
+
+[[audits.enumflags2_derive]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.7.7"
+
+[[audits.enumflags2_derive]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "safe-to-run"
+version = "0.7.7"
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.8"
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.8"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.10"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.11"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.12"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "0.1.8 -> 0.1.10"
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "0.1.10 -> 0.1.11"
+
+[[audits.enumn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "0.1.11 -> 0.1.12"
+
+[[audits.enumn]]
+who = "Alexandre Courbot <acourbot@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.12 -> 0.1.14"
+
+[[audits.env_logger]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.8.3"
+
+[[audits.env_logger]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.3"
+
+[[audits.env_logger]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.9.3 -> 0.8.4"
+
+[[audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.1"
+
+[[audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.errno]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.8"
+
+[[audits.errno]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.8"
+
+[[audits.errno]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.8 -> 0.3.1"
+
+[[audits.errno]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.1 -> 0.3.2"
+
+[[audits.errno]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.2 -> 0.3.3"
+
+[[audits.error-chain]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.11.0"
+
+[[audits.error-chain]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.12.4"
+
+[[audits.euclid]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.22.7"
+
+[[audits.euclid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.22.9"
+
+[[audits.exitcode]]
+who = "Gwendal Grignou <gwendal@chromium.org>"
+criteria = ["safe-to-run", "crypto-safe"]
+version = "1.1.2"
+
+[[audits.ext-trait]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.ext-trait-proc_macros]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.ext2]]
+who = "Edward O'Callaghan <quasisec@google.com>"
+criteria = ["safe-to-run", "crypto-safe"]
+version = "0.1.1"
+
+[[audits.ext4-view]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.ext4-view]]
+who = "Ted Brandston <tbrandston@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.0 -> 0.4.2"
+
+[[audits.extension-traits]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.fallible-iterator]]
+who = "Hidenori Kobayashi <hidenorik@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.fastrand]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.9.0"
+notes = """
+`does-not-implement-crypto` is certified because this crate explicitly says
+that the RNG here is not cryptographically secure.
+"""
+
+[[audits.fastrand]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.9.0"
+notes = """
+`rg -i unsafe` resulted in two hits for this package:
+1. `#![forbid(unsafe_code)]`
+2. A CHANGELOG entry noting that unsafe code was forbidden.
+"""
+
+[[audits.fastrand]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.2"
+
+[[audits.fd-lock]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "2.0.0"
+
+[[audits.fd-lock]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.0.9"
+
+[[audits.fd-lock]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.0.9 -> 3.0.10"
+
+[[audits.fd-lock]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.0.9 -> 3.0.13"
+
+[[audits.filedescriptor]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.2"
+
+[[audits.filetime]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.22"
+
+[[audits.fixedbitset]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.2"
+
+[[audits.flate2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.26"
+
+[[audits.flate2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.26 -> 1.0.27"
+notes = """
+There is a CRC implementation in here, but those are not considered crypto.
+Further, it's only used in tests internal to this crate.
+"""
+
+[[audits.flexbuffers]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.0"
+
+[[audits.float-cmp]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.0"
+
+[[audits.fnv]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.7"
+notes = """
+fnv explicitly documents that it does not attempt to be crypto-secure, nor
+does it try to guard against collisions. Hence, this does not implement
+crypto.
+"""
+
+[[audits.foreign-types]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.2"
+
+[[audits.foreign-types-shared]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.form_urlencoded]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.0"
+
+[[audits.form_urlencoded]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.1.0 -> 1.2.0"
+
+[[audits.form_urlencoded]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.2.0 -> 1.2.1"
+
+[[audits.fragile]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.0"
+
+[[audits.fs-err]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.0.0"
+
+[[audits.ftdi]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.3"
+
+[[audits.ftdi-mpsse]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.funty]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.1.0"
+
+[[audits.futures]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.3.28"
+notes = """
+`futures` has no logic other than tests - it simply `pub use`s things from
+other crates.
+"""
+
+[[audits.futures]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.3.28"
+notes = """
+`rg -i unsafe` in this crate had one hit: a comment in a test
+mentioning UnsafeFutureObj. UnsafeFutureObj is implemented in
+futures-task-0.3.28, not here.
+"""
+
+[[audits.futures-channel]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-channel]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-channel]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.futures-core]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-core]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-core]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.futures-executor]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-executor]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-io]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-io]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-io]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.futures-macro]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-macro]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.futures-sink]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-sink]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-sink]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.futures-task]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-task]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+
+[[audits.futures-task]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.futures-util]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.futures-util]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.28"
+notes = """
+There's a custom xorshift-based `random::shuffle` implementation in
+src/async_await/random.rs. This is `doc(hidden)` and seems to exist just so
+that `futures-macro::select` can be unbiased. Sicne xorshift is explicitly not
+intended to be a cryptographically secure algorithm, it is not considered
+crypto.
+"""
+
+[[audits.futures-util]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.28 -> 0.3.31"
+
+[[audits.gag]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.0"
+
+[[audits.gag]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.gbm]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.15.0"
+
+[[audits.gbm-sys]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.1"
+
+[[audits.gdbstub]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.6"
+
+[[audits.gdbstub]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.6 -> 0.7.0"
+
+[[audits.gdbstub_arch]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.4 -> 0.3.0"
+
+[[audits.generic-array]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.14.7"
+
+[[audits.getopts]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.21"
+
+[[audits.getrandom]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.16"
+notes = """
+getrandom simply contains a bundle of ways of deferring to external sources of
+randomness (libcalls, syscalls, CPU insns), so no crypto is directly implemented
+here.
+"""
+
+[[audits.getrandom]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.2"
+
+[[audits.getrandom]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.7"
+
+[[audits.getrandom]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.10"
+notes = """
+While this crate provides crypto methods, they all defer to system or hardware
+crypto implementations. Hence, this crate does not implement crypto.
+"""
+
+[[audits.ghost]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.9"
+
+[[audits.ghost]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.9 -> 0.1.13"
+
+[[audits.ghost]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.13 -> 0.1.14"
+
+[[audits.gimli]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.27.2"
+
+[[audits.gimli]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.27.3"
+
+[[audits.gimli]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.27.3 -> 0.28.0"
+
+[[audits.gimli]]
+who = "Hidenori Kobayashi <hidenorik@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.28.0 -> 0.30.0"
+
+[[audits.glob]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.0"
+
+[[audits.glob]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.3.1"
+
+[[audits.glob]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.3.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.gpio-cdev]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.1"
+
+[[audits.gpt_disk_io]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.15.0"
+
+[[audits.gpt_disk_io]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.15.0 -> 0.16.0"
+
+[[audits.gpt_disk_types]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.15.0"
+
+[[audits.gpt_disk_types]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.15.0 -> 0.16.0"
+
+[[audits.grpcio]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.8.2"
+
+[[audits.grpcio]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.9.1"
+
+[[audits.grpcio]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.9.1 -> 0.13.0"
+
+[[audits.grpcio-compiler]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.6.0"
+
+[[audits.grpcio-compiler]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.7.0"
+
+[[audits.grpcio-compiler]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.0 -> 0.7.0"
+
+[[audits.grpcio-compiler]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+delta = "0.7.0 -> 0.6.0"
+
+[[audits.grpcio-compiler]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.0 -> 0.13.0"
+
+[[audits.grpcio-sys]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.8.1"
+
+[[audits.grpcio-sys]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.9.1+1.38.0"
+
+[[audits.grpcio-sys]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.13.0+1.56.2-patched"
+
+[[audits.h2]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.14"
+
+[[audits.h2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.18"
+
+[[audits.h2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.18 -> 0.3.19"
+
+[[audits.h2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.19 -> 0.3.20"
+
+[[audits.h2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.20 -> 0.3.21"
+
+[[audits.h2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.21 -> 0.3.24"
+
+[[audits.h2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.24 -> 0.3.26"
+
+[[audits.half]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.4.1"
+
+[[audits.hashbrown]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.13.2"
+
+[[audits.hashbrown]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.2 -> 0.12.3"
+
+[[audits.hashbrown]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.2 -> 0.14.3"
+
+[[audits.heapless]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.17"
+notes = """
+does-not-implement-crypto: Hashing containers (e.g., IndexMap) defer to other
+machinery like the hash32 crate for hashing.
+"""
+
+[[audits.heck]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.heck]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.0"
+
+[[audits.heck]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.0 -> 0.3.3"
+
+[[audits.heck]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.0 -> 0.4.1"
+
+[[audits.hex]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.3"
+
+[[audits.hostname]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.1"
+
+[[audits.http]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.8"
+
+[[audits.http]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.9"
+
+[[audits.http-body]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.4.5"
+
+[[audits.http-body]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.4.5"
+
+[[audits.http-range-header]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.0"
+
+[[audits.http-range-header]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.3.1"
+
+[[audits.http-range-header]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.3.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.httparse]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.8.0"
+
+[[audits.httpdate]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.0.2"
+
+[[audits.httpdate]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.3"
+
+[[audits.httpdate]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.3"
+notes = "`rg -i unsafe` had exactly one hit: `#![forbid(unsafe_code)]`"
+
+[[audits.humantime]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.1.0"
+
+[[audits.hyper]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.14.20"
+
+[[audits.hyper]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.14.27"
+
+[[audits.hyper-timeout]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.4.1"
+
+[[audits.hyper-timeout]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.4.1"
+
+[[audits.i2cdev]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.1"
+
+[[audits.iana-time-zone]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.53"
+
+[[audits.iana-time-zone]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.53 -> 0.1.56"
+
+[[audits.iana-time-zone]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.56 -> 0.1.57"
+
+[[audits.icu_locid_transform]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+
+[[audits.icu_locid_transform_data]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+
+[[audits.icu_normalizer_data]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+
+[[audits.icu_provider]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+notes = """
+This crate contains a custom impl of FxHash. The maintainers needed a custom
+hashing function that was `const` and self-contained. Since FxHash isn't built
+to be crypto secure, this does-not-implement-crypto.
+"""
+
+[[audits.icu_provider_macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.0"
+
+[[audits.idna]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.idna]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.0 -> 1.0.3"
+
+[[audits.idna_adapter]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.0"
+
+[[audits.image]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.23.14"
+
+[[audits.image]]
+who = "Chih-Yao Chuang <jasonchuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.23.14 -> 0.24.8"
+
+[[audits.include_dir]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.2"
+
+[[audits.include_dir_impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.6.2"
+
+[[audits.include_dir_impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.6.2"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.indexmap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.9.3"
+
+[[audits.indexmap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.9.3 -> 2.1.0"
+
+[[audits.indexmap]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.1.0 -> 2.2.6"
+
+[[audits.indoc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.3.6"
+notes = """
+This crate simply reexports indoc_impl. There's therefore no code
+specific to this crate to audit.
+"""
+
+[[audits.indoc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.3.6"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.indoc-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.3.6"
+
+[[audits.indoc-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.3.6"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.inflections]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.1"
+
+[[audits.inotify]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.9.3"
+
+[[audits.inotify]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.6"
+
+[[audits.inotify-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.1.5"
+
+[[audits.inotify-sys]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.5"
+
+[[audits.instant]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.9"
+
+[[audits.instant]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.12"
+
+[[audits.intrusive-collections]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.6"
+
+[[audits.inventory]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.11"
+
+[[audits.inventory-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.11"
+
+[[audits.inventory-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.11"
+notes = """
+This crate has an instance of `unsafe {` in a comment. The comment
+is referencing a future potential implementation of this code, once
+a desired rustc feature is stabilized. There's otherwise no mention
+of `unsafe` flagged by `rg -i unsafe`.
+"""
+
+[[audits.io-lifetimes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.4"
+
+[[audits.io-lifetimes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.10"
+
+[[audits.io-lifetimes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.10 -> 1.0.11"
+
+[[audits.io-uring]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.13"
+
+[[audits.ioctl-rs]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.6"
+
+[[audits.iovec]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.4"
+
+[[audits.is-terminal]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.2"
+
+[[audits.is-terminal]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.2 -> 0.4.9"
+
+[[audits.iso8601]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.2"
+
+[[audits.itertools]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.9.0"
+
+[[audits.itertools]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.10.5"
+
+[[audits.itertools]]
+who = "Yu-An Wang <wyuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.10.5 -> 0.11.0"
+
+[[audits.itoa]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.7"
+
+[[audits.itoa]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.5"
+
+[[audits.itoa]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.5 -> 1.0.6"
+
+[[audits.itoa]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.6 -> 1.0.9"
+
+[[audits.jobserver]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.26"
+
+[[audits.junit-report]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.kernlog]]
+who = "Matthias Kaehlcke <mka@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.1"
+
+[[audits.lazy_static]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.4.0"
+
+[[audits.lazy_static]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.4.0"
+
+[[audits.lazycell]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.3.0"
+
+[[audits.lazycell]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.3.0"
+
+[[audits.libc]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.86"
+
+[[audits.libc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.146"
+notes = """
+Much like the getrandom crate, this exports interfaces to APIs which perform
+crypto, but does not implement any crypto itself.
+"""
+
+[[audits.libc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.146 -> 0.2.147"
+
+[[audits.libc]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.147 -> 0.2.153"
+
+[[audits.libc]]
+who = "Hsin-chen Chuang <chharry@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.153 -> 0.2.170"
+
+[[audits.libdbus-sys]]
+who = "ChromeOS Legacy"
+criteria = "safe-to-run"
+version = "0.2.2"
+
+[[audits.libdbus-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.5"
+notes = """
+This audit does **not** include an audit of the `vendor/` directory, which
+contains a full copy of dbus, but is only built when the `vendored` feature is enabled.
+"""
+
+[[audits.libftdi1-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.2"
+
+[[audits.libfuzzer-sys]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.4"
+
+[[audits.libfuzzer-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.4 -> 0.4.7"
+
+[[audits.libloading]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.7.0"
+
+[[audits.libloading]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.4"
+
+[[audits.libloading]]
+who = "Chia-I Wu <olv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.5"
+
+[[audits.libslirp-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.2.1"
+notes = "No audit of the slirp DSO this is intended to link to was done."
+
+[[audits.libtest-mimic]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.0"
+notes = "Used in tests only"
+
+[[audits.libtest-mimic]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.0 -> 0.6.1"
+
+[[audits.libusb1-sys]]
+who = "Benjamin Gordon <bmgordon@chromium.org>"
+criteria = "does-not-implement-crypto"
+version = "0.7.0"
+notes = """
+* The libusb subdirectory contains a partial copy of libusb-1.0.27.  I downloaded a copy from upstream
+  and confirmed that there are no diffs.
+* build.rs calls pkg_config to probe for libusb-1.0 and sets up some build variables.
+* The files under src contain constants, extern declarations for libusb functions, and small helper
+  functions that fill in some structs.
+"""
+
+[[audits.libusb1-sys]]
+who = "Benjamin Gordon <bmgordon@chromium.org>"
+criteria = "safe-to-run"
+version = "0.7.0"
+notes = """
+* The libusb subdirectory contains a partial copy of libusb-1.0.27.  I downloaded a copy from upstream
+  and confirmed that there are no diffs.
+* build.rs calls pkg_config to probe for libusb-1.0 and sets up some build variables.
+* The files under src contain constants, extern declarations for libusb functions, and small helper
+  functions that fill in some structs.
+"""
+
+[[audits.libz-sys]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.1.2"
+
+[[audits.libz-sys]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.1.3"
+
+[[audits.libz-sys]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.1.8"
+
+[[audits.libz-sys]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.12"
+notes = """
+The bundled zlib C sources were not audited as a part of this. However, I did
+compare the vendored sources present in this crate with their upstream repos.
+
+There was no diff between zlib/ and https://zlib.net/fossils/zlib-1.2.11.tar.gz.
+
+zlib-ng did not provide a version, so I ran diff across everything in zlib-ng's
+commit history. The closest upstream SHA was
+cf89cf35037f152ce7adfeca864656de5d33ea1e with 8 lines of output from
+`diff --recursive . ../../libz-sys-1.1.12/src/zlib-ng/`. All of these referenced
+files that were only present in libz-sys, and they're all presumably irrelevant
+(CI configuration files, .git files, linter config)
+"""
+
+[[audits.link-cplusplus]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.0.5"
+
+[[audits.link-cplusplus]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.9"
+notes = """
+This crate exists simply to link with libcxx or libstdcxx. No assertions
+are made about the safety of either of those libraries. :)
+"""
+
+[[audits.link-cplusplus]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.9"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.linked-hash-map]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.6"
+
+[[audits.linux-embedded-hal]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.2"
+
+[[audits.linux-raw-sys]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.13"
+
+[[audits.linux-raw-sys]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.5"
+
+[[audits.litemap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.4"
+
+[[audits.litrs]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.3"
+
+[[audits.lock_api]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.2"
+
+[[audits.lock_api]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.9"
+
+[[audits.lock_api]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.10"
+
+[[audits.log]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.14"
+
+[[audits.log]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.17"
+
+[[audits.log]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.17 -> 0.4.20"
+
+[[audits.log-panics]]
+who = "Howard Chung <howardchung@google.com>"
+criteria = ["safe-to-run", "crypto-safe"]
+version = "2.1.0"
+
+[[audits.lz4_flex]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.1"
+notes = "Frequently makes use of unsafe for performance reasons. Most behind feature flags, but not all. Not entirely sure how memory safe those optimizations are."
+
+[[audits.lzma-sys]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.20"
+
+[[audits.managed]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.0"
+
+[[audits.match_cfg]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.0"
+
+[[audits.match_cfg]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.matchit]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.5.0"
+
+[[audits.matchit]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.5.0"
+
+[[audits.matroska-demuxer]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.0"
+
+[[audits.memchr]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "2.4.0"
+
+[[audits.memchr]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.4.1"
+
+[[audits.memchr]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.6.3"
+
+[[audits.memchr]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.7.2"
+
+[[audits.memmap2]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.0"
+
+[[audits.memoffset]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.5"
+
+[[audits.memoffset]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.5 -> 0.7.1"
+
+[[audits.memoffset]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.1 -> 0.8.0"
+
+[[audits.memoffset]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.8.0 -> 0.9.0"
+
+[[audits.merge]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.1.0"
+
+[[audits.merge]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.0"
+
+[[audits.merge_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.0"
+
+[[audits.merge_derive]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.0"
+
+[[audits.merge_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.mime]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.3.16"
+
+[[audits.mime]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.16"
+
+[[audits.miniz_oxide]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.2"
+
+[[audits.miniz_oxide]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.4 -> 0.3.7"
+
+[[audits.miniz_oxide]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.5.4 -> 0.4.4"
+
+[[audits.miniz_oxide]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.2 -> 0.5.4"
+
+[[audits.miniz_oxide]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.2 -> 0.7.1"
+
+[[audits.mio]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.7.7"
+
+[[audits.mio]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.7.14"
+
+[[audits.mio]]
+who = "Vovo Yang <vovoy@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.8"
+
+[[audits.mockall]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.4"
+
+[[audits.mockall]]
+who = "Yu-An Wang <wyuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.11.4 -> 0.12.1"
+
+[[audits.mockall_derive]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.4"
+
+[[audits.mockall_derive]]
+who = "Yu-An Wang <wyuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.11.4 -> 0.12.1"
+
+[[audits.mocktopus]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.0"
+
+[[audits.mocktopus_macros]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.11"
+
+[[audits.multi_log]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.2"
+
+[[audits.multimap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.3"
+
+[[audits.named-lock]]
+who = "crosvm"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.nb]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.3"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.nb]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.0"
+
+[[audits.nb]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.nb]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.1.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.nb]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "1.0.0 -> 0.1.3"
+
+[[audits.nb]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "1.0.0 -> 1.1.0"
+
+[[audits.nibble_vec]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.1.0"
+
+[[audits.nibble_vec]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.0"
+
+[[audits.nix]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.19.1"
+
+[[audits.nix]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.20.0"
+
+[[audits.nix]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.24.2"
+
+[[audits.nix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.23.1 -> 0.23.2"
+
+[[audits.nix]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.25.0 -> 0.26.2"
+
+[[audits.nix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.26.2 -> 0.27.1"
+
+[[audits.nix]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.27.1 -> 0.28.0"
+
+[[audits.nix]]
+who = "Hsin-chen Chuang <chharry@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.28.0 -> 0.29.0"
+
+[[audits.nom]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "5.1.2"
+
+[[audits.nom]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "6.1.2"
+
+[[audits.normalize-line-endings]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.num]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.2.1"
+notes = "This crate just reexports subcrates, so it's trivially safe in isolation."
+
+[[audits.num]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.2.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.num-cmp]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.0"
+
+[[audits.num-complex]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.4 -> 0.4.4"
+
+[[audits.num-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.3.3"
+
+[[audits.num-derive]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.3"
+
+[[audits.num-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.3 -> 0.4.2"
+
+[[audits.num-integer]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.45"
+
+[[audits.num-iter]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.43"
+
+[[audits.num-iter]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.43"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.num-rational]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.4"
+
+[[audits.num-traits]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.14"
+
+[[audits.num-traits]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.15"
+
+[[audits.num-traits]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.15 -> 0.2.16"
+
+[[audits.num_cpus]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.13.0"
+
+[[audits.num_cpus]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.13.0"
+
+[[audits.num_cpus]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.13.0 -> 1.16.0"
+
+[[audits.num_enum]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.7"
+
+[[audits.num_enum_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.7"
+
+[[audits.num_threads]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.6"
+
+[[audits.number_prefix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.4.0"
+
+[[audits.number_prefix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.4.0"
+notes = "`rg -i unsafe` had exactly one hit: `#![deny(unsafe_code)]`"
+
+[[audits.object]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.30.3"
+notes = "I'm not counting the code related to the GNU Hash section as crypto for the sake of this review."
+
+[[audits.object]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.30.3 -> 0.30.4"
+
+[[audits.object]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.30.3 -> 0.31.1"
+
+[[audits.object]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.31.1 -> 0.32.1"
+
+[[audits.once_cell]]
+who = "crosvm"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.17.0"
+
+[[audits.once_cell]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.19.0"
+
+[[audits.once_cell]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.17.0 -> 1.18.0"
+
+[[audits.open-enum]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.open-enum-derive]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.openssl-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.0"
+
+[[audits.openssl-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.openssl-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.openssl-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "0.1.0 -> 0.1.1"
+
+[[audits.os_str_bytes]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "6.3.0"
+
+[[audits.os_str_bytes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "6.4.1"
+
+[[audits.os_str_bytes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "6.4.1 -> 6.5.1"
+
+[[audits.owning_ref]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.1"
+
+[[audits.p9]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "0.2.3"
+
+[[audits.p9]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.3 -> 0.3.1"
+
+[[audits.p9_wire_format_derive]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "0.2.3"
+
+[[audits.p9_wire_format_derive]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.3 -> 0.3.0"
+
+[[audits.panic-halt]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.2.0"
+
+[[audits.panic-halt]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.2.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.parking_lot]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.11.1"
+
+[[audits.parking_lot]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.2"
+
+[[audits.parking_lot]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+delta = "0.11.2 -> 0.11.1"
+
+[[audits.parking_lot]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.11.2 -> 0.12.1"
+
+[[audits.parking_lot_core]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.8.3"
+
+[[audits.paste]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.18"
+
+[[audits.paste]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.4"
+
+[[audits.paste]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.14"
+
+[[audits.paste-impl]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.18"
+
+[[audits.pdl-compiler]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+notes = "Google first-party code (source already has rule of two enforced)."
+
+[[audits.pdl-runtime]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+notes = "Google first-party code (source already has rule of two enforced)."
+
+[[audits.peeking_take_while]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.1.2"
+
+[[audits.peeking_take_while]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.2"
+
+[[audits.percent-encoding]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.2.0"
+
+[[audits.percent-encoding]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.2.0 -> 2.3.0"
+
+[[audits.percent-encoding]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.3.0 -> 2.3.1"
+
+[[audits.pest]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.7.0"
+
+[[audits.pest_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.7.0"
+
+[[audits.pest_generator]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.7.0"
+
+[[audits.pest_meta]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.7.0"
+
+[[audits.petgraph]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.2"
+
+[[audits.pin-project]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.0.12"
+
+[[audits.pin-project-internal]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.0.12"
+
+[[audits.pin-project-internal]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.0.12"
+
+[[audits.pin-project-lite]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.4"
+
+[[audits.pin-project-lite]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.9"
+
+[[audits.pin-utils]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.0"
+
+[[audits.pin-utils]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.0"
+
+[[audits.pkg-config]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = "does-not-implement-crypto"
+version = "0.3.26"
+
+[[audits.pkg-config]]
+who = "Alexandre Courbot <acourbot@chromium.org>"
+criteria = "safe-to-run"
+version = "0.3.26"
+
+[[audits.pkg-config]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.31"
+
+[[audits.ppv-lite86]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.10"
+
+[[audits.predicates]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.1.5"
+
+[[audits.predicates]]
+who = "Yu-An Wang <wyuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.1.5 -> 3.0.4"
+
+[[audits.predicates-core]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.6"
+
+[[audits.predicates-tree]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.9"
+
+[[audits.prettyplease]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.20"
+
+[[audits.prettyplease]]
+who = "Harshad Phule <phuleh@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.1.25"
+
+[[audits.prettyplease]]
+who = "Harshad Phule <phuleh@google.com>"
+criteria = "safe-to-run"
+version = "0.1.25"
+
+[[audits.prettyplease]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.25 -> 0.2.6"
+
+[[audits.prettyplease]]
+who = "Bob Haarman <inglorion@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.6 -> 0.2.17"
+
+[[audits.primal-check]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.3"
+
+[[audits.printf-compat]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.proc-macro-crate]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.1"
+
+[[audits.proc-macro-error]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.4"
+
+[[audits.proc-macro-error-attr]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.4"
+
+[[audits.proc-macro-error-attr]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.4"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.proc-macro-hack]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.5.19"
+
+[[audits.proc-macro-hack]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.5.19"
+
+[[audits.proc-macro-nested]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.7"
+
+[[audits.proc-macro-nested]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.7"
+
+[[audits.proc-macro-nested]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.7"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.proc-macro2]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.26"
+
+[[audits.proc-macro2]]
+who = "Chrome OS Toolchain"
+criteria = "safe-to-run"
+version = "1.0.29"
+
+[[audits.proc-macro2]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.49"
+
+[[audits.proc-macro2]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.79"
+
+[[audits.proc-macro2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.49 -> 1.0.56"
+
+[[audits.proc-macro2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.56 -> 1.0.59"
+
+[[audits.proc-macro2]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.59 -> 1.0.66"
+
+[[audits.proc-macro2]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.66 -> 1.0.69"
+
+[[audits.proc-macro2]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.79 -> 1.0.86"
+
+[[audits.procfs]]
+who = "Youssef Esmat <youssefesmat@chromium.org>"
+criteria = "does-not-implement-crypto"
+version = "0.15.1"
+
+[[audits.procfs]]
+who = "Youssef Esmat <youssefesmat@chromium.org>"
+criteria = "safe-to-run"
+version = "0.15.1"
+
+[[audits.prost]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.11.0"
+
+[[audits.prost-build]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.1"
+
+[[audits.prost-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.11.0"
+
+[[audits.prost-derive]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.11.0"
+
+[[audits.prost-types]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.1"
+
+[[audits.protobuf]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "2.22.0"
+
+[[audits.protobuf]]
+who = "ChromeOS Audio"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.0"
+
+[[audits.protobuf]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.27.1 -> 2.28.0"
+
+[[audits.protobuf]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.2.0 -> 3.6.0"
+
+[[audits.protobuf]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.6.0 -> 3.7.2"
+
+[[audits.protobuf-codegen]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "2.22.0"
+
+[[audits.protobuf-codegen]]
+who = "ChromeOS Audio"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.0"
+
+[[audits.protobuf-codegen]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.27.1 -> 2.28.0"
+
+[[audits.protobuf-codegen]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.2.0 -> 3.6.0"
+
+[[audits.protobuf-codegen]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.6.0 -> 3.7.2"
+
+[[audits.protobuf-parse]]
+who = "ChromeOS Audio"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.0"
+
+[[audits.protobuf-parse]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.2.0 -> 3.6.0"
+
+[[audits.protobuf-parse]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.6.0 -> 3.7.2"
+
+[[audits.protobuf-support]]
+who = "ChromeOS Audio"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.2.0"
+
+[[audits.protobuf-support]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.2.0 -> 3.6.0"
+
+[[audits.protobuf-support]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "3.6.0 -> 3.7.2"
+
+[[audits.protoc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "2.27.1"
+
+[[audits.protoc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "2.27.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.protoc]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.27.1 -> 2.28.0"
+
+[[audits.protoc-grpcio]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.0"
+
+[[audits.protoc-grpcio]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.0 -> 3.0.0"
+
+[[audits.protoc-rust]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "2.27.1"
+
+[[audits.protoc-rust]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "2.27.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.protoc-rust]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.27.1 -> 2.28.0"
+
+[[audits.ptr_meta]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.0"
+
+[[audits.ptr_meta_derive]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.0"
+
+[[audits.pyo3-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.13.2"
+
+[[audits.qrcode]]
+who = "Chih-Yao Chuang <jasonchuang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.13.0"
+
+[[audits.quick-error]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.3"
+
+[[audits.quick-xml]]
+who = "Matthew DeVore <matvore@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.30.0"
+
+[[audits.quote]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.15"
+
+[[audits.quote]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.13"
+
+[[audits.quote]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.9"
+
+[[audits.quote]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.23"
+
+[[audits.quote]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.36"
+
+[[audits.quote]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.23 -> 1.0.26"
+
+[[audits.quote]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.26 -> 1.0.28"
+
+[[audits.quote]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.28 -> 1.0.31"
+
+[[audits.quote]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.31 -> 1.0.32"
+
+[[audits.r0]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.r0]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.2 -> 1.0.0"
+
+[[audits.radium]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.5.3"
+
+[[audits.radix_trie]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.1"
+
+[[audits.rand]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.8.3"
+
+[[audits.rand_chacha]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.0"
+
+[[audits.rand_chacha]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.3.1"
+
+[[audits.rand_core]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.6.1"
+
+[[audits.rand_core]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.6.4"
+
+[[audits.rand_pcg]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.1"
+
+[[audits.rand_xorshift]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+notes = """
+The rand_xorshift algorithm is not intended to be cryptographically secure in
+any real sense, so `does-not-implement-crypto` is selected here.
+"""
+
+[[audits.regex]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.5.4"
+
+[[audits.regex]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.10.4"
+
+[[audits.regex]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.11.1"
+
+[[audits.regex-automata]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.6"
+
+[[audits.regex-automata]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.9"
+
+[[audits.regex-syntax]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.6.25"
+
+[[audits.regex-syntax]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.3"
+
+[[audits.regex-syntax]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.5"
+
+[[audits.remain]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.4"
+
+[[audits.retain_mut]]
+who = "Gwendal Grignou <gwendal@chromium.org>"
+criteria = ["safe-to-run", "crypto-safe"]
+version = "0.1.7"
+
+[[audits.riscv-rt]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.0"
+
+[[audits.riscv-rt-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.6"
+
+[[audits.riscv-target]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.2"
+
+[[audits.rtic-core]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.0"
+
+[[audits.rtic-monotonic]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.0"
+
+[[audits.rtic-syntax]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.3"
+
+[[audits.rtt-target]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.1"
+
+[[audits.rusb]]
+who = "Benjamin Gordon <bmgordon@chromium.org>"
+criteria = "does-not-implement-crypto"
+version = "0.9.4"
+notes = "Files are straightforward wrappers around libusb functions."
+
+[[audits.rusb]]
+who = "Benjamin Gordon <bmgordon@chromium.org>"
+criteria = "safe-to-run"
+version = "0.9.4"
+notes = """
+* build.rs reads version info from libusb.h
+* Files in src are straightforward wrappers around libusb functions and don't do anything extra beyond
+  tracking lifetimes.
+"""
+
+[[audits.rustc-demangle]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.18"
+
+[[audits.rustc-demangle]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.21"
+
+[[audits.rustc-demangle-capi]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.0"
+
+[[audits.rustc-hash]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.1.0"
+notes = "The hash this crate implements is explicitly non-cryptographic."
+
+[[audits.rustc-hash]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.1.0"
+
+[[audits.rustc_version]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.3"
+
+[[audits.rustc_version]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.3 -> 0.4.0"
+
+[[audits.rustfft]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "6.1.0"
+
+[[audits.rustix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.36.7"
+notes = """
+Precompiled files in `src/backend/linux_raw/arch/outline` were not audited. I'm
+also at all familiar with PowerPC asm, but the instructions seemed inoffensive.
+
+This crate provides random functions, but they simply proxy libc's, so no
+crypto is truly implemented here.
+"""
+
+[[audits.rustix]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.38.32"
+
+[[audits.rustix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.36.7 -> 0.38.3"
+
+[[audits.rustversion]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.9"
+
+[[audits.rusty-fork]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+
+[[audits.rustyline]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "10.0.0"
+
+[[audits.rustyline]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "10.0.0 -> 9.1.2"
+
+[[audits.rustyline-derive]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.0"
+
+[[audits.rustyline-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.0 -> 0.4.0"
+
+[[audits.ryu]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.5"
+
+[[audits.safemem]]
+who = "Gwendal Grignou <gwendal@chromium.org>"
+criteria = ["safe-to-run", "crypto-safe"]
+version = "0.3.3"
+
+[[audits.same-file]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.0.6"
+
+[[audits.same-file]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.6"
+
+[[audits.sbat]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.0"
+
+[[audits.scoped-tls]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.0"
+
+[[audits.scopeguard]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.1.0"
+
+[[audits.scopeguard]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.1.0"
+
+[[audits.scratch]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.7"
+
+[[audits.scudo]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.2"
+notes = "Scudo itself was not audited as a part of this review"
+
+[[audits.semver]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.0"
+
+[[audits.semver]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.16"
+
+[[audits.semver-parser]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.0"
+
+[[audits.serde]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.126"
+
+[[audits.serde]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.152"
+
+[[audits.serde-tuple-vec-map]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.1"
+
+[[audits.serde-tuple-vec-map]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.serde_bytes]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.10.5"
+
+[[audits.serde_derive]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.152"
+
+[[audits.serde_json]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.64"
+
+[[audits.serde_json]]
+who = "Harshad Phule <phuleh@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.0.96"
+
+[[audits.serde_json]]
+who = "Harshad Phule <phuleh@google.com>"
+criteria = "safe-to-run"
+version = "1.0.96"
+
+[[audits.serde_spanned]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.7"
+
+[[audits.serde_urlencoded]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.7.1"
+
+[[audits.serial-core]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.serial-unix]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.serial_test]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.0"
+
+[[audits.serial_test_derive]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.0"
+
+[[audits.shell-words]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.1.0"
+
+[[audits.shell-words]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.1.0"
+notes = "`rg -i unsafe` had exactly one hit: `#![forbid(unsafe_code)]`"
+
+[[audits.shlex]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.1.1"
+
+[[audits.shlex]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.1"
+
+[[audits.shlex]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.0"
+
+[[audits.shlex]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.0"
+
+[[audits.shlex]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.1.0 -> 1.3.0"
+
+[[audits.signal-hook-registry]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.4.0"
+
+[[audits.simple_logger]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.16.0"
+
+[[audits.slab]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.2"
+
+[[audits.slab]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.4.7"
+
+[[audits.slab]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.4.7"
+
+[[audits.smallvec]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.6.1"
+
+[[audits.smallvec]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.10.0 -> 1.13.2"
+
+[[audits.socket2]]
+who = "Vovo Yang <vovoy@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.9"
+
+[[audits.spidev]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.1"
+
+[[audits.spin]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.8"
+
+[[audits.stable_deref_trait]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.0"
+
+[[audits.static_assertions]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.0"
+
+[[audits.stderrlog]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.3"
+
+[[audits.strength_reduce]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.4"
+
+[[audits.strsim]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.10.0"
+
+[[audits.strsim]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.1"
+
+[[audits.strsim]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.10.0 -> 0.8.0"
+
+[[audits.structopt-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.18"
+
+[[audits.svd-parser]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.12.0"
+
+[[audits.syn]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.69"
+
+[[audits.syn]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.0.80"
+
+[[audits.syn]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.107"
+
+[[audits.syn]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.58"
+
+[[audits.syn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.107 -> 2.0.14"
+
+[[audits.syn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.14 -> 2.0.18"
+
+[[audits.syn]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.18 -> 2.0.28"
+
+[[audits.syn]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.28 -> 2.0.38"
+
+[[audits.syn]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.58 -> 2.0.77"
+
+[[audits.syn]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.0.77 -> 2.0.87"
+
+[[audits.sync_wrapper]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.1"
+
+[[audits.sync_wrapper]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.synom]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.3"
+
+[[audits.synstructure]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.12.4"
+
+[[audits.synstructure]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.12.4 -> 0.13.1"
+
+[[audits.sys-info]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.9.1"
+notes = """
+In c/linux.c, this includes some custom hashing logic for a C hashvector. This
+is only run on disk device names, and is very obviously not meant to be crypto,
+so does-not-implement-crypto is fine here.
+"""
+
+[[audits.sysfs_gpio]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.1"
+
+[[audits.syslog]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "6.0.1"
+
+[[audits.syslog_rfc5424]]
+who = "Edward O'Callaghan <quasisec@google.com>"
+criteria = ["safe-to-run", "crypto-safe"]
+version = "0.9.0"
+
+[[audits.tar]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.40"
+
+[[audits.tempfile]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.4.0"
+
+[[audits.tempfile]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "3.10.1"
+
+[[audits.termcolor]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.1.2"
+
+[[audits.termcolor]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.3"
+
+[[audits.termios]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.termtree]]
+who = "Max Lee <endlesspring@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.1"
+
+[[audits.testing_logger]]
+who = "Christoph Schlosser <cschlosser@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.1"
+
+[[audits.textwrap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.11.0"
+
+[[audits.textwrap]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.11.0"
+
+[[audits.textwrap]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.15.1"
+
+[[audits.textwrap]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.15.2"
+
+[[audits.textwrap]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.16.0"
+
+[[audits.thiserror]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.23"
+
+[[audits.thiserror]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.50"
+
+[[audits.thiserror]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.58"
+
+[[audits.thiserror]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.58 -> 2.0.0"
+
+[[audits.thiserror-impl]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.0.23"
+
+[[audits.thiserror-impl]]
+who = "Abhishek Pandit-Subedi <abhishekpandit@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.50"
+
+[[audits.thiserror-impl]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.58"
+
+[[audits.thiserror-impl]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.58 -> 2.0.0"
+
+[[audits.thread_local]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.1.4"
+
+[[audits.threadpool]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.8.1"
+
+[[audits.time-macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.4"
+
+[[audits.timeout-readwrite]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.2"
+
+[[audits.tinystr]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.6"
+
+[[audits.tinytemplate]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.1"
+
+[[audits.tinyvec_macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.0"
+
+[[audits.tinyvec_macros]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.0"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.tokio]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.2.0"
+
+[[audits.tokio]]
+who = "Vovo Yang <vovoy@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.29.1"
+
+[[audits.tokio-io-timeout]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.2.0"
+
+[[audits.tokio-io-timeout]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "1.2.0"
+
+[[audits.tokio-macros]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.1.0"
+
+[[audits.tokio-macros]]
+who = "Vovo Yang <vovoy@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.1.0"
+
+[[audits.tokio-stream]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.3"
+
+[[audits.tokio-util]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.7.3"
+
+[[audits.toml]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.10"
+
+[[audits.toml]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.5.10 -> 0.8.19"
+
+[[audits.toml_datetime]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.8"
+
+[[audits.toml_edit]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.22.20"
+
+[[audits.tonic]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.8.1"
+
+[[audits.tonic-build]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.2"
+
+[[audits.tower]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.4.13"
+
+[[audits.tower-http]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.4"
+
+[[audits.tower-layer]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.3.1"
+
+[[audits.tower-layer]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.1"
+
+[[audits.tower-service]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.3.2"
+
+[[audits.tower-service]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.2"
+
+[[audits.tracing]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.35"
+
+[[audits.tracing-attributes]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.22"
+
+[[audits.tracing-core]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.1.29"
+
+[[audits.tracing-futures]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.2.5"
+
+[[audits.tracing-futures]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.5"
+
+[[audits.transpose]]
+who = "Li-Yu Yu <aaronyu@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.2"
+
+[[audits.transpose]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.2 -> 0.2.3"
+
+[[audits.try-lock]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.3"
+
+[[audits.try-lock]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.3"
+
+[[audits.twox-hash]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.6.3"
+notes = "Non-cyptographic hashing function"
+
+[[audits.uart_16550]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.18"
+
+[[audits.ucs2]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.2"
+
+[[audits.ucs2]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.2 -> 0.3.3"
+
+[[audits.uefi]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.19.0"
+
+[[audits.uefi]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.20.0"
+
+[[audits.uefi]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.23.0"
+
+[[audits.uefi]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.25.0"
+
+[[audits.uefi]]
+who = "Joseph Sussman <josephsussman@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.25.0 -> 0.27.0"
+
+[[audits.uefi]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.27.0 -> 0.28.0"
+
+[[audits.uefi]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.28.0 -> 0.29.0"
+
+[[audits.uefi]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.29.0 -> 0.31.0"
+
+[[audits.uefi]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.31.0 -> 0.32.0"
+
+[[audits.uefi]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.32.0 -> 0.33.0"
+
+[[audits.uefi-macros]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.10.0"
+
+[[audits.uefi-macros]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.11.0"
+
+[[audits.uefi-macros]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.12.0"
+
+[[audits.uefi-macros]]
+who = "Joseph Sussman <josephsussman@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.12.0 -> 0.13.0"
+
+[[audits.uefi-macros]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.0 -> 0.14.0"
+
+[[audits.uefi-macros]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.14.0 -> 0.15.0"
+
+[[audits.uefi-macros]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.15.0 -> 0.16.0"
+
+[[audits.uefi-macros]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.16.0 -> 0.17.0"
+
+[[audits.uefi-raw]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.0"
+
+[[audits.uefi-raw]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.0"
+
+[[audits.uefi-raw]]
+who = "Joseph Sussman <josephsussman@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.0 -> 0.5.1"
+
+[[audits.uefi-raw]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.5.1 -> 0.5.2"
+
+[[audits.uefi-raw]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.5.2 -> 0.6.0"
+
+[[audits.uefi-raw]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.6.0 -> 0.7.0"
+
+[[audits.uefi-raw]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.0 -> 0.8.0"
+
+[[audits.uefi-raw]]
+who = "Andre Braga <andrebraga@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.8.0 -> 0.9.0"
+
+[[audits.uefi-services]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.16.0"
+
+[[audits.uefi-services]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.17.0"
+
+[[audits.uefi-services]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.20.0"
+
+[[audits.uefi-services]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.22.0"
+
+[[audits.uefi-services]]
+who = "Joseph Sussman <josephsussman@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.22.0 -> 0.24.0"
+
+[[audits.ufmt-write]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.0"
+
+[[audits.uguid]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.2.1"
+
+[[audits.uguid]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.0"
+
+[[audits.uguid]]
+who = "Nicholas Bishop <nicholasbishop@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.1.0"
+
+[[audits.uguid]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "2.1.0 -> 2.2.0"
+
+[[audits.uhid-virt]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.0.6"
+
+[[audits.uhid-virt]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "safe-to-run"
+version = "0.0.6"
+
+[[audits.uhidrs-sys]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.0.2"
+
+[[audits.uhidrs-sys]]
+who = "Zhengping Jiang <jiangzp@google.com>"
+criteria = "safe-to-run"
+version = "1.0.2"
+
+[[audits.unicase]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.6.0"
+
+[[audits.unicode-ident]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.6"
+
+[[audits.unicode-normalization]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.22"
+
+[[audits.unicode-segmentation]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "1.7.1"
+
+[[audits.unicode-segmentation]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.8.0"
+
+[[audits.unicode-width]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.1.8"
+
+[[audits.unicode-width]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.9"
+
+[[audits.unicode-xid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.0.4"
+notes = "`rg -i unsafe` had exactly one hit: `#![deny(missing_docs, unsafe_code)]`"
+
+[[audits.unicode-xid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.0"
+
+[[audits.unicode-xid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.0"
+notes = "`rg -i unsafe` had exactly one hit: `#![deny(missing_docs, unsafe_code)]`"
+
+[[audits.unicode-xid]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "0.2.1"
+
+[[audits.unicode-xid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.2.4"
+
+[[audits.unicode-xid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.2.4"
+notes = "`rg -i unsafe` had exactly one hit: `#![forbid(unsafe_code)]`"
+
+[[audits.unicode-xid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+delta = "0.1.0 -> 0.0.4"
+
+[[audits.unindent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.1.10"
+
+[[audits.unindent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.1.10"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.uninit]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.1"
+
+[[audits.uninit]]
+who = "Howard Yang <hcyang@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.2"
+
+[[audits.url]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.3.1"
+
+[[audits.userfaultfd]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.0"
+
+[[audits.userfaultfd]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.5.0 -> 0.7.0"
+
+[[audits.userfaultfd]]
+who = "Shintaro Kawamura <kawasin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.0 -> 0.8.1"
+
+[[audits.userfaultfd-sys]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.2"
+
+[[audits.userfaultfd-sys]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+delta = "0.4.2 -> 0.5.0"
+notes = "First party code managed by Googlers on github"
+
+[[audits.userfaultfd-sys]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+delta = "0.4.2 -> 0.5.0"
+notes = "First party code, managed by Googlers on GitHub"
+
+[[audits.utf16_iter]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.5"
+
+[[audits.utf8_iter]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.4"
+
+[[audits.utf8parse]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.0"
+
+[[audits.utf8parse]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.1"
+
+[[audits.uuid]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.3.0"
+notes = "Randomness and hashing involved in UUID generation is sourced from other crates."
+
+[[audits.uuid]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.3.0 -> 1.8.0"
+
+[[audits.v4l2r]]
+who = "Alexandre Courbot <acourbot@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.4"
+
+[[audits.v4l2r]]
+who = "Justin Green <greenjustin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.5"
+
+[[audits.v4l2r]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.0.5 -> 0.0.6"
+
+[[audits.vcell]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.3"
+
+[[audits.vcpkg]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.11"
+
+[[audits.vec_map]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.8.2"
+
+[[audits.version_check]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "0.9.4"
+
+[[audits.version_check]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "0.9.4"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
+
+[[audits.virtio-media]]
+who = "Alexandre Courbot <acourbot@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.3"
+
+[[audits.virtio-media]]
+who = "Alexandre Courbot <acourbot@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.4"
+
+[[audits.virtio-media]]
+who = "Alexandre Courbot <acourbot@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.0.5"
+
+[[audits.virtio-media]]
+who = "Alexandre Courbot <acourbot@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.0.5 -> 0.0.6"
+
+[[audits.virtio-media]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "crypto-safe"]
+delta = "0.0.6 -> 0.0.7"
+
+[[audits.virtio-media]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.0.6 -> 0.0.7"
+
+[[audits.void]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["does-not-implement-crypto", "safe-to-deploy"]
+version = "1.0.2"
+
+[[audits.void]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.2"
+notes = """
+`rg -i unsafe` in this crate had one hit: a comment on a function
+mentioning that the aforementioned function should be impossible
+to call _unless_ `unsafe` was used to incorrectly construct an
+object.
+"""
+
+[[audits.volatile]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.4.5"
+
+[[audits.volatile-register]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.1"
+
+[[audits.vsock]]
+who = "Dennis Kempin <denniskempin@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.0"
+notes = """
+The crate provides a simple wrapper to mimick the TcpListener/TcpStream APIs
+with vsock sockets.
+"""
+
+[[audits.vsock]]
+who = "Eri Sawada <erisawada@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.0"
+
+[[audits.wait-timeout]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.0"
+
+[[audits.walkdir]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "2.3.1"
+
+[[audits.walkdir]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "2.3.2"
+
+[[audits.walkdir]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "2.3.2"
+
+[[audits.want]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.3.0"
+
+[[audits.want]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.3.0"
+
+[[audits.which]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "3.1.1"
+
+[[audits.which]]
+who = "Android Legacy"
+criteria = "safe-to-run"
+version = "4.0.2"
+
+[[audits.which]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "4.3.0"
+
+[[audits.winnow]]
+who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.6.18"
+
+[[audits.write16]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.0"
+
+[[audits.writeable]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.5.5"
+
+[[audits.wyz]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.2.0"
+
+[[audits.xattr]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.xz2]]
+who = "Bastian Kersting <bkersting@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.7"
+
+[[audits.yoke]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.5"
+
+[[audits.yoke-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.5"
+
+[[audits.zerocopy]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.7.0-alpha.1"
+
+[[audits.zerocopy]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.0-alpha.1 -> 0.6.1"
+
+[[audits.zerocopy]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.0-alpha.1 -> 0.6.6"
+
+[[audits.zerocopy]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.0-alpha.1 -> 0.7.8"
+
+[[audits.zerocopy]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.8 -> 0.7.32"
+
+[[audits.zerocopy]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.32 -> 0.8.14"
+
+[[audits.zerocopy-derive]]
+who = "ChromeOS"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.3.2"
+
+[[audits.zerocopy-derive]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.3.2 -> 0.7.8"
+
+[[audits.zerocopy-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.8 -> 0.6.6"
+
+[[audits.zerocopy-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.8 -> 0.7.32"
+
+[[audits.zerocopy-derive]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.32 -> 0.8.14"
+
+[[audits.zerofrom]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.5"
+
+[[audits.zerofrom-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.1.5"
+
+[[audits.zeroize]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.5.7"
+
+[[audits.zeroize_derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "1.3.2"
+
+[[audits.zerovec-derive]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.10.3"
+
+[[audits.zstd]]
+who = "Matt Turner <msturner@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.13.0"
+
+[[audits.zstd-safe]]
+who = "Matt Turner <msturner@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "7.0.0"
+
+[[audits.zstd-sys]]
+who = "Matt Turner <msturner@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.0.9+zstd.1.5.5"
+notes = "Includes an implementation of xxhash (a non-cyptographic hashing function) as part of the zstd C sources"

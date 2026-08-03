@@ -1,0 +1,99 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/pigweed.gni")
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_scripts",
+    ":install_upstart_configs",
+    ":timberslide",
+  ]
+  if (use.test) {
+    deps += [ ":timberslide_test_runner" ]
+  }
+}
+
+config("use_token_config") {
+  cflags = [
+    "--include",
+    "timberslide/token_config.h",
+  ]
+}
+
+group("token_config") {
+  public_configs = [ ":use_token_config" ]
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libec",
+    "libmetrics",
+    "re2",
+  ]
+}
+
+static_library("libtimberslide") {
+  sources = [
+    "fingerprint_log_listener_impl.cc",
+    "string_transformer.cc",
+    "timberslide.cc",
+  ]
+  configs += [
+    ":target_defaults",
+    ":use_token_config",
+  ]
+
+  public_deps = [ "$dir_pw_tokenizer:decoder" ]
+}
+
+executable("timberslide") {
+  sources = [ "main.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "bin"
+  deps = [ ":libtimberslide" ]
+}
+
+install_config("install_scripts") {
+  sources = [ "init/timberslide-watcher.sh" ]
+  install_path = "/usr/share/cros/init"
+  type = "executable"
+}
+
+install_config("install_upstart_configs") {
+  sources = [
+    "init/ecloggers.conf",
+    "init/timberslide-watcher.conf",
+    "init/timberslide.conf",
+  ]
+  install_path = "upstart"
+}
+
+if (use.test) {
+  pkg_config("timberslide_test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+  executable("timberslide_test_runner") {
+    sources = [
+      "fingerprint_log_listener_impl_test.cc",
+      "string_transformer_test.cc",
+      "timberslide_test.cc",
+      "timberslide_testrunner.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":timberslide_test_config",
+      ":target_defaults",
+    ]
+    run_test = true
+    deps = [
+      ":libtimberslide",
+      "$dir_pw_tokenizer:decoder",
+      "//common-mk/testrunner",
+    ]
+  }
+}

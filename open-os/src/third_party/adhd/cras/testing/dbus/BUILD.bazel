@@ -1,0 +1,32 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("//:utils.bzl", "require_config")
+
+cc_library(
+    name = "message_builder",
+    testonly = True,
+    hdrs = ["message_builder.hh"],
+    deps = [
+        "//cras/common:check",
+        "@pkg_config//dbus-1",
+        "@pkg_config//protobuf",
+    ],
+)
+
+cc_test(
+    name = "message_builder_test",
+    srcs = ["message_builder_test.cc"],
+    # TODO(b/294166984): This currently breaks on archlinux due to mixing
+    # http_archive absl and pkg-config absl.
+    # Re-enable after we figure out how to select 3P dependencies.
+    target_compatible_with = require_config("//:chromeos_build"),
+    deps = [
+        ":message_builder",
+        "@com_google_absl//absl/types:span",
+        "@pkg_config//gtest",
+        "@pkg_config//gtest_main",
+    ],
+)

@@ -1,0 +1,16 @@
+BDEPEND=app-arch/xz-utils dev-lang/perl sys-apps/texinfo virtual/pkgconfig nls? ( sys-devel/gettext ) test? ( || ( >=dev-lang/python-3.11.0_p2:3.11 ) >=dev-perl/HTTP-Daemon-6.60.0 dev-perl/HTTP-Message dev-perl/IO-Socket-SSL ) verify-sig? ( >=sec-keys/openpgp-keys-wget-20230511 ) verify-sig? ( app-crypt/gnupg >=app-portage/gemato-16 )
+DEFINED_PHASES=configure prepare setup unpack
+DEPEND=!static? ( cookie-check? ( net-libs/libpsl ) idn? ( >=net-dns/libidn2-0.14:= ) metalink? ( app-crypt/gpgme media-libs/libmetalink ) pcre? ( dev-libs/libpcre2 ) ssl? ( gnutls? ( net-libs/gnutls:= ) !gnutls? ( dev-libs/openssl:= ) ) uuid? ( sys-apps/util-linux ) zlib? ( sys-libs/zlib ) ) static? ( cookie-check? ( net-libs/libpsl ) idn? ( >=net-dns/libidn2-0.14:=[static-libs(+)] ) metalink? ( app-crypt/gpgme media-libs/libmetalink ) pcre? ( dev-libs/libpcre2[static-libs(+)] ) ssl? ( gnutls? ( net-libs/gnutls:=[static-libs(+)] ) !gnutls? ( dev-libs/openssl:=[static-libs(+)] ) ) uuid? ( sys-apps/util-linux[static-libs(+)] ) zlib? ( sys-libs/zlib[static-libs(+)] ) )
+DESCRIPTION=Network utility to retrieve files from the WWW
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/wget/
+IUSE=cookie-check debug gnutls idn ipv6 metalink nls ntlm pcre +ssl static test uuid zlib verify-sig
+KEYWORDS=*
+LICENSE=GPL-3+
+RDEPEND=!static? ( cookie-check? ( net-libs/libpsl ) idn? ( >=net-dns/libidn2-0.14:= ) metalink? ( app-crypt/gpgme media-libs/libmetalink ) pcre? ( dev-libs/libpcre2 ) ssl? ( gnutls? ( net-libs/gnutls:= ) !gnutls? ( dev-libs/openssl:= ) ) uuid? ( sys-apps/util-linux ) zlib? ( sys-libs/zlib ) )
+REQUIRED_USE=ntlm? ( !gnutls ssl ) gnutls? ( ssl )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://gnu/wget/wget-1.21.4.tar.gz verify-sig? ( mirror://gnu/wget/wget-1.21.4.tar.gz.sig )
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	verify-sig	40b4f4f782cf67118f594ce604cc4c0a
+_md5_=b64a66ddb39253b87f8de2660545ac69

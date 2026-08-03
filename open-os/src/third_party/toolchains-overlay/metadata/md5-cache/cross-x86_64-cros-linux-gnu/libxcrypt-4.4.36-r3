@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/perl test? ( || ( ( >=dev-lang/python-3.11.0_p2:3.11 dev-python/passlib[python_targets_python3_11(-)] ) ) )
+DEFINED_PHASES=compile configure install prepare pretend setup test
+DEPEND=system? ( elibc_glibc? ( cross-x86_64-cros-linux-gnu/glibc[-crypt(-)] !cross-x86_64-cros-linux-gnu/glibc[crypt(-)] ) elibc_musl? ( cross-x86_64-cros-linux-gnu/musl[-crypt(+)] !cross-x86_64-cros-linux-gnu/musl[crypt(+)] ) )
+DESCRIPTION=Extended crypt library for descrypt, md5crypt, bcrypt, and others
+EAPI=7
+HOMEPAGE=https://github.com/besser82/libxcrypt
+IUSE=+compat static-libs +system test headers-only abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64
+KEYWORDS=*
+LICENSE=LGPL-2.1+ public-domain BSD BSD-2
+RDEPEND=system? ( elibc_glibc? ( cross-x86_64-cros-linux-gnu/glibc[-crypt(-)] !cross-x86_64-cros-linux-gnu/glibc[crypt(-)] ) elibc_musl? ( cross-x86_64-cros-linux-gnu/musl[-crypt(+)] !cross-x86_64-cros-linux-gnu/musl[crypt(+)] ) )
+RESTRICT=!test? ( test )
+SLOT=0/1
+SRC_URI=https://dev.gentoo.org/~sam/distfiles/cross-x86_64-cros-linux-gnu/libxcrypt/libxcrypt-4.4.36-autotools.tar.xz
+_eclasses_=crossdev	f04338ff78f213a4a55c5c37b3c6563e	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=7c60fa8d4d2bd15a5de886f577bae6a8

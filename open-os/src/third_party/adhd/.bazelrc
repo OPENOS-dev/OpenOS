@@ -1,0 +1,93 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+build --experimental_cc_shared_library
+
+build --define VCSID=vcsid-unspecified
+
+build --conlyopt=-std=gnu11
+build --cxxopt=-std=gnu++20
+
+build --copt=-Wall --copt=-Wimplicit-fallthrough
+
+# Pthread support
+build --copt=-pthread --linkopt=-pthread
+
+# b/201531268: LFS support
+build --copt=-D_FILE_OFFSET_BITS=64
+build --copt=-D_LARGEFILE_SOURCE
+build --copt=-D_LARGEFILE64_SOURCE
+
+# b/267242424: Keep null checks
+build --copt=-fno-delete-null-pointer-checks
+
+# Breaks protobuf.
+build --copt=-Wno-error=unused-function
+
+# Compiler-specific strict configs.
+build:clang-strict --copt=-Werror
+# Need this until we pick up https://github.com/abseil/abseil-cpp/commit/a4950fba03217d0ea102c98ce795c189bba50383
+# In file included from external/com_google_absl/absl/base/internal/nullability_impl.h:22:
+# external/com_google_absl/absl/meta/type_traits.h:511:36: error: builtin __is_trivially_relocatable is deprecated; use __builtin_is_cpp_trivially_relocatable instead [-Werror,-Wdeprecated-builtins]
+build:clang-strict --copt=-Wno-deprecated-builtins
+
+build:gcc-strict --copt=-Werror
+build:gcc-strict --copt=-Wno-sign-compare
+build:gcc-strict --copt=-Wno-address-of-packed-member
+build:gcc-strict --copt=-Wno-stringop-overread
+build:gcc-strict --copt=-Wno-format-truncation
+
+# go/cras-style#build-time-feature-switches
+# NOTE: These flags don't work with gcc. So put them behind a config.
+build:clang-strict --copt=-Werror=undef-prefix --copt=-Wundef-prefix=HAVE_,CRAS_
+
+# Use system protobuf.
+build --proto_compiler=//third_party/protobuf:system_protoc
+build --proto_toolchain_for_cc=//third_party/protobuf:system_cc_toolchain
+
+# --config=asan
+# Enable AddressSanitizer.
+build:asan --copt=-fsanitize=address --linkopt=-fsanitize=address
+
+# --config=ubsan
+# Enable UndefinedBehaviorSanitizer.
+build:ubsan --copt=-fsanitize=undefined --linkopt=-fsanitize=undefined
+build:ubsan --linkopt=-fsanitize-link-c++-runtime
+
+# --config=tsan
+# Enable ThreadSanitizer.
+build:tsan --copt=-fsanitize=thread --linkopt=-fsanitize=thread
+test:tsan --test_tag_filters=-tsan-broken
+
+# --config=local-gcc
+# Use system gcc to build.
+build:local-gcc --action_env=CC=gcc --action_env=CXX=g++
+
+# --config=local-clang
+# Use system clang to build.
+build:local-clang --action_env=CC=clang --action_env=CXX=clang++
+build:local-clang --config=clang-strict
+
+build:fuzzer --//:fuzzer --copt=-Wno-error=unused-function
+
+build --copt=-Wno-error=sign-compare
+
+# Always enable debug symbols.
+build --copt=-g --linkopt=-g --strip=never
+
+test --run_under=//rules:test_wrapper.py
+
+# Make test output less noisy, but helpful when there's an error.
+test --test_output=errors
+test --test_summary=terse
+
+# CI flags
+build:ci --show_progress_rate_limit=10
+
+# b/316075428: Disable bzlmod for now, to avoid generating MODULE.bazel files.
+common --noexperimental_enable_bzlmod
+
+# Allow user customization.
+# https://bazel.build/configure/best-practices#bazelrc-file
+try-import %workspace%/user.bazelrc

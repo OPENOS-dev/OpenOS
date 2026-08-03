@@ -1,0 +1,14 @@
+CrOS's abseil requires C++17, but this version of python-protobuf expects an
+older abseil.  Patch the flag accordingly.
+
+--- a/setup.py	2023-06-14 08:28:10.000000000 -0600
++++ b/setup.py	2024-08-09 23:17:26.055376788 -0600
+@@ -370,7 +370,7 @@
+       extra_compile_args.append('-Wno-invalid-offsetof')
+       extra_compile_args.append('-Wno-sign-compare')
+       extra_compile_args.append('-Wno-unused-variable')
+-      extra_compile_args.append('-std=c++14')
++      extra_compile_args.append('-std=c++17')
+ 
+     if sys.platform == 'darwin':
+       extra_compile_args.append('-Wno-shorten-64-to-32')

@@ -1,0 +1,10 @@
+[package]
+name = "prebuilts"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+cfg-if = { workspace = true }
+named-lock = "0.3"

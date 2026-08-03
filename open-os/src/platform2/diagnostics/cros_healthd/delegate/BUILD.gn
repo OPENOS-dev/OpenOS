@@ -1,0 +1,69 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("libexecutor_delegate") {
+  sources = [ "delegate_impl.cc" ]
+  public_pkg_deps = [
+    "libec",
+    "libmojo",
+  ]
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+  ]
+  public_deps = [ "//diagnostics/cros_healthd/mojom:delegate_mojo_bindings" ]
+  deps = [
+    "//diagnostics/cros_healthd/delegate/events",
+    "//diagnostics/cros_healthd/delegate/fetchers",
+    "//diagnostics/cros_healthd/delegate/routines",
+    "//diagnostics/cros_healthd/delegate/utils",
+    "//diagnostics/cros_healthd/mojom:executor_mojo_bindings",
+    "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+  ]
+}
+
+executable("delegate") {
+  output_name = "executor-delegate"
+  sources = [ "delegate_main.cc" ]
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "libec",
+    "libmojo",
+  ]
+  assert_no_deps = [
+    "//diagnostics/cros_healthd:*",
+    "//diagnostics/cros_healthd/event/*",
+    "//diagnostics/cros_healthd/executor/*",
+    "//diagnostics/cros_healthd/fetchers/*",
+    "//diagnostics/cros_healthd/minijail/*",
+    "//diagnostics/cros_healthd/process/*",
+    "//diagnostics/cros_healthd/routines/*",
+    "//diagnostics/cros_healthd/system/*",
+    "//diagnostics/cros_healthd/utils/*",
+    "//diagnostics/cros_healthd/welco_ec/*",
+  ]
+  install_path = "/usr/libexec/diagnostics"
+  deps = [
+    ":libexecutor_delegate",
+    "//diagnostics/cros_healthd/delegate/utils",
+  ]
+}
+
+if (use.test) {
+  source_set("test") {
+    sources = [ "delegate_impl_test.cc" ]
+    pkg_deps = [
+      "libchrome-test",
+      "libec",
+    ]
+    deps = [
+      ":libexecutor_delegate",
+      "//diagnostics/base:healthd_testrunner",
+      "//diagnostics/base:test_support",
+      "//diagnostics/cros_healthd/delegate/utils:test_support",
+      "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+# Description
+# This test records power related statistics while encode video file in vp9
+# for 1 hr.
+
+NAME = "power_VideoEncode.vp9_1hr"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "mqg",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("")
+TEST_TYPE = "client"
+
+HOURS = 60 * 60
+formats = [('vp9', 'fhd', 24)]
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_VideoEncode', tag=NAME.split('.')[1], pdash_note=pdash_note,
+             seconds_per_test=HOURS, format=formats)

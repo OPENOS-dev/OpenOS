@@ -1,0 +1,15 @@
+BDEPEND=virtual/pkgconfig doc? ( || ( ( >=dev-lang/python-3.11.0_p2:3.11 dev-python/commonmark[python_targets_python3_11(-)] dev-python/recommonmark[python_targets_python3_11(-)] dev-python/sphinx[python_targets_python3_11(-)] >=dev-python/sphinx-rtd-theme-0.2.4[python_targets_python3_11(-)] ) ) >=app-doc/doxygen-1.8.3 >=media-gfx/graphviz-2.38.0 ) test? ( || ( ( >=dev-lang/python-3.11.0_p2:3.11 dev-python/pytest[python_targets_python3_11(-)] ) ) ) !cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array virtual/pkgconfig
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test
+DEPEND=input_devices_wacom? ( >=dev-libs/libwacom-0.27:= ) >=dev-libs/libevdev-1.9.902 >=sys-libs/mtdev-1.1 virtual/libudev:= virtual/udev test? ( >=dev-libs/check-0.9.10 ) !cros_host? ( dev-lang/python )
+DESCRIPTION=Library to handle input devices in Wayland
+EAPI=7
+HOMEPAGE=https://www.freedesktop.org/wiki/Software/libinput/ https://gitlab.freedesktop.org/libinput/libinput
+IUSE=doc input_devices_wacom test cros_host test
+KEYWORDS=*
+LICENSE=MIT
+RDEPEND=input_devices_wacom? ( >=dev-libs/libwacom-0.27:= ) >=dev-libs/libevdev-1.9.902 >=sys-libs/mtdev-1.1 virtual/libudev:= virtual/udev
+RESTRICT=!test? ( test )
+SLOT=0/10
+SRC_URI=https://gitlab.freedesktop.org/libinput/libinput/-/archive/1.24.0/libinput-1.24.0.tar.bz2
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	meson	0b48ece927e974cd82202dc49f391f82	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	optfeature	f4941a15f8b66955c45f7b0e7c4ae890	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=d19bbc5ea6fbf1b9c7e973eb09cccd26

@@ -1,0 +1,56 @@
+# virtual/tmpfiles and virtual/udev each try and use systemd-utils since it's
+# the first one listed, but we don't want tmpfiles at all, and we want
+# sys-fs/udev for the SDK.
+#
+# sys-apps/systemd-utils[udev] doesn't work because we don't have all the user
+# and group accounts that the package requires.
+#
+# sys-apps/systemd-utils[tmpfiles] should in theory work fine, but we are
+# currently using sys-apps/systemd-tmpfiles.
+sys-apps/systemd-utils
+sys-apps/opentmpfiles
+sys-apps/systemd-tmpfiles
+
+# Packages need to migrate to libusb-1.
+dev-libs/libusb-compat
+<virtual/libusb-1
+
+# We really don't want to use sys-apps/shadow in the SDK. See also its
+# package.provided entry.
+sys-apps/shadow
+
+# Mask packages that should never show up in the SDK.
+app-editors/vim
+app-editors/vim-core
+chromeos-base/attestation-client
+chromeos-base/bootlockbox-client
+chromeos-base/chaps-client
+chromeos-base/crosid
+chromeos-base/crostini_client
+chromeos-base/cryptohome-client
+chromeos-base/debugd
+chromeos-base/debugd-client
+chromeos-base/device_management-client
+chromeos-base/dlcservice-client
+chromeos-base/featured
+chromeos-base/hiberman-client
+chromeos-base/imageloader
+chromeos-base/imageloader-client
+chromeos-base/iioservice_simpleclient
+chromeos-base/libhwsec
+chromeos-base/libhwsec-foundation
+chromeos-base/lorgnette-client
+chromeos-base/lvmd-client
+chromeos-base/metrics
+chromeos-base/ml-client
+chromeos-base/oobe_config
+chromeos-base/patchpanel-client
+chromeos-base/permission_broker-client
+chromeos-base/runtime_probe-client
+chromeos-base/session_manager-client
+chromeos-base/shill-client
+chromeos-base/shill-dbus-client
+chromeos-base/tpm_manager-client
+chromeos-base/u2fd-client
+chromeos-base/update_engine-client
+media-sound/cras-client

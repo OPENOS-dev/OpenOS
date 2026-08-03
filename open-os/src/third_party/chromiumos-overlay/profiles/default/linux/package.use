@@ -1,0 +1,133 @@
+# The USE flags specified in this file are applied to packages
+# for all linux targets. In ChromeOS, that means they are applied
+# to the host packages in the chroot, as well as packages built for a
+# target board.
+
+app-admin/sudo		-sendmail
+app-admin/webapp-config	-portage
+app-arch/tar		minimal
+app-crypt/mit-krb5	-keyutils
+dev-db/sqlite		extensions
+dev-embedded/libftdi	-cxx tools
+dev-lang/python		sqlite
+# We want to re-enable this, but we'll have to update hard-host-depends to
+# stop pulling in app-crypt/nss and add an upgrade hook to uninstall that
+# from the sdk.
+#dev-libs/nss		utils
+dev-libs/gmp		-cxx
+dev-libs/libevent	-ssl -threads
+dev-libs/libzip		lzma
+dev-perl/GD             png
+# This requires deps we haven't imported (zeromq) and doesn't seem worth the
+# effort at this time.
+dev-python/ipython -smp
+# We don't need integration with cvs, subversion, or perl in git, so we can
+# disable these for faster builds.
+dev-vcs/git		bash-completion curl -cvs -gpg -perl -subversion -webdav
+dev-vcs/subversion	-dso webdav-serf
+games-emulation/zsnes	ao -debug
+media-libs/libao	alsa
+media-libs/freeimage	-cxx
+media-libs/gd           png
+media-libs/libmtp       -crypt
+media-libs/libv4l	tracer
+# We don't want any driver/hw rendering on the host
+media-libs/mesa         -llvm -gallium -classic
+media-sound/alsa-utils	-libsamplerate minimal
+net-misc/curl		ares
+net-misc/socat		-ssl
+net-wireless/bluez	-consolekit
+sci-geosciences/gpsd	-cxx
+# verity and other packages link statically with libuuid.
+# disable pam in util-linux to break a cyclic dep python -> util-linux -> pam -> python
+sys-apps/util-linux	-perl static-libs -su -suid -pam
+sys-boot/grub       grub_platforms_pc grub_platforms_efi-64 grub_platforms_coreboot static
+sys-devel/gettext	-git
+# Remove dependency on libmix which is deprecated and unsupported.
+net-analyzer/netcat -crypt
+net-dns/avahi		dbus
+net-misc/dhcpcd -crash
+
+cross-armv7a-cros-linux-gnueabi/gcc   hardfp
+cross-armv7a-cros-linux-gnueabi-bootstrap/gcc   hardfp
+cross-armv7a-cros-linux-gnueabihf/gcc   hardfp
+cross-armv7a-cros-linux-gnueabihf-bootstrap/gcc   hardfp
+cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
+cross-armv6j-cros-linux-gnueabi-bootstrap/gcc   hardfp -thumb
+sys-devel/clang		multitarget
+sys-devel/llvm		multitarget
+
+sys-apps/debianutils	-installkernel
+sys-apps/pciutils	-udev
+# xz-utils includes liblzma, which is picked by bmpblk_utility (vboot_reference)
+# and may be executed outside chroot.
+app-arch/xz-utils	static-libs
+# We don't have any font with graphite table. Drop graphite from harfbuzz.
+# We don't need instrospection either.
+media-libs/harfbuzz	-graphite -introspection
+dev-java/icedtea-bin -alsa -cups -X
+# Need png for color font support. bzip2 is not used. It's only for X11 *pcf.bz2
+# that we don't have.
+media-libs/freetype     png -bzip2
+dev-embedded/openocd  ftdi
+# Resolve circular dependency between libcap and pam.
+# http://crbug.com/508630 (see #8)
+sys-libs/libcap	-pam
+
+# Exclude qmanifest and qtegrity from portage-utils (unused),
+# and disable OpenMP support (not supported by toolchain).
+app-portage/portage-utils -openmp -qmanifest -qtegrity
+
+# Disable obsolete/unused protocols.
+dev-libs/openssl -sslv2 -sslv3 -tls-heartbeat
+
+# Build selected kernels with AutoFDO
+sys-kernel/chromeos-kernel-5_4 kernel_afdo
+sys-kernel/chromeos-kernel-5_10 kernel_afdo
+sys-kernel/chromeos-kernel-5_15 kernel_afdo
+sys-kernel/chromeos-kernel-6_1 kernel_afdo
+sys-kernel/chromeos-kernel-6_6 kernel_afdo
+
+# start using coreboot-sdk across firmware packages
+sys-boot/coreboot			coreboot-sdk
+sys-boot/libpayload			coreboot-sdk
+sys-boot/depthcharge			coreboot-sdk
+sys-boot/chromeos-seabios		coreboot-sdk
+chromeos-base/chromeos-ec		coreboot-sdk
+sys-firmware/optee_os			coreboot-sdk
+sys-firmware/optee_os_tadevkit		coreboot-sdk
+sys-firmware/optee-oemcrypto-ta	coreboot-sdk
+chromeos-base/hwsec-optee-ta		coreboot-sdk
+sys-firmware/optee_os_mtk		coreboot-sdk
+sys-firmware/hdcp-prov4-ta		coreboot-sdk
+sys-firmware/hwdrm-videoproc-ta	coreboot-sdk
+
+# clang doesn't recognize gcc pragmas, so libgcrypt needs to turn off -O flags.
+dev-libs/libgcrypt	o-flag-munging
+
+# Use hostname from coreutils so we don't require net-tools anymore.
+sys-apps/coreutils hostname
+sys-apps/net-tools -hostname
+
+# Use the dedicated python-magic package.
+sys-apps/file -python
+
+<sys-libs/glibc-2.39-r3					-crypt
+<cross-aarch64-cros-linux-gnu/glibc-2.39-r3		-crypt
+<cross-x86_64-cros-linux-gnu/glibc-2.39-r3 		-crypt
+<cross-i686-cros-linux-gnu/glibc-2.39-r3		-crypt
+<cross-armv7a-cros-linux-gnueabihf/glibc-2.39-r3	-crypt
+
+# enable the glibc stack-realign flag to avoid crashes, for details:
+# https://gitweb.gentoo.org/repo/gentoo.git/commit/sys-libs/glibc?id=02aa6328a720c86d0157c4582f7e5bac72ae9296
+sys-libs/glibc					stack-realign
+cross-aarch64-cros-linux-gnu/glibc		stack-realign
+cross-x86_64-cros-linux-gnu/glibc 		stack-realign
+cross-i686-cros-linux-gnu/glibc			stack-realign
+cross-armv7a-cros-linux-gnueabihf/glibc		stack-realign
+
+# only the cross-*/libxcrypt headers are required to build compiler-rt
+cross-aarch64-cros-linux-gnu/libxcrypt		headers-only
+cross-x86_64-cros-linux-gnu/libxcrypt		headers-only
+cross-i686-cros-linux-gnu/libxcrypt		headers-only
+cross-armv7a-cros-linux-gnueabihf/libxcrypt	headers-only

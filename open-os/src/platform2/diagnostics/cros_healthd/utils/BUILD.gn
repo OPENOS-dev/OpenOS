@@ -1,0 +1,66 @@
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+# Library that provides utilities used by cros_healthd.
+pkg_config("utils_pkg_deps") {
+  pkg_deps = [
+    "fwupd",
+    "libbrillo",
+    "libchrome",
+    "libmetrics",
+    "libmojo",
+    "libudev",
+    "libusb-1.0",
+  ]
+}
+
+source_set("utils") {
+  configs += [ ":utils_pkg_deps" ]
+  sources = [
+    "callback_barrier.cc",
+    "floss_utils.cc",
+    "fwupd_utils.cc",
+    "metrics_utils.cc",
+    "mojo_utils.cc",
+    "procfs_utils.cc",
+    "resource_queue.cc",
+    "usb_utils.cc",
+  ]
+  public_deps = [ "//diagnostics/mojom/public:libcros_healthd_mojo_bindings" ]
+  deps = [ "//diagnostics/base" ]
+}
+
+if (use.test) {
+  pkg_config("utils_test_pkg_deps") {
+    pkg_deps = [
+      "fwupd",
+      "libbrillo",
+      "libchrome",
+      "libchrome-test",
+      "libmetrics",
+      "libusb-1.0",
+    ]
+  }
+
+  source_set("utils_test") {
+    sources = [
+      "callback_barrier_test.cc",
+      "dbus_utils_test.cc",
+      "floss_utils_test.cc",
+      "fwupd_utils_test.cc",
+      "metrics_utils_test.cc",
+      "procfs_utils_test.cc",
+      "resource_queue_test.cc",
+      "usb_utils_test.cc",
+    ]
+    configs += [ ":utils_test_pkg_deps" ]
+    deps = [
+      ":utils",
+      "//diagnostics/base",
+      "//diagnostics/base:healthd_testrunner",
+    ]
+  }
+}

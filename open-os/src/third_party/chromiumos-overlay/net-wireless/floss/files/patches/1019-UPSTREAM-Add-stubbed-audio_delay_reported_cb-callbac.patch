@@ -1,0 +1,33 @@
+From b1d653a8321e9eba27dd1d995f81d95f55feea66 Mon Sep 17 00:00:00 2001
+From: Hsin-chen Chuang <chharry@google.com>
+Date: Fri, 9 Jan 2026 23:27:12 +0800
+Subject: [PATCH] UPSTREAM: Add stubbed audio_delay_reported_cb callback
+
+This prevent crashing when playing audio.
+
+Bug: 472907742
+Test: m com.google.android.bt
+Test: floss/build/build-in-container.py
+Test: emerge-cherry floss-upstream
+Test: bluetooth_AdapterAUHealth.au_hfp_wbs_dut_as_source_test.floss
+      failed but Floss doesn't crash
+Flag: NONE Floss only change
+Change-Id: Ic4e39414a10046adc2b8016d48129fdd63346944
+---
+ floss/rust/topshim/btav/btav_shim.cc | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/floss/rust/topshim/btav/btav_shim.cc b/floss/rust/topshim/btav/btav_shim.cc
+index ed78e4f413..5608f890e9 100644
+--- a/floss/rust/topshim/btav/btav_shim.cc
++++ b/floss/rust/topshim/btav/btav_shim.cc
+@@ -273,6 +273,7 @@ static bool mandatory_codec_preferred_cb(const RawAddress& addr) {
+ }
++static void audio_delay_reported_cb(const RawAddress& /* bd_addr */, int /* delay */) {}
+ 
+ btav_source_callbacks_t g_callbacks = {
+-        sizeof(btav_source_callbacks_t), connection_state_cb, audio_state_cb, audio_config_cb,
+-        mandatory_codec_preferred_cb,
++        sizeof(btav_source_callbacks_t), connection_state_cb,     audio_state_cb, audio_config_cb,
++        mandatory_codec_preferred_cb,    audio_delay_reported_cb,
+ };

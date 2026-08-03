@@ -1,0 +1,53 @@
+#! /bin/bash
+
+# This script will work in its entirety only on Mac OS X because the
+# TPMs in Intel Macintoshes don't have physical presence wired up in
+# firmware at all, permitting software to do everything, including
+# establishing physical presence.
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+# Change the TPM to the "physically present" state.
+#
+echo "* Asserting physical presence..."
+tpm_setpresence --assert       || exit 1
+
+# Clear the TPM. This will destroy all existing ownership information.
+# All existing keys will be deactivated and data tied to the TPM will be 
+# rendered useless. Finally, the TPM will end up being disabled. The
+# --force argument causes the TPM to skip asking us for the existing
+# owner password. Instead, we are authorized based on the physical
+# presence we asserted prior to calling this.
+#
+echo "* Clearing the TPM..."
+tpm_clear --force              || exit 2
+
+# reboot for the clear operation to take effect
+
+echo "* Asserting physical presence..."
+tpm_setpresence --assert       || exit 3
+
+# Set the TPM to enabled state. The --force option will skip asking for
+# the existing owner password and will authorized based on physical
+# presence instead.
+#
+echo "* Enabling the TPM..."
+tpm_setenable --enable --force || exit 4
+
+# Set the TPM to active state. This requires physical presence.
+#
+echo "* Setting the TPM active..."
+tpm_setactive --active         || exit 5
+
+# reboot for the setactive operation to take effect
+
+echo "* Running TPM self test..."
+tpm_selftest                   || exit 6
+
+echo "* Asserting physical presence..."
+tpm_setpresence --assert       || exit 7
+
+echo ""
+echo "You can run tpm_takeownership now."
+
+exit 0

@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for CPAN
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* ~perl-core/CPAN-2.380.0 ) !<perl-core/CPAN-2.380.0 !>perl-core/CPAN-2.380.0-r999
+SLOT=0
+_md5_=25810e3d8d99ed282846c6b02eea31b3

@@ -1,0 +1,25 @@
+From f5d6de6d9a5bdf2d4f87c23bf524d98b93c71b2d Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Mon, 2 Jun 2025 11:16:36 -0600
+Subject: [PATCH] Replace auto_ptr with unique_ptr
+
+---
+ src/common/CupsFilter.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/common/CupsFilter.h b/src/common/CupsFilter.h
+index e649877..edfa5be 100644
+--- a/src/common/CupsFilter.h
++++ b/src/common/CupsFilter.h
+@@ -132,7 +132,7 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
+     bool UseCustomHalftoning    = PageHeader.cupsBitsPerPixel > 1;
+     bool IsProcessLineSupported = true;
+ 
+-    std::auto_ptr<CHalftoneFilter> H;
++    std::unique_ptr<CHalftoneFilter> H;
+     if (UseCustomHalftoning)
+     {
+       if (HalftoningMethod_ == "NLL")
+-- 
+2.49.0.1204.g71687c7c1d-goog
+

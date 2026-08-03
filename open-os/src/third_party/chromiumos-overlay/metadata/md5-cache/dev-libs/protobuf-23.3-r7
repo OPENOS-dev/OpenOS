@@ -1,0 +1,16 @@
+BDEPEND=emacs? ( app-editors/emacs:* ) >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5
+DEFINED_PHASES=compile configure install postinst postrm prepare test
+DEPEND=>=dev-cpp/abseil-cpp-20240116.3:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] zlib? ( sys-libs/zlib[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] ) test? ( >=dev-cpp/gtest-1.9[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] )
+DESCRIPTION=Google's Protocol Buffers - Extensible mechanism for serializing structured data
+EAPI=7
+HOMEPAGE=https://protobuf.dev/
+IUSE=emacs examples system-protoc test zlib asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=>=dev-cpp/abseil-cpp-20240116.3:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] zlib? ( sys-libs/zlib[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] ) emacs? ( app-editors/emacs:* )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+RESTRICT=!test? ( test )
+SLOT=0/23.3.2
+SRC_URI=https://github.com/protocolbuffers/protobuf/archive/v23.3.tar.gz -> protobuf-23.3.tar.gz
+_eclasses_=cmake	34502c2b638b59994575d53ba3805d7b	cmake-multilib	37d23064f303dcf23453353ab8c77059	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	elisp-common	3322f14f031ddc95feccd9089c9adc59	flag-o-matic	ad475baa777c9978fa035216c8264a10	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=27cc7e74092a8fe1f0760924768754b4

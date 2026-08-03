@@ -1,0 +1,55 @@
+From be1a1d809388f045f2c448e8cc9c556df6297feb Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Thu, 7 May 2026 11:25:20 -0600
+Subject: [PATCH] disable boringssl in base::RandBytes
+
+Introduced in r1045239 (crrev.com/c/3880863).
+Updated in r1321254 (crrev.com/c/5669584).
+Updated in r1477790 (crrev.com/c/6665689).
+Updated in r1624070 (crrev.com/c/7812144).
+Updated in r1626560 (crrev.com/c/7828277).
+Updated in r1632053 (crrev.com/c/7856143).
+
+In the most recent update, upstream removed all of the previous
+functionality this patch has been using, so this adds it back in.  Also,
+this was combined with the long-term-0900 patch since they are both
+related.
+
+Change-Id: I465dc418929f7ed936d5a2c8be114ca8194acc7e
+patch-name: long-term-0800-disable-boringssl-in-base-RandBytes.patch
+---
+ base/rand_util_posix.cc | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/base/rand_util_posix.cc b/base/rand_util_posix.cc
+index 49bf347d51..1cf96c589d 100644
+--- a/base/rand_util_posix.cc
++++ b/base/rand_util_posix.cc
+@@ -22,11 +22,8 @@
+ #include "base/system/sys_info.h"
+ #include "base/time/time.h"
+ #include "build/build_config.h"
+-#include "third_party/boringssl/src/include/openssl/rand.h"
+ 
+-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+-#include "third_party/lss/linux_syscall_support.h"
+-#elif BUILDFLAG(IS_MAC)
++#if BUILDFLAG(IS_MAC)
+ #include <sys/random.h>
+ #elif BUILDFLAG(IS_IOS)
+ #include <CommonCrypto/CommonRandom.h>
+@@ -114,12 +111,6 @@ bool UseBoringSSLForRandBytes() {
+ namespace {
+ 
+ void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
+-  // The BoringSSL experiment takes priority over everything else.
+-  if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
+-    // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
+-    (void)RAND_bytes(output.data(), output.size());
+-    return;
+-  }
+ #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+   // On Android it is mandatory to check that the kernel _version_ has the
+   // support for a syscall before calling. The same check is made on Linux and
+-- 
+2.54.0.669.g59709faab0-goog

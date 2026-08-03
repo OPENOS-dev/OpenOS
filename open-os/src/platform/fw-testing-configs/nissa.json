@@ -1,0 +1,305 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "custom_usb_enable_pins": [
+    {
+      "ioex": false,
+      "name": "en_usb_a0_vbus"
+    }
+  ],
+  "delay_reboot_to_ping": 260,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "firmware_screen": 30,
+  "firmware_screen_rec_mode": 90,
+  "hold_pwr_button_nopowerd_shutdown": 14,
+  "hold_pwr_button_poweron": 1.2,
+  "max_charging_power": 45.0,
+  "minidiag_capability": {
+    "cbmem_preserved_by_ap_reset": false
+  },
+  "models": {
+    "anraggar": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "white_screen_power_press_time": 1.666
+    },
+    "anraggar360": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "white_screen_power_press_time": 1.666
+    },
+    "craaskana": {
+      "white_screen_power_press_time": 1.666
+    },
+    "craaskino": {
+      "white_screen_power_press_time": 1.666
+    },
+    "craaskvin": {
+      "white_screen_power_press_time": 1.666
+    },
+    "craasneto": {
+      "white_screen_power_press_time": 1.666
+    },
+    "dirks": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": false,
+          "name": "en_usb_a0_vbus"
+        },
+        {
+          "ioex": false,
+          "name": "en_usb_a1_vbus"
+        },
+        {
+          "ioex": false,
+          "name": "en_usb_a2_vbus"
+        },
+        {
+          "ioex": false,
+          "name": "en_usb_a3_vbus"
+        },
+        {
+          "ioex": false,
+          "name": "en_usb_a4_vbus"
+        }
+      ],
+      "delay_reboot_to_ping": 200,
+      "ec_capability": {
+        "arm": false,
+        "battery": false,
+        "cbi": true,
+        "charging": false,
+        "keyboard": false,
+        "lid": false
+      },
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "has_keyboard": false,
+      "has_lid": false,
+      "hibernate": false,
+      "rec_button_dev_switch": true
+    },
+    "domika": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "domilly": {
+      "ec_watchdog_period": 6.5
+    },
+    "domiso": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "epiccs": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "glassway": {
+      "white_screen_power_press_time": 1.666
+    },
+    "gothrax": {
+      "ec_watchdog_period": 6.5
+    },
+    "guren": {
+      "white_screen_power_press_time": 1.666
+    },
+    "joxer": {
+      "ec_watchdog_period": 6.5
+    },
+    "kaladin": {
+      "has_ISHMotionsense": true,
+      "white_screen_power_press_time": 1.666
+    },
+    "kelsier": {
+      "white_screen_power_press_time": 1.666
+    },
+    "meliks": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": false,
+          "name": "en_sub_usb_a1_vbus"
+        }
+      ]
+    },
+    "naktal": {
+      "ec_watchdog_period": 6.5
+    },
+    "nereid": {
+      "ec_watchdog_period": 6.5
+    },
+    "pirrha": {
+      "ec_watchdog_period": 6.5
+    },
+    "pujjocento": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": false,
+          "name": "en_pp5000_vbus"
+        }
+      ],
+      "ec_cold_boot_time": 1.6,
+      "firmware_screen": 25,
+      "max_charging_power": 65.0,
+      "usbc_input_voltage_limit": 20,
+      "white_screen_power_press_time": 1.666
+    },
+    "pujjoga": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": false,
+          "name": "en_sub_usb_a1_vbus"
+        }
+      ],
+      "ec_cold_boot_time": 1.6
+    },
+    "pujjogatwin": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": false,
+          "name": "en_sub_usb_a1_vbus"
+        }
+      ],
+      "ec_cold_boot_time": 1.6
+    },
+    "pujjoniru": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "white_screen_power_press_time": 1.666
+    },
+    "pujjoteen": {
+      "white_screen_power_press_time": 1.666
+    },
+    "pujjoteenlo": {
+      "custom_usb_enable_pins": [
+        {
+          "ioex": false,
+          "name": "en_pp5000_vbus"
+        }
+      ],
+      "ec_cold_boot_time": 1.6,
+      "firmware_screen": 25,
+      "max_charging_power": 65.0,
+      "usbc_input_voltage_limit": 20,
+      "white_screen_power_press_time": 1.666
+    },
+    "quandiso": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "quandiso2": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "quandiso360": {
+      "ec_watchdog_period": 6.5
+    },
+    "quandiso3602": {
+      "ec_watchdog_period": 6.5
+    },
+    "roric": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "hold_pwr_button_poweron": 0.2,
+      "white_screen_power_press_time": 1.666
+    },
+    "ruke": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "hold_pwr_button_poweron": 0.2,
+      "white_screen_power_press_time": 1.666
+    },
+    "rull": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "hold_pwr_button_poweron": 0.2,
+      "white_screen_power_press_time": 1.666
+    },
+    "rynax": {
+      "white_screen_power_press_time": 1.666
+    },
+    "sundance": {
+      "custom_usb_enable_pins": [],
+      "ec_cold_boot_time": 1.6,
+      "usb_a_port_count": 0
+    },
+    "teliks": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "s3_override_to_unsupported": true,
+      "white_screen_power_press_time": 1.666
+    },
+    "teliks360": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "white_screen_power_press_time": 1.666
+    },
+    "telith": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "white_screen_power_press_time": 1.666
+    },
+    "teltic": {
+      "ec_cold_boot_time": 1.6,
+      "ec_watchdog_period": 6.5,
+      "firmware_screen": 25,
+      "white_screen_power_press_time": 1.666
+    },
+    "uldren": {
+      "white_screen_power_press_time": 1.666
+    },
+    "uldrenite": {
+      "white_screen_power_press_time": 1.666
+    },
+    "uldrenite360": {
+      "cr50_capability": {
+        "rdd_use_ccd_mode": true
+      }
+    },
+    "uldrino": {
+      "white_screen_power_press_time": 1.666
+    },
+    "yahiko": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "yavijo": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "yaviks": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "yavikso": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "yavilla": {
+      "ec_watchdog_period": 6.5,
+      "white_screen_power_press_time": 1.666
+    },
+    "yavilly": {
+      "ec_watchdog_period": 6.5
+    },
+    "yavista": {
+      "ec_watchdog_period": 6.5
+    }
+  },
+  "platform": "nissa",
+  "smm_store": false,
+  "spi_voltage": "pp3300",
+  "usbc_input_voltage_limit": 15
+}

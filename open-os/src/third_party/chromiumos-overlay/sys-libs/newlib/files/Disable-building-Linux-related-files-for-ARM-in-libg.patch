@@ -1,0 +1,48 @@
+From 415fdd4279b85eeec9d54775ce13c5c412451e08 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tomhughes@chromium.org>
+Date: Fri, 14 Mar 2025 12:11:17 -0700
+Subject: [PATCH] Disable building Linux-related files for ARM in libgloss
+
+linux-crt0.S doesn't compile with clang:
+
+libgloss/arm/linux-crt0.c:37:2: error: non-ASM statement in naked function is
+not supported
+   37 |         _main(*sp, (char **)(sp + 1));
+      |         ^
+libgloss/arm/linux-crt0.c:32:16: note: attribute is here
+   32 | __attribute__((naked))
+      |                ^
+
+We're only using newlib with baremetal, not Linux, so just skip build the files
+that are Linux-specific.
+
+BUG=b:254674977
+---
+ libgloss/arm/Makefile.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libgloss/arm/Makefile.in b/libgloss/arm/Makefile.in
+index e1bad1710..c45c6fac9 100644
+--- a/libgloss/arm/Makefile.in
++++ b/libgloss/arm/Makefile.in
+@@ -109,7 +109,7 @@ INCLUDES += `if [ -d ${objroot}/newlib ]; then echo -I$(srcroot)/newlib/libc/mac
+ # build a test program for each target board. Just trying to get
+ # it to link is a good test, so we ignore all the errors for now.
+ #
+-all: ${CRT0} ${LINUX_CRT0} ${LINUX_BSP} ${REDBOOT_CRT0} ${REDBOOT_OBJS} ${RDPMON_CRT0} ${RDPMON_BSP} ${RDIMON_CRT0} ${RDIMON_BSP}
++all: ${CRT0} ${REDBOOT_CRT0} ${REDBOOT_OBJS} ${RDPMON_CRT0} ${RDPMON_BSP} ${RDIMON_CRT0} ${RDIMON_BSP}
+ 	@rootpre=`pwd`/; export rootpre; \
+ 	srcrootpre=`cd $(srcdir); pwd`/; export srcrootpre; \
+ 	for dir in .. ${SUBDIRS}; do \
+@@ -206,7 +206,7 @@ distclean maintainer-clean realclean: clean
+ 	rm -f Makefile config.status *~
+ 
+ .PHONY: install info install-info clean-info
+-install: ${CRT0_INSTALL} ${LINUX_INSTALL} ${REDBOOT_INSTALL} ${RDPMON_INSTALL} ${RDIMON_INSTALL} ${IQ80310_INSTALL}  ${PID_INSTALL} ${NANO_INSTALL}
++install: ${CRT0_INSTALL} ${REDBOOT_INSTALL} ${RDPMON_INSTALL} ${RDIMON_INSTALL} ${IQ80310_INSTALL}  ${PID_INSTALL} ${NANO_INSTALL}
+ 	@rootpre=`pwd`/; export rootpre; \
+ 	srcrootpre=`cd $(srcdir); pwd`/; export srcrootpre; \
+ 	for dir in .. ${SUBDIRS}; do \
+-- 
+2.49.0.rc1.451.g8f38331e32-goog
+

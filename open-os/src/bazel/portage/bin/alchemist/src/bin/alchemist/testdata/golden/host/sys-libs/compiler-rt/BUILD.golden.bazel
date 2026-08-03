@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "17.0_pre498229-r9",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "17.0_pre498229-r9_debug",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "17.0_pre498229-r9_package_set",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "17.0_pre498229-r9_install",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "17.0_pre498229-r9_installed",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "17.0_pre498229-r9_install_list",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "compiler-rt",
+    actual = ":17.0_pre498229-r9",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":17.0_pre498229-r9_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "compiler-rt_debug",
+    actual = ":17.0_pre498229-r9_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":17.0_pre498229-r9_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "compiler-rt_package_set",
+    actual = ":17.0_pre498229-r9_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":17.0_pre498229-r9_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "compiler-rt_install",
+    actual = ":17.0_pre498229-r9_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":17.0_pre498229-r9_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "compiler-rt_installed",
+    actual = ":17.0_pre498229-r9_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":17.0_pre498229-r9_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "compiler-rt_install_list",
+    actual = ":17.0_pre498229-r9_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "17.0_pre498229-r9_test",
+    tests = [ "//internal/packages/stage2/host/chromiumos/sys-libs/compiler-rt:17.0_pre498229-r9_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":17.0_pre498229-r9_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "compiler-rt_test",
+    tests = [ ":17.0_pre498229-r9_test" ],
+    visibility = ["@//bazel:internal"],
+)

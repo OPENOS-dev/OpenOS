@@ -1,0 +1,1030 @@
+/*
+ * Copyright 2018 Richard Hughes <richard@hughsie.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#ifdef HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+
+#include "fu-mm-common.h"
+#include "fu-mm-device.h"
+
+/**
+ * FuMmDevice
+ *
+ * A modem manager device.
+ *
+ * See also: #FuUdevDevice
+ */
+
+/* not strictly last, but the last we care about */
+#define MM_MODEM_PORT_TYPE_LAST (MM_MODEM_PORT_TYPE_IGNORED + 1)
+
+typedef enum {
+	FU_MM_DEVICE_PORT_FLAG_NONE = 0,
+	FU_MM_DEVICE_PORT_FLAG_MAKE_RAW = 1 << 0,
+} G_GNUC_FLAG_ENUM FuMmDevicePortFlags;
+
+typedef struct {
+	MMModemPortType type;
+	gchar *device_file;
+	FuMmDevicePortFlags flags;
+} FuMmDevicePort;
+
+typedef struct {
+	gboolean inhibited;
+	gchar *branch_at;
+	gchar *inhibition_uid;
+	GPtrArray *ports; /* element-type FuMmDevicePort */
+} FuMmDevicePrivate;
+
+G_DEFINE_TYPE_WITH_PRIVATE(FuMmDevice, fu_mm_device, FU_TYPE_UDEV_DEVICE);
+
+#define GET_PRIVATE(o) (fu_mm_device_get_instance_private(o))
+
+#define FU_MM_DEVICE_AT_RETRIES 3
+
+#define FU_MM_DEVICE_AT_DELAY 3000 /* ms */
+
+enum { PROP_0, PROP_INHIBITED, PROP_LAST };
+
+static void
+fu_mm_device_port_free(FuMmDevicePort *port)
+{
+	g_free(port->device_file);
+	g_free(port);
+}
+
+static void
+fu_mm_device_set_branch_at(FuMmDevice *self, const gchar *branch_at)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	if (g_strcmp0(priv->branch_at, branch_at) == 0)
+		return;
+	g_free(priv->branch_at);
+	priv->branch_at = g_strdup(branch_at);
+}
+
+static void
+fu_mm_device_to_string(FuDevice *device, guint idt, GString *str)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	fwupd_codec_string_append(str, idt, "BranchAt", priv->branch_at);
+	fwupd_codec_string_append_bool(str, idt, "Inhibited", priv->inhibited);
+	fwupd_codec_string_append(str, idt, "InhibitionUid", priv->inhibition_uid);
+	for (guint i = 0; i < priv->ports->len; i++) {
+		FuMmDevicePort *port = g_ptr_array_index(priv->ports, i);
+		g_autofree gchar *title =
+		    g_strdup_printf("Port[%s]", fu_mm_device_port_type_to_string(port->type));
+		fwupd_codec_string_append(str, idt, title, port->device_file);
+	}
+}
+
+const gchar *
+fu_mm_device_get_inhibition_uid(FuMmDevice *self)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	g_return_val_if_fail(FU_IS_MM_DEVICE(self), NULL);
+	return priv->inhibition_uid;
+}
+
+void
+fu_mm_device_set_inhibited(FuMmDevice *self, gboolean inhibited)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	g_return_if_fail(FU_IS_MM_DEVICE(self));
+	if (priv->inhibited == inhibited)
+		return;
+	priv->inhibited = inhibited;
+	g_object_notify(G_OBJECT(self), "inhibited");
+}
+
+gboolean
+fu_mm_device_get_inhibited(FuMmDevice *self)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	g_return_val_if_fail(FU_IS_MM_DEVICE(self), FALSE);
+	return priv->inhibited;
+}
+
+gboolean
+fu_mm_device_set_device_file(FuMmDevice *self, MMModemPortType port_type, GError **error)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	g_return_val_if_fail(FU_IS_MM_DEVICE(self), FALSE);
+
+	/* find port by type */
+	for (guint i = 0; i < priv->ports->len; i++) {
+		FuMmDevicePort *port = g_ptr_array_index(priv->ports, i);
+		if (port_type == port->type) {
+			if (port->flags & FU_MM_DEVICE_PORT_FLAG_MAKE_RAW) {
+				fu_device_add_private_flag(FU_DEVICE(self),
+							   FU_MM_DEVICE_FLAG_MAKE_SERIAL_RAW);
+			}
+			fu_udev_device_set_device_file(FU_UDEV_DEVICE(self), port->device_file);
+			return TRUE;
+		}
+	}
+
+	/* not found */
+	g_set_error(error,
+		    FWUPD_ERROR,
+		    FWUPD_ERROR_NOT_SUPPORTED,
+		    "no port for %s",
+		    fu_mm_device_port_type_to_string(port_type));
+	return FALSE;
+}
+
+gboolean
+fu_mm_device_set_autosuspend_delay(FuMmDevice *self, guint timeout_ms, GError **error)
+{
+	g_autofree gchar *buf = g_strdup_printf("%u", timeout_ms);
+	g_autoptr(GError) error_local = NULL;
+
+	if (!fu_udev_device_write_sysfs(FU_UDEV_DEVICE(self),
+					"power/autosuspend_delay_ms",
+					buf,
+					1000,
+					&error_local)) {
+		if (g_error_matches(error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND)) {
+			g_debug("autosuspend_delay_ms does not exist, so skipping");
+			return TRUE;
+		}
+		g_propagate_error(error, g_steal_pointer(&error_local));
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+static gboolean
+fu_mm_device_add_instance_id_vid(FuMmDevice *self, const gchar *value, GError **error)
+{
+	if (fu_device_get_vid(FU_DEVICE(self)) == 0x0) {
+		guint64 value_u64 = 0;
+		if (!fu_strtoull(value, &value_u64, 0x0, G_MAXUINT16, FU_INTEGER_BASE_16, error))
+			return FALSE;
+		fu_device_set_vid(FU_DEVICE(self), (guint16)value_u64);
+	}
+	if (fu_device_get_instance_str(FU_DEVICE(self), "VID") == NULL)
+		fu_device_add_instance_str(FU_DEVICE(self), "VID", value);
+	return TRUE;
+}
+
+static gboolean
+fu_mm_device_add_instance_id_pid(FuMmDevice *self, const gchar *value, GError **error)
+{
+	if (fu_device_get_pid(FU_DEVICE(self)) == 0x0) {
+		guint64 value_u64 = 0;
+		if (!fu_strtoull(value, &value_u64, 0x0, G_MAXUINT16, FU_INTEGER_BASE_16, error))
+			return FALSE;
+		fu_device_set_pid(FU_DEVICE(self), (guint16)value_u64);
+	}
+	if (fu_device_get_instance_str(FU_DEVICE(self), "PID") == NULL)
+		fu_device_add_instance_str(FU_DEVICE(self), "PID", value);
+	return TRUE;
+}
+
+gboolean
+fu_mm_device_add_instance_id(FuMmDevice *self, const gchar *device_id, GError **error)
+{
+	g_autofree gchar *subsys_pid = NULL;
+	g_autofree gchar *subsys_vid = NULL;
+	g_auto(GStrv) instancestrs = NULL;
+	g_auto(GStrv) subsys_instancestr = NULL;
+
+	/* add vendor ID */
+	if (g_pattern_match_simple("???\\VID_????", device_id) ||
+	    g_pattern_match_simple("???\\VEN_????", device_id)) {
+		g_autofree gchar *prefix = g_strndup(device_id, 3);
+		g_autofree gchar *vendor_id = g_strdup_printf("%s:0x%s", prefix, device_id + 8);
+		fu_device_add_vendor_id(FU_DEVICE(self), vendor_id);
+	}
+
+	/* parse the ModemManager InstanceID lookalike */
+	subsys_instancestr = g_strsplit(device_id, "\\", 2);
+	if (subsys_instancestr[1] == NULL)
+		return TRUE;
+	instancestrs = g_strsplit(subsys_instancestr[1], "&", -1);
+	for (guint i = 0; instancestrs[i] != NULL; i++) {
+		g_auto(GStrv) kv = g_strsplit(instancestrs[i], "_", 2);
+		if (g_strcmp0(kv[0], "VID") == 0) {
+			if (!fu_mm_device_add_instance_id_vid(self, kv[1], error))
+				return FALSE;
+		} else if (g_strcmp0(kv[0], "PID") == 0) {
+			if (!fu_mm_device_add_instance_id_pid(self, kv[1], error))
+				return FALSE;
+		} else if (g_strcmp0(kv[0], "REV") == 0 || g_strcmp0(kv[0], "NAME") == 0 ||
+			   g_strcmp0(kv[0], "CARRIER") == 0) {
+			fu_device_add_instance_str(FU_DEVICE(self), kv[0], kv[1]);
+		} else if (g_strcmp0(kv[0], "SSVID") == 0 && subsys_vid == NULL) {
+			subsys_vid = g_strdup(kv[1]);
+		} else if (g_strcmp0(kv[0], "SSPID") == 0 && subsys_pid == NULL) {
+			subsys_pid = g_strdup(kv[1]);
+		} else {
+			g_debug("ignoring instance attribute '%s'", instancestrs[i]);
+		}
+	}
+
+	/* convert nonstandard SSVID+SSPID to SUBSYS */
+	if (subsys_vid != NULL && subsys_pid != NULL) {
+		g_autofree gchar *subsys = g_strdup_printf("%s%s", subsys_vid, subsys_pid);
+		fu_device_add_instance_str(FU_DEVICE(self), "SUBSYS", subsys);
+	}
+
+	/* add all possible instance IDs */
+	fu_device_build_instance_id_full(FU_DEVICE(self),
+					 FU_DEVICE_INSTANCE_FLAG_QUIRKS,
+					 NULL,
+					 subsys_instancestr[0],
+					 "VID",
+					 NULL);
+	fu_device_build_instance_id(FU_DEVICE(self),
+				    NULL,
+				    subsys_instancestr[0],
+				    "VID",
+				    "PID",
+				    NULL);
+	fu_device_build_instance_id(FU_DEVICE(self),
+				    NULL,
+				    subsys_instancestr[0],
+				    "VID",
+				    "PID",
+				    "NAME",
+				    NULL);
+	fu_device_build_instance_id(FU_DEVICE(self),
+				    NULL,
+				    subsys_instancestr[0],
+				    "VID",
+				    "PID",
+				    "SUBSYS",
+				    NULL);
+	fu_device_build_instance_id(FU_DEVICE(self),
+				    NULL,
+				    subsys_instancestr[0],
+				    "VID",
+				    "PID",
+				    "SUBSYS",
+				    "NAME",
+				    NULL);
+	if (fu_device_has_private_flag(FU_DEVICE(self),
+				       FU_DEVICE_PRIVATE_FLAG_ADD_INSTANCE_ID_REV)) {
+		fu_device_build_instance_id(FU_DEVICE(self),
+					    NULL,
+					    subsys_instancestr[0],
+					    "VID",
+					    "PID",
+					    "REV",
+					    NULL);
+		fu_device_build_instance_id(FU_DEVICE(self),
+					    NULL,
+					    subsys_instancestr[0],
+					    "VID",
+					    "PID",
+					    "REV",
+					    "NAME",
+					    NULL);
+		fu_device_build_instance_id(FU_DEVICE(self),
+					    NULL,
+					    subsys_instancestr[0],
+					    "VID",
+					    "PID",
+					    "SUBSYS",
+					    "REV",
+					    NULL);
+	}
+	if (!fu_device_has_private_flag(FU_DEVICE(self), FU_MM_DEVICE_FLAG_USE_BRANCH)) {
+		fu_device_build_instance_id(FU_DEVICE(self),
+					    NULL,
+					    subsys_instancestr[0],
+					    "VID",
+					    "PID",
+					    "CARRIER",
+					    NULL);
+		if (fu_device_has_private_flag(FU_DEVICE(self),
+					       FU_DEVICE_PRIVATE_FLAG_ADD_INSTANCE_ID_REV)) {
+			fu_device_build_instance_id(FU_DEVICE(self),
+						    NULL,
+						    subsys_instancestr[0],
+						    "VID",
+						    "PID",
+						    "REV",
+						    "CARRIER",
+						    NULL);
+			fu_device_build_instance_id(FU_DEVICE(self),
+						    NULL,
+						    subsys_instancestr[0],
+						    "VID",
+						    "PID",
+						    "SUBSYS",
+						    "REV",
+						    "CARRIER",
+						    NULL);
+		}
+	}
+	return TRUE;
+}
+
+static void
+fu_mm_device_add_port(FuMmDevice *self,
+		      MMModemPortType port_type,
+		      const gchar *device_file,
+		      FuMmDevicePortFlags flags)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	FuMmDevicePort *port;
+
+	if (port_type >= MM_MODEM_PORT_TYPE_LAST)
+		return;
+
+	/* already exists */
+	for (guint i = 0; i < priv->ports->len; i++) {
+		port = g_ptr_array_index(priv->ports, i);
+		if (port->type == port_type)
+			return;
+	}
+
+	/* create new */
+	port = g_new0(FuMmDevicePort, 1);
+	port->type = port_type;
+	port->flags = flags;
+	port->device_file = g_strdup(device_file);
+	g_ptr_array_add(priv->ports, port);
+}
+
+gboolean
+fu_mm_device_probe_from_omodem(FuMmDevice *self, MMObject *omodem, GError **error)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	MMModemFirmware *modem_fw = mm_object_peek_modem_firmware(omodem);
+	MMModem *modem = mm_object_peek_modem(omodem);
+	MMModemPortInfo *used_ports = NULL;
+	guint n_used_ports = 0;
+#if MM_CHECK_VERSION(1, 26, 0)
+	MMModemPortInfo *ignored_ports = NULL;
+	guint n_ignored_ports = 0;
+#endif
+	const gchar **device_ids;
+	const gchar *sysfs_path;
+	const gchar *version;
+	g_autoptr(MMFirmwareUpdateSettings) update_settings = NULL;
+
+	/* inhibition uid is the modem interface 'Device' property, which may
+	 * be the device sysfs path or a different user-provided id */
+	priv->inhibition_uid = mm_modem_dup_device(modem);
+
+	/* get the sysfs path for the MM physical device */
+	sysfs_path = mm_modem_get_physdev(modem);
+	if (sysfs_path == NULL) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_NOT_SUPPORTED,
+				    "no physdev set");
+		return FALSE;
+	}
+	fu_device_set_physical_id(FU_DEVICE(self), sysfs_path);
+
+	/* get GUIDs */
+	update_settings = mm_modem_firmware_get_update_settings(modem_fw);
+	device_ids = mm_firmware_update_settings_get_device_ids(update_settings);
+	if (device_ids == NULL || device_ids[0] == NULL) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_NOT_SUPPORTED,
+				    "modem did not specify any device IDs");
+		return FALSE;
+	}
+
+	/* get version string, which is fw_ver+config_ver */
+	version = mm_firmware_update_settings_get_version(update_settings);
+	if (version == NULL) {
+		g_set_error_literal(error,
+				    FWUPD_ERROR,
+				    FWUPD_ERROR_NOT_SUPPORTED,
+				    "modem did not specify a firmware version");
+		return FALSE;
+	}
+
+	fu_device_set_backend_id(FU_DEVICE(self), mm_object_get_path(omodem));
+
+	/* look for the AT and QMI/MBIM ports */
+	if (mm_modem_get_ports(modem, &used_ports, &n_used_ports)) {
+		for (guint i = 0; i < n_used_ports; i++) {
+			g_autofree gchar *device_file =
+			    g_strdup_printf("/dev/%s", used_ports[i].name);
+			if (used_ports[i].type >= MM_MODEM_PORT_TYPE_LAST)
+				continue;
+			if (used_ports[i].type == MM_MODEM_PORT_TYPE_IGNORED &&
+			    g_pattern_match_simple("wwan*qcdm*", used_ports[i].name)) {
+				fu_mm_device_add_port(self,
+						      MM_MODEM_PORT_TYPE_QCDM,
+						      device_file,
+						      FU_MM_DEVICE_PORT_FLAG_NONE);
+			} else {
+				fu_mm_device_add_port(self,
+						      used_ports[i].type,
+						      device_file,
+						      FU_MM_DEVICE_PORT_FLAG_NONE);
+			}
+		}
+		mm_modem_port_info_array_free(used_ports, n_used_ports);
+	}
+
+#if MM_CHECK_VERSION(1, 26, 0)
+	if (mm_modem_get_ignored_ports(modem, &ignored_ports, &n_ignored_ports)) {
+		for (guint i = 0; i < n_ignored_ports; i++) {
+			g_autofree gchar *device_file =
+			    g_strdup_printf("/dev/%s", ignored_ports[i].name);
+			if (ignored_ports[i].type >= MM_MODEM_PORT_TYPE_LAST)
+				continue;
+			fu_mm_device_add_port(self,
+					      ignored_ports[i].type,
+					      device_file,
+					      FU_MM_DEVICE_PORT_FLAG_MAKE_RAW);
+		}
+		mm_modem_port_info_array_free(ignored_ports, n_ignored_ports);
+	}
+#endif
+
+	/* add properties to fwupd device */
+	if (mm_modem_get_manufacturer(modem) != NULL)
+		fu_device_set_vendor(FU_DEVICE(self), mm_modem_get_manufacturer(modem));
+	if (mm_modem_get_model(modem) != NULL)
+		fu_device_set_name(FU_DEVICE(self), mm_modem_get_model(modem));
+
+	/* only for modems that opt-in */
+	if (fu_device_has_private_flag(FU_DEVICE(self), FU_MM_DEVICE_FLAG_USE_BRANCH))
+		fu_device_set_branch(FU_DEVICE(self), mm_modem_get_carrier_configuration(modem));
+
+	fu_device_set_version(FU_DEVICE(self), version);
+
+	/* filter these */
+	for (guint i = 0; device_ids[i] != NULL; i++) {
+		if (!fu_mm_device_add_instance_id(self, device_ids[i], error))
+			return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+typedef struct {
+	const gchar *cmd;
+	gsize count;
+	gboolean has_response;
+	GBytes *blob;
+} FuMmDeviceAtCmdHelper;
+
+static gboolean
+fu_mm_device_at_cmd_cb(FuDevice *device, gpointer user_data, GError **error)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+	FuMmDeviceAtCmdHelper *helper = (FuMmDeviceAtCmdHelper *)user_data;
+	const gchar *buf;
+	gsize bufsz = 0;
+	g_autofree gchar *at_res_safe = NULL;
+	g_autofree gchar *cmd_cr = NULL;
+	g_autoptr(GBytes) at_req = NULL;
+	g_autoptr(GBytes) at_res = NULL;
+
+	/* sanity check */
+	if (helper->cmd == NULL) {
+		g_set_error_literal(error, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED, "no cmd");
+		return FALSE;
+	}
+
+	/* command */
+	g_debug("req: %s", helper->cmd);
+	cmd_cr = g_strdup_printf("%s\r\n", helper->cmd);
+	at_req = g_bytes_new(cmd_cr, strlen(cmd_cr));
+	if (!fu_udev_device_write_bytes(FU_UDEV_DEVICE(self),
+					at_req,
+					1500,
+					FU_IO_CHANNEL_FLAG_FLUSH_INPUT,
+					error)) {
+		g_prefix_error(error, "failed to write %s: ", helper->cmd);
+		return FALSE;
+	}
+
+	/* AT command has no response, return TRUE */
+	if (!helper->has_response) {
+		g_debug("no response expected for AT command: '%s', assuming succeed", helper->cmd);
+		return TRUE;
+	}
+
+	/* response */
+	at_res = fu_udev_device_read_bytes(FU_UDEV_DEVICE(self),
+					   helper->count,
+					   1500,
+					   FU_IO_CHANNEL_FLAG_SINGLE_SHOT,
+					   error);
+	if (at_res == NULL) {
+		g_prefix_error(error, "failed to read response for %s: ", helper->cmd);
+		return FALSE;
+	}
+	at_res_safe = fu_strsafe_bytes(at_res, 32);
+	if (at_res_safe == NULL) {
+		g_set_error_literal(error, FWUPD_ERROR, FWUPD_ERROR_INVALID_DATA, "no AT res");
+		return FALSE;
+	}
+	g_debug("res: %s", at_res_safe);
+
+	/*
+	 * the first time the modem returns may be the command itself with one \n missing.
+	 * this is because the modem AT has enabled echo
+	 */
+	buf = g_bytes_get_data(at_res, &bufsz);
+	if (g_strrstr_len(buf, bufsz, helper->cmd) != NULL && bufsz == strlen(helper->cmd) + 1) {
+		g_bytes_unref(at_res);
+		at_res = fu_udev_device_read_bytes(FU_UDEV_DEVICE(self),
+						   helper->count,
+						   1500,
+						   FU_IO_CHANNEL_FLAG_SINGLE_SHOT,
+						   error);
+		if (at_res == NULL) {
+			g_prefix_error(error, "failed to read response for %s: ", helper->cmd);
+			return FALSE;
+		}
+		buf = g_bytes_get_data(at_res, &bufsz);
+	}
+	if (bufsz < 6) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_NOT_SUPPORTED,
+			    "failed to read valid response for %s",
+			    helper->cmd);
+		return FALSE;
+	}
+
+	/* return error if AT command failed */
+	if (g_strrstr_len(buf, bufsz, "\r\nOK\r\n") == NULL &&
+	    g_strrstr_len(buf, bufsz, "\r\nCONNECT\r\n") == NULL) {
+		g_autofree gchar *tmp = g_strndup(buf + 2, bufsz - 4);
+		g_set_error(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_NOT_SUPPORTED,
+			    "failed to read valid response for %s: %s",
+			    helper->cmd,
+			    tmp);
+		return FALSE;
+	}
+
+	/* success */
+	helper->blob = g_steal_pointer(&at_res);
+	return TRUE;
+}
+
+gboolean
+fu_mm_device_at_cmd(FuMmDevice *self, const gchar *cmd, gboolean has_response, GError **error)
+{
+	FuMmDeviceAtCmdHelper helper = {.cmd = cmd, .count = 64, .has_response = has_response};
+	if (!fu_device_retry_full(FU_DEVICE(self),
+				  fu_mm_device_at_cmd_cb,
+				  FU_MM_DEVICE_AT_RETRIES,
+				  FU_MM_DEVICE_AT_DELAY,
+				  &helper,
+				  error))
+		return FALSE;
+
+	/* success, but remove the perhaps-unused buffer */
+	if (helper.blob != NULL)
+		g_bytes_unref(helper.blob);
+	return TRUE;
+}
+
+static GBytes *
+fu_mm_device_at_cmd_full(FuMmDevice *self, const gchar *cmd, gsize count, GError **error)
+{
+	FuMmDeviceAtCmdHelper helper = {.cmd = cmd, .count = count, .has_response = TRUE};
+	if (!fu_device_retry_full(FU_DEVICE(self),
+				  fu_mm_device_at_cmd_cb,
+				  FU_MM_DEVICE_AT_RETRIES,
+				  FU_MM_DEVICE_AT_DELAY,
+				  &helper,
+				  error))
+		return NULL;
+	return helper.blob;
+}
+
+static gboolean
+fu_mm_device_ensure_branch(FuMmDevice *self, GError **error)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	g_autoptr(GBytes) blob = NULL;
+	g_auto(GStrv) parts = NULL;
+
+	/* nothing to do if there is no AT port available or
+	 * ModemManagerBranchAtCommand quirk is not set */
+	if (priv->branch_at == NULL)
+		return TRUE;
+
+	/* not supported if the devices is signed */
+	if (fu_device_has_flag(self, FWUPD_DEVICE_FLAG_SIGNED_PAYLOAD))
+		return TRUE;
+
+	/* example AT+GETFWBRANCH response: "\r\nFOSS-002 \r\n\r\nOK\r\n" */
+	blob = fu_mm_device_at_cmd_full(self, priv->branch_at, 64, error);
+	if (blob == NULL)
+		return FALSE;
+	parts = fu_strsplit_bytes(blob, "\r\n", -1);
+	for (guint i = 0; parts[i] != NULL; i++) {
+		if (g_strcmp0(parts[i], "") != 0 && g_strcmp0(parts[i], "OK") != 0) {
+			g_info("firmware branch reported as '%s'", parts[i]);
+			fu_device_set_branch(FU_DEVICE(self), parts[i]);
+			break;
+		}
+	}
+
+	/* success */
+	return TRUE;
+}
+
+static void
+fu_mm_device_ensure_payload_quectel(FuMmDevice *self)
+{
+	const gchar *version = fu_device_get_version(FU_DEVICE(self));
+	g_autoptr(GError) error_qsec = NULL;
+	g_autoptr(GError) error_qcfg = NULL;
+	g_autoptr(GBytes) blob = NULL;
+	const gchar *signed_versions[] = {"EM05GFAR07A07M1G_01.005.01.005",
+					  "EM05CEFCR08A16M1G_LNV"};
+
+	/* newer firmware */
+	blob = fu_mm_device_at_cmd_full(self, "AT+QSECBOOT=\"status\"", 64, &error_qsec);
+	if (blob == NULL) {
+		g_debug("ignoring: %s", error_qsec->message);
+	} else {
+		/* AT+QSECBOOT="status" response: `\r\n+QSECBOOT: "STATUS",1\r\n\r\nOK\r\n` */
+		g_auto(GStrv) parts = fu_strsplit_bytes(blob, "\r\n", -1);
+		for (guint i = 0; parts[i] != NULL; i++) {
+			if (g_strcmp0(parts[i], "+QSECBOOT: \"status\",1") == 0) {
+				fu_device_add_flag(FU_DEVICE(self),
+						   FWUPD_DEVICE_FLAG_SIGNED_PAYLOAD);
+				break;
+			}
+			if (g_strcmp0(parts[i], "+QSECBOOT: \"status\",0") == 0) {
+				fu_device_add_flag(FU_DEVICE(self),
+						   FWUPD_DEVICE_FLAG_UNSIGNED_PAYLOAD);
+				break;
+			}
+		}
+		return;
+	}
+
+	/* older firmware */
+	blob = fu_mm_device_at_cmd_full(self, "AT+QCFG=\"secbootstat\"", 64, &error_qcfg);
+	if (blob == NULL) {
+		g_debug("ignoring: %s", error_qcfg->message);
+	} else {
+		g_auto(GStrv) parts = fu_strsplit_bytes(blob, "\r\n", -1);
+		for (guint i = 0; parts[i] != NULL; i++) {
+			if (g_strcmp0(parts[i], "+QCFG: \"secbootstat\",1") == 0) {
+				fu_device_add_flag(FU_DEVICE(self),
+						   FWUPD_DEVICE_FLAG_SIGNED_PAYLOAD);
+				break;
+			}
+			if (g_strcmp0(parts[i], "+QCFG: \"secbootstat\",0") == 0) {
+				fu_device_add_flag(FU_DEVICE(self),
+						   FWUPD_DEVICE_FLAG_UNSIGNED_PAYLOAD);
+				break;
+			}
+		}
+		return;
+	}
+
+	/* find model name and compare with table from Quectel */
+	if (version == NULL)
+		return;
+	for (guint i = 0; i < G_N_ELEMENTS(signed_versions); i++) {
+		if (strncmp(version, signed_versions[i], 6) == 0) {
+			if (fu_version_compare(version,
+					       signed_versions[i],
+					       FWUPD_VERSION_FORMAT_PLAIN) >= 0) {
+				fu_device_add_flag(FU_DEVICE(self),
+						   FWUPD_DEVICE_FLAG_SIGNED_PAYLOAD);
+			} else {
+				fu_device_add_flag(FU_DEVICE(self),
+						   FWUPD_DEVICE_FLAG_UNSIGNED_PAYLOAD);
+			}
+			return;
+		}
+	}
+}
+
+static void
+fu_mm_device_ensure_payload(FuMmDevice *self)
+{
+	if (fu_device_has_vendor_id(FU_DEVICE(self), "USB:0x2C7C") ||
+	    fu_device_has_vendor_id(FU_DEVICE(self), "PCI:0x1EAC")) {
+		fu_mm_device_ensure_payload_quectel(self);
+	} else if (fu_device_has_vendor_id(FU_DEVICE(self), "USB:0x2CB7")) {
+		fu_device_add_private_flag(FU_DEVICE(self),
+					   FU_DEVICE_PRIVATE_FLAG_SAVE_INTO_BACKUP_REMOTE);
+		fu_device_add_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_UNSIGNED_PAYLOAD);
+	}
+}
+
+static gboolean
+fu_mm_device_make_serial_raw(FuMmDevice *self, GError **error)
+{
+#ifdef HAVE_TERMIOS_H
+	gint fd = fu_io_channel_unix_get_fd(fu_udev_device_get_io_channel(FU_UDEV_DEVICE(self)));
+	struct termios tio;
+
+	if (tcgetattr(fd, &tio) != 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+#ifdef HAVE_ERRNO_H
+			    g_io_error_from_errno(errno),
+#else
+			    G_IO_ERROR_FAILED, /* nocheck:blocked */
+#endif
+			    "could not get termios attributes: %s",
+			    fwupd_strerror(errno));
+		return FALSE;
+	}
+
+	cfmakeraw(&tio);
+
+	if (tcsetattr(fd, TCSANOW, &tio) != 0) {
+		g_set_error(error,
+			    FWUPD_ERROR,
+#ifdef HAVE_ERRNO_H
+			    g_io_error_from_errno(errno),
+#else
+			    G_IO_ERROR_FAILED, /* nocheck:blocked */
+#endif
+			    "could not set termios attributes: %s",
+			    fwupd_strerror(errno));
+		return FALSE;
+	}
+
+	return TRUE;
+#else
+	g_set_error_literal(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_NOT_SUPPORTED,
+			    "Not supported as <termios.h> not found");
+	return FALSE;
+#endif
+}
+
+static gboolean
+fu_mm_device_open(FuDevice *device, GError **error)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+
+	/* FuUdevDevice->open() */
+	if (!FU_DEVICE_CLASS(fu_mm_device_parent_class)->open(device, error))
+		return FALSE;
+
+	/* ignored ports have not previously been configured by ModemManager */
+	if (fu_device_has_private_flag(device, FU_MM_DEVICE_FLAG_MAKE_SERIAL_RAW)) {
+		if (!fu_mm_device_make_serial_raw(self, error))
+			return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+static gboolean
+fu_mm_device_setup(FuDevice *device, GError **error)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+	g_autoptr(GError) error_local = NULL;
+
+	if (!fu_mm_device_ensure_branch(self, &error_local))
+		g_debug("failed to set firmware branch: %s", error_local->message);
+	fu_mm_device_ensure_payload(self);
+
+	/* success */
+	return TRUE;
+}
+
+static gboolean
+fu_mm_device_set_quirk_kv(FuDevice *device, const gchar *key, const gchar *value, GError **error)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+
+	if (g_strcmp0(key, "ModemManagerBranchAtCommand") == 0) {
+		fu_mm_device_set_branch_at(self, value);
+		return TRUE;
+	}
+
+	/* failed */
+	g_set_error_literal(error,
+			    FWUPD_ERROR,
+			    FWUPD_ERROR_NOT_SUPPORTED,
+			    "quirk key not supported");
+	return FALSE;
+}
+
+static gboolean
+fu_mm_device_from_json(FuDevice *device, FwupdJsonObject *json_obj, GError **error)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+	const gchar *tmp;
+	g_autoptr(FwupdJsonArray) json_array_ids = NULL;
+	g_autoptr(FwupdJsonObject) json_object_ports = NULL;
+
+	/* FuUdevDevice->from_json */
+	if (!FU_DEVICE_CLASS(fu_mm_device_parent_class)->from_json(device, json_obj, error))
+		return FALSE;
+
+	/* optional properties */
+	tmp = fwupd_json_object_get_string(json_obj, "Version", NULL);
+	if (tmp != NULL)
+		fu_device_set_version(device, tmp);
+	tmp = fwupd_json_object_get_string(json_obj, "PhysicalId", NULL);
+	if (tmp != NULL)
+		fu_device_set_physical_id(device, tmp);
+	tmp = fwupd_json_object_get_string(json_obj, "BranchAt", NULL);
+	if (tmp != NULL)
+		fu_mm_device_set_branch_at(self, tmp);
+
+	/* specified by ModemManager, unusually */
+	json_array_ids = fwupd_json_object_get_array(json_obj, "DeviceIds", NULL);
+	if (json_array_ids != NULL) {
+		for (guint i = 0; i < fwupd_json_array_get_size(json_array_ids); i++) {
+			const gchar *instance_id;
+			instance_id = fwupd_json_array_get_string(json_array_ids, i, error);
+			if (instance_id == NULL)
+				return FALSE;
+			if (!fu_mm_device_add_instance_id(self, instance_id, error))
+				return FALSE;
+		}
+	}
+
+	/* ports */
+	json_object_ports = fwupd_json_object_get_object(json_obj, "Ports", NULL);
+	if (json_object_ports != NULL) {
+		g_autoptr(GPtrArray) keys = fwupd_json_object_get_keys(json_object_ports);
+		for (guint i = 0; i < keys->len; i++) {
+			const gchar *device_file;
+			const gchar *port_type = g_ptr_array_index(keys, i);
+
+			device_file =
+			    fwupd_json_object_get_string(json_object_ports, port_type, error);
+			if (device_file == NULL)
+				return FALSE;
+			fu_mm_device_add_port(self,
+					      fu_mm_device_port_type_from_string(port_type),
+					      device_file,
+					      FU_MM_DEVICE_PORT_FLAG_NONE);
+		}
+	}
+
+	/* success */
+	return TRUE;
+}
+
+static void
+fu_mm_device_add_json(FuDevice *device, FwupdJsonObject *json_obj, FwupdCodecFlags flags)
+{
+	FuMmDevice *self = FU_MM_DEVICE(device);
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	GPtrArray *instance_ids = fu_device_get_instance_ids(device);
+	GPtrArray *vendor_ids = fu_device_get_vendor_ids(device);
+	g_autoptr(FwupdJsonArray) json_arr = fwupd_json_array_new();
+	g_autoptr(FwupdJsonObject) json_object_ports = fwupd_json_object_new();
+
+	/* FuUdevDevice->add_json */
+	FU_DEVICE_CLASS(fu_mm_device_parent_class)->add_json(device, json_obj, flags);
+
+	/* optional properties */
+	fwupd_json_object_add_string(json_obj, "GType", G_OBJECT_TYPE_NAME(self));
+	if (fu_device_get_version(device) != NULL)
+		fwupd_json_object_add_string(json_obj, "Version", fu_device_get_version(device));
+	if (fu_device_get_physical_id(device) != NULL) {
+		fwupd_json_object_add_string(json_obj,
+					     "PhysicalId",
+					     fu_device_get_physical_id(device));
+	}
+	if (priv->branch_at != NULL)
+		fwupd_json_object_add_string(json_obj, "BranchAt", priv->branch_at);
+
+	/* specified by ModemManager, unusually */
+	for (guint i = 0; i < instance_ids->len; i++) {
+		const gchar *instance_id = g_ptr_array_index(instance_ids, i);
+		fwupd_json_array_add_string(json_arr, instance_id);
+	}
+	for (guint i = 0; i < vendor_ids->len; i++) {
+		const gchar *vendor_id = g_ptr_array_index(vendor_ids, i);
+		if (g_str_has_prefix(vendor_id, "USB:0x")) {
+			g_autofree gchar *id = g_strdup_printf("USB\\VID_%s", vendor_id + 6);
+			fwupd_json_array_add_string(json_arr, id);
+		}
+		if (g_str_has_prefix(vendor_id, "PCI:0x")) {
+			g_autofree gchar *id = g_strdup_printf("PCI\\VEN_%s", vendor_id + 6);
+			fwupd_json_array_add_string(json_arr, id);
+		}
+	}
+	fwupd_json_object_add_array(json_obj, "DeviceIds", json_arr);
+
+	/* ports always specified */
+	for (guint i = 0; i < priv->ports->len; i++) {
+		FuMmDevicePort *port = g_ptr_array_index(priv->ports, i);
+		fwupd_json_object_add_string(json_object_ports,
+					     fu_mm_device_port_type_to_string(port->type),
+					     port->device_file);
+	}
+	fwupd_json_object_add_object(json_obj, "Ports", json_object_ports);
+}
+
+static void
+fu_mm_device_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	FuMmDevice *self = FU_MM_DEVICE(object);
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	switch (prop_id) {
+	case PROP_INHIBITED:
+		g_value_set_boolean(value, priv->inhibited);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+fu_mm_device_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	FuMmDevice *self = FU_MM_DEVICE(object);
+	switch (prop_id) {
+	case PROP_INHIBITED:
+		fu_mm_device_set_inhibited(self, g_value_get_boolean(value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+fu_mm_device_init(FuMmDevice *self)
+{
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+	fu_device_add_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_UPDATABLE);
+	fu_device_add_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_REQUIRE_AC);
+	fu_device_set_firmware_gtype(FU_DEVICE(self), FU_TYPE_ZIP_FIRMWARE);
+	fu_device_add_private_flag(FU_DEVICE(self), FU_DEVICE_PRIVATE_FLAG_USE_RUNTIME_VERSION);
+	fu_device_add_private_flag(FU_DEVICE(self), FU_DEVICE_PRIVATE_FLAG_REPLUG_MATCH_GUID);
+	fu_device_add_private_flag(FU_DEVICE(self), FU_DEVICE_PRIVATE_FLAG_MD_SET_VERFMT);
+	fu_device_add_private_flag(FU_DEVICE(self), FU_DEVICE_PRIVATE_FLAG_ADD_INSTANCE_ID_REV);
+	fu_device_add_private_flag(FU_DEVICE(self), FU_UDEV_DEVICE_FLAG_SYSFS_USE_PHYSICAL_ID);
+	fu_device_add_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_UNSIGNED_PAYLOAD);
+	fu_device_set_version_format(FU_DEVICE(self), FWUPD_VERSION_FORMAT_PLAIN);
+	fu_device_set_summary(FU_DEVICE(self), "Mobile broadband device");
+	fu_device_add_icon(FU_DEVICE(self), FU_DEVICE_ICON_MODEM);
+	fu_device_register_private_flag(FU_DEVICE(self), FU_MM_DEVICE_FLAG_USE_BRANCH);
+	fu_device_register_private_flag(FU_DEVICE(self), FU_MM_DEVICE_FLAG_MAKE_SERIAL_RAW);
+	fu_device_add_possible_plugin(FU_DEVICE(self), "modem_manager");
+	fu_udev_device_add_open_flag(FU_UDEV_DEVICE(self), FU_IO_CHANNEL_OPEN_FLAG_READ);
+	fu_udev_device_add_open_flag(FU_UDEV_DEVICE(self), FU_IO_CHANNEL_OPEN_FLAG_WRITE);
+	priv->ports = g_ptr_array_new_with_free_func((GDestroyNotify)fu_mm_device_port_free);
+}
+
+static void
+fu_mm_device_finalize(GObject *object)
+{
+	FuMmDevice *self = FU_MM_DEVICE(object);
+	FuMmDevicePrivate *priv = GET_PRIVATE(self);
+
+	g_free(priv->branch_at);
+	g_free(priv->inhibition_uid);
+	g_ptr_array_unref(priv->ports);
+
+	G_OBJECT_CLASS(fu_mm_device_parent_class)->finalize(object);
+}
+
+static void
+fu_mm_device_class_init(FuMmDeviceClass *klass)
+{
+	FuDeviceClass *device_class = FU_DEVICE_CLASS(klass);
+	GObjectClass *object_class = G_OBJECT_CLASS(klass);
+	GParamSpec *pspec;
+
+	object_class->finalize = fu_mm_device_finalize;
+	object_class->get_property = fu_mm_device_get_property;
+	object_class->set_property = fu_mm_device_set_property;
+	device_class->setup = fu_mm_device_setup;
+	device_class->to_string = fu_mm_device_to_string;
+	device_class->set_quirk_kv = fu_mm_device_set_quirk_kv;
+	device_class->from_json = fu_mm_device_from_json;
+	device_class->add_json = fu_mm_device_add_json;
+	device_class->open = fu_mm_device_open;
+
+	pspec = g_param_spec_boolean("inhibited",
+				     NULL,
+				     NULL,
+				     FALSE,
+				     G_PARAM_READWRITE | G_PARAM_STATIC_NAME);
+	g_object_class_install_property(object_class, PROP_INHIBITED, pspec);
+}

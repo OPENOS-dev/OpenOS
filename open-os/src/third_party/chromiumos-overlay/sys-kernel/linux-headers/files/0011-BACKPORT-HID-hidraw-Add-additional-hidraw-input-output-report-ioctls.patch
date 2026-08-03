@@ -1,0 +1,59 @@
+From f43d3870cafa2a0f3854c1819c8385733db8f9ae Mon Sep 17 00:00:00 2001
+From: Dean Camera <dean@fourwalledcubicle.com>
+Date: Thu, 26 Nov 2020 09:39:57 +1100
+Subject: [PATCH] BACKPORT: HID: hidraw: Add additional hidraw input/output report
+ ioctls.
+
+Currently the hidraw module can only read and write feature HID reports on
+demand, via dedicated ioctls. Input reports are read from the device through
+the read() interface, while output reports are written through the write
+interface().
+
+This is insufficient; it is desirable in many situations to be able to read and
+write input and output reports through the control interface to cover
+additional scenarios:
+
+  - Reading an input report by its report ID, to get initial state
+  - Writing an input report, to set initial input state in the device
+  - Reading an output report by its report ID, to obtain current state
+  - Writing an output report by its report ID, out of band
+
+This patch adds these missing ioctl requests to read and write the remaining
+HID report types. Note that not all HID backends will neccesarily support this
+(e.g. while the USB link layer supports setting Input reports, others may not).
+
+Also included are documentation and example updates. The current hidraw
+documentation states that feature reports read from the device does *not*
+include the report ID, however this is not the case and the returned report
+will have its report ID prepended by conforming HID devices, as the report data
+sent from the device over the control endpoint must be indentical in format to
+those sent over the regular transport.
+
+Signed-off-by: Dean Camera <dean@fourwalledcubicle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+(cherry picked from commit f43d3870cafa2a0f3854c1819c8385733db8f9ae)
+---
+ include/uapi/linux/hidraw.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/uapi/linux/hidraw.h b/include/uapi/linux/hidraw.h
+index 515860d5b722..a1b02883f43f 100644
+--- a/include/uapi/linux/hidraw.h
++++ b/include/uapi/linux/hidraw.h
+@@ -39,6 +39,14 @@ struct hidraw_devinfo {
+ /* The first byte of SFEATURE and GFEATURE is the report number */
+ #define HIDIOCSFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x06, len)
+ #define HIDIOCGFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x07, len)
++#define HIDIOCGRAWUNIQ(len)     _IOC(_IOC_READ, 'H', 0x08, len)
++/* The first byte of SINPUT and GINPUT is the report number */
++#define HIDIOCSINPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x09, len)
++#define HIDIOCGINPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x0A, len)
++/* The first byte of SOUTPUT and GOUTPUT is the report number */
++#define HIDIOCSOUTPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x0B, len)
++#define HIDIOCGOUTPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x0C, len)
++#define HIDIOCREVOKE	      _IOW('H', 0x0D, int) /* Revoke device access */
+ 
+ #define HIDRAW_FIRST_MINOR 0
+ #define HIDRAW_MAX_DEVICES 64
+-- 
+2.45.2

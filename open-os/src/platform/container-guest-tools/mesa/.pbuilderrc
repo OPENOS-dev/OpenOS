@@ -1,0 +1,23 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -e
+
+HOOKDIR="${HOME}/.pbuilder/hooks/"
+BINDMOUNTS="${HOME} ${DEPSBASE}"
+PBUILDERSATISFYDEPENDSCMD=/usr/lib/pbuilder/pbuilder-satisfydepends-apt
+
+OS="debian"
+NAME="${OS}-${DIST}-${ARCH}"
+COMPONENTS="main"
+
+DEBOOTSTRAPOPTS=("${DEBOOTSTRAPOPTS[@]}" "--arch=${ARCH}")
+BASETGZ="/var/cache/pbuilder/${NAME}.tgz"
+BUILDRESULT="/var/cache/pbuilder/${NAME}/result/"
+APTCACHE="/var/cache/pbuilder/${NAME}/aptcache/"
+BUILDPLACE="/var/cache/pbuilder/build"
+
+MIRRORSITE="http://deb.debian.org/debian"
+
+mkdir -p "${APTCACHE}"

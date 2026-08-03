@@ -1,0 +1,14 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+extra_sources = [
+    "//third_party/chromiumos-overlay/eclass/cros-kernel",
+]
+# chromeos-base/secagentd requires `/usr/lib/debug/boot/vmlinux` which is
+# normally stripped from the interface layer. We don't gain anything by having
+# a kernel interface layer since it's mostly a leaf package.
+generate_interface_libraries = false

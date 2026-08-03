@@ -1,0 +1,55 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[tool.black]
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+(
+  .*/servo/data/.*|
+  .*/servo/drv/.*
+)
+'''
+
+[tool.pytest.ini_options]
+pythonpath = [
+      "/usr/local/lib/python3.13/dist-packages",
+      "/hdctools"
+]
+filterwarnings = [
+      "ignore:This process.*:DeprecationWarning::",
+      "ignore:Type google.protobuf.pyext._message.*:DeprecationWarning::",
+      "ignore:datetime.datetime.utcfromtimestamp\\(\\) is deprecated.*:DeprecationWarning::",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+follow_imports = "silent"
+check_untyped_defs = true
+explicit_package_bases = true
+mypy_path = "."
+
+[tool.coverage.run]
+omit = [
+    '*pb2.py',
+    '*pb2_grpc.py',
+    '*_grpc_aio.py',
+    '*_grpc.py',
+    '*/protoc-gen-custom_grpc.py',
+    '*/_utils.py',
+    '*/tests/fixtures/*',
+    '*/data/*'
+]
+
+[tool.coverage.report]
+omit = [
+    '*pb2.py',
+    '*pb2_grpc.py',
+    '*_grpc_aio.py',
+    '*_grpc.py',
+    '*/protoc-gen-custom_grpc.py',
+    '*/_utils.py',
+    '*/tests/fixtures/*',
+    '*/data/*'
+]

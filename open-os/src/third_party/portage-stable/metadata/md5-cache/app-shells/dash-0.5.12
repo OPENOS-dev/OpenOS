@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=configure prepare
+DEPEND=!static? ( libedit? ( dev-libs/libedit ) ) libedit? ( static? ( dev-libs/libedit[static-libs] ) )
+DESCRIPTION=Debian Almquist Shell
+EAPI=7
+HOMEPAGE=http://gondor.apana.org.au/~herbert/dash/
+IUSE=libedit static
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=!static? ( libedit? ( dev-libs/libedit ) )
+SLOT=0
+SRC_URI=http://gondor.apana.org.au/~herbert/dash/files/dash-0.5.12.tar.gz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3b4887709b6e2e6820b66091a039f676

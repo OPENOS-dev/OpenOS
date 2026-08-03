@@ -1,0 +1,17 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a helper test that can only run on bluetooth devices,
+# and should succeed trivially.
+NAME = "stub_Pass.bluetooth"
+METADATA = {
+    'contacts': ['tauto-core@google.com'],
+    'bug_component': "b:1284375", # ChromeOS > Test > Harness > Tauto > Examples
+    'criteria': 'This test will always succeed'
+}
+DEPENDENCIES = "bluetooth"
+ATTRIBUTES = "suite:stub, suite:push_to_prod, suite:skylab_staging_test"
+TEST_TYPE = "client"
+
+job.run_test('stub_Pass', tag='bluetooth')

@@ -1,0 +1,11 @@
+# OPENOS ebuild build & validation environment
+# Runs Gentoo Portage inside Docker (via Lima on macOS)
+FROM gentoo/stage3:arm64-openrc
+
+RUN emerge --sync && \
+    emerge -q app-portage/repoman dev-util/pkgcheck
+
+WORKDIR /var/db/repos/openos
+
+# Default: validate all ebuilds
+CMD ["repoman", "manifest", "&&", "repoman", "full"]

@@ -1,0 +1,66 @@
+{
+  "ac_on_can_wake_ap_from_ulp": true,
+  "cr50_capability": {
+    "rdd_off_in_g3": true
+  },
+  "custom_max_tpm_init_us": 230000,
+  "custom_usb_enable_pins": [
+    {
+      "ioex": false,
+      "name": "EN_PP5000_USBA"
+    }
+  ],
+  "delay_reboot_to_ping": 200,
+  "ec_capability": {
+    "arm": false,
+    "battery": true,
+    "cbi": true,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": true
+  },
+  "ec_watchdog_period": 2.1,
+  "firmware_screen": 30,
+  "hold_pwr_button_nopowerd_shutdown": 14,
+  "minidiag_capability": {
+    "cbmem_preserved_by_ap_reset": false,
+    "event_log_launch_count": false
+  },
+  "minios_enabled": false,
+  "models": {
+    "chronicler": {
+      "firmware_screen": 16
+    },
+    "collis": {
+      "max_charging_power": 45.0
+    },
+    "copano": {
+      "hold_pwr_button_poweroff": 8.0,
+      "max_charging_power": 45.0
+    },
+    "delbin": {
+      "firmware_screen_rec_mode": 75,
+      "max_charging_power": 45.0
+    },
+    "eldrid": {
+      "firmware_screen": 20
+    },
+    "elemi": {
+      "hold_pwr_button_poweroff": 7
+    },
+    "halvor": {
+      "max_charging_power": 65.0
+    },
+    "voema": {
+      "max_charging_power": 65.0
+    },
+    "volta": {
+      "max_charging_power": 45.0
+    }
+  },
+  "platform": "volteer",
+  "s3_override_to_unsupported": true,
+  "smm_store": false,
+  "spi_voltage": "pp3300"
+}

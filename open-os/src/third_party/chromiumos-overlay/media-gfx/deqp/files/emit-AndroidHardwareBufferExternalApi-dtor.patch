@@ -1,0 +1,33 @@
+Unconditionally emit ~AndroidHardwareBufferExternalApi()
+
+This patch moves the definition of ~AndroidHardwareBufferExternalApi()
+outside an #if block so that it is always emitted. Without this change,
+if the #if codition is false, the destructor definition is not emitted,
+which also causes the typeinfo for the class to be missing.
+
+diff --git a/external/vulkancts/modules/vulkan/util/vktExternalMemoryAndroidHardwareBufferUtil.cpp b/external/vulkancts/modules/vulkan/util/vktExternalMemoryAndroidHardwareBufferUtil.cpp
+index d6c69df..97dc19a 100644
+--- a/external/vulkancts/modules/vulkan/util/vktExternalMemoryAndroidHardwareBufferUtil.cpp
++++ b/external/vulkancts/modules/vulkan/util/vktExternalMemoryAndroidHardwareBufferUtil.cpp
+@@ -56,6 +56,10 @@ namespace vkt
+ namespace ExternalMemoryUtil
+ {
+ 
++AndroidHardwareBufferExternalApi::~AndroidHardwareBufferExternalApi()
++{
++}
++
+ #if (DE_OS == DE_OS_ANDROID)
+ 
+ static int32_t androidGetSdkVersion()
+@@ -121,10 +125,6 @@ AndroidHardwareBufferExternalApi::AndroidHardwareBufferExternalApi()
+     }
+ }
+ 
+-AndroidHardwareBufferExternalApi::~AndroidHardwareBufferExternalApi()
+-{
+-}
+-
+ #if defined(BUILT_WITH_ANDROID_HARDWARE_BUFFER)
+ typedef int (*pfn_system_property_get)(const char *, char *);
+ typedef int (*pfnAHardwareBuffer_allocate)(const AHardwareBuffer_Desc *desc, AHardwareBuffer **outBuffer);

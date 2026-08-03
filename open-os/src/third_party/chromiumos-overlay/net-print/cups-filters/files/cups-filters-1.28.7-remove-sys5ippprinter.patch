@@ -1,0 +1,28 @@
+Remove sys5ippprinter because it is unused.
+
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -541,7 +541,6 @@
+ pkgfilter_PROGRAMS += \
+ 	commandtoescpx \
+ 	commandtopclx \
+-	sys5ippprinter \
+ 	texttotext \
+ 	pdftops \
+ 	rastertoescpx \
+@@ -758,15 +757,6 @@
+ 	-lz \
+ 	libcupsfilters.la
+ 
+-sys5ippprinter_SOURCES = \
+-	filter/common.c \
+-	filter/common.h \
+-	filter/sys5ippprinter.c
+-EXTRA_sys5ippprinter_SOURCES = filter/strcasestr.c
+-sys5ippprinter_CFLAGS = $(CUPS_CFLAGS)
+-sys5ippprinter_LDADD = $(STRCASESTR) $(CUPS_LIBS)
+-sys5ippprinter_DEPENDENCIES = $(STRCASESTR)
+-
+ texttotext_SOURCES = \
+ 	filter/texttotext.c
+ EXTRA_texttotext_SOURCES = filter/strcasestr.c

@@ -1,0 +1,33 @@
+<root>
+  <!-- Collection of controls retrieving information from the a CrOS EC -->
+  <control>
+    <name>ec_board</name>
+    <doc>The board name of the EC image</doc>
+    <params interface="EC_CONSOLE" drv="simple_ec" uart_cmd="version"
+      regex="RO:\s+(\S+?)[-_]v?\d+\..*$" group="1" formatting="strip"/>
+    <!-- Sample version strings
+RO: fleex_v2.0.786-8928ffebb
+RO: careena_v2.1.392-2b6db0545c
+RO: crystaldrift_v3.3.107059-ec:3d3
+RO: frostflow_v3.3.107034-ec:c77a44
+RO: markarth_v3.3.107059-ec:3d39e5,
+RO: screebo-15694.0.0
+RO: voltorb-0.0.0-unknown
+RO: steelix-0.0.0-unknown
+RO: magolor_v2.0.21919-9347314528
+    -->
+  </control>
+  <control>
+    <name>ec_active_copy</name>
+    <doc>The active copy of the EC image</doc>
+    <params interface="EC_CONSOLE" drv="simple_ec" uart_cmd="sysinfo"
+      regex="Copy:\s+(\S+)\s" group="1" formatting="strip"/>
+  </control>
+  <control>
+    <name>ec_system_powerstate</name>
+    <doc>The current power state according to the EC.</doc>
+    <params interface="EC_CONSOLE" drv="simple_ec" uart_cmd="powerinfo"
+      regex="power state \d+ = ([^,]*), in" group="1" formatting="strip"
+      debug_info="Cannot retrieve the power state on EC console."/>
+  </control>
+</root>

@@ -1,0 +1,124 @@
+#!/bin/bash
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Wrapper around graphical application launches that configures the application
+# to use our debug Mesa build.
+
+# Use from Steam by going to game properties and entering the following into
+# "launch options":
+#   /opt/dev_tools/bin/run_mesa [-p <source-prefix>] [-a <action>] %command%
+
+export PATH # Needs to be done in Borealis to make build tools available
+
+# Specify the source_prefix defined during the mesa build that contains the
+# build (./build-output-*) and install (./install) directories.
+: "${MESA_SOURCE_PREFIX:="/tmp/mesa"}"
+: "${ACTION:="run"}"
+: "${LOG_FILE:="/tmp/game.log"}"
+: "${USE_ZINK:="false"}"
+
+function print_usage() {
+  echo "usage:  $0 [args] [--] <command> [command-args]"
+  echo ""
+  echo "Run a command using mesa from the specified prefix location."
+  echo "  Several runtime actions are supported."
+  echo ""
+  echo "Optional Args:"
+  echo "  -p, --prefix:  Specify the mesa source code prefix"
+  echo "  -a, --action:  Specify the runtime action ('-a help' for options)"
+  echo "  -z, --zink:    Use Zink layering driver"
+  echo "  --             Optionally mark the end of script arguments parsing"
+  echo "                   and pass the remaining arguments to <command>"
+}
+
+echo '' > "${LOG_FILE}" # clear old log output
+exec > >(tee "${LOG_FILE}") 2>&1 # tee all output to log
+
+ARGS=()
+while (( "$#" > 0 )); do
+  case $1 in
+    -p|--prefix)
+      MESA_SOURCE_PREFIX="$2"
+      shift 2
+      ;;
+    -a|--action)
+      ACTION="$2"
+      shift 2
+      ;;
+    -z|--zink)
+      USE_ZINK="true"
+      shift
+      ;;
+    --)
+      # stop parsing and pass remaining args unmodified
+      shift
+      ARGS+=("$@")
+      break
+      ;;
+    --help|-h|--usage|-u)
+      shift
+      print_usage
+      exit 1
+      ;;
+    *)
+      ARGS+=("$1")
+      shift;
+  esac
+done
+set -- "${ARGS[@]}" # store remaining args back to $@, preserving spaces
+
+# Settings
+MESA_SOURCE_PREFIX="$(realpath "${MESA_SOURCE_PREFIX}")" # use absolute paths
+MESA_LIBS_PREFIX="${MESA_SOURCE_PREFIX}/install"
+for arch in i386 x86_64; do
+  if [ "${arch}" == "x86_64" ]; then
+    MESA_LIBS_DIR="${MESA_LIBS_PREFIX}/lib"
+  else
+    MESA_LIBS_DIR="${MESA_LIBS_PREFIX}/lib32"
+  fi
+  export LD_LIBRARY_PATH="${MESA_LIBS_DIR}:${LD_LIBRARY_PATH}"
+  export LIBGL_DRIVERS_PATH="${MESA_LIBS_DIR}/dri:${LIBGL_DRIVERS_PATH}"
+  export VK_ICD_FILENAMES="${MESA_SOURCE_PREFIX}/install/share/vulkan/icd.d/virtio_icd.${arch}.json:${VK_ICD_FILENAMES}"
+  if [ "${USE_ZINK}" == "true" ]; then
+    export MESA_LOADER_DRIVER_OVERRIDE=zink
+    export GALLIUM_DRIVER=zink
+  fi
+done
+
+# Select a default display if unset
+export DISPLAY="${DISPLAY:-":0"}"
+echo "DISPLAY=${DISPLAY}"
+
+# Request debug output from each component of the VM's graphics stack
+if [[ "${VERBOSE:-0}" == 1 ]]; then
+  export VIRGL_DEBUG="all,${VIRGL_DEBUG}"
+  export LIBGL_DEBUG="verbose,${LIBGL_DEBUG}"
+fi
+
+echo Launching application from wrapper "($0)": "$@"
+
+# validate action choice
+case "${ACTION}" in
+  strace|systrace)
+    # Capture a syscall trace
+    echo -e "\nCapturing syscall trace for command: $*"
+    exec strace -f -o /tmp/game.strace.log -s256 "$@"
+    ;;
+  apitrace)
+    # Collect a replayable GL trace
+    echo -e "\nCapturing GL trace for command: $*"
+    exec apitrace trace --output /tmp/game.trace "$@"
+    ;;
+  run)
+    # Run the command and log its output
+    echo -e "\nRunning command: $*"
+    exec "$@"
+    ;;
+  help|*)
+    echo -e "ERROR: Unrecognized action \"${ACTION}\""
+    echo "Available Actions: (strace,apitrace,run)"
+    ;;
+esac
+exit 1

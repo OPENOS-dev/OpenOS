@@ -1,0 +1,34 @@
+# Copyright 2016 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.client.cros.audio import audio_test_data
+from autotest_lib.client.cros.chameleon import chameleon_audio_ids
+from autotest_lib.server import utils
+
+
+NAME = "audio_AudioArtifacts.usb"
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "This test will fail if the recorded audio contains artifacts",
+    "doc" : " Tests USB audio artifacts against DUT after suspend"
+}
+TEST_TYPE = "server"
+#ATTRIBUTES = "suite:audio_advanced"
+DEPENDENCIES = "test_usbaudio, chameleon_state:WORKING"
+JOB_RETRIES = 1
+
+args_dict = utils.args_to_dict(args)
+chameleon_args = hosts.CrosHost.get_chameleon_arguments(args_dict)
+
+def run(machine):
+    host = hosts.create_host(machine, chameleon_args=chameleon_args)
+    job.run_test("audio_AudioArtifacts", host=host, tag="usb",
+                 golden_file=audio_test_data.FREQUENCY_TEST_FILE,
+                 source_id=chameleon_audio_ids.CrosIds.USBOUT,
+                 sink_id=None,
+                 recorder_id=chameleon_audio_ids.ChameleonIds.USBIN
+                 )
+
+parallel_simple(run, machines)

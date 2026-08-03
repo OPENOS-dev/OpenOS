@@ -1,0 +1,32 @@
+# Copyright 2015 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'audio_CrasCheck'
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    'variant_category': '{"name": "Audio_Board"}',
+    "criteria": """
+                Test will fail if 1. cras is not running 2. cras crashes
+                3. active stream count does not match.
+                """
+}
+ATTRIBUTES = "suite:bvt-perbuild, suite:distributed_lab_qual_bvt_shard1, suite:audio"
+TEST_TYPE = 'client'
+JOB_RETRIES = 2
+
+'''
+Test checks for basic audio confidence by checking cras status, crashes and
+active streams.
+'''
+
+job.run_test('audio_CrasCheck', skipped_model_with_bugs={
+    'nocturne':'b/346511575',
+    'soraka':'b/393876310',
+    'coachz':'b/393876310',
+    'quackingstick':'b/393876310',
+    'kodama':'b/393876310',
+    'krane':'b/393876310',
+    'kohaku':'b/393876310',
+})

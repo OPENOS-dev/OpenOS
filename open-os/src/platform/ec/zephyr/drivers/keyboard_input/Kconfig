@@ -1,0 +1,19 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config CROS_EC_COL_GPIO_DRIVE
+	bool "GPIO driven column keyboard matrix hook"
+	depends on CROS_EC_KEYBOARD_INPUT
+	depends on DT_HAS_CROS_EC_COL_GPIO_ENABLED
+	default y
+	select INPUT_KBD_DRIVE_COLUMN_HOOK
+	help
+	  Implemnt the hook to handle a keyboard matrix column using a GPIO.
+
+config CROS_EC_SCANCODE_SET2
+	bool "DT based scancode set2 table"
+	depends on DT_HAS_CROS_EC_SCANCODE_SET2_ENABLED
+	default y
+	help
+	  Define a scancode_set2 array based on the devicetree definition.

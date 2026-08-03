@@ -1,0 +1,143 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2015 MediaTek Inc.
+ */
+
+#ifndef MTK_DRM_DRV_H
+#define MTK_DRM_DRV_H
+
+#include <drm/drm_encoder.h>
+#include <linux/io.h>
+#include "mtk_ddp_comp.h"
+
+#define MAX_CONNECTOR	2
+#define MAX_PLANE	8
+#define BW_CHANNEL_NR	4
+#define DDP_COMPONENT_DRM_OVL_ADAPTOR (DDP_COMPONENT_ID_MAX + 1)
+#define DDP_COMPONENT_DRM_OVLSYS_ADAPTOR0 (DDP_COMPONENT_DRM_OVL_ADAPTOR + 1)
+#define DDP_COMPONENT_DRM_OVLSYS_ADAPTOR1 (DDP_COMPONENT_DRM_OVLSYS_ADAPTOR0 + 1)
+#define DDP_COMPONENT_DRM_OVLSYS_ADAPTOR2 (DDP_COMPONENT_DRM_OVLSYS_ADAPTOR1 + 1)
+#define DDP_COMPONENT_DRM_ID_MAX (DDP_COMPONENT_DRM_OVLSYS_ADAPTOR2 + 1)
+#define to_mtk_encoder(x) container_of(x, struct mtk_encoder, encoder)
+
+enum mtk_crtc_path {
+	CRTC_MAIN,
+	CRTC_EXT,
+	CRTC_THIRD,
+	MAX_CRTC,
+};
+
+enum mtk_drm_mmsys {
+	DISPSYS0,
+	DISPSYS1,
+	OVLSYS0,
+	OVLSYS1,
+	MAX_MMSYS,
+};
+
+struct device;
+struct device_node;
+struct drm_crtc;
+struct drm_device;
+struct drm_fb_helper;
+struct drm_property;
+struct regmap;
+
+struct mtk_encoder {
+	struct drm_encoder encoder;
+	bool (*is_seamless_switch)(struct drm_encoder *encoder,
+				   struct drm_connector *connector,
+				   struct drm_crtc_state *crtc_state);
+	int (*compute_config)(struct drm_encoder *encoder,
+			      struct drm_crtc_state *crtc_state,
+			      struct drm_connector_state *conn_state);
+	int (*update_config)(struct drm_encoder *encoder,
+			     struct drm_crtc_state *crtc_state,
+			     void *cmdq_pkt);
+};
+
+struct mtk_drm_route {
+	const unsigned int crtc_id;
+	const unsigned int route_ddp;
+};
+
+struct mtk_mmsys_driver_data {
+	const unsigned int *main_path;
+	unsigned int main_len;
+	unsigned int main_order;
+	const unsigned int *ext_path;
+	unsigned int ext_len;
+	unsigned int ext_order;
+	const unsigned int *third_path;
+	unsigned int third_len;
+	unsigned int third_order;
+	const struct mtk_drm_route *conn_routes;
+	unsigned int num_conn_routes;
+
+	bool shadow_register;
+	unsigned int mmsys_id;
+	unsigned int mmsys_dev_num;
+
+	u16 max_width;
+	u16 min_width;
+	u16 min_height;
+	bool has_secure;
+	bool default_sec_mode;
+	unsigned int sec_mbox_index;
+	const char *secure_heap;
+};
+
+struct mtk_drm_private {
+	struct drm_device *drm;
+	struct device *dma_dev;
+	bool mtk_drm_bound;
+	bool drm_master;
+	struct device *dev;
+	struct device_node *mutex_node;
+	struct device *mutex_dev;
+	struct device *mmsys_dev;
+	struct device_node *vdisp_ao_node;
+	struct device *vdisp_ao_dev;
+	struct device_node *dpc_node;
+	struct device *dpc_dev;
+	struct device *pmqos_dev;
+	struct device_node *comp_node[DDP_COMPONENT_DRM_ID_MAX];
+	struct mtk_ddp_comp ddp_comp[DDP_COMPONENT_DRM_ID_MAX];
+	struct mtk_mmsys_driver_data *data;
+	struct drm_atomic_state *suspend_state;
+	unsigned int mbox_index;
+	unsigned int sec_mbox_index;
+	struct mtk_drm_private **all_drm_private;
+};
+
+struct mtk_drm_ovlsys_private {
+	struct device *mmsys_dev;
+	struct device *mutex_dev;
+	unsigned int use_path;
+};
+
+extern bool mtk_dpi_v2;
+
+extern struct platform_driver mtk_disp_aal_driver;
+extern struct platform_driver mtk_disp_blender_driver;
+extern struct platform_driver mtk_disp_ccorr_driver;
+extern struct platform_driver mtk_disp_color_driver;
+extern struct platform_driver mtk_disp_dither_driver;
+extern struct platform_driver mtk_disp_exdma_driver;
+extern struct platform_driver mtk_disp_gamma_driver;
+extern struct platform_driver mtk_disp_merge_driver;
+extern struct platform_driver mtk_disp_outproc_driver;
+extern struct platform_driver mtk_disp_ovl_adaptor_driver;
+extern struct platform_driver mtk_disp_ovl_driver;
+extern struct platform_driver mtk_disp_ovlsys_adaptor_driver;
+extern struct platform_driver mtk_disp_pmqos_driver;
+extern struct platform_driver mtk_disp_rdma_driver;
+extern struct platform_driver mtk_dpi_driver;
+extern struct platform_driver mtk_dpi_driver_v2;
+extern struct platform_driver mtk_dsc_driver;
+extern struct platform_driver mtk_dsi_driver;
+extern struct platform_driver mtk_dvo_driver;
+extern struct platform_driver mtk_ethdr_driver;
+extern struct platform_driver mtk_mdp_rdma_driver;
+extern struct platform_driver mtk_padding_driver;
+#endif /* MTK_DRM_DRV_H */

@@ -1,0 +1,139 @@
+From 909b7d6785e60cf147d0b6a94db089dcd5d5c463 Mon Sep 17 00:00:00 2001
+From: Miguel Casas <mcasas@chromium.org>
+Date: Thu, 8 Feb 2024 11:25:23 -0800
+Subject: [PATCH] This is a rebase of the 2 patches proposed in [1] against
+ ffmpeg v6.1. They were proposed to fix a bug in ffmpeg's implementation where
+ a resolution change (to a smaller one) without a key frame would fail with
+ VA-API, even though it's allowed per spec. See b/234847837 and
+ https://crrev.com/c/4061439 for the original discussion.
+
+[1] https://lists.ffmpeg.org/pipermail/ffmpeg-devel/2022-November/303782.html
+---
+ libavcodec/decode.c           |  8 +++++---
+ libavcodec/hwaccel_internal.h |  8 ++++++++
+ libavcodec/vaapi_decode.c     | 23 +++++++++++++++++++++--
+ libavcodec/vaapi_decode.h     |  1 +
+ libavcodec/vaapi_vp9.c        |  4 ++++
+ 5 files changed, 39 insertions(+), 5 deletions(-)
+
+diff --git a/libavcodec/decode.c b/libavcodec/decode.c
+index 2cfb3fcf97..1ea4f2f410 100644
+--- a/libavcodec/decode.c
++++ b/libavcodec/decode.c
+@@ -1251,10 +1251,12 @@ static int hwaccel_init(AVCodecContext *avctx,
+ 
+ void ff_hwaccel_uninit(AVCodecContext *avctx)
+ {
+-    if (FF_HW_HAS_CB(avctx, uninit))
+-        FF_HW_SIMPLE_CALL(avctx, uninit);
++    if (avctx->hwaccel && !(ffhwaccel(avctx->hwaccel)->caps_internal & HWACCEL_CAP_RESET_WITHOUT_UNINIT)) {
++      if (FF_HW_HAS_CB(avctx, uninit))
++          FF_HW_SIMPLE_CALL(avctx, uninit);
+ 
+-    av_freep(&avctx->internal->hwaccel_priv_data);
++        av_freep(&avctx->internal->hwaccel_priv_data);
++    }
+ 
+     avctx->hwaccel = NULL;
+ 
+diff --git a/libavcodec/hwaccel_internal.h b/libavcodec/hwaccel_internal.h
+index 057b07323d..c1275c749a 100644
+--- a/libavcodec/hwaccel_internal.h
++++ b/libavcodec/hwaccel_internal.h
+@@ -31,6 +31,14 @@
+ #define HWACCEL_CAP_ASYNC_SAFE      (1 << 0)
+ #define HWACCEL_CAP_THREAD_SAFE     (1 << 1)
+ 
++/**
++ * The hwaccel supports reset without calling back AVHWAccel.uninit()
++ * and realloc avctx->internal->hwaccel_priv_data.
++ *
++ * New configuration can set up through AVHWAccel.init().
++ */
++#define HWACCEL_CAP_RESET_WITHOUT_UNINIT     (1 << 2)
++
+ typedef struct FFHWAccel {
+     /**
+      * The public AVHWAccel. See avcodec.h for it.
+diff --git a/libavcodec/vaapi_decode.c b/libavcodec/vaapi_decode.c
+index ceac769c52..0cf85fac8e 100644
+--- a/libavcodec/vaapi_decode.c
++++ b/libavcodec/vaapi_decode.c
+@@ -666,8 +666,10 @@ int ff_vaapi_decode_init(AVCodecContext *avctx)
+     VAStatus vas;
+     int err;
+ 
+-    ctx->va_config  = VA_INVALID_ID;
+-    ctx->va_context = VA_INVALID_ID;
++    if (!ctx->inited) {
++        ctx->va_config  = VA_INVALID_ID;
++        ctx->va_context = VA_INVALID_ID;
++    }
+ 
+     err = ff_decode_get_hw_frames_ctx(avctx, AV_HWDEVICE_TYPE_VAAPI);
+     if (err < 0)
+@@ -678,11 +680,26 @@ int ff_vaapi_decode_init(AVCodecContext *avctx)
+     ctx->device = ctx->frames->device_ctx;
+     ctx->hwctx  = ctx->device->hwctx;
+ 
++    if (ctx->va_config != VA_INVALID_ID)
++    {
++        vas = vaDestroyConfig(ctx->hwctx->display, ctx->va_config);
++        if (vas != VA_STATUS_SUCCESS) {
++            av_log(avctx, AV_LOG_ERROR, "Failed to destroy decode "
++                   "configuration %#x: %d (%s).\n",
++                   ctx->va_config, vas, vaErrorStr(vas));
++            err = AVERROR(EIO);
++            goto fail;
++        }
++    }
++
+     err = vaapi_decode_make_config(avctx, ctx->frames->device_ref,
+                                    &ctx->va_config, NULL);
+     if (err)
+         goto fail;
+ 
++    if (ctx->inited)
++        return 0;
++
+     vas = vaCreateContext(ctx->hwctx->display, ctx->va_config,
+                           avctx->coded_width, avctx->coded_height,
+                           VA_PROGRESSIVE,
+@@ -699,6 +716,8 @@ int ff_vaapi_decode_init(AVCodecContext *avctx)
+     av_log(avctx, AV_LOG_DEBUG, "Decode context initialised: "
+            "%#x/%#x.\n", ctx->va_config, ctx->va_context);
+ 
++    ctx->inited = 1;
++
+     return 0;
+ 
+ fail:
+diff --git a/libavcodec/vaapi_decode.h b/libavcodec/vaapi_decode.h
+index 6beda14e52..62a4f37ed9 100644
+--- a/libavcodec/vaapi_decode.h
++++ b/libavcodec/vaapi_decode.h
+@@ -61,6 +61,7 @@ typedef struct VAAPIDecodeContext {
+     int                   surface_count;
+ 
+     VASurfaceAttrib       pixel_format_attribute;
++    int                   inited;
+ } VAAPIDecodeContext;
+ 
+ 
+diff --git a/libavcodec/vaapi_vp9.c b/libavcodec/vaapi_vp9.c
+index 9dc7d5e72b..aa44be34f4 100644
+--- a/libavcodec/vaapi_vp9.c
++++ b/libavcodec/vaapi_vp9.c
+@@ -181,5 +181,9 @@ const FFHWAccel ff_vp9_vaapi_hwaccel = {
+     .uninit               = ff_vaapi_decode_uninit,
+     .frame_params         = ff_vaapi_common_frame_params,
+     .priv_data_size       = sizeof(VAAPIDecodeContext),
++#if VA_CHECK_VERSION(1, 0, 0)
++    .caps_internal        = HWACCEL_CAP_ASYNC_SAFE | HWACCEL_CAP_RESET_WITHOUT_UNINIT,
++#else
+     .caps_internal        = HWACCEL_CAP_ASYNC_SAFE,
++#endif
+ };
+-- 
+2.39.2
+

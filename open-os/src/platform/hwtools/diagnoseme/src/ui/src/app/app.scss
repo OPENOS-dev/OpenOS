@@ -1,0 +1,35 @@
+// Copyright 2025 The ChromiumOS Authors
+//      Use of this source code is governed by a BSD-style license that can be
+//      found in the LICENSE file.
+
+@use '@angular/material' as mat;
+
+.top-level {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: darkgray;
+}
+
+.diagnoseme-toolbar .mat-icon {
+    color: white;
+    background: #673ab7;
+
+}
+
+.diagnoseme-toolbar button {
+   background-color: #673ab7;
+    border: none;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.build-info {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-right: 16px;
+  color: rgba(255, 255, 255, 0.87);
+}

@@ -1,0 +1,15 @@
+BDEPEND=>=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install prepare
+DEPEND=net-print/cups
+DESCRIPTION=Epson Inkjet Printer Driver (ESC/P-R)
+EAPI=7
+HOMEPAGE=http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX
+IUSE=fuzzer fuzzer asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=net-print/cups
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/epson-inkjet-printer-escpr-1.8.8-1.tar.gz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	cros-constants	676fcfd1679a06bba553adf90e231454	cros-fuzzer	d598850678086f73116a1dba1b01de44	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=6fce7d017a5dfee3c5443c84d55fb507

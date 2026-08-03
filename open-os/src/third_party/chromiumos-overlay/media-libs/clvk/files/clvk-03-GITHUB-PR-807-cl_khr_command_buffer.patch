@@ -1,0 +1,2469 @@
+diff --git a/clvk/src/CMakeLists.txt b/clvk/src/CMakeLists.txt
+index 613d006..f4d4666 100644
+--- a/clvk/src/CMakeLists.txt
++++ b/clvk/src/CMakeLists.txt
+@@ -55,6 +55,7 @@ endif()
+ # Core objects
+ add_library(OpenCL-objects OBJECT
+   api.cpp
++  command.cpp
+   config.cpp
+   context.cpp
+   device.cpp
+@@ -77,6 +78,7 @@ add_library(OpenCL-objects OBJECT
+   exports.map
+ )
+ target_link_libraries(OpenCL-objects clvk-config-definitions)
++target_compile_definitions(OpenCL-objects PUBLIC CL_ENABLE_BETA_EXTENSIONS)
+ 
+ if (CLVK_UNIT_TESTING)
+    target_compile_definitions(OpenCL-objects PUBLIC CLVK_UNIT_TESTING_ENABLED)
+diff --git a/clvk/src/api.cpp b/clvk/src/api.cpp
+index 83f0314..bc05062 100644
+--- a/clvk/src/api.cpp
++++ b/clvk/src/api.cpp
+@@ -13,6 +13,7 @@
+ // limitations under the License.
+ 
+ #include "cl_headers.hpp"
++#include "command.hpp"
+ #include "icd.hpp"
+ #include "image_format.hpp"
+ #include "init.hpp"
+@@ -81,6 +82,10 @@ bool is_valid_semaphore(cl_semaphore_khr sem) {
+     return sem != nullptr && icd_downcast(sem)->is_valid();
+ }
+ 
++bool is_valid_command_buffer(cl_command_buffer_khr cmdbuf) {
++    return cmdbuf != nullptr && icd_downcast(cmdbuf)->is_valid();
++}
++
+ bool is_valid_event_wait_list(cl_uint num_events_in_wait_list,
+                               const cl_event* event_wait_list) {
+ 
+@@ -106,11 +111,10 @@ bool is_same_context(cl_command_queue queue, cl_kernel kernel) {
+     return icd_downcast(queue)->context() == icd_downcast(kernel)->context();
+ }
+ 
+-bool is_same_context(cl_command_queue queue, cl_uint num_events,
++bool is_same_context(cl_context context, cl_uint num_events,
+                      const cl_event* event_list) {
+     for (cl_uint i = 0; i < num_events; i++) {
+-        if (icd_downcast(queue)->context() !=
+-            icd_downcast(event_list[i])->context()) {
++        if (context != icd_downcast(event_list[i])->context()) {
+             return false;
+         }
+     }
+@@ -118,6 +122,12 @@ bool is_same_context(cl_command_queue queue, cl_uint num_events,
+     return true;
+ }
+ 
++bool is_same_context(cl_command_queue queue, cl_uint num_events,
++                     const cl_event* event_list) {
++    return is_same_context(icd_downcast(queue)->context(), num_events,
++                           event_list);
++}
++
+ bool is_same_context(cl_command_queue queue, cl_uint num_semas,
+                      const cl_semaphore_khr* semas) {
+     for (cl_uint i = 0; i < num_semas; i++) {
+@@ -309,6 +319,21 @@ static const std::unordered_map<std::string, void*> gExtensionEntrypoints = {
+     EXTENSION_ENTRYPOINT(clGetSemaphoreInfoKHR),
+     EXTENSION_ENTRYPOINT(clRetainSemaphoreKHR),
+     EXTENSION_ENTRYPOINT(clReleaseSemaphoreKHR),
++    EXTENSION_ENTRYPOINT(clCreateCommandBufferKHR),
++    EXTENSION_ENTRYPOINT(clFinalizeCommandBufferKHR),
++    EXTENSION_ENTRYPOINT(clRetainCommandBufferKHR),
++    EXTENSION_ENTRYPOINT(clReleaseCommandBufferKHR),
++    EXTENSION_ENTRYPOINT(clEnqueueCommandBufferKHR),
++    EXTENSION_ENTRYPOINT(clCommandCopyBufferKHR),
++    EXTENSION_ENTRYPOINT(clCommandNDRangeKernelKHR),
++    EXTENSION_ENTRYPOINT(clCommandFillBufferKHR),
++    EXTENSION_ENTRYPOINT(clCommandCopyBufferRectKHR),
++    EXTENSION_ENTRYPOINT(clGetCommandBufferInfoKHR),
++    EXTENSION_ENTRYPOINT(clCommandBarrierWithWaitListKHR),
++    EXTENSION_ENTRYPOINT(clCommandCopyBufferToImageKHR),
++    EXTENSION_ENTRYPOINT(clCommandCopyImageToBufferKHR),
++    EXTENSION_ENTRYPOINT(clCommandCopyImageKHR),
++    EXTENSION_ENTRYPOINT(clCommandFillImageKHR),
+ #undef EXTENSION_ENTRYPOINT
+ #undef FUNC_PTR
+ };
+@@ -439,6 +464,7 @@ cl_int CLVK_API_CALL clGetDeviceInfo(cl_device_id dev,
+     cl_device_integer_dot_product_acceleration_properties_khr
+         val_int_dot_product_props;
+     std::vector<size_t> val_subgroup_sizes;
++    cl_device_command_buffer_capabilities_khr val_command_buffer_capabilities;
+ 
+     auto device = icd_downcast(dev);
+ 
+@@ -938,6 +964,31 @@ cl_int CLVK_API_CALL clGetDeviceInfo(cl_device_id dev,
+         copy_ptr = &val_int_dot_product_props;
+         size_ret = sizeof(val_int_dot_product_props);
+         break;
++    case CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR:
++        val_command_buffer_capabilities = 0;
++        copy_ptr = &val_command_buffer_capabilities;
++        size_ret = sizeof(val_command_buffer_capabilities);
++        break;
++    case CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR:
++        val_queue_properties = 0;
++        copy_ptr = &val_queue_properties;
++        size_ret = sizeof(val_queue_properties);
++        break;
++    case CL_DEVICE_COMMAND_BUFFER_NUM_SYNC_DEVICES_KHR:
++        val_uint = 0;
++        copy_ptr = &val_uint;
++        size_ret = sizeof(val_uint);
++        break;
++    case CL_DEVICE_COMMAND_BUFFER_SYNC_DEVICES_KHR:
++        val_deviceid = nullptr;
++        copy_ptr = &val_deviceid;
++        size_ret = sizeof(val_deviceid);
++        break;
++    case CL_DEVICE_COMMAND_BUFFER_SUPPORTED_QUEUE_PROPERTIES_KHR:
++        val_queue_properties = CL_QUEUE_PROFILING_ENABLE;
++        copy_ptr = &val_queue_properties;
++        size_ret = sizeof(val_queue_properties);
++        break;
+     case CL_DEVICE_SUB_GROUP_SIZES_INTEL:
+         if (device->supports_subgroup_size_selection()) {
+             uint32_t size = device->min_sub_group_size();
+@@ -1288,7 +1339,8 @@ cl_event CLVK_API_CALL clCreateUserEvent(cl_context context,
+         }
+     }
+ 
+-    auto event = new cvk_event_command(icd_downcast(context), nullptr, nullptr);
++    auto event =
++        new cvk_event_command(icd_downcast(context), nullptr, CL_COMMAND_USER);
+     TRACE_INSTANT("clCreateUserEvent-event", "event", (uintptr_t)event);
+ 
+     if (errcode_ret != nullptr) {
+@@ -5484,6 +5536,19 @@ cl_int CLVK_API_CALL clEnqueueFillImage(
+     // Create image map command
+     std::array<size_t, 3> reg = {region[0], region[1], region[2]};
+ 
++    if (config.fill_image_on_device()) {
++        std::array<size_t, 3> org = {origin[0], origin[1], origin[2]};
++        std::array<uint8_t, 16> fill_color_array;
++        std::memcpy(fill_color_array.data(), fill_color,
++                    sizeof(fill_color_array));
++
++        auto cmd_fill_on_device = new cvk_command_fill_image_on_device(
++            command_queue, image, fill_color_array, org, reg);
++        return command_queue->enqueue_command_with_deps(cmd_fill_on_device,
++                                                        num_events_in_wait_list,
++                                                        event_wait_list, event);
++    }
++
+     void* map_ptr;
+     _cl_event* evt_map;
+     size_t image_row_pitch, image_slice_pitch;
+@@ -6659,3 +6724,845 @@ cl_int CLVK_API_CALL clGetKernelSuggestedLocalWorkSizeKHR(
+ 
+     return CL_SUCCESS;
+ }
++
++//
++// cl_khr_command_buffer
++//
++
++namespace {
++
++bool is_valid_sync_point(cl_sync_point_khr sync_point) {
++    return sync_point != 0;
++}
++
++bool is_valid_sync_point_wait_list(
++    cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list) {
++    if (((sync_point_wait_list == nullptr) &&
++         (num_sync_points_in_wait_list > 0)) ||
++        (sync_point_wait_list != nullptr &&
++         num_sync_points_in_wait_list == 0)) {
++        return false;
++    }
++
++    for (cl_uint i = 0; i < num_sync_points_in_wait_list; i++) {
++        if (!is_valid_sync_point(sync_point_wait_list[i])) {
++            return false;
++        }
++    }
++    return true;
++}
++
++} // namespace
++
++static cl_command_buffer_khr cvk_create_command_buffer_khr(
++    cl_uint num_queues, const cl_command_queue* queues,
++    const cl_command_buffer_properties_khr* properties, cl_int* errcode_ret) {
++
++    if (num_queues != 1 || queues == nullptr) {
++        *errcode_ret = CL_INVALID_VALUE;
++        return nullptr;
++    }
++
++    cl_command_buffer_properties_khr* props =
++        (cl_command_buffer_properties_khr*)properties;
++    std::map<cl_command_buffer_properties_khr, cl_command_buffer_properties_khr>
++        props_map;
++    while (props != nullptr && *props != 0) {
++        auto prop = props[0];
++        auto value = props[1];
++
++        if (props_map.count(prop) != 0) {
++            *errcode_ret = CL_INVALID_VALUE;
++            return nullptr;
++        }
++
++        props_map[prop] = value;
++        props += 2;
++    }
++    for (auto [prop, value] : props_map) {
++        switch (prop) {
++        case CL_COMMAND_BUFFER_FLAGS_KHR:
++            if (value & CL_COMMAND_BUFFER_SIMULTANEOUS_USE_KHR ||
++                value & CL_COMMAND_BUFFER_DEVICE_SIDE_SYNC_KHR ||
++                value & CL_COMMAND_BUFFER_MUTABLE_KHR) {
++                *errcode_ret = CL_INVALID_PROPERTY;
++                return nullptr;
++            } else if (value != 0) {
++                *errcode_ret = CL_INVALID_VALUE;
++                return nullptr;
++            }
++            break;
++        case CL_COMMAND_BUFFER_MUTABLE_DISPATCH_ASSERTS_KHR:
++            if (value != 0) {
++                *errcode_ret = CL_INVALID_VALUE;
++                return nullptr;
++            }
++            break;
++        default:
++            break;
++        }
++    }
++
++    for (unsigned i = 0; i < num_queues; i++) {
++        if (!is_valid_command_queue(queues[i])) {
++            *errcode_ret = CL_INVALID_COMMAND_QUEUE;
++            return nullptr;
++        }
++        if (icd_downcast(queues[i])->has_property(
++                CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)) {
++            *errcode_ret = CL_INCOMPATIBLE_COMMAND_QUEUE_KHR;
++            return nullptr;
++        }
++    }
++
++    std::vector<cvk_command_queue*> queues_internal;
++    queues_internal.reserve(num_queues);
++    for (cl_uint i = 0; i < num_queues; i++) {
++        queues_internal.push_back(icd_downcast(queues[i]));
++    }
++
++    std::vector<cl_command_buffer_properties_khr> properties_internal;
++
++    auto cmdbuf = new cvk_api_command_buffer(queues_internal,
++                                             std::move(properties_internal));
++    auto ctx = cmdbuf->context();
++    for (cl_uint i = 0; i < num_queues; i++) {
++        if (queues_internal[i]->context() != ctx) {
++            *errcode_ret = CL_INVALID_CONTEXT;
++            return nullptr;
++        }
++    }
++
++    *errcode_ret = CL_SUCCESS;
++    return cmdbuf;
++}
++
++cl_command_buffer_khr CLVK_API_CALL clCreateCommandBufferKHR(
++    cl_uint num_queues, const cl_command_queue* queues,
++    const cl_command_buffer_properties_khr* properties, cl_int* errcode_ret) {
++    TRACE_FUNCTION("num_queues", num_queues);
++    LOG_API_CALL(
++        "num_queues = %u, queues = %p, properties = %p, errcode_ret = %p",
++        num_queues, queues, properties, errcode_ret);
++
++    cl_int err;
++    auto buffer =
++        cvk_create_command_buffer_khr(num_queues, queues, properties, &err);
++
++    if (errcode_ret != nullptr) {
++        *errcode_ret = err;
++    }
++
++    return buffer;
++}
++
++cl_int CLVK_API_CALL
++clFinalizeCommandBufferKHR(cl_command_buffer_khr command_buffer) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    return icd_downcast(command_buffer)->finalize();
++}
++
++cl_int CLVK_API_CALL
++clRetainCommandBufferKHR(cl_command_buffer_khr command_buffer) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    icd_downcast(command_buffer)->retain();
++
++    return CL_SUCCESS;
++}
++
++cl_int CLVK_API_CALL
++clReleaseCommandBufferKHR(cl_command_buffer_khr command_buffer) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    icd_downcast(command_buffer)->release();
++
++    return CL_SUCCESS;
++}
++
++cl_int CLVK_API_CALL clEnqueueCommandBufferKHR(
++    cl_uint num_queues, cl_command_queue* queues,
++    cl_command_buffer_khr command_buffer, cl_uint num_events_in_wait_list,
++    const cl_event* event_wait_list, cl_event* event) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer, "num_queues",
++                   num_queues, "num_events_in_wait_list",
++                   num_events_in_wait_list);
++
++    LOG_API_CALL(
++        "num_queues = %u, queues = %p, command_buffer = %p, "
++        "num_events_in_wait_list = %u, event_wait_list = %p, event = %p",
++        num_queues, queues, command_buffer, num_events_in_wait_list,
++        event_wait_list, event);
++
++    if ((queues == nullptr && num_queues > 0) ||
++        (queues != nullptr && num_queues == 0)) {
++        return CL_INVALID_VALUE;
++    }
++
++    for (cl_uint i = 0; i < num_queues; i++) {
++        if (!is_valid_command_queue(queues[i])) {
++            return CL_INVALID_COMMAND_QUEUE;
++        }
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++    auto ctx = cmdbuf->context();
++
++    if (num_queues > 0 && num_queues != cmdbuf->queues().size()) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_event_wait_list(num_events_in_wait_list, event_wait_list)) {
++        return CL_INVALID_EVENT_WAIT_LIST;
++    }
++    if (!is_same_context(cmdbuf->context(), num_events_in_wait_list,
++                         event_wait_list)) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    std::vector<cvk_command_queue*> qs(num_queues);
++    for (cl_uint i = 0; i < num_queues; i++) {
++        qs[i] = icd_downcast(queues[i]);
++        if (qs[i]->context() != ctx) {
++            return CL_INVALID_CONTEXT;
++        }
++    }
++    auto ret =
++        cmdbuf->enqueue(qs, num_events_in_wait_list, event_wait_list, event);
++
++    return ret;
++}
++
++cl_int CLVK_API_CALL clGetCommandBufferInfoKHR(
++    cl_command_buffer_khr command_buffer, cl_command_buffer_info_khr param_name,
++    size_t param_value_size, void* param_value, size_t* param_value_size_ret) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer, "param_name",
++                   param_name);
++    LOG_API_CALL(
++        "command_buffer = %p, param_name = %x, param_value_size = %zu, "
++        "param_value = %p, param_value_size_ret = %p",
++        command_buffer, param_name, param_value_size, param_value,
++        param_value_size_ret);
++
++    cl_int ret = CL_SUCCESS;
++    size_t ret_size = 0;
++    const void* copy_ptr = nullptr;
++    cl_uint val_uint;
++    cl_command_buffer_state_khr val_state;
++    std::vector<cl_command_queue> val_queues;
++    cl_context val_context;
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    switch (param_name) {
++    case CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR:
++        val_uint = cmdbuf->refcount();
++        copy_ptr = &val_uint;
++        ret_size = sizeof(val_uint);
++        break;
++    case CL_COMMAND_BUFFER_STATE_KHR:
++        val_state = cmdbuf->state();
++        copy_ptr = &val_state;
++        ret_size = sizeof(val_state);
++        break;
++    case CL_COMMAND_BUFFER_PROPERTIES_ARRAY_KHR:
++        copy_ptr = cmdbuf->properties().data();
++        ret_size = cmdbuf->properties().size() *
++                   sizeof(cl_command_buffer_properties_khr);
++        break;
++    case CL_COMMAND_BUFFER_NUM_QUEUES_KHR:
++        val_uint = cmdbuf->queues().size();
++        copy_ptr = &val_uint;
++        ret_size = sizeof(val_uint);
++        break;
++    case CL_COMMAND_BUFFER_QUEUES_KHR: {
++        for (auto q : cmdbuf->queues()) {
++            val_queues.push_back(static_cast<cl_command_queue>(q));
++        }
++        copy_ptr = val_queues.data();
++        ret_size = val_queues.size() * sizeof(cl_command_queue);
++        break;
++    }
++    case CL_COMMAND_BUFFER_CONTEXT_KHR:
++        val_context = cmdbuf->context();
++        copy_ptr = &val_context;
++        ret_size = sizeof(val_context);
++        break;
++    default:
++        ret = CL_INVALID_VALUE;
++        break;
++    }
++
++    if ((param_value != nullptr) && (copy_ptr != nullptr)) {
++        if (param_value_size < ret_size) {
++            ret = CL_INVALID_VALUE;
++        }
++        memcpy(param_value, copy_ptr, std::min(param_value_size, ret_size));
++    }
++
++    if (param_value_size_ret != nullptr) {
++        *param_value_size_ret = ret_size;
++    }
++
++    return ret;
++}
++
++cl_int CLVK_API_CALL clCommandCopyBufferKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_mem src_buffer,
++    cl_mem dst_buffer, size_t src_offset, size_t dst_offset, size_t size,
++    cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    auto ctx = cmdbuf->context();
++    auto src_buf = static_cast<cvk_buffer*>(src_buffer);
++    auto dst_buf = static_cast<cvk_buffer*>(dst_buffer);
++    if (queue->context() != ctx || src_buf->context() != ctx ||
++        dst_buf->context() != ctx) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    auto cmd =
++        new cvk_command_copy_buffer(queue, CL_COMMAND_COPY_BUFFER, src_buf,
++                                    dst_buf, src_offset, dst_offset, size);
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int CLVK_API_CALL clCommandCopyBufferRectKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_mem src_buffer,
++    cl_mem dst_buffer, const size_t* src_origin, const size_t* dst_origin,
++    const size_t* region, size_t src_row_pitch, size_t src_slice_pitch,
++    size_t dst_row_pitch, size_t dst_slice_pitch,
++    cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    auto srcbuf = static_cast<cvk_buffer*>(src_buffer);
++    auto dstbuf = static_cast<cvk_buffer*>(dst_buffer);
++
++    auto ctx = cmdbuf->context();
++    if (queue->context() != ctx || srcbuf->context() != ctx ||
++        dstbuf->context() != ctx) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    auto cmd = new cvk_command_copy_buffer_rect(
++        queue, srcbuf, dstbuf, src_origin, dst_origin, region, src_row_pitch,
++        src_slice_pitch, dst_row_pitch, dst_slice_pitch);
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int CLVK_API_CALL clCommandNDRangeKernelKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_kernel kernel,
++    cl_uint work_dim, const size_t* global_work_offset,
++    const size_t* global_work_size, const size_t* local_work_size,
++    cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    cl_command_properties_khr* props = (cl_command_properties_khr*)properties;
++    while (props != nullptr && *props != 0) {
++        auto prop = props[0];
++        auto value = props[1];
++
++        switch (prop) {
++        case CL_MUTABLE_DISPATCH_ASSERTS_KHR:
++        case CL_MUTABLE_DISPATCH_UPDATABLE_FIELDS_KHR:
++        default:
++            if (value != 0) {
++                return CL_INVALID_VALUE;
++            }
++            break;
++        }
++        props += 2;
++    }
++
++    auto kern = icd_downcast(kernel);
++    if (kern->uses_printf()) {
++        return CL_INVALID_OPERATION;
++    }
++
++    cvk_ndrange ndrange(work_dim, global_work_offset, global_work_size,
++                        local_work_size);
++    // Try to pick a sensible work-group size if the user didn't specify one.
++    if (local_work_size == nullptr) {
++        icd_downcast(command_buffer)
++            ->queues()
++            .front()
++            ->device()
++            ->select_work_group_size(icd_downcast(kernel), ndrange.gws,
++                                     ndrange.lws);
++        cvk_info_fn("selected local work size: {%u,%u,%u}", ndrange.lws[0],
++                    ndrange.lws[1], ndrange.lws[2]);
++    }
++    // Check work-group size matches the required size if specified
++    auto reqd_work_group_size =
++        icd_downcast(kernel)->required_work_group_size();
++    if (reqd_work_group_size[0] != 0) {
++        if (reqd_work_group_size != ndrange.lws) {
++            cvk_error_fn("work-group size does not match the required size");
++            return CL_INVALID_WORK_GROUP_SIZE;
++        }
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    if (icd_downcast(kernel)->context() != queue->context()) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    auto cmd = new cvk_command_kernel(queue, kern, work_dim, ndrange);
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int CLVK_API_CALL clCommandFillBufferKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_mem buffer,
++    const void* pattern, size_t pattern_size, size_t offset, size_t size,
++    cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    if (icd_downcast(buffer)->context() != queue->context()) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    auto cmd = new cvk_command_fill_buffer(
++        queue, static_cast<cvk_buffer*>(buffer), offset, size, pattern,
++        pattern_size, CL_COMMAND_FILL_BUFFER);
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int clCommandBarrierWithWaitListKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties,
++    cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL(
++        "command_buffer = %p, command_queue = %p, num_sync_points_in_wait_list "
++        "= %u, "
++        "sync_point_wait_list = %p, sync_point = %p, mutable_handle = %p",
++        command_buffer, command_queue, num_sync_points_in_wait_list,
++        sync_point_wait_list, sync_point, mutable_handle);
++    UNUSED(properties);
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    auto cmd = new cvk_command_dep(queue, CL_COMMAND_BARRIER);
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int clCommandCopyBufferToImageKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_mem src_buffer,
++    cl_mem dst_image, size_t src_offset, const size_t* dst_origin,
++    const size_t* region, cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++    cvk_command* cmd;
++    auto image = static_cast<cvk_image*>(dst_image);
++    auto buffer = static_cast<cvk_buffer*>(src_buffer);
++
++    auto ctx = cmdbuf->context();
++    if (image->context() != ctx || queue->context() != ctx ||
++        buffer->context() != ctx) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    std::array<size_t, 3> origin = {dst_origin[0], dst_origin[1],
++                                    dst_origin[2]};
++    std::array<size_t, 3> reg = {region[0], region[1], region[2]};
++
++    if (image->is_backed_by_buffer_view()) {
++        cmd = new cvk_command_copy_buffer(
++            queue, CL_COMMAND_COPY_BUFFER_TO_IMAGE, buffer,
++            static_cast<cvk_buffer*>(image->buffer()), src_offset,
++            dst_origin[0] * image->element_size(),
++            region[0] * image->element_size());
++
++    } else {
++        cmd = new cvk_command_buffer_image_copy(CL_COMMAND_COPY_BUFFER_TO_IMAGE,
++                                                queue, buffer, image,
++                                                src_offset, origin, reg);
++    }
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int clCommandCopyImageKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_mem src_image,
++    cl_mem dst_image, const size_t* src_origin, const size_t* dst_origin,
++    const size_t* region, cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    auto ctx = cmdbuf->context();
++    auto src_img = static_cast<cvk_image*>(src_image);
++    auto dst_img = static_cast<cvk_image*>(dst_image);
++
++    if (src_img->context() != ctx || dst_img->context() != ctx ||
++        queue->context() != ctx) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    std::array<size_t, 3> src_orig = {src_origin[0], src_origin[1],
++                                      src_origin[2]};
++    std::array<size_t, 3> dst_orig = {dst_origin[0], dst_origin[1],
++                                      dst_origin[2]};
++    std::array<size_t, 3> reg = {region[0], region[1], region[2]};
++
++    cvk_command* cmd;
++    if (src_img->is_backed_by_buffer_view() &&
++        dst_img->is_backed_by_buffer_view()) {
++        cmd = new cvk_command_copy_buffer(
++            queue, CL_COMMAND_COPY_IMAGE,
++            static_cast<cvk_buffer*>(src_img->buffer()),
++            static_cast<cvk_buffer*>(dst_img->buffer()),
++            src_origin[0] * src_img->element_size(),
++            dst_origin[0] * dst_img->element_size(),
++            region[0] * src_img->element_size());
++
++    } else if (src_img->is_backed_by_buffer_view()) {
++        cmd = new cvk_command_buffer_image_copy(
++            CL_COMMAND_COPY_IMAGE, CL_COMMAND_COPY_BUFFER_TO_IMAGE, queue,
++            static_cast<cvk_buffer*>(src_img->buffer()), dst_img,
++            src_origin[0] * src_img->element_size(), dst_orig, reg);
++
++    } else if (dst_img->is_backed_by_buffer_view()) {
++        cmd = new cvk_command_buffer_image_copy(
++            CL_COMMAND_COPY_IMAGE, CL_COMMAND_COPY_IMAGE_TO_BUFFER, queue,
++            static_cast<cvk_buffer*>(dst_img->buffer()), src_img,
++            dst_origin[0] * dst_img->element_size(), src_orig, reg);
++    } else {
++        cmd = new cvk_command_image_image_copy(queue, src_img, dst_img,
++                                               src_orig, dst_orig, reg);
++    }
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int clCommandCopyImageToBufferKHR(
++    cl_command_buffer_khr command_buffer, cl_command_queue command_queue,
++    const cl_command_properties_khr* properties, cl_mem src_image,
++    cl_mem dst_buffer, const size_t* src_origin, const size_t* region,
++    size_t dst_offset, cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point, cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL("command_buffer = %p", command_buffer);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++
++    auto queue = cmdbuf->queues().at(0);
++
++    auto ctx = cmdbuf->context();
++    auto image = static_cast<cvk_image*>(src_image);
++    auto buffer = static_cast<cvk_buffer*>(dst_buffer);
++
++    if (image->context() != ctx || buffer->context() != ctx ||
++        queue->context() != ctx) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    std::array<size_t, 3> origin = {src_origin[0], src_origin[1],
++                                    src_origin[2]};
++    std::array<size_t, 3> reg = {region[0], region[1], region[2]};
++
++    cvk_command* cmd;
++    if (image->is_backed_by_buffer_view()) {
++        cmd = new cvk_command_copy_buffer(
++            queue, CL_COMMAND_COPY_IMAGE_TO_BUFFER,
++            static_cast<cvk_buffer*>(image->buffer()), buffer,
++            src_origin[0] * image->element_size(), dst_offset,
++            region[0] * image->element_size());
++    } else {
++        cmd = new cvk_command_buffer_image_copy(CL_COMMAND_COPY_IMAGE_TO_BUFFER,
++                                                queue, buffer, image,
++                                                dst_offset, origin, reg);
++    }
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
++
++cl_int clCommandFillImageKHR(cl_command_buffer_khr command_buffer,
++                             cl_command_queue command_queue,
++                             const cl_command_properties_khr* properties,
++                             cl_mem image, const void* fill_color,
++                             const size_t* origin, const size_t* region,
++                             cl_uint num_sync_points_in_wait_list,
++                             const cl_sync_point_khr* sync_point_wait_list,
++                             cl_sync_point_khr* sync_point,
++                             cl_mutable_command_khr* mutable_handle) {
++    TRACE_FUNCTION("command_buffer", (uintptr_t)command_buffer);
++    LOG_API_CALL(
++        "command_buffer = %p, command_queue = %p, image = %p, fill_color = %p, "
++        "origin = %p, region = %p, num_sync_points_in_wait_list = %u, "
++        "sync_point_wait_list = %p, sync_point = %p, mutable_handle = %p",
++        command_buffer, command_queue, image, fill_color, origin, region,
++        num_sync_points_in_wait_list, sync_point_wait_list, sync_point,
++        mutable_handle);
++    UNUSED(properties);
++
++    if (command_queue != nullptr) {
++        return CL_INVALID_COMMAND_QUEUE;
++    }
++    if (mutable_handle != nullptr) {
++        return CL_INVALID_VALUE;
++    }
++
++    if (!is_valid_command_buffer(command_buffer)) {
++        return CL_INVALID_COMMAND_BUFFER_KHR;
++    }
++
++    if (!is_valid_sync_point_wait_list(num_sync_points_in_wait_list,
++                                       sync_point_wait_list)) {
++        return CL_INVALID_SYNC_POINT_WAIT_LIST_KHR;
++    }
++
++    auto cmdbuf = icd_downcast(command_buffer);
++    auto queue = cmdbuf->queues().at(0);
++    auto ctx = cmdbuf->context();
++    auto img = static_cast<cvk_image*>(image);
++    if (img->context() != ctx || queue->context() != ctx) {
++        return CL_INVALID_CONTEXT;
++    }
++
++    cvk_command* cmd;
++    if (img->is_backed_by_buffer_view()) {
++        cvk_image::fill_pattern_array pattern;
++        size_t pattern_size;
++        img->prepare_fill_pattern(fill_color, pattern, &pattern_size);
++        cmd = new cvk_command_fill_buffer(
++            queue, static_cast<cvk_buffer*>(img->buffer()),
++            origin[0] * img->element_size(), region[0] * img->element_size(),
++            pattern.data(), pattern_size, CL_COMMAND_FILL_IMAGE);
++    } else {
++        std::array<size_t, 3> org = {origin[0], origin[1], origin[2]};
++        std::array<size_t, 3> reg = {region[0], region[1], region[2]};
++        std::array<uint8_t, 16> fill_color_array;
++        std::memcpy(fill_color_array.data(), fill_color,
++                    sizeof(fill_color_array));
++        cmd = new cvk_command_fill_image_on_device(queue, image,
++                                                   fill_color_array, org, reg);
++    }
++
++    return cmdbuf->add_command(cmd, num_sync_points_in_wait_list,
++                               sync_point_wait_list, sync_point);
++}
+diff --git a/clvk/src/command.cpp b/clvk/src/command.cpp
+new file mode 100644
+index 0000000..46f19f4
+--- /dev/null
++++ b/clvk/src/command.cpp
+@@ -0,0 +1,116 @@
++// Copyright 2025 The clvk authors.
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++#include "command.hpp"
++
++cl_int cvk_api_command_buffer::add_command(
++    cvk_command* command, cl_uint num_sync_points_in_wait_list,
++    const cl_sync_point_khr* sync_point_wait_list,
++    cl_sync_point_khr* sync_point) {
++    UNUSED(num_sync_points_in_wait_list);
++    UNUSED(sync_point_wait_list);
++    std::lock_guard lock(m_lock);
++    if (m_state != CL_COMMAND_BUFFER_STATE_RECORDING_KHR) {
++        return CL_INVALID_OPERATION;
++    }
++    m_commands[command->queue()].push_back(command);
++    if (sync_point != nullptr) {
++        *sync_point = m_sync_point;
++    }
++    m_sync_point++;
++    return CL_SUCCESS;
++}
++
++cl_int cvk_api_command_buffer::finalize() {
++    std::lock_guard lock(m_lock);
++    if (m_state != CL_COMMAND_BUFFER_STATE_RECORDING_KHR) {
++        return CL_INVALID_OPERATION;
++    }
++    m_state = CL_COMMAND_BUFFER_STATE_EXECUTABLE_KHR;
++    return CL_SUCCESS;
++}
++
++cl_int
++cvk_api_command_buffer::enqueue(const std::vector<cvk_command_queue*>& queues,
++                                cl_uint num_events_in_wait_list,
++                                const cl_event* event_wait_list,
++                                cl_event* event) {
++    std::unique_lock<std::mutex> lock(m_lock);
++    if (m_state != CL_COMMAND_BUFFER_STATE_EXECUTABLE_KHR) {
++        return CL_INVALID_OPERATION;
++    }
++    std::vector<cvk_command_queue*> queues_to_enqueue;
++    if (queues.size() == 0) {
++        for (auto queue : m_queues) {
++            queues_to_enqueue.push_back(queue);
++        }
++    } else {
++        for (auto queue : queues) {
++            queues_to_enqueue.push_back(queue);
++            if (m_commands.count(queue) != m_commands.count(m_queues[0])) {
++                for (auto cmd : m_commands[m_queues[0]]) {
++                    m_commands[queue].push_back(cmd->clone(queue));
++                }
++            }
++        }
++    }
++
++    cl_int err = CL_SUCCESS;
++    for (auto queue : queues_to_enqueue) {
++        for (auto cmd : m_commands[queue]) {
++            cmd->reset_event();
++            cmd->retain();
++        }
++        unsigned nb_commands = m_commands[queue].size();
++        std::vector<cl_event> events;
++        events.resize(nb_commands);
++        for (unsigned i = 0; i < nb_commands; i++) {
++            auto cmd = m_commands[queue][i];
++            err = queue->enqueue_command_with_deps(cmd, num_events_in_wait_list,
++                                                   event_wait_list, &events[i]);
++            if (err != CL_SUCCESS) {
++                return err;
++            }
++        }
++        if (nb_commands == 0) {
++            nb_commands = 1;
++            events.resize(nb_commands);
++            auto cmd =
++                new cvk_command_dep(queue, CL_COMMAND_COMMAND_BUFFER_KHR);
++            err = queue->enqueue_command_with_deps(cmd, num_events_in_wait_list,
++                                                   event_wait_list, &events[0]);
++            if (err != CL_SUCCESS) {
++                return err;
++            }
++        }
++
++        if (event != nullptr) {
++            if (nb_commands == 1) {
++                *event = events[0];
++                icd_downcast(events[0])->retain();
++            } else {
++                *event = new cvk_event_combine(
++                    queue->context(), CL_COMMAND_COMMAND_BUFFER_KHR, queue,
++                    icd_downcast(events[0]),
++                    icd_downcast(events[nb_commands - 1]));
++            }
++        }
++        last_enqueue_event.reset(icd_downcast(events[nb_commands - 1]));
++
++        for (unsigned i = 0; i < nb_commands; i++) {
++            icd_downcast(events[i])->release();
++        }
++    }
++    return err;
++}
+diff --git a/clvk/src/command.hpp b/clvk/src/command.hpp
+new file mode 100644
+index 0000000..3a5cdb2
+--- /dev/null
++++ b/clvk/src/command.hpp
+@@ -0,0 +1,68 @@
++// Copyright 2025 The clvk authors.
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++#pragma once
++
++#include "cl_headers.hpp"
++#include "memory.hpp"
++#include "objects.hpp"
++#include "queue.hpp"
++
++struct cvk_api_command_buffer : public _cl_command_buffer_khr,
++                                api_object<object_magic::command_buffer> {
++
++    cvk_api_command_buffer(const std::vector<cvk_command_queue*>& queues,
++                           std::vector<cl_command_properties_khr>&& properties)
++        : api_object(queues[0]->context()), m_sync_point(1),
++          m_properties(std::move(properties)),
++          m_state(CL_COMMAND_BUFFER_STATE_RECORDING_KHR) {
++        for (auto cq : queues) {
++            m_queues.emplace_back(cq);
++        }
++    }
++
++    const std::vector<cvk_command_queue_holder>& queues() const {
++        return m_queues;
++    }
++    const std::vector<cl_command_properties_khr>& properties() const {
++        return m_properties;
++    }
++    cl_command_buffer_state_khr state() { return m_state; }
++
++    cl_int add_command(cvk_command* command,
++                       cl_uint num_sync_points_in_wait_list,
++                       const cl_sync_point_khr* sync_point_wait_list,
++                       cl_sync_point_khr* sync_point);
++
++    cl_int finalize();
++
++    cl_int enqueue(const std::vector<cvk_command_queue*>& queues,
++                   cl_uint num_events_in_wait_list,
++                   const cl_event* event_wait_list, cl_event* event);
++
++private:
++    cl_sync_point_khr m_sync_point;
++    std::vector<cvk_command_queue_holder> m_queues;
++    std::vector<cl_command_properties_khr> m_properties;
++    std::unordered_map<cvk_command_queue*, std::vector<cvk_command*>>
++        m_commands;
++    cl_command_buffer_state_khr m_state;
++    std::mutex m_lock;
++    cvk_event_holder last_enqueue_event;
++};
++
++static inline cvk_api_command_buffer*
++icd_downcast(cl_command_buffer_khr cmdbuf) {
++    return static_cast<cvk_api_command_buffer*>(cmdbuf);
++}
+diff --git a/clvk/src/config.def b/clvk/src/config.def
+index d754afb..558d763 100644
+--- a/clvk/src/config.def
++++ b/clvk/src/config.def
+@@ -226,6 +226,10 @@ OPTION(bool, poll_executor, false)
+ // thread to know where a semaphore has reached an expected value.
+ PROPERTY(bool, poll_main_thread, false)
+ 
++// Use a kernel to implement clEnqueueFillImage, so that the operation is
++// performed on device (Not through a host-to-device transfer).
++OPTION(bool, fill_image_on_device, false)
++
+ 
+ ////////////////////////////////////////////////////////////
+ // LOGGING & VALIDATION ////////////////////////////////////
+diff --git a/clvk/src/device.cpp b/clvk/src/device.cpp
+index 145bfb1..ffe2cf0 100644
+--- a/clvk/src/device.cpp
++++ b/clvk/src/device.cpp
+@@ -605,6 +605,7 @@ void cvk_device::build_extension_ils_list() {
+         MAKE_NAME_VERSION(1, 0, 0, "cl_khr_3d_image_writes"),
+         // MAKE_NAME_VERSION(0, 9, 0, "cl_khr_semaphore"),
+         MAKE_NAME_VERSION(1, 0, 0, "cl_khr_spirv_linkonce_odr"),
++        MAKE_NAME_VERSION(0, 9, 8, "cl_khr_command_buffer"),
+     };
+ 
+     if (m_properties.apiVersion >= VK_MAKE_VERSION(1, 1, 0)) {
+@@ -1242,10 +1243,12 @@ void cvk_device::select_work_group_size(
+     cvk_kernel* kernel, const std::array<uint32_t, 3>& global_size,
+     std::array<uint32_t, 3>& local_size) const {
+ 
+-    auto required_work_group_size = kernel->required_work_group_size();
+-    if (required_work_group_size[0] != 0) {
+-        local_size = required_work_group_size;
+-        return;
++    if (kernel != nullptr) {
++        auto required_work_group_size = kernel->required_work_group_size();
++        if (required_work_group_size[0] != 0) {
++            local_size = required_work_group_size;
++            return;
++        }
+     }
+     // Start at (1,1,1), which is always valid.
+     local_size = {1, 1, 1};
+diff --git a/clvk/src/event.cpp b/clvk/src/event.cpp
+index 143cc21..620e992 100644
+--- a/clvk/src/event.cpp
++++ b/clvk/src/event.cpp
+@@ -22,15 +22,14 @@ static const cl_profiling_info status_to_profiling_info[4] = {
+     CL_PROFILING_COMMAND_QUEUED,
+ };
+ 
+-cvk_event_command::cvk_event_command(cvk_context* ctx, cvk_command* cmd,
+-                                     cvk_command_queue* queue)
+-    : cvk_event(ctx, queue), m_cmd(cmd) {
+-    if (cmd == nullptr) {
++cvk_event_command::cvk_event_command(cvk_context* ctx, cvk_command_queue* queue,
++                                     cl_command_type type)
++    : cvk_event(ctx, queue), m_query_pool(VK_NULL_HANDLE) {
++    m_command_type = type;
++    if (type == CL_COMMAND_USER) {
+         m_status = CL_SUBMITTED;
+-        m_command_type = CL_COMMAND_USER;
+     } else {
+         m_status = CL_QUEUED;
+-        m_command_type = cmd->type();
+     }
+     if (m_command_type == CL_COMMAND_USER || !queue->use_timeline_semaphore()) {
+         m_cv = std::make_unique<cvk_std_condition_variable>();
+@@ -42,6 +41,13 @@ cvk_event_command::cvk_event_command(cvk_context* ctx, cvk_command* cmd,
+     }
+ }
+ 
++cvk_event_command::~cvk_event_command() {
++    if (m_query_pool != VK_NULL_HANDLE) {
++        auto vkdev = m_queue->device()->vulkan_device();
++        vkDestroyQueryPool(vkdev, m_query_pool, nullptr);
++    }
++}
++
+ void cvk_event_command::set_status_no_lock(cl_int status,
+                                            std::unique_lock<std::mutex>& lock) {
+     if (status >= m_status) {
+@@ -53,15 +59,23 @@ void cvk_event_command::set_status_no_lock(cl_int status,
+                     status);
+     m_status = status;
+ 
+-    if (m_queue && m_queue->has_property(CL_QUEUE_PROFILING_ENABLE) && m_cmd &&
++    if (m_queue && m_queue->has_property(CL_QUEUE_PROFILING_ENABLE) &&
+         status >= CL_COMPLETE && status <= CL_QUEUED) {
+         cl_profiling_info pinfo = status_to_profiling_info[status];
+         // profiling could have already been set. In particular in the
+         // case of the command_batch
+         if (get_profiling_info(pinfo) == 0) {
+-            auto err = m_cmd->set_profiling_info(pinfo);
+-            if (err != CL_SUCCESS) {
+-                m_status = err;
++            if (m_query_pool != VK_NULL_HANDLE &&
++                pinfo == CL_PROFILING_COMMAND_END) {
++                auto err = set_profiling_info_end_from_query_pool();
++                if (err != CL_SUCCESS) {
++                    m_status = err;
++                }
++            } else if (m_query_pool != VK_NULL_HANDLE &&
++                       pinfo == CL_PROFILING_COMMAND_START) {
++                return;
++            } else {
++                set_profiling_info_from_monotonic_clock(pinfo);
+             }
+         }
+     }
+@@ -77,3 +91,50 @@ void cvk_event_command::set_status_no_lock(cl_int status,
+         m_cv->notify();
+     }
+ }
++
++cl_int cvk_event_command::set_profiling_info_end_from_query_pool() {
++    // If it has already been set, don't override it
++    if (get_profiling_info(CL_PROFILING_COMMAND_END) != 0) {
++        return CL_SUCCESS;
++    }
++    cl_ulong start_dev, end_dev;
++    auto perr = get_timestamp_query_results(&start_dev, &end_dev);
++    if (perr != CL_COMPLETE) {
++        return perr;
++    }
++    cl_ulong start_host, end_host;
++    perr = m_queue->device()->device_timer_to_host(start_dev, start_host);
++    if (perr != CL_SUCCESS) {
++        return perr;
++    }
++    perr = m_queue->device()->device_timer_to_host(end_dev, end_host);
++    if (perr != CL_SUCCESS) {
++        return perr;
++    }
++    set_profiling_info(CL_PROFILING_COMMAND_START, start_host);
++    set_profiling_info(CL_PROFILING_COMMAND_END, end_host);
++    return CL_SUCCESS;
++}
++
++cl_int cvk_event_command::get_timestamp_query_results(cl_ulong* start,
++                                                      cl_ulong* end) {
++    uint64_t timestamps[NUM_POOL_QUERIES_PER_COMMAND];
++    auto dev = m_queue->device();
++    auto res = vkGetQueryPoolResults(
++        dev->vulkan_device(), m_query_pool, 0, NUM_POOL_QUERIES_PER_COMMAND,
++        sizeof(timestamps), timestamps, sizeof(uint64_t),
++        VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
++    if (res != VK_SUCCESS) {
++        cvk_error_fn("vkGetQueryPoolResults failed %d %s", res,
++                     vulkan_error_string(res));
++        return CL_OUT_OF_RESOURCES;
++    }
++
++    auto ts_start_raw = timestamps[POOL_QUERY_CMD_START];
++    auto ts_end_raw = timestamps[POOL_QUERY_CMD_END];
++
++    *start = dev->timestamp_to_ns(ts_start_raw);
++    *end = dev->timestamp_to_ns(ts_end_raw);
++
++    return CL_COMPLETE;
++}
+diff --git a/clvk/src/event.hpp b/clvk/src/event.hpp
+index 45ebfdd..e9de5e0 100644
+--- a/clvk/src/event.hpp
++++ b/clvk/src/event.hpp
+@@ -147,8 +147,12 @@ protected:
+ 
+ struct cvk_event_command : public cvk_event {
+ 
+-    cvk_event_command(cvk_context* ctx, cvk_command* cmd,
+-                      cvk_command_queue* queue);
++    cvk_event_command(cvk_context* ctx, cvk_command_queue* queue,
++                      cl_command_type type);
++
++    ~cvk_event_command();
++
++    VkQueryPool* get_query_pool() { return &m_query_pool; }
+ 
+     void set_status(cl_int status) override final {
+         std::unique_lock<std::mutex> lock(m_lock);
+@@ -187,8 +191,7 @@ struct cvk_event_command : public cvk_event {
+                         "cvk_event::wait: event = %p, status = %d", this,
+                         m_status);
+         if (m_status > 0) {
+-            TRACE_BEGIN_EVENT(command_type(), "queue", (uintptr_t)m_queue,
+-                              "command", (uintptr_t)m_cmd);
++            TRACE_BEGIN_EVENT(command_type(), "queue", (uintptr_t)m_queue);
+             auto ret = m_cv->wait(lock, poll);
+             TRACE_END();
+             if (!ret) {
+@@ -203,6 +206,8 @@ struct cvk_event_command : public cvk_event {
+         return m_status;
+     }
+ 
++    cl_int set_profiling_info_end_from_query_pool();
++
+     void set_profiling_info(cl_profiling_info pinfo, uint64_t val) {
+         m_profiling_data[pinfo - CL_PROFILING_COMMAND_QUEUED] = val;
+     }
+@@ -232,6 +237,10 @@ struct cvk_event_command : public cvk_event {
+     }
+     uint64_t get_value() override final { return m_cv->get_value(); }
+ 
++    static const int NUM_POOL_QUERIES_PER_COMMAND = 2;
++    static const int POOL_QUERY_CMD_START = 0;
++    static const int POOL_QUERY_CMD_END = 1;
++
+ private:
+     void set_status_no_lock(cl_int status, std::unique_lock<std::mutex>& lock);
+     void execute_callback(cvk_event_callback cb,
+@@ -240,13 +249,14 @@ private:
+         cb.pointer(this, m_status, cb.data);
+         lock.lock();
+     }
++    cl_int get_timestamp_query_results(cl_ulong* start, cl_ulong* end);
+ 
+     std::mutex m_lock;
+     std::unique_ptr<cvk_condition_variable> m_cv;
+     cl_int m_status;
+     cl_ulong m_profiling_data[4]{};
+-    cvk_command* m_cmd;
+     std::unordered_map<cl_int, std::vector<cvk_event_callback>> m_callbacks;
++    VkQueryPool m_query_pool;
+ };
+ 
+ using cvk_event_holder = refcounted_holder<cvk_event>;
+diff --git a/clvk/src/icd.hpp b/clvk/src/icd.hpp
+index df3ca31..040086a 100644
+--- a/clvk/src/icd.hpp
++++ b/clvk/src/icd.hpp
+@@ -34,3 +34,4 @@ struct _cl_mem : clvk::icd_object {};
+ struct _cl_sampler : clvk::icd_object {};
+ struct _cl_event : clvk::icd_object {};
+ struct _cl_semaphore_khr : clvk::icd_object {};
++struct _cl_command_buffer_khr : clvk::icd_object {};
+diff --git a/clvk/src/log.cpp b/clvk/src/log.cpp
+index 1926245..c0f8e1d 100644
+--- a/clvk/src/log.cpp
++++ b/clvk/src/log.cpp
+@@ -515,6 +515,15 @@ const char* cl_command_type_to_string(cl_command_type type) {
+         CASE(CL_COMMAND_RELEASE_GL_OBJECTS);
+         CASE(CL_COMMAND_SEMAPHORE_WAIT_KHR);
+         CASE(CL_COMMAND_SEMAPHORE_SIGNAL_KHR);
++        CASE(CL_COMMAND_COMMAND_BUFFER_KHR);
++        CASE(CL_COMMAND_READ_BUFFER_RECT);
++        CASE(CL_COMMAND_WRITE_BUFFER_RECT);
++        CASE(CL_COMMAND_COPY_BUFFER_RECT);
++        CASE(CL_COMMAND_USER);
++        CASE(CL_COMMAND_BARRIER);
++        CASE(CL_COMMAND_MIGRATE_MEM_OBJECTS);
++        CASE(CL_COMMAND_FILL_BUFFER);
++        CASE(CL_COMMAND_FILL_IMAGE);
+         CASE(CLVK_COMMAND_BATCH);
+         CASE(CLVK_COMMAND_IMAGE_INIT);
+     default:
+diff --git a/clvk/src/memory.cpp b/clvk/src/memory.cpp
+index f1b7113..99acee0 100644
+--- a/clvk/src/memory.cpp
++++ b/clvk/src/memory.cpp
+@@ -325,7 +325,21 @@ cvk_image* cvk_image::create(cvk_context* ctx, cl_mem_flags flags,
+     return image.release();
+ }
+ 
+-bool cvk_image::init_vulkan_image() {
++cvk_image* cvk_image::create_write_enable_image_from(cvk_image* image) {
++    auto properties = image->properties();
++    auto image_write_enabled =
++        std::make_unique<cvk_image>(image->m_context, CL_MEM_WRITE_ONLY,
++                                    (const cl_image_desc*)&(image->m_desc),
++                                    (const cl_image_format*)&(image->m_format),
++                                    nullptr, std::move(properties));
++    if (!image_write_enabled->init(image->m_memory)) {
++        return nullptr;
++    }
++    return image_write_enabled.release();
++}
++
++bool cvk_image::init_vulkan_image(
++    std::shared_ptr<cvk_memory_allocation> memory) {
+     // Translate image type and size
+     VkImageType image_type;
+     VkImageViewType view_type;
+@@ -431,25 +445,29 @@ bool cvk_image::init_vulkan_image() {
+         return false;
+     }
+ 
+-    CVK_ASSERT(m_desc.image_type != CL_MEM_OBJECT_IMAGE1D_BUFFER);
+-    // Select memory type
+-    cvk_device::allocation_parameters params =
+-        device->select_memory_for(m_image);
+-    if (params.memory_type_index == VK_MAX_MEMORY_TYPES) {
+-        cvk_error_fn("Could not get memory type!");
+-        return false;
+-    }
++    if (memory != nullptr) {
++        m_memory = memory;
++    } else {
++        CVK_ASSERT(m_desc.image_type != CL_MEM_OBJECT_IMAGE1D_BUFFER);
++        // Select memory type
++        cvk_device::allocation_parameters params =
++            device->select_memory_for(m_image);
++        if (params.memory_type_index == VK_MAX_MEMORY_TYPES) {
++            cvk_error_fn("Could not get memory type!");
++            return false;
++        }
+ 
+-    // Allocate memory
+-    m_memory = std::make_unique<cvk_memory_allocation>(
+-        vkdev, params.size, params.memory_type_index, params.memory_coherent,
+-        device->keep_memory_allocations_mapped());
++        // Allocate memory
++        m_memory = std::make_unique<cvk_memory_allocation>(
++            vkdev, params.size, params.memory_type_index,
++            params.memory_coherent, device->keep_memory_allocations_mapped());
+ 
+-    res = m_memory->allocate(device->uses_physical_addressing());
++        res = m_memory->allocate(device->uses_physical_addressing());
+ 
+-    if (res != VK_SUCCESS) {
+-        cvk_error_fn("Could not allocate memory!");
+-        return false;
++        if (res != VK_SUCCESS) {
++            cvk_error_fn("Could not allocate memory!");
++            return false;
++        }
+     }
+ 
+     // Bind the image to memory
+@@ -582,11 +600,11 @@ bool cvk_image::init_vulkan_texel_buffer() {
+     return true;
+ }
+ 
+-bool cvk_image::init() {
++bool cvk_image::init(std::shared_ptr<cvk_memory_allocation> memory) {
+     if (is_backed_by_buffer_view()) {
+         return init_vulkan_texel_buffer();
+     } else {
+-        return init_vulkan_image();
++        return init_vulkan_image(memory);
+     }
+ }
+ 
+diff --git a/clvk/src/memory.hpp b/clvk/src/memory.hpp
+index 24933e8..ad30e8e 100644
+--- a/clvk/src/memory.hpp
++++ b/clvk/src/memory.hpp
+@@ -638,6 +638,7 @@ struct cvk_image : public cvk_mem {
+                              const cl_image_desc* desc,
+                              const cl_image_format* format, void* host_ptr,
+                              std::vector<cl_mem_properties>&& properties);
++    static cvk_image* create_write_enable_image_from(cvk_image* image);
+ 
+     bool is_backed_by_buffer_view() const {
+         return type() == CL_MEM_OBJECT_IMAGE1D_BUFFER;
+@@ -700,6 +701,7 @@ struct cvk_image : public cvk_mem {
+     cvk_mem* buffer() const { return icd_downcast(m_desc.buffer); }
+     cl_uint num_mip_levels() const { return m_desc.num_mip_levels; }
+     cl_uint num_samples() const { return m_desc.num_samples; }
++    cl_image_info image_type() const { return m_desc.image_type; }
+ 
+     bool has_same_format(const cvk_image* other) const {
+         auto fmt = format();
+@@ -828,9 +830,9 @@ struct cvk_image : public cvk_mem {
+                               size_t* size_ret) const;
+ 
+ private:
+-    bool init_vulkan_image();
++    bool init_vulkan_image(std::shared_ptr<cvk_memory_allocation> memory);
+     bool init_vulkan_texel_buffer();
+-    bool init();
++    bool init(std::shared_ptr<cvk_memory_allocation> memory = nullptr);
+ 
+     size_t num_channels() const {
+         switch (m_format.image_channel_order) {
+diff --git a/clvk/src/objects.hpp b/clvk/src/objects.hpp
+index d1de855..5e7ac89 100644
+--- a/clvk/src/objects.hpp
++++ b/clvk/src/objects.hpp
+@@ -45,6 +45,7 @@ enum class object_magic : uint32_t
+     memory_object = 0x8899AABBU,
+     sampler = 0x99AABBCCU,
+     semaphore = 0xAABBCCDDU,
++    command_buffer = 0xBBCCDDEEU,
+ };
+ 
+ template <object_magic magic> struct object_magic_header {
+diff --git a/clvk/src/queue.cpp b/clvk/src/queue.cpp
+index 15a1848..139140b 100644
+--- a/clvk/src/queue.cpp
++++ b/clvk/src/queue.cpp
+@@ -154,19 +154,19 @@ cl_int cvk_command_queue::enqueue_command_with_retry(cvk_command* cmd,
+     if (config.enqueue_command_retry_sleep_us == UINT32_MAX ||
+         err != CL_OUT_OF_RESOURCES) {
+         if (err != CL_SUCCESS) {
+-            delete cmd;
++            cmd->release();
+         }
+         return err;
+     }
+     if (m_nb_group_in_flight == 0) {
+         err = end_current_command_batch();
+         if (err != CL_SUCCESS) {
+-            delete cmd;
++            cmd->release();
+             return err;
+         }
+         err = flush_no_lock();
+         if (err != CL_SUCCESS) {
+-            delete cmd;
++            cmd->release();
+             return err;
+         }
+     }
+@@ -182,13 +182,14 @@ cl_int cvk_command_queue::enqueue_command_with_retry(cvk_command* cmd,
+         err = enqueue_command(cmd, event);
+     } while (err == CL_OUT_OF_RESOURCES && m_nb_group_in_flight != 0);
+     if (err != CL_SUCCESS) {
+-        delete cmd;
++        cmd->release();
+     }
+     return err;
+ }
+ 
+ cl_int cvk_command_queue::enqueue_command(cvk_command* cmd, _cl_event** event) {
+ 
++    CVK_ASSERT(cmd->queue() == this);
+     cl_int err;
+ 
+     // Enqueue data movement/consistency commands if needed
+@@ -400,7 +401,7 @@ cl_int cvk_command_group::execute_cmds(bool poll) {
+         // Deleting batch with many commands can take a while. Trace it to be
+         // able to understand it easily.
+         TRACE_BEGIN("delete_cmd");
+-        delete cmd;
++        cmd->release();
+         TRACE_END();
+     }
+     return global_status;
+@@ -639,7 +640,7 @@ void cvk_command_pool::free_command_buffer(VkCommandBuffer buf) {
+ }
+ 
+ bool cvk_command_buffer::begin() {
+-
++    CVK_ASSERT(m_command_buffer == VK_NULL_HANDLE);
+     if (!m_queue->allocate_command_buffer(&m_command_buffer)) {
+         return false;
+     }
+@@ -1121,8 +1122,10 @@ cvk_command_kernel::build_batchable_inner(cvk_command_buffer& command_buffer) {
+     // TODO CL_INVALID_KERNEL_ARGS if the kernel argument values have not been
+     // specified.
+ 
+-    m_argument_values = m_kernel->argument_values();
+-    m_argument_values->retain_resources();
++    if (m_argument_values == nullptr) {
++        m_argument_values = m_kernel->argument_values();
++        m_argument_values->retain_resources();
++    }
+ 
+     // Setup descriptors
+     if (!m_argument_values->setup_descriptor_sets()) {
+@@ -1277,18 +1280,19 @@ cl_int cvk_command_batchable::build(cvk_command_buffer& command_buffer) {
+     VkQueryPoolCreateInfo query_pool_create_info = {
+         VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO,
+         nullptr,
+-        0,                            // flags
+-        VK_QUERY_TYPE_TIMESTAMP,      // queryType
+-        NUM_POOL_QUERIES_PER_COMMAND, // queryCount
+-        0,                            // pipelineStatistics
++        0,                                               // flags
++        VK_QUERY_TYPE_TIMESTAMP,                         // queryType
++        cvk_event_command::NUM_POOL_QUERIES_PER_COMMAND, // queryCount
++        0,                                               // pipelineStatistics
+     };
+ 
+     bool profiling = m_queue->has_property(CL_QUEUE_PROFILING_ENABLE);
++    auto query_pool = m_event->get_query_pool();
+ 
+     if (profiling && m_queue->profiling_on_device()) {
+         auto vkdev = m_queue->device()->vulkan_device();
+         auto res = vkCreateQueryPool(vkdev, &query_pool_create_info, nullptr,
+-                                     &m_query_pool);
++                                     query_pool);
+         if (res != VK_SUCCESS) {
+             return CL_OUT_OF_RESOURCES;
+         }
+@@ -1296,11 +1300,11 @@ cl_int cvk_command_batchable::build(cvk_command_buffer& command_buffer) {
+ 
+     // Sample timestamp if profiling
+     if (profiling && m_queue->profiling_on_device()) {
+-        vkCmdResetQueryPool(command_buffer, m_query_pool, 0,
+-                            NUM_POOL_QUERIES_PER_COMMAND);
++        vkCmdResetQueryPool(command_buffer, *query_pool, 0,
++                            cvk_event_command::NUM_POOL_QUERIES_PER_COMMAND);
+         vkCmdWriteTimestamp(command_buffer,
+-                            VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, m_query_pool,
+-                            POOL_QUERY_CMD_START);
++                            VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, *query_pool,
++                            cvk_event_command::POOL_QUERY_CMD_START);
+     }
+ 
+     auto err = build_batchable_inner(command_buffer);
+@@ -1311,36 +1315,13 @@ cl_int cvk_command_batchable::build(cvk_command_buffer& command_buffer) {
+     // Sample timestamp if profiling
+     if (profiling && m_queue->profiling_on_device()) {
+         vkCmdWriteTimestamp(command_buffer,
+-                            VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, m_query_pool,
+-                            POOL_QUERY_CMD_END);
++                            VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, *query_pool,
++                            cvk_event_command::POOL_QUERY_CMD_END);
+     }
+ 
+     return CL_SUCCESS;
+ }
+ 
+-cl_int cvk_command_batchable::get_timestamp_query_results(cl_ulong* start,
+-                                                          cl_ulong* end) {
+-    uint64_t timestamps[NUM_POOL_QUERIES_PER_COMMAND];
+-    auto dev = m_queue->device();
+-    auto res = vkGetQueryPoolResults(
+-        dev->vulkan_device(), m_query_pool, 0, NUM_POOL_QUERIES_PER_COMMAND,
+-        sizeof(timestamps), timestamps, sizeof(uint64_t),
+-        VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
+-    if (res != VK_SUCCESS) {
+-        cvk_error_fn("vkGetQueryPoolResults failed %d %s", res,
+-                     vulkan_error_string(res));
+-        return CL_OUT_OF_RESOURCES;
+-    }
+-
+-    auto ts_start_raw = timestamps[POOL_QUERY_CMD_START];
+-    auto ts_end_raw = timestamps[POOL_QUERY_CMD_END];
+-
+-    *start = dev->timestamp_to_ns(ts_start_raw);
+-    *end = dev->timestamp_to_ns(ts_end_raw);
+-
+-    return CL_COMPLETE;
+-}
+-
+ cl_int cvk_command_batchable::do_action() {
+     CVK_ASSERT(m_command_buffer);
+ 
+@@ -2011,3 +1992,178 @@ cvk_command_image_init::build_batchable_inner(cvk_command_buffer& cmdbuf) {
+ 
+     return CL_SUCCESS;
+ }
++
++cl_int cvk_command_fill_image_on_device::build_batchable_inner(
++    cvk_command_buffer& cmdbuf) {
++    if (m_cmd_kernel != nullptr) {
++        return m_cmd_kernel->build_batchable_inner(cmdbuf);
++    }
++    char source[1024];
++    char color[512];
++    const char* kernel_name = "fill_image";
++    const char* type = get_image_type();
++    const char* access_qualifier = get_image_access_qualifier();
++    const char* coord = get_image_coord();
++    get_image_color(color);
++    sprintf(source,
++            "kernel void %s(write_only %s image) { write_image%s(image, "
++            "%s, %s); }",
++            kernel_name, type, access_qualifier, coord, color);
++
++    auto program = std::make_unique<cvk_program>(m_queue->context());
++    program->append_source(source, strlen(source));
++    const cl_device_id device = static_cast<cl_device_id>(m_queue->device());
++    auto err = program->build(build_operation::build, 1, &device, nullptr, 0,
++                              nullptr, nullptr, nullptr, nullptr);
++    if (err != CL_SUCCESS) {
++        cvk_error_fn("fail to build program (%u)", err);
++        return CL_OUT_OF_RESOURCES;
++    }
++
++    auto prog = program.release();
++    auto kernel = std::make_unique<cvk_kernel>(prog, kernel_name);
++    prog->release();
++    err = kernel->init();
++    if (err != CL_SUCCESS) {
++        cvk_error_fn("fail to init kernel (%u)", err);
++        return err;
++    }
++    err = kernel->set_arg(0, sizeof(m_mem), &m_mem);
++    if (err != CL_SUCCESS) {
++        cvk_error_fn("fail to set arg (%u)", err);
++        return err;
++    }
++
++    cl_uint work_dim = dimensions();
++    cvk_ndrange ndrange(work_dim, m_work_offset.data(), m_work_size.data(),
++                        nullptr);
++    auto kern = kernel.release();
++    m_cmd_kernel =
++        std::make_unique<cvk_command_kernel>(m_queue, kern, work_dim, ndrange);
++    kern->release();
++    return m_cmd_kernel->build_batchable_inner(cmdbuf);
++}
++
++cl_uint cvk_command_fill_image_on_device::dimensions() const {
++    switch (m_image->image_type()) {
++    default:
++        CVK_ASSERT(false);
++        return 0;
++    case CL_MEM_OBJECT_IMAGE1D:
++    case CL_MEM_OBJECT_IMAGE1D_BUFFER:
++        return 1;
++    case CL_MEM_OBJECT_IMAGE1D_ARRAY:
++    case CL_MEM_OBJECT_IMAGE2D:
++        return 2;
++    case CL_MEM_OBJECT_IMAGE2D_ARRAY:
++    case CL_MEM_OBJECT_IMAGE3D:
++        return 3;
++    }
++}
++
++const char*
++cvk_command_fill_image_on_device::get_image_access_qualifier() const {
++    switch (m_image->format().image_channel_data_type) {
++    default:
++        CVK_ASSERT(false);
++        return nullptr;
++    case CL_UNORM_SHORT_565:
++    case CL_UNORM_SHORT_555:
++    case CL_UNORM_INT_101010:
++    case CL_UNORM_INT_101010_2:
++    case CL_UNORM_INT8:
++    case CL_UNORM_INT16:
++        return "ui";
++    case CL_UNSIGNED_INT8:
++    case CL_UNSIGNED_INT16:
++    case CL_UNSIGNED_INT32:
++    case CL_SIGNED_INT8:
++    case CL_SIGNED_INT16:
++    case CL_SIGNED_INT32:
++    case CL_FLOAT:
++    case CL_HALF_FLOAT:
++        return "f";
++    case CL_SNORM_INT8:
++    case CL_SNORM_INT16:
++        return "i";
++    }
++}
++
++const char* cvk_command_fill_image_on_device::get_image_type() const {
++    switch (m_image->image_type()) {
++    default:
++        CVK_ASSERT(false);
++        return nullptr;
++    case CL_MEM_OBJECT_IMAGE1D:
++        return "image1d_t";
++    case CL_MEM_OBJECT_IMAGE1D_BUFFER:
++        return "image1d_buffer_t";
++    case CL_MEM_OBJECT_IMAGE1D_ARRAY:
++        return "image1d_array_t";
++    case CL_MEM_OBJECT_IMAGE2D:
++        return "image2d_t";
++    case CL_MEM_OBJECT_IMAGE2D_ARRAY:
++        return "image2d_array_t";
++    case CL_MEM_OBJECT_IMAGE3D:
++        return "image3d";
++    }
++}
++
++const char* cvk_command_fill_image_on_device::get_image_coord() const {
++    switch (m_image->image_type()) {
++    default:
++        CVK_ASSERT(false);
++        return nullptr;
++    case CL_MEM_OBJECT_IMAGE1D:
++    case CL_MEM_OBJECT_IMAGE1D_BUFFER:
++        return "get_global_id(0)";
++    case CL_MEM_OBJECT_IMAGE1D_ARRAY:
++    case CL_MEM_OBJECT_IMAGE2D:
++        return "(int2)(get_global_id(0), get_global_id(1))";
++    case CL_MEM_OBJECT_IMAGE2D_ARRAY:
++    case CL_MEM_OBJECT_IMAGE3D:
++        return "(int4)(get_global_id(0), get_global_id(1), "
++               "get_global_id(2), 0)";
++    }
++}
++
++void cvk_command_fill_image_on_device::get_image_color(char* color) const {
++    switch (m_image->format().image_channel_data_type) {
++    default:
++        CVK_ASSERT(false);
++        break;
++    case CL_UNORM_SHORT_565:
++    case CL_UNORM_SHORT_555:
++    case CL_UNORM_INT_101010:
++    case CL_UNORM_INT_101010_2:
++    case CL_UNORM_INT8:
++    case CL_UNORM_INT16: {
++        auto fill_color = static_cast<const uint32_t*>(
++            static_cast<const void*>(m_fill_color.data()));
++        sprintf(color, "(uint4)(%u, %u, %u, %u)", fill_color[0], fill_color[1],
++                fill_color[2], fill_color[3]);
++    } break;
++    case CL_UNSIGNED_INT8:
++    case CL_UNSIGNED_INT16:
++    case CL_UNSIGNED_INT32:
++    case CL_SIGNED_INT8:
++    case CL_SIGNED_INT16:
++    case CL_SIGNED_INT32:
++    case CL_FLOAT:
++    case CL_HALF_FLOAT: {
++        auto fill_color = static_cast<const uint32_t*>(
++            static_cast<const void*>(m_fill_color.data()));
++        sprintf(color,
++                "(float4)(as_float(0x%x), as_float(0x%x), as_float(0x%x), "
++                "as_float(0x%x))",
++                fill_color[0], fill_color[1], fill_color[2], fill_color[3]);
++    } break;
++    case CL_SNORM_INT8:
++    case CL_SNORM_INT16: {
++        auto fill_color = static_cast<const int32_t*>(
++            static_cast<const void*>(m_fill_color.data()));
++        sprintf(color, "(int4)(%i, %i, %i, %i)", fill_color[0], fill_color[1],
++                fill_color[2], fill_color[3]);
++    } break;
++    }
++}
+diff --git a/clvk/src/queue.hpp b/clvk/src/queue.hpp
+index 68b6930..ac57419 100644
+--- a/clvk/src/queue.hpp
++++ b/clvk/src/queue.hpp
+@@ -422,11 +422,10 @@ protected:
+ #define CLVK_COMMAND_BATCH 0x5000
+ #define CLVK_COMMAND_IMAGE_INIT 0x5001
+ 
+-struct cvk_command {
+-
++struct cvk_command : public refcounted {
+     cvk_command(cl_command_type type, cvk_command_queue* queue)
+         : m_type(type), m_queue(queue),
+-          m_event(new cvk_event_command(m_queue->context(), this, queue)) {}
++          m_event(new cvk_event_command(m_queue->context(), queue, type)) {}
+ 
+     virtual ~cvk_command() {
+         for (auto& event : m_event_deps) {
+@@ -452,6 +451,8 @@ struct cvk_command {
+         m_event_deps = deps;
+     }
+ 
++    virtual cvk_command* clone(cvk_command_queue* queue) = 0;
++
+     virtual bool can_be_batched() const { return false; }
+ 
+     virtual bool is_built_before_enqueue() const { return true; }
+@@ -531,6 +532,16 @@ struct cvk_command {
+         return CL_SUCCESS;
+     }
+ 
++    void reset_event() {
++        while (!m_event_deps.empty()) {
++            m_event_deps.back()->release();
++            m_event_deps.pop_back();
++        }
++
++        m_event->release();
++        m_event = new cvk_event_command(m_queue->context(), m_queue, m_type);
++    }
++
+ protected:
+     cl_command_type m_type;
+     cvk_command_queue_holder m_queue;
+@@ -578,6 +589,11 @@ struct cvk_command_buffer_host_copy final
+         return {m_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_buffer_host_copy(queue, m_type, m_buffer, m_ptr,
++                                                m_offset, m_size);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -646,16 +662,28 @@ struct cvk_command_copy_host_buffer_rect final : public cvk_command {
+         const size_t* region, size_t host_row_pitch, size_t host_slice_pitch,
+         size_t buffer_row_pitch, size_t buffer_slice_pitch,
+         size_t elem_size = 1)
+-        : cvk_command(type, queue),
+-          m_copier(buffer_origin, host_origin, region, buffer_row_pitch,
+-                   buffer_slice_pitch, host_row_pitch, host_slice_pitch,
+-                   elem_size),
+-          m_buffer(buffer), m_hostptr(hostptr) {}
++        : cvk_command_copy_host_buffer_rect(
++              queue, type, buffer, hostptr,
++              cvk_rectangle_copier(buffer_origin, host_origin, region,
++                                   buffer_row_pitch, buffer_slice_pitch,
++                                   host_row_pitch, host_slice_pitch,
++                                   elem_size)) {}
++    cvk_command_copy_host_buffer_rect(cvk_command_queue* queue,
++                                      cl_command_type type, cvk_buffer* buffer,
++                                      void* hostptr,
++                                      cvk_rectangle_copier copier)
++        : cvk_command(type, queue), m_copier(copier), m_buffer(buffer),
++          m_hostptr(hostptr) {}
+ 
+     const std::vector<cvk_mem*> memory_objects() const override final {
+         return {m_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_copy_host_buffer_rect(queue, m_type, m_buffer,
++                                                     m_hostptr, m_copier);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -676,6 +704,12 @@ struct cvk_command_copy_buffer final : public cvk_command {
+         return {m_src_buffer, m_dst_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_copy_buffer(queue, m_type, &*m_src_buffer,
++                                           &*m_dst_buffer, m_src_offset,
++                                           m_dst_offset, m_size);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -693,15 +727,26 @@ struct cvk_command_copy_buffer_rect final : public cvk_command {
+                                  const size_t* dst_origin, const size_t* region,
+                                  size_t src_row_pitch, size_t src_slice_pitch,
+                                  size_t dst_row_pitch, size_t dst_slice_pitch)
+-        : cvk_command(CL_COMMAND_COPY_BUFFER_RECT, queue),
+-          m_copier(src_origin, dst_origin, region, src_row_pitch,
+-                   src_slice_pitch, dst_row_pitch, dst_slice_pitch, 1),
++        : cvk_command_copy_buffer_rect(
++              queue, src_buffer, dst_buffer,
++              cvk_rectangle_copier(src_origin, dst_origin, region,
++                                   src_row_pitch, src_slice_pitch,
++                                   dst_row_pitch, dst_slice_pitch, 1)) {}
++    cvk_command_copy_buffer_rect(cvk_command_queue* queue,
++                                 cvk_buffer* src_buffer, cvk_buffer* dst_buffer,
++                                 cvk_rectangle_copier copier)
++        : cvk_command(CL_COMMAND_COPY_BUFFER_RECT, queue), m_copier(copier),
+           m_src_buffer(src_buffer), m_dst_buffer(dst_buffer) {}
+ 
+     const std::vector<cvk_mem*> memory_objects() const override {
+         return {m_src_buffer, m_dst_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_copy_buffer_rect(queue, m_src_buffer,
++                                                m_dst_buffer, m_copier);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -724,6 +769,12 @@ struct cvk_command_fill_buffer final : public cvk_command_buffer_base_region {
+         return {m_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_fill_buffer(queue, m_buffer, m_offset, m_size,
++                                           m_pattern.data(), m_pattern_size,
++                                           m_type);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -734,51 +785,17 @@ private:
+ 
+ struct cvk_command_batchable : public cvk_command {
+     cvk_command_batchable(cl_command_type type, cvk_command_queue* queue)
+-        : cvk_command(type, queue), m_query_pool(VK_NULL_HANDLE) {}
+-
+-    virtual ~cvk_command_batchable() {
+-        if (m_query_pool != VK_NULL_HANDLE) {
+-            auto vkdev = m_queue->device()->vulkan_device();
+-            vkDestroyQueryPool(vkdev, m_query_pool, nullptr);
+-        }
+-    }
++        : cvk_command(type, queue) {}
+ 
+     bool can_be_batched() const override;
+     bool is_built_before_enqueue() const override final { return false; }
+     bool is_synchronous_submit() const override final { return true; }
+ 
+-    CHECK_RETURN cl_int get_timestamp_query_results(cl_ulong* start,
+-                                                    cl_ulong* end);
+-
+     CHECK_RETURN cl_int build();
+     CHECK_RETURN cl_int build(cvk_command_buffer& cmdbuf);
+     CHECK_RETURN virtual cl_int
+     build_batchable_inner(cvk_command_buffer& cmdbuf) = 0;
+ 
+-    CHECK_RETURN cl_int set_profiling_info_end() {
+-        // If it has already been set, don't override it
+-        if (m_event->get_profiling_info(CL_PROFILING_COMMAND_END) != 0) {
+-            return CL_SUCCESS;
+-        }
+-        cl_ulong start_dev, end_dev;
+-        cl_int perr = get_timestamp_query_results(&start_dev, &end_dev);
+-        if (perr != CL_COMPLETE) {
+-            return perr;
+-        }
+-        cl_ulong start_host, end_host;
+-        perr = m_queue->device()->device_timer_to_host(start_dev, start_host);
+-        if (perr != CL_SUCCESS) {
+-            return perr;
+-        }
+-        perr = m_queue->device()->device_timer_to_host(end_dev, end_host);
+-        if (perr != CL_SUCCESS) {
+-            return perr;
+-        }
+-        m_event->set_profiling_info(CL_PROFILING_COMMAND_START, start_host);
+-        m_event->set_profiling_info(CL_PROFILING_COMMAND_END, end_host);
+-        return CL_SUCCESS;
+-    }
+-
+     CHECK_RETURN cl_int
+     set_profiling_info(cl_profiling_info pinfo) override final {
+         if (!m_queue->profiling_on_device()) {
+@@ -792,7 +809,7 @@ struct cvk_command_batchable : public cvk_command {
+             return m_queue->device()->update_device_host_timer();
+         } else {
+             CVK_ASSERT(pinfo == CL_PROFILING_COMMAND_END);
+-            return set_profiling_info_end();
++            return m_event->set_profiling_info_end_from_query_pool();
+         }
+     }
+ 
+@@ -801,11 +818,6 @@ private:
+     CHECK_RETURN cl_int do_action() override;
+ 
+     std::unique_ptr<cvk_command_buffer> m_command_buffer;
+-    VkQueryPool m_query_pool;
+-
+-    static const int NUM_POOL_QUERIES_PER_COMMAND = 2;
+-    static const int POOL_QUERY_CMD_START = 0;
+-    static const int POOL_QUERY_CMD_END = 1;
+ };
+ 
+ struct cvk_ndrange {
+@@ -845,8 +857,14 @@ struct cvk_command_kernel final : public cvk_command_batchable {
+     cvk_command_kernel(cvk_command_queue* q, cvk_kernel* kernel, uint32_t dims,
+                        const cvk_ndrange& ndrange)
+         : cvk_command_batchable(CL_COMMAND_NDRANGE_KERNEL, q), m_kernel(kernel),
+-          m_dimensions(dims), m_ndrange(ndrange), m_pipeline(VK_NULL_HANDLE),
+-          m_argument_values(nullptr) {}
++          m_dimensions(dims), m_ndrange(ndrange), m_pipeline(VK_NULL_HANDLE) {
++        m_argument_values = m_kernel->argument_values();
++        m_argument_values->retain_resources();
++        if (!m_argument_values->setup_descriptor_sets()) {
++            m_argument_values->release_resources();
++            m_argument_values = nullptr;
++        }
++    }
+ 
+     ~cvk_command_kernel() {
+         if (m_argument_values) {
+@@ -871,6 +889,10 @@ struct cvk_command_kernel final : public cvk_command_batchable {
+         return argvals->memory_objects();
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_kernel(queue, m_kernel, m_dimensions, m_ndrange);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_post_action() override final;
+ 
+@@ -898,6 +920,15 @@ struct cvk_command_batch : public cvk_command {
+     cvk_command_batch(cvk_command_queue* queue)
+         : cvk_command(CLVK_COMMAND_BATCH, queue), m_submitted(false) {}
+ 
++    ~cvk_command_batch() {
++        for (auto cmd : m_commands) {
++            cmd->release();
++        }
++        for (auto event : m_events) {
++            event->release();
++        }
++    }
++
+     cl_int add_command(cvk_command_batchable* cmd) {
+         if (!m_command_buffer) {
+             // Create command buffer and start recording on first call
+@@ -916,6 +947,9 @@ struct cvk_command_batch : public cvk_command {
+         cvk_debug_fn("add command %p (%s) to batch %p", cmd,
+                      cl_command_type_to_string(cmd->type()), this);
+         m_commands.emplace_back(cmd);
++        auto event = cmd->event();
++        event->retain();
++        m_events.emplace_back(event);
+ 
+         return ret;
+     }
+@@ -935,50 +969,80 @@ struct cvk_command_batch : public cvk_command {
+         if (m_queue->profiling_on_device()) {
+             if (pinfo == CL_PROFILING_COMMAND_START) {
+                 return status;
+-            } else {
+-                for (auto& cmd : m_commands) {
+-                    cl_int err;
+-                    if (pinfo == CL_PROFILING_COMMAND_END) {
+-                        err = cmd->set_profiling_info_end();
+-                    } else {
+-                        err = cmd->set_profiling_info(pinfo);
+-                    }
++            }
++            for (auto& event : m_events) {
++                if (pinfo == CL_PROFILING_COMMAND_END) {
++                    auto err = event->set_profiling_info_end_from_query_pool();
+                     // do not stop at first error, but record only the first one
+                     if (err != CL_SUCCESS && status == CL_SUCCESS) {
+                         status = err;
+                     }
++                } else {
++                    event->copy_profiling_info(pinfo, m_event);
+                 }
+             }
+         } else {
+-            for (auto& cmd : m_commands) {
+-                cmd->event()->copy_profiling_info(pinfo, m_event);
++            for (auto& event : m_events) {
++                event->copy_profiling_info(pinfo, m_event);
+             }
+         }
+         return status;
+     }
+ 
+     void set_event_status(cl_int status) override final {
++        static const cl_profiling_info status_to_profiling_info[4] = {
++            CL_PROFILING_COMMAND_END,
++            CL_PROFILING_COMMAND_START,
++            CL_PROFILING_COMMAND_SUBMIT,
++            CL_PROFILING_COMMAND_QUEUED,
++        };
+         m_event->set_status(status);
++        if (m_queue->has_property(CL_QUEUE_PROFILING_ENABLE)) {
++            auto err = set_profiling_info(status_to_profiling_info[status]);
++            if (err != CL_SUCCESS) {
++                m_event->set_status(err);
++            }
++        }
+         if (status == CL_RUNNING && m_queue->profiling_on_device()) {
+             return;
+         }
+-        for (auto& cmd : m_commands) {
+-            cmd->set_event_status(status);
++        for (auto& event : m_events) {
++            event->set_status(status);
+         }
+     }
+ 
+-    CHECK_RETURN cl_int submit();
+-
+     cvk_event_command* event() const override final {
+-        CVK_ASSERT(m_commands.size() > 0);
+-        return m_commands.back()->event();
++        CVK_ASSERT(m_events.size() > 0);
++        return m_events.back();
+     }
+ 
++    const std::vector<cvk_mem*> memory_objects() const override {
++        std::vector<cvk_mem*> objects;
++        for (auto& cmd : m_commands) {
++            for (auto obj : cmd->memory_objects()) {
++                objects.push_back(obj);
++            }
++        }
++        return objects;
++    }
++
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        auto new_batch = new cvk_command_batch(queue);
++        for (auto command : m_commands) {
++            new_batch->add_command(
++                (cvk_command_batchable*)command->clone(queue));
++        }
++        return new_batch;
++    }
++
++    CHECK_RETURN cl_int submit();
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+     bool m_submitted;
+-    std::vector<std::unique_ptr<cvk_command_batchable>> m_commands;
++    std::vector<cvk_command_batchable*> m_commands;
++    std::vector<cvk_event_command*> m_events;
+     std::unique_ptr<cvk_command_buffer> m_command_buffer;
+ };
+ 
+@@ -1001,6 +1065,11 @@ struct cvk_command_map_buffer final : public cvk_command_buffer_base_region {
+         return {m_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_map_buffer(queue, m_buffer, m_offset, m_size,
++                                          m_flags, m_type, m_image);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -1021,6 +1090,10 @@ struct cvk_command_unmap_buffer final : public cvk_command_buffer_base {
+         return {m_buffer};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_unmap_buffer(queue, m_buffer, m_mapped_ptr);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -1033,6 +1106,10 @@ struct cvk_command_dep : public cvk_command {
+ 
+     const std::vector<cvk_mem*> memory_objects() const override { return {}; }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_dep(queue, m_type);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final { return CL_COMPLETE; }
+ };
+@@ -1064,6 +1141,12 @@ struct cvk_command_buffer_image_copy final : public cvk_command_batchable {
+         return {m_buffer, m_image};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_buffer_image_copy(m_type, m_copy_type, queue,
++                                                 m_buffer, m_image, m_offset,
++                                                 m_origin, m_region);
++    }
++
+ private:
+     void build_inner_image_to_buffer(cvk_command_buffer& cmdbuf,
+                                      const VkBufferImageCopy& region);
+@@ -1087,6 +1170,10 @@ struct cvk_command_map_image final : public cvk_command {
+         return {m_image};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_map_image(queue, m_image);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final { return CL_COMPLETE; };
+ 
+@@ -1106,6 +1193,10 @@ struct cvk_command_unmap_image final : public cvk_command {
+         return {m_image};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_unmap_image(queue, m_image, m_mapped_ptr);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -1131,6 +1222,12 @@ struct cvk_command_image_image_copy final : public cvk_command_batchable {
+         return {m_src_image, m_dst_image};
+     }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_image_image_copy(queue, m_src_image, m_dst_image,
++                                                m_src_origin, m_dst_origin,
++                                                m_region);
++    }
++
+ private:
+     cvk_image_holder m_src_image;
+     cvk_image_holder m_dst_image;
+@@ -1150,6 +1247,11 @@ struct cvk_command_fill_image final : public cvk_command {
+ 
+     const std::vector<cvk_mem*> memory_objects() const override { return {}; }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_fill_image(queue, m_ptr, m_pattern,
++                                          m_pattern_size, m_region);
++    }
++
+ private:
+     CHECK_RETURN cl_int do_action() override final;
+ 
+@@ -1159,6 +1261,67 @@ private:
+     std::array<size_t, 3> m_region;
+ };
+ 
++struct cvk_command_fill_image_on_device final : public cvk_command_batchable {
++    cvk_command_fill_image_on_device(cvk_command_queue* queue, cl_mem image,
++                                     const std::array<uint8_t, 16> fill_color,
++                                     const std::array<size_t, 3> work_offset,
++                                     const std::array<size_t, 3> work_size)
++        : cvk_command_batchable(CL_COMMAND_FILL_IMAGE, queue),
++          m_image(static_cast<cvk_image*>(icd_downcast(image))),
++          m_fill_color(fill_color), m_work_offset(work_offset),
++          m_work_size(work_size) {
++        const std::array<uint32_t, 3> global_size = {(uint32_t)work_size[0],
++                                                     (uint32_t)work_size[1],
++                                                     (uint32_t)work_size[2]};
++        std::array<uint32_t, 3> local_size;
++        queue->device()->select_work_group_size(nullptr, global_size,
++                                                local_size);
++        m_local_size[0] = local_size[0];
++        m_local_size[1] = local_size[1];
++        m_local_size[2] = local_size[2];
++
++        if (!m_image->has_any_flag(CL_MEM_WRITE_ONLY | CL_MEM_READ_WRITE)) {
++            m_image_write_enabled.reset(
++                cvk_image::create_write_enable_image_from(m_image));
++            m_mem = m_image_write_enabled;
++        } else {
++            m_mem = image;
++        }
++    }
++
++    CHECK_RETURN cl_int
++    build_batchable_inner(cvk_command_buffer& cmdbuf) override final;
++
++    bool can_be_batched() const override final {
++        return cvk_command_batchable::can_be_batched();
++    }
++
++    const std::vector<cvk_mem*> memory_objects() const override {
++        return {m_image};
++    }
++
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_fill_image_on_device(queue, m_mem, m_fill_color,
++                                                    m_work_offset, m_work_size);
++    }
++
++private:
++    cl_uint dimensions() const;
++    const char* get_image_access_qualifier() const;
++    const char* get_image_type() const;
++    const char* get_image_coord() const;
++    void get_image_color(char* color) const;
++
++    cl_mem m_mem;
++    cvk_image_holder m_image;
++    cvk_image_holder m_image_write_enabled;
++    std::array<uint8_t, 16> m_fill_color;
++    std::array<size_t, 3> m_work_offset;
++    std::array<size_t, 3> m_work_size;
++    std::array<size_t, 3> m_local_size;
++    std::unique_ptr<cvk_command_kernel> m_cmd_kernel;
++};
++
+ struct cvk_command_image_init final : public cvk_command_batchable {
+ 
+     cvk_command_image_init(cvk_command_queue* queue, cvk_image* image)
+@@ -1171,6 +1334,10 @@ struct cvk_command_image_init final : public cvk_command_batchable {
+     build_batchable_inner(cvk_command_buffer& cmdbuf) override final;
+     ~cvk_command_image_init() { m_image->discard_init_data(); }
+ 
++    cvk_command* clone(cvk_command_queue* queue) override final {
++        return new cvk_command_image_init(queue, m_image);
++    }
++
+ private:
+     cvk_image_holder m_image;
+ };

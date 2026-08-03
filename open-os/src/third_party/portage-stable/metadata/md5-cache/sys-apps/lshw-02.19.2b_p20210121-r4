@@ -1,0 +1,15 @@
+BDEPEND=gtk? ( virtual/pkgconfig ) sqlite? ( virtual/pkgconfig )
+DEFINED_PHASES=compile install postinst postrm preinst prepare
+DEPEND=dev-util/desktop-file-utils x11-misc/shared-mime-info
+DESCRIPTION=Hardware Lister
+EAPI=7
+HOMEPAGE=https://www.ezix.org/project/wiki/HardwareLiSter
+IUSE=gtk sqlite static
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-apps/hwdata gtk? ( x11-libs/gtk+:3 ) sqlite? ( dev-db/sqlite:3 )
+REQUIRED_USE=static? ( !gtk !sqlite )
+SLOT=0
+SRC_URI=https://ezix.org/src/pkg/lshw/archive/fdab06ac0b190ea0aa02cd468f904ed69ce0d9f1.tar.gz -> lshw-02.19.2b_p20210121-B.02.19.2_p20210121.tar.gz
+_eclasses_=desktop	b1d22ac8bdd4679ab79c71aca235009d	flag-o-matic	ad475baa777c9978fa035216c8264a10	plocale	89c6aac5da68423465e6fd79fb4ad5fb	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	xdg	c7ba313ea1eaf266f95cc6235f7d6a07	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=640942ce7ecf6084a67bc7fd78f6fa24

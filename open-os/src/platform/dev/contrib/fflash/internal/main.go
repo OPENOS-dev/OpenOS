@@ -1,0 +1,229 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package internal
+
+import (
+	"bytes"
+	"context"
+	"encoding/gob"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"strings"
+	"time"
+
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+
+	"chromium.googlesource.com/chromiumos/platform/dev-util.git/contrib/fflash/internal/dut"
+	embeddedagent "chromium.googlesource.com/chromiumos/platform/dev-util.git/contrib/fflash/internal/embedded-agent"
+	"chromium.googlesource.com/chromiumos/platform/dev-util.git/contrib/fflash/internal/payload"
+	"chromium.googlesource.com/chromiumos/platform/dev-util.git/contrib/fflash/internal/ssh"
+)
+
+const devFeaturesRootfsVerification = "/usr/libexec/debugd/helpers/dev_features_rootfs_verification"
+
+const oauth2Scopes = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/devstorage.read_only"
+
+// getToken returns the user's token to access Google Cloud Storage.
+// It uses luci-auth which is shipped with depot_tools.
+func getToken(ctx context.Context) (oauth2.TokenSource, error) {
+	// Impersonate gsutil
+	// https://github.com/GoogleCloudPlatform/gsutil/blob/7bad311bd5444907c515ff745429cc2ffd31b22d/gslib/utils/system_util.py#L174
+	c := oauth2.Config{
+		ClientID:     "909320924072.apps.googleusercontent.com",
+		ClientSecret: "p3RlpR10xMFh9ZXBS/ZNLYUu",
+		Endpoint:     google.Endpoint,
+	}
+
+	cmd := exec.CommandContext(ctx, "luci-auth", "token", "-scopes", oauth2Scopes)
+	stdout, err := cmd.Output()
+	if err != nil {
+		if err, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf(`luci-auth failed: %s
+You may need to login with:
+luci-auth login -scopes %q
+
+refer to the error message below:
+=== luci-auth output ===
+%s`,
+				err,
+				oauth2Scopes,
+				strings.TrimSpace(string(err.Stderr)),
+			)
+		}
+		return nil, fmt.Errorf("luci-auth failed: %s", err)
+	}
+
+	ts := c.TokenSource(
+		ctx,
+		&oauth2.Token{
+			AccessToken: strings.TrimSpace(string(stdout)),
+		},
+	)
+
+	return ts, nil
+}
+
+type Options struct {
+	PayloadFile   string `json:",omitempty"` // JSON payload file to flash
+	GS            string `json:",omitempty"` // gs:// directory to flash
+	VersionString string `json:",omitempty"` // version string such as R105-14989.0.0
+	MilestoneNum  int    `json:",omitempty"` // release number such as 105
+	Board         string `json:",omitempty"` // build target name such as brya
+	Snapshot      bool   `json:",omitempty"` // flash a snapshot build
+	Postsubmit    bool   `json:",omitempty"` // flash a postsubmit build
+	Port          string `json:",omitempty"` // port number to connect to on the dut-host
+	DryRun        bool   `json:",omitempty"` // print what is going to be flashed but do not actually flash
+	// the ConnectTimeout of the SSH command.
+	SSHConnectTimeout time.Duration `json:",omitempty"`
+	dut.FlashOptions
+}
+
+func Main(ctx context.Context, t0 time.Time, target string, opts *Options) error {
+	if err := embeddedagent.SelfCheck(); err != nil {
+		return err
+	}
+
+	optionsString, err := json.Marshal(opts)
+	if err != nil {
+		panic(err) // should never fail
+	}
+	log.Printf("Running fflash with options: %s", string(optionsString))
+
+	tkSrc, err := getToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	sshDialer, err := ssh.NewDialer(ssh.SSHOptions{Port: opts.Port, ConnectTimeout: opts.SSHConnectTimeout})
+	if err != nil {
+		return fmt.Errorf("failed to make ssh dialer: %w", err)
+	}
+	defer sshDialer.Close()
+
+	sshClient, err := sshDialer.DialWithSystemSSH(ctx, target)
+	if err != nil {
+		return fmt.Errorf("system ssh failed: %w", err)
+	}
+	defer sshClient.Close()
+
+	dutArch, err := DetectArch(sshClient)
+	if err != nil {
+		return err
+	}
+	log.Println("DUT arch:", dutArch)
+
+	var payload *payload.OneOf
+	if opts.PayloadFile != "" {
+		payload, err = createFilePayload(opts.PayloadFile)
+	} else {
+		payload, err = createGSPayload(ctx, tkSrc, sshClient, target, opts)
+	}
+	if err != nil {
+		return fmt.Errorf("createGSPayload(): %w", err)
+	}
+	req := &dut.Request{
+		Payload:      payload,
+		FlashOptions: opts.FlashOptions,
+	}
+
+	if opts.DryRun {
+		log.Print("Exit early due to --dry-run")
+		return nil
+	}
+
+	log.Println("pushing dut-agent to", target)
+	bin, err := embeddedagent.ExecutableForArch(dutArch)
+	if err != nil {
+		return err
+	}
+	agentPath, err := PushCompressedExecutable(ctx, sshClient, bin)
+	if err != nil {
+		return err
+	}
+	log.Println("agent pushed to", agentPath)
+
+	session, err := sshClient.NewSession()
+	if err != nil {
+		return err
+	}
+	var stdin bytes.Buffer
+	req.ElapsedTimeWhenSent = time.Since(t0)
+	if err := gob.NewEncoder(&stdin).Encode(req); err != nil {
+		return fmt.Errorf("failed to write flash request: %w", err)
+	}
+	session.Stdin = &stdin
+	var stdout bytes.Buffer
+	session.Stdout = &stdout
+	session.Stderr = os.Stderr
+	if err := session.Run(agentPath); err != nil {
+		return fmt.Errorf("dut-agent failed: %w", err)
+	}
+	var result dut.Result
+	if err := gob.NewDecoder(&stdout).Decode(&result); err != nil {
+		return fmt.Errorf("cannot decode dut-agent result: %w", err)
+	}
+
+	oldParts, err := DetectPartitions(sshClient)
+	if err != nil {
+		return err
+	}
+	log.Println("DUT root is on:", oldParts.ActiveRootfs())
+
+	sshClient, err = CheckedReboot(ctx, sshDialer, sshClient, target, oldParts.InactiveRootfs())
+	if err != nil {
+		return err
+	}
+
+	needs2ndReboot := false
+
+	if result.RetryDisableRootfsVerification {
+		log.Println("retrying disable rootfs verification")
+		if _, err := sshClient.RunSimpleOutput(devFeaturesRootfsVerification); err != nil {
+			return fmt.Errorf("disable rootfs verification failed: %w", err)
+		}
+		needs2ndReboot = true
+	}
+
+	if result.RetryClearTpmOwner {
+		log.Println("retrying clear tpm owner")
+		if _, err := sshClient.RunSimpleOutput("crossystem clear_tpm_owner_request=1"); err != nil {
+			return fmt.Errorf("failed to clear tpm owner: %w", err)
+		}
+		needs2ndReboot = true
+	}
+
+	if needs2ndReboot {
+		sshClient, err = CheckedReboot(ctx, sshDialer, sshClient, target, oldParts.InactiveRootfs())
+		if err != nil {
+			return err
+		}
+	}
+
+	if opts.DisableRootfsVerification {
+		if _, err := sshClient.RunSimpleOutput(devFeaturesRootfsVerification + " -q"); err != nil {
+			return fmt.Errorf("failed to check rootfs verification: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func createFilePayload(payloadFile string) (*payload.OneOf, error) {
+	r, err := os.Open(payloadFile)
+	if err != nil {
+		return nil, err
+	}
+	out := &payload.OneOf{}
+	dec := json.NewDecoder(r)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(out); err != nil {
+		return nil, fmt.Errorf("error parsing %q: %w", payloadFile, err)
+	}
+	return out, nil
+}

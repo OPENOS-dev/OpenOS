@@ -1,0 +1,113 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/generate-dbus-adaptors.gni")
+import("//common-mk/generate-dbus-proxies.gni")
+import("//common-mk/pkg_config.gni")
+import("//common-mk/proto_library.gni")
+
+group("all") {
+  deps = [
+    ":libmodemloggerd",
+    ":modemloggerd",
+    ":modemloggerd_client",
+  ]
+  if (use.test) {
+    deps += [ ":modemloggerd_test" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "dbus-1",
+    "libbrillo",
+    "libchrome",
+    "libcros_config",
+    "protobuf",
+  ]
+}
+
+pkg_config("modemloggerd_client_config") {
+  pkg_deps = [
+    "dbus-1",
+    "libbrillo",
+    "libchrome",
+  ]
+}
+
+generate_dbus_proxies("modemloggerd_proxies") {
+  proxy_output_file =
+      "include/modemloggerd/dbus_bindings/modemloggerd-proxies.h"
+  sources = [
+    "dbus_bindings/org.chromium.Modemloggerd.Manager.xml",
+    "dbus_bindings/org.chromium.Modemloggerd.Modem.xml",
+  ]
+}
+
+generate_dbus_adaptors("modemloggerd_adaptors") {
+  dbus_service_config = "dbus_bindings/dbus-service-config.json"
+  dbus_adaptors_out_dir = "include/modemloggerd/dbus_bindings"
+  sources = [
+    "dbus_bindings/org.chromium.Modemloggerd.Manager.xml",
+    "dbus_bindings/org.chromium.Modemloggerd.Modem.xml",
+  ]
+}
+
+proto_library("modemloggerd-protos") {
+  proto_in_dir = "./proto/"
+  proto_out_dir = "include/modemloggerd/"
+  sources = [
+    "${proto_in_dir}/helper_manifest.proto",
+    "${proto_in_dir}/prefs.proto",
+  ]
+}
+
+static_library("libmodemloggerd") {
+  sources = [
+    "adaptor_factory.cc",
+    "daemon.cc",
+    "logging_prefs.cc",
+    "manager.cc",
+    "manager_dbus_adaptor.cc",
+    "modem.cc",
+    "modem_dbus_adaptor.cc",
+  ]
+
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":modemloggerd-protos",
+    ":modemloggerd_adaptors",
+  ]
+}
+
+executable("modemloggerd") {
+  sources = [ "main.cc" ]
+  configs += [ ":target_defaults" ]
+  deps = [ ":libmodemloggerd" ]
+}
+
+executable("modemloggerd_client") {
+  sources = [ "client/modemloggerd_client.cc" ]
+  configs += [ ":modemloggerd_client_config" ]
+  deps = [ ":modemloggerd_proxies" ]
+  install_path = "bin"
+}
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+
+  executable("modemloggerd_test") {
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    deps = [
+      ":libmodemloggerd",
+      "//common-mk/testrunner",
+    ]
+  }
+}

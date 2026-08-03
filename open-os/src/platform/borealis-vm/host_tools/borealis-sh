@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(b/189789301) Intergrate this functionality into vsh instead
+owner_id="$(dbus-send \
+  --system \
+  --dest=org.chromium.SessionManager \
+  --print-reply \
+  --type=method_call \
+  /org/chromium/SessionManager \
+  org.chromium.SessionManagerInterface.RetrievePrimarySession \
+  | awk 'NR==3' \
+  | cut -d "\"" -f2)"
+vm_name=borealis
+
+exec /usr/bin/vsh \
+  --owner_id="${owner_id}" --vm_name="${vm_name}" "$@"

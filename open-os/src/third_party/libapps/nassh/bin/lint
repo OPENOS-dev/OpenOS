@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Lint our source files."""
+
+import glob
+import os
+import sys
+
+import nassh  # pylint: disable=wrong-import-order
+import libdot
+
+
+JS_DIR = nassh.DIR / "js"
+WASSH_DIR = libdot.LIBAPPS_DIR / "wassh"
+WJB_DIR = libdot.LIBAPPS_DIR / "wasi-js-bindings"
+
+
+def _get_default_paths(basedir):
+    """Get list of paths to lint by default."""
+    most_files = sorted(
+        x
+        for x in libdot.lint.get_known_sources(basedir)
+        if x.suffix not in {".js"}
+    )
+
+    # All files in js/*.js excluding generated files.
+    # Use relpath for nicer default output.
+    # Sort to ensure nasftp.js comes before nasftp_cli.js, etc.
+    js_files = sorted(
+        x for x in JS_DIR.glob("*.js") if not x.name.startswith("deps_")
+    )
+
+    return [os.path.relpath(x) for x in most_files + js_files]
+
+
+def main(argv):
+    """The main func!"""
+    # We need to use an absolute path with the module root to workaround
+    # https://github.com/google/closure-compiler/issues/3580
+    for i, arg in enumerate(argv):
+        if arg and arg[0] != "-" and os.path.exists(arg):
+            argv[i] = os.path.relpath(os.path.realpath(arg), nassh.DIR)
+    os.chdir(nassh.DIR)
+
+    wasi_externs = WJB_DIR / "externs"
+    externs = ["--js_module_root", JS_DIR] + [
+        f"--externs={os.path.relpath(x)}"
+        for x in sorted(glob.glob(os.path.join(nassh.DIR, "externs", "*.js")))
+    ]
+
+    libdot_files = [os.path.relpath(libdot.DIR / "index.js")] + sorted(
+        os.path.relpath(x)
+        for x in libdot.DIR.glob("js/*.js")
+        if "_tests" not in x.name and x.name.startswith("lib")
+    )
+
+    hterm_files = [
+        os.path.relpath(nassh.HTERM_DIR / "index.js"),
+        os.path.relpath(nassh.HTERM_DIR / "js" / "deps_resources.shim.js"),
+        os.path.relpath(nassh.HTERM_DIR / "third_party" / "wcwidth" / "wc.js"),
+    ] + sorted(
+        os.path.relpath(x)
+        for x in nassh.HTERM_DIR.glob("js/*.js")
+        if "_test" not in x.name and x.name.startswith("hterm")
+    )
+
+    closure_args = (
+        list(libdot.lint.DEFAULT_CLOSURE_ARGS)
+        + externs
+        + [
+            # TODO(vapier): We want to turn this on at some point.
+            "--jscomp_off=strictMissingProperties",
+        ]
+        + libdot_files
+        + hterm_files
+        + [
+            # Let closure compiler itself do the expansion.
+            WJB_DIR / "js" / "**.js",
+            WASSH_DIR / "js" / "**.js",
+        ]
+        + [
+            f"--externs={os.path.relpath(x)}"
+            for x in sorted(wasi_externs.glob("*.js"))
+        ]
+    )
+    return libdot.lint.main(
+        argv,
+        basedir=nassh.DIR,
+        get_default_paths=_get_default_paths,
+        closure_args=closure_args,
+    )
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

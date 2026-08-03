@@ -1,0 +1,15 @@
+BDEPEND=chromeos-base/vboot_reference dev-libs/openssl sys-apps/coreboot-utils sys-apps/flashmap chromeos-base/chromeos-config-host:= app-arch/zip dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=sys-boot/coreboot:= depthcharge? ( sys-boot/depthcharge:= ) bmpblk? ( sys-boot/chromeos-bmpblk:= ) tianocore? ( sys-boot/edk2:= ) chromeos-base/chromeos-config:= u-boot? ( sys-boot/u-boot:= ) cros_ec? ( chromeos-base/chromeos-ec:= ) zephyr_ec? ( chromeos-base/chromeos-zephyr:= ) has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+DESCRIPTION=ChromeOS firmware image builder
+EAPI=7
+HOMEPAGE=http://www.chromium.org
+IUSE=wilco_ec zephyr_ec fsp unibuild u-boot tianocore cros_ec +bmpblk ec_ro_sync +depthcharge payload-align-64 +ro-payload-compress-lzma ro-payload-compress-lz4 +rw-payload-compress-lzma rw-payload-compress-lz4 +include_altfw intel_cpu cros-debug has_chromeos_config_bsp has_chromeos_config_bsp_private has_chromeos_config_bsp_baseboard has_chromeos_config_bsp_baseboard_private unibuild cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=GPL-2
+PROPERTIES=live
+RDEPEND=sys-boot/coreboot:= depthcharge? ( sys-boot/depthcharge:= ) bmpblk? ( sys-boot/chromeos-bmpblk:= ) tianocore? ( sys-boot/edk2:= ) chromeos-base/chromeos-config:= u-boot? ( sys-boot/u-boot:= ) cros_ec? ( chromeos-base/chromeos-ec:= ) zephyr_ec? ( chromeos-base/chromeos-zephyr:= ) has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+REQUIRED_USE=unibuild
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-debug	24f14e41660a7626765c7cf71ea9cdc7	cros-unibuild	20e99cb053588c1793c4de8687bfba83	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=cb5989857ed2aede901fa7e5b684aa99

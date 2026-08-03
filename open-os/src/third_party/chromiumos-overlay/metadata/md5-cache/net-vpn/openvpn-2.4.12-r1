@@ -1,0 +1,16 @@
+BDEPEND=>=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 virtual/pkgconfig
+DEFINED_PHASES=configure install postinst prepare setup test
+DEPEND=kernel_linux? ( iproute2? ( sys-apps/iproute2[-minimal] ) !iproute2? ( >=sys-apps/net-tools-1.60_p20160215155418 ) ) pam? ( sys-libs/pam ) ssl? ( !mbedtls? ( >=dev-libs/openssl-0.9.8:0= ) mbedtls? ( net-libs/mbedtls:= ) ) lz4? ( app-arch/lz4 ) lzo? ( >=dev-libs/lzo-1.07 ) pkcs11? ( >=dev-libs/pkcs11-helper-1.11 ) systemd? ( sys-apps/systemd ) test? ( dev-util/cmocka )
+DESCRIPTION=Robust and highly flexible tunneling application compatible with many OSes
+EAPI=7
+HOMEPAGE=https://openvpn.net/
+IUSE=down-root examples inotify iproute2 +lz4 +lzo mbedtls pam pkcs11 +plugins selinux +ssl systemd test userland_BSD kernel_linux
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=kernel_linux? ( iproute2? ( sys-apps/iproute2[-minimal] ) !iproute2? ( >=sys-apps/net-tools-1.60_p20160215155418 ) ) pam? ( sys-libs/pam ) ssl? ( !mbedtls? ( >=dev-libs/openssl-0.9.8:0= ) mbedtls? ( net-libs/mbedtls:= ) ) lz4? ( app-arch/lz4 ) lzo? ( >=dev-libs/lzo-1.07 ) pkcs11? ( >=dev-libs/pkcs11-helper-1.11 ) systemd? ( sys-apps/systemd ) selinux? ( sec-policy/selinux-openvpn )
+REQUIRED_USE=pkcs11? ( ssl ) !plugins? ( !pam !down-root ) inotify? ( plugins )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/OpenVPN/openvpn/archive/v2.4.12.tar.gz -> openvpn-2.4.12.tar.gz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	linux-info	327865b9921771330775d971263dc234	systemd	5f4bb0758df2e483babf68cd517078ca	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=2b29a83c482c4d9db60fe4f1b8d3fcc0

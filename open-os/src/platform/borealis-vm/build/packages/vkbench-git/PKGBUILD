@@ -1,0 +1,54 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Maintainer: David Riley <davidriley@chromium.org>
+# Maintainer: Po-Hsien Wang <pwang@chromium.org>
+# Maintainer: Ilja Friedel <ihf@chromium.org>
+
+pkgname=vkbench-git
+pkgver=VERSION
+pkgrel=1
+pkgdesc="Vulkan benchmark tool"
+arch=('x86_64')
+url=""
+license=('BSD')
+groups=()
+depends=('vulkan-driver' 'libpng' 'fmt')
+makedepends=('cmake' 'git' 'vulkan-headers' 'glslang')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+replaces=()
+backup=()
+options=()
+install=
+_borealis_branch_tracked=('main')
+_borealis_current_ref=('commit=8673541bd5c1cd6d1002878bb53d366a9c835ac6')
+source=("vkbench::git+https://chromium.googlesource.com/chromiumos/platform/vkbench#${_borealis_current_ref}"
+        'LICENSE')
+noextract=()
+sha512sums=('SKIP'
+         '00e7239987e00b95fdabaad4a0cbd009194bb695f742891295ef57339d09f6a26e260d5e60a1b43cf56f928f3b542862b43503c03231d42d98ac04e2a613e8a4')
+
+pkgver() {
+        cd "$srcdir/${pkgname%-git}"
+
+        printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+        cd "$srcdir/${pkgname%-git}"
+}
+
+build() {
+        cd "$srcdir/${pkgname%-git}"
+        cmake . -Bbuild -DCMAKE_INSTALL_PREFIX=/usr
+        make -j -C build
+}
+
+package() {
+        cd "$srcdir/${pkgname%-git}"
+        make DESTDIR="$pkgdir/" -C build install
+
+        install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "${srcdir}/LICENSE"
+}

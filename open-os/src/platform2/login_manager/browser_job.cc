@@ -1,0 +1,564 @@
+// Copyright 2014 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This class is most definitely NOT re-entrant.
+
+#include "login_manager/browser_job.h"
+
+#include <errno.h>
+#include <inttypes.h>
+#include <signal.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#include <algorithm>
+#include <queue>
+#include <set>
+#include <string_view>
+#include <utility>
+
+#include <base/check.h>
+#include <base/check_op.h>
+#include <base/json/json_writer.h>
+#include <base/logging.h>
+#include <base/rand_util.h>
+#include <base/strings/strcat.h>
+#include <base/strings/string_number_conversions.h>
+#include <base/strings/string_split.h>
+#include <base/strings/string_util.h>
+#include <base/values.h>
+#include <brillo/process/process_reaper.h>
+#include <chromeos/switches/chrome_switches.h>
+
+#include "login_manager/login_metrics.h"
+#include "login_manager/subprocess.h"
+#include "login_manager/system_utils.h"
+
+namespace login_manager {
+
+const char BrowserJobInterface::kLoginManagerFlag[] = "--login-manager";
+const char BrowserJobInterface::kLoginUserFlag[] = "--login-user=";
+const char BrowserJobInterface::kLoginProfileFlag[] = "--login-profile=";
+const char BrowserJobInterface::kCrashLoopBeforeFlag[] = "--crash-loop-before=";
+
+const char BrowserJob::kFirstExecAfterBootFlag[] = "--first-exec-after-boot";
+
+// Check for last 4 runs with extra args to detect startup crash. 4 allows
+// the case of applying flags in guest sessions, where we have:
+//   1st chrome start to show the login screen
+//   2nd chrome start to enter guest sessions
+//   3rd chrome start to apply flags from about:flags page
+// If `kUseExtraArgsRuns` is 3 and the 3rd run is less than
+// `kRestartWindowSecond` seconds (100s) apart from 1st run, it would be
+// considered as too crashy and flags are dropped for the 3rd run.
+// See https://crbug.com/1129951.
+const int BrowserJob::kUseExtraArgsRuns = 4;
+static_assert(BrowserJob::kUseExtraArgsRuns > 1,
+              "kUseExtraArgsRuns should be greater than 1 because extra "
+              "arguments could need one restart to apply them.");
+
+const int BrowserJob::kRestartTries = BrowserJob::kUseExtraArgsRuns + 2;
+const time_t BrowserJob::kRestartWindowSeconds = 100;
+
+const char BrowserJobInterface::kGuestSessionFlag[] = "--bwsi";
+
+namespace {
+
+constexpr char kVmoduleFlag[] = "--vmodule=";
+constexpr char kEnableFeaturesFlag[] = "--enable-features=";
+constexpr char kDisableFeaturesFlag[] = "--disable-features=";
+constexpr char kEnableBlinkFeaturesFlag[] = "--enable-blink-features=";
+constexpr char kDisableBlinkFeaturesFlag[] = "--disable-blink-features=";
+constexpr char kSafeModeFlag[] = "--safe-mode";
+
+constexpr char kSessionManagerSafeModeEnabled[] =
+    "SessionManager.SafeModeEnabled";
+
+// Erases all occurrences of |arg| within |args|. Returns true if any entries
+// were removed or false otherwise.
+bool RemoveArgs(std::vector<std::string>* args, const std::string& arg) {
+  std::vector<std::string>::iterator new_end =
+      std::remove(args->begin(), args->end(), arg);
+  if (new_end == args->end()) {
+    return false;
+  }
+
+  args->erase(new_end, args->end());
+  return true;
+}
+
+// Split the values in |arg| following |prefix| by |separator|, adding them to
+// |agreeing_values| and removing them from |disagreeing_values|.
+void MergeSwitchValue(const std::string_view arg,
+                      const std::string_view prefix,
+                      const std::string_view separator,
+                      std::set<std::string>& agreeing_values,
+                      std::set<std::string>& disagreeing_values) {
+  auto values =
+      base::SplitString(arg.substr(prefix.size()), separator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (auto& value : values) {
+    disagreeing_values.erase(value);
+    agreeing_values.insert(std::move(value));
+  }
+}
+
+// Joins the values of all switches in |args| prefixed by |enable_prefix| and
+// |disable_prefix| (both of which include all characters up to the list of
+// values, typically ending in an "=" character), using |separator|, appending a
+// merged version of the switch, with each individual value included in at most
+// one of the enable and disable, depending on whether the value is last seen in
+// an enable or a disable. If |keep_existing| is true, all earlier occurrences
+// of the switch are preserved; otherwise, they are removed.
+void MergeSwitches(std::vector<std::string>* args,
+                   const std::string_view enable_prefix,
+                   const std::string_view disable_prefix,
+                   const std::string_view separator,
+                   bool keep_existing) {
+  std::set<std::string> enable_values, disable_values;
+  bool enable_seen = false;
+  bool disable_seen = false;
+  auto head = args->begin();
+  for (const auto& arg : *args) {
+    bool match =
+        base::StartsWith(arg, enable_prefix, base::CompareCase::SENSITIVE);
+    if (match) {
+      MergeSwitchValue(arg, enable_prefix, separator, enable_values,
+                       disable_values);
+      enable_seen = true;
+    } else if (!disable_prefix.empty()) {
+      match =
+          base::StartsWith(arg, disable_prefix, base::CompareCase::SENSITIVE);
+      if (match) {
+        MergeSwitchValue(arg, disable_prefix, separator, disable_values,
+                         enable_values);
+        disable_seen = true;
+      }
+    }
+    if (!match || keep_existing) {
+      *head++ = arg;
+    }
+  }
+  if (head != args->end()) {
+    args->erase(head, args->end());
+  }
+
+  // Add the enable arg if the set of enabled values is non-empty or if existing
+  // instance of that arg is present and retained. The `!keep_existing` case is
+  // straightforward - any prior enable arg values will have been dropped so
+  // only whether the set of values is empty needs to be considered. Otherwise,
+  // when `keep_existing`, the previous value needs to be overridden, including
+  // when the resolved set of values is empty. An exception for this is made if
+  // no prior value was seen to avoid introducing the arg to all command lines
+  // unnecessarily.
+  if (!enable_values.empty() || (keep_existing && enable_seen)) {
+    args->push_back(base::StrCat(
+        {enable_prefix,
+         base::JoinString(std::vector<std::string_view>(enable_values.begin(),
+                                                        enable_values.end()),
+                          separator)}));
+  }
+  // The logic above also applies here.
+  if (!disable_values.empty() || (keep_existing && disable_seen)) {
+    args->push_back(base::StrCat(
+        {disable_prefix,
+         base::JoinString(std::vector<std::string_view>(disable_values.begin(),
+                                                        disable_values.end()),
+                          separator)}));
+  }
+}
+
+std::string GetUnprefixedFlagName(const std::string& flag) {
+  static const char* const kSwitchPrefixes[] = {"--", "-"};
+
+  std::string unprefixed = flag;
+  for (const char* const prefix : kSwitchPrefixes) {
+    std::string prefix_str(prefix);
+    if (flag.rfind(prefix, 0) == 0) {
+      unprefixed = flag.substr(prefix_str.length());
+      break;
+    }
+  }
+
+  return unprefixed.substr(0, unprefixed.find('='));
+}
+
+}  // namespace
+
+BrowserJob::BrowserJob(const std::vector<std::string>& arguments,
+                       const std::vector<std::string>& environment_variables,
+                       brillo::ProcessReaper& process_reaper,
+                       LoginMetrics* metrics,
+                       SystemUtils* system_utils,
+                       const BrowserJob::Config& cfg,
+                       std::unique_ptr<SubprocessInterface> subprocess)
+    : arguments_(arguments),
+      environment_variables_(environment_variables),
+      process_reaper_(process_reaper),
+      login_metrics_(metrics),
+      system_utils_(system_utils),
+      start_times_(std::deque<time_t>(kRestartTries, 0)),
+      config_(cfg),
+      subprocess_(std::move(subprocess)) {
+  // Take over managing kLoginManagerFlag.
+  if (RemoveArgs(&arguments_, kLoginManagerFlag)) {
+    removed_login_manager_flag_ = true;
+    login_arguments_.push_back(kLoginManagerFlag);
+  }
+}
+
+BrowserJob::~BrowserJob() {}
+
+pid_t BrowserJob::CurrentPid() const {
+  return subprocess_->GetPid();
+}
+
+bool BrowserJob::IsGuestSession() {
+  return std::ranges::count(arguments_, kGuestSessionFlag) > 0;
+}
+
+bool BrowserJob::ShouldStop() const {
+  return system_utils_->time(nullptr) - start_times_.front() <
+         kRestartWindowSeconds;
+}
+
+void BrowserJob::RecordTime() {
+  start_times_.push_back(system_utils_->time(nullptr));
+  start_times_.pop_front();
+  DCHECK_EQ(kRestartTries, start_times_.size());
+}
+
+bool BrowserJob::RunInBackground(
+    base::OnceCallback<void(const siginfo_t&)> termination_callback) {
+  CHECK(login_metrics_);
+  bool first_boot = !login_metrics_->HasRecordedChromeExec();
+  login_metrics_->RecordStats("chrome-exec");
+  RecordTime();
+
+  extra_one_time_arguments_.clear();
+  if (first_boot) {
+    extra_one_time_arguments_.push_back(kFirstExecAfterBootFlag);
+  }
+
+  // Must happen after RecordTime(). After RecordTime(), ShouldStop() is
+  // basically returning what it would return if this instance of the browser
+  // crashed and wanted to be restarted again.
+  if (ShouldStop()) {
+    // This might be the last restart left in a crash-loop. If so, we don't want
+    // crash_reporter to do its normal behavior of writing the crash dump into
+    // the user directory, because after that next Chrome crash, the user will
+    // be logged out, at which point the crash dump will become inaccessible.
+    // Instead, instruct crash_reporter to keep the crash dump in-memory and
+    // immediately upload it using UploadSingleCrash.
+    time_t crash_loop_before = start_times_.front() + kRestartWindowSeconds;
+    std::string crash_loop_before_arg =
+        kCrashLoopBeforeFlag +
+        base::NumberToString(static_cast<uint64_t>(crash_loop_before));
+    extra_one_time_arguments_.push_back(crash_loop_before_arg);
+  }
+
+  const std::vector<std::string> argv(ExportArgv());
+  const std::vector<std::string> env_vars(ExportEnvironmentVariables());
+  LOG(INFO) << "Running browser " << base::JoinString(argv, " ");
+
+  bool enter_existing_mount_ns = false;
+  if (IsGuestSession()) {
+    if (config_.isolate_guest_session &&
+        config_.chrome_mount_ns_path.has_value()) {
+      enter_existing_mount_ns = true;
+    } else {
+      LOG(INFO) << "Entering new mount namespace for browser.";
+      subprocess_->UseNewMountNamespace();
+    }
+  } else {
+    // Regular session.
+    if (config_.isolate_regular_session &&
+        config_.chrome_mount_ns_path.has_value()) {
+      enter_existing_mount_ns = true;
+    }
+  }
+
+  if (enter_existing_mount_ns) {
+    base::FilePath ns_path = config_.chrome_mount_ns_path.value();
+    LOG(INFO) << "Entering mount namespace '" << ns_path.value()
+              << "' for browser";
+    subprocess_->EnterExistingMountNamespace(ns_path);
+  }
+
+  if (!subprocess_->ForkAndExec(argv, env_vars)) {
+    return false;
+  }
+
+  process_reaper_->WatchForChild(
+      FROM_HERE, subprocess_->GetPid(),
+      base::BindOnce(&BrowserJob::OnTerminated, weak_factory_.GetWeakPtr(),
+                     std::move(termination_callback)));
+  return true;
+}
+
+void BrowserJob::KillEverything(int signal, const std::string& message) {
+  if (subprocess_->GetPid() < 0) {
+    return;
+  }
+
+  LOG(INFO) << "Terminating process group for browser " << subprocess_->GetPid()
+            << " with signal " << signal << ": " << message;
+  subprocess_->KillEverything(signal);
+}
+
+void BrowserJob::Kill(int signal, const std::string& message) {
+  const pid_t pid = subprocess_->GetPid();
+  if (pid < 0) {
+    return;
+  }
+
+  LOG(INFO) << "Terminating browser process " << pid << " with signal "
+            << signal << ": " << message;
+  subprocess_->Kill(signal);
+}
+
+bool BrowserJob::WaitForExit(base::TimeDelta timeout) {
+  const pid_t pid = subprocess_->GetPid();
+  if (pid < 0) {
+    return true;
+  }
+
+  return system_utils_->ProcessGroupIsGone(pid, timeout);
+}
+
+void BrowserJob::AbortAndKillAll(base::TimeDelta timeout) {
+  const pid_t pid = subprocess_->GetPid();
+  if (pid < 0) {
+    return;
+  }
+
+  if (system_utils_->ProcessGroupIsGone(pid, base::TimeDelta())) {
+    DLOG(INFO) << "Cleaned up browser process " << pid;
+    return;
+  }
+
+  if (!system_utils_->ProcessIsGone(pid, base::TimeDelta())) {
+    LOG(WARNING) << "Aborting browser process " << pid;
+
+    std::string message = "Browser aborted";
+    // Send a SIGABRT to the browser process so that it generates a crash
+    // report. We don't send SIGABRT to the other processes because the reports
+    // are often corrupt and we aren't getting any value out of them.
+    Kill(SIGABRT, message);
+
+    // Wait to allow Breakpad or Crashpad time to collect the crash report.
+    if (system_utils_->ProcessGroupIsGone(pid, timeout)) {
+      DLOG(INFO) << "browser group " << pid << " gone after SIGABRT wait";
+      return;
+    }
+  }
+
+  std::string message = base::StringPrintf(
+      "Browser group took more than %" PRId64 " seconds to exit after signal.",
+      timeout.InSeconds());
+  LOG(WARNING) << "Killing browser process " << pid << "'s process group "
+               << timeout.InSeconds() << " seconds after sending SIGABRT";
+  KillEverything(SIGKILL, message);
+
+  constexpr base::TimeDelta kTimeoutForSecondKill = base::Seconds(1);
+  if (!system_utils_->ProcessGroupIsGone(pid, kTimeoutForSecondKill)) {
+    LOG(WARNING) << "Browser process " << pid << "'s group still not gone "
+                 << kTimeoutForSecondKill << " after sending SIGKILL signal";
+  }
+}
+
+// When user logs in we want to restart chrome in browsing mode with
+// user signed in. Hence we remove --login-manager flag and add
+// --login-user=|account_id| and --login-profile=|userhash| flags.
+void BrowserJob::StartSession(const std::string& account_id,
+                              const std::string& userhash) {
+  if (!session_already_started_) {
+    login_arguments_.clear();
+    login_arguments_.push_back(kLoginUserFlag + account_id);
+    login_arguments_.push_back(kLoginProfileFlag + userhash);
+  }
+  session_already_started_ = true;
+}
+
+void BrowserJob::StopSession() {
+  login_arguments_.clear();
+  if (removed_login_manager_flag_) {
+    login_arguments_.push_back(kLoginManagerFlag);
+    removed_login_manager_flag_ = false;
+  }
+}
+
+const std::string BrowserJob::GetName() const {
+  base::FilePath exec_file(arguments_[0]);
+  return exec_file.BaseName().value();
+}
+
+void BrowserJob::SetArguments(const std::vector<std::string>& arguments) {
+  // Ensure we preserve the program name to be executed, if we have one.
+  std::string argv0;
+  if (!arguments_.empty()) {
+    argv0 = arguments_[0];
+  }
+
+  arguments_ = arguments;
+
+  if (!argv0.empty()) {
+    if (arguments_.size()) {
+      arguments_[0] = argv0;
+    } else {
+      arguments_.push_back(argv0);
+    }
+  }
+}
+
+void BrowserJob::SetExtraArguments(const std::vector<std::string>& arguments) {
+  extra_arguments_.clear();
+  auto is_not_unsafe = [](const std::string& flag) {
+    // A list of flags that shouldn't be user-configurable on Chrome OS.
+    // Keeping this the list watertight will be hard to impossible in practice,
+    // so this is only a temporary measure until we have a more robust solution
+    // for flag handling. See crbug.com/1073940 for details.
+    static const char* const kUnsafeFlags[] = {
+        "allow-sandbox-debugging",
+        "disable-gpu-sandbox",
+        "disable-namespace-sandbox",
+        "disable-seccomp-filter-sandbox",
+        "disable-setuid-sandbox",
+        "gpu-launcher",
+        "no-sandbox",
+        "no-zygote-sandbox",
+        "ppapi-plugin-launcher",
+        "remote-debugging-port",
+        "renderer-cmd-prefix",
+        "single-process",
+        "utility-cmd-prefix",
+    };
+    return std::find(std::begin(kUnsafeFlags), std::end(kUnsafeFlags),
+                     GetUnprefixedFlagName(flag)) == std::end(kUnsafeFlags);
+  };
+  std::copy_if(arguments.begin(), arguments.end(),
+               std::back_inserter(extra_arguments_), is_not_unsafe);
+}
+
+void BrowserJob::SetFeatureFlags(
+    const std::vector<std::string>& feature_flags,
+    const std::map<std::string, std::string>& origin_list_flags) {
+  feature_flags_ = feature_flags;
+  origin_list_flags_ = origin_list_flags;
+}
+
+void BrowserJob::SetTestArguments(const std::vector<std::string>& arguments) {
+  test_arguments_ = arguments;
+}
+
+void BrowserJob::SetAdditionalEnvironmentVariables(
+    const std::vector<std::string>& env_vars) {
+  additional_environment_variables_ = env_vars;
+}
+
+void BrowserJob::ClearPid() {
+  pid_t pid = subprocess_->GetPid();
+  if (pid >= 0) {
+    process_reaper_->ForgetChild(pid);
+  }
+  subprocess_->ClearPid();
+}
+
+std::vector<std::string> BrowserJob::ExportArgv() const {
+  std::vector<std::string> to_return(arguments_.begin(), arguments_.end());
+  to_return.insert(to_return.end(), login_arguments_.begin(),
+                   login_arguments_.end());
+
+  if (ShouldDropExtraArguments()) {
+    LOG(WARNING) << "Dropping extra arguments and setting safe-mode switch due "
+                    "to crashy browser.";
+    to_return.emplace_back(kSafeModeFlag);
+    login_metrics_->ReportCrosEvent(kSessionManagerSafeModeEnabled);
+  } else {
+    to_return.insert(to_return.end(), extra_arguments_.begin(),
+                     extra_arguments_.end());
+
+    // Encode feature flags.
+    base::ListValue feature_flag_list;
+    for (const auto& feature_flag : feature_flags_) {
+      feature_flag_list.Append(feature_flag);
+    }
+    if (!feature_flag_list.empty()) {
+      std::sort(feature_flag_list.begin(), feature_flag_list.end());
+      std::string encoded;
+      base::JSONWriter::Write(feature_flag_list, &encoded);
+      to_return.push_back(base::StringPrintf(
+          "--%s=%s", chromeos::switches::kFeatureFlags, encoded.c_str()));
+    }
+
+    // Encode origin list values.
+    base::DictValue origin_list_dict;
+    for (const auto& entry : origin_list_flags_) {
+      origin_list_dict.Set(entry.first, entry.second);
+    }
+    if (!origin_list_dict.empty()) {
+      std::string encoded;
+      base::JSONWriter::Write(origin_list_dict, &encoded);
+      to_return.push_back(base::StringPrintf(
+          "--%s=%s", chromeos::switches::kFeatureFlagsOriginList,
+          encoded.c_str()));
+    }
+  }
+
+  if (!extra_one_time_arguments_.empty()) {
+    to_return.insert(to_return.end(), extra_one_time_arguments_.begin(),
+                     extra_one_time_arguments_.end());
+  }
+
+  to_return.insert(to_return.end(), test_arguments_.begin(),
+                   test_arguments_.end());
+
+  // Chrome doesn't support repeated switches in most cases. Merge switches
+  // containing comma-separated values that may be supplied via multiple sources
+  // (e.g. chrome_setup.cc, chrome://flags, Telemetry).
+  //
+  // --enable-features and --disable-features may be placed within sentinel
+  // values (--flag-switches-begin/end, --policy-switches-begin/end). To
+  // preserve those positions, keep the existing flags while also appending
+  // merged versions at the end of the command line. Chrome will use the final,
+  // merged flags: https://crbug.com/767266
+  //
+  // Chrome merges --enable-blink-features and --disable-blink-features for
+  // renderer processes (see content::FeaturesFromSwitch()), but we still merge
+  // the values here to produce shorter command lines.
+  MergeSwitches(&to_return, kVmoduleFlag, "", ",", false /* keep_existing */);
+  MergeSwitches(&to_return, kEnableFeaturesFlag, kDisableFeaturesFlag, ",",
+                true /* keep_existing */);
+  MergeSwitches(&to_return, kEnableBlinkFeaturesFlag, kDisableBlinkFeaturesFlag,
+                ",", false /* keep_existing */);
+
+  return to_return;
+}
+
+std::vector<std::string> BrowserJob::ExportEnvironmentVariables() const {
+  std::vector<std::string> vars = environment_variables_;
+  vars.insert(vars.end(), additional_environment_variables_.begin(),
+              additional_environment_variables_.end());
+  return vars;
+}
+
+bool BrowserJob::ShouldDropExtraArguments() const {
+  // Check start_time_with_extra_args != 0 so that test cases such as
+  // SetExtraArguments and ExportArgv pass without mocking time().
+  const time_t start_time_with_extra_args =
+      start_times_[kRestartTries - kUseExtraArgsRuns];
+  return (start_time_with_extra_args != 0 &&
+          system_utils_->time(nullptr) - start_time_with_extra_args <
+              kRestartWindowSeconds);
+}
+
+void BrowserJob::OnTerminated(
+    base::OnceCallback<void(const siginfo_t&)> callback,
+    const siginfo_t& siginfo) {
+  if (callback) {
+    std::move(callback).Run(siginfo);
+  }
+}
+
+}  // namespace login_manager

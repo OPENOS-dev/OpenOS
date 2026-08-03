@@ -1,0 +1,14 @@
+BDEPEND=|| ( >=dev-lang/python-3.11.0_p2:3.11 ) dev-util/re2c doc? ( app-text/asciidoc app-doc/doxygen dev-libs/libxslt media-gfx/graphviz ) test? ( dev-cpp/gtest )
+DEFINED_PHASES=compile install postinst postrm setup test
+DESCRIPTION=A small build system similar to make
+EAPI=7
+HOMEPAGE=https://github.com/Kitware/ninja
+IUSE=doc emacs test vim-syntax
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=emacs? ( >=app-editors/emacs-23.1:* ) vim-syntax? ( || ( app-editors/vim app-editors/gvim ) )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://github.com/Kitware/ninja/archive/refs/tags/v1.11.1.g95dee.kitware.jobserver-1.tar.gz -> ninja-1.11.1.g95dee.kitware.jobserver-1.tar.gz
+_eclasses_=bash-completion-r1	47a7402d95930413ce25ba8d857339bb	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	elisp-common	3322f14f031ddc95feccd9089c9adc59	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3219d899afddb07a72b7d1eab9359f07

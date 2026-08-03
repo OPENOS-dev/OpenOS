@@ -1,0 +1,170 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+
+genrule(
+    name = "skel-config",
+    srcs = ["skel.cros-garcon.conf"],
+    outs = [".config/cros-garcon.conf"],
+    cmd = "mv $(location skel.cros-garcon.conf) $@",
+)
+
+pkg_tar(
+    name = "cros-garcon-desktop",
+    srcs = ["garcon_host_browser.desktop"],
+    mode = "0644",
+    package_dir = "/usr/share/applications",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "cros-garcon-etc-skel",
+    srcs = [":skel-config"],
+    mode = "0644",
+    package_dir = "/etc/skel",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "cros-garcon-systemd",
+    srcs = ["cros-garcon.service"],
+    mode = "0644",
+    package_dir = "/usr/lib/systemd/user",
+    strip_prefix = "/cros-garcon",
+    symlinks = {"./default.target.wants/cros-garcon.service": "/usr/lib/systemd/user/cros-garcon.service"},
+)
+
+pkg_tar(
+    name = "cros-garcon-terminal-handler",
+    srcs = ["garcon-terminal-handler"],
+    mode = "0755",
+    package_dir = "/usr/bin",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "cros-garcon-url-handler",
+    srcs = ["garcon-url-handler"],
+    mode = "0755",
+    package_dir = "/usr/bin",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "cros-garcon-config",
+    srcs = ["cros-garcon-override.conf"],
+    mode = "0644",
+    package_dir = "/etc/systemd/user/cros-garcon.service.d",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "cros-garcon-polkit-pkla",
+    srcs = [
+        "garcon-packagekit.pkla",
+        "garcon-synaptic.pkla",
+    ],
+    mode = "0644",
+    package_dir = "/var/lib/polkit-1/localauthority/50-local.d",
+    strip_prefix = "/cros-garcon",
+)
+
+
+pkg_tar(
+    name = "cros-garcon-polkit",
+    srcs = [
+        "50-garcon-packagekit.rules",
+        "50-garcon-synaptic.rules",
+    ],
+    mode = "0644",
+    package_dir = "/etc/polkit-1/rules.d",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "cros-garcon-dpkg-config",
+    srcs = ["garcon-hook"],
+    mode = "0644",
+    package_dir = "/etc/dpkg/dpkg.cfg.d",
+    strip_prefix = "/cros-garcon",
+)
+
+pkg_tar(
+    name = "debian-data-old",
+    extension = "tar.gz",
+    deps = [
+        ":cros-garcon-config",
+        ":cros-garcon-desktop",
+        ":cros-garcon-dpkg-config",
+        ":cros-garcon-etc-skel",
+        ":cros-garcon-polkit-pkla",
+        ":cros-garcon-systemd",
+        ":cros-garcon-terminal-handler",
+        ":cros-garcon-url-handler",
+    ],
+)
+
+pkg_tar(
+    name = "debian-data",
+    extension = "tar.gz",
+    deps = [
+        ":cros-garcon-config",
+        ":cros-garcon-desktop",
+        ":cros-garcon-dpkg-config",
+        ":cros-garcon-etc-skel",
+        ":cros-garcon-polkit",
+        ":cros-garcon-systemd",
+        ":cros-garcon-terminal-handler",
+        ":cros-garcon-url-handler",
+    ],
+)
+
+pkg_deb(
+    name = "deb",
+    architecture = "all",
+    conffiles_file = "conffiles",
+    data = ":debian-data-old",
+    depends = [
+        "desktop-file-utils",
+        "openssh-sftp-server",
+        "packagekit",
+        "xdg-utils",
+    ],
+    description_file = "deb-description",
+    homepage = "https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/vm_tools/garcon/",
+    maintainer = "The ChromiumOS Authors <chromium-os-dev@chromium.org>",
+    package = "cros-garcon",
+    postinst = "postinst",
+    prerm = "prerm",
+    provides = ["x-terminal-emulator"],
+    section = "misc",
+    # To maintain a clean upgrade path, the version should sort before the
+    # :deb-bookworm versions.
+    version = "0.29",
+    visibility = ["//cros-debs:__pkg__"],
+)
+
+pkg_deb(
+    name = "deb-bookworm",
+    architecture = "all",
+    conffiles_file = "conffiles",
+    data = ":debian-data",
+    depends = [
+        "desktop-file-utils",
+        "openssh-sftp-server",
+        "packagekit",
+        "xdg-utils",
+    ],
+    description_file = "deb-description",
+    homepage = "https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/vm_tools/garcon/",
+    maintainer = "The ChromiumOS Authors <chromium-os-dev@chromium.org>",
+    package = "cros-garcon",
+    postinst = "postinst",
+    prerm = "prerm",
+    provides = ["x-terminal-emulator"],
+    section = "misc",
+    version = "0.32",
+    visibility = ["//cros-debs:__pkg__"],
+)

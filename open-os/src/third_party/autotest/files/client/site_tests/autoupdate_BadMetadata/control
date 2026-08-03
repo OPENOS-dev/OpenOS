@@ -1,0 +1,23 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, The ChromiumOS Authors"
+NAME = "autoupdate_BadMetadata"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Test an update with bad metadata in the omaha response."
+}
+TEST_TYPE = "client"
+TIME = "SHORT"
+PY_VERSION = 3
+
+DOC = """
+Test an update with bad metadata in the omaha response.
+"""
+
+job.run_test('autoupdate_BadMetadata')

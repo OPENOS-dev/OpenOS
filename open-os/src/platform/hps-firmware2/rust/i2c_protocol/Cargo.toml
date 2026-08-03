@@ -1,0 +1,19 @@
+[package]
+name = "i2c_protocol"
+version = "0.1.0"
+edition = "2021"
+authors = ["Google"]
+license = "BSD-3-Clause"
+
+[dependencies]
+i2c_peripheral = { path = "../i2c_peripheral" }
+mcu_common = { path = "../mcu_common" }
+nb = "1.0.0"
+
+[dev-dependencies]
+embedded-hal = "0.2.4"
+fake_i2c = { path = "../fake_i2c" }
+mcu_common = { path = "../mcu_common", features = [ "std" ] }
+
+[target.'cfg(target_arch = "arm")'.dependencies]
+cortex-m = "0.7.1"

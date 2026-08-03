@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Builds the Rust FPGA ROM. This is intended for development purposes only.
+
+set -e
+
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+FEATURES=image-transfer,dev
+if [ "${TFLM-}" != "0" ]; then
+    FEATURES+=,tflm
+fi
+export FEATURES
+export PROFILE=dev
+
+exec "${PROJECT_ROOT}/scripts/build-fpga-rom"

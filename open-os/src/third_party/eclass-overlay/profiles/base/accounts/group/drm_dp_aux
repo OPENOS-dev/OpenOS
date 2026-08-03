@@ -1,0 +1,6 @@
+group:drm_dp_aux
+gid:407
+# fwupd: For fwupd firmware updates that use /dev/drm_dp_aux* devices.
+# fwupdate-drm_dp_aux: For firmware updater utilities that use /dev/drm_dp_aux* devices.
+# fwupdate-drm_dp_aux-i2c: For firmware updater utilities that use /dev/drm_dp_aux* and /dev/i2c-* devices.
+users:fwupd,fwupdate-drm_dp_aux,fwupdate-drm_dp_aux-i2c

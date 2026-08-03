@@ -1,0 +1,11 @@
+BDEPEND=!cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/rust:= ) arm64? ( cross-aarch64-cros-linux-gnu/rust:= ) amd64? ( cross-x86_64-cros-linux-gnu/rust:= ) )
+DEFINED_PHASES=compile install prepare unpack
+DEPEND=virtual/rust:1= virtual/rust-binaries:=
+EAPI=7
+IUSE=cros_host
+KEYWORDS=*
+LICENSE=|| ( UoI-NCSA MIT )
+RDEPEND=virtual/rust:1= virtual/rust-binaries:=
+REQUIRED_USE=!cros_host
+SLOT=0/0.0.1-r4
+_md5_=a2922eb9bfa95d9cacf1955dd8e5035d

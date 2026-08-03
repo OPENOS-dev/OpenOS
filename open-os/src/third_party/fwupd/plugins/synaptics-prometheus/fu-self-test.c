@@ -1,0 +1,117 @@
+/*
+ * Copyright 2019 Richard Hughes <richard@hughsie.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#include "config.h"
+
+#include "fu-plugin-private.h"
+#include "fu-synaptics-prometheus-device.h"
+#include "fu-synaptics-prometheus-firmware.h"
+
+static void
+fu_test_synaptics_prometheus_firmware_func(void)
+{
+	const guint8 *buf;
+	gboolean ret;
+	gsize sz = 0;
+	g_autofree gchar *filename = NULL;
+	g_autoptr(FuSynapticsPrometheusDevice) device = fu_synaptics_prometheus_device_new(NULL);
+	g_autoptr(GBytes) blob1 = NULL;
+	g_autoptr(GBytes) blob2 = NULL;
+	g_autoptr(GBytes) fw = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GInputStream) stream = NULL;
+	g_autoptr(FuFirmware) firmware2 = NULL;
+	g_autoptr(FuFirmware) firmware = fu_synaptics_prometheus_firmware_new();
+	g_autoptr(FuProgress) progress = fu_progress_new(G_STRLOC);
+
+	filename = g_test_build_filename(G_TEST_DIST, "tests", "test.pkg", NULL);
+	if (!g_file_test(filename, G_FILE_TEST_EXISTS)) {
+		g_test_skip("Missing test.pkg");
+		return;
+	}
+	fw = fu_bytes_get_contents(filename, &error);
+	g_assert_no_error(error);
+	g_assert_nonnull(fw);
+	buf = g_bytes_get_data(fw, &sz);
+	g_assert_cmpint(sz, ==, 294);
+	g_assert_cmpint(buf[0], ==, 0x01);
+	g_assert_cmpint(buf[1], ==, 0x00);
+	ret = fu_firmware_parse_bytes(firmware,
+				      fw,
+				      0x0,
+				      FU_FIRMWARE_PARSE_FLAG_NO_SEARCH |
+					  FU_FIRMWARE_PARSE_FLAG_CACHE_STREAM,
+				      &error);
+	g_assert_no_error(error);
+	g_assert_true(ret);
+
+	/* does not exist */
+	blob1 = fu_firmware_get_image_by_id_bytes(firmware, "NotGoingToExist", NULL);
+	g_assert_null(blob1);
+	blob1 = fu_firmware_get_image_by_id_bytes(firmware, "cfg-update-header", NULL);
+	g_assert_null(blob1);
+
+	/* header needs to exist */
+	blob1 = fu_firmware_get_image_by_id_bytes(firmware, "mfw-update-header", &error);
+	g_assert_no_error(error);
+	g_assert_nonnull(blob1);
+	buf = g_bytes_get_data(blob1, &sz);
+	g_assert_cmpint(sz, ==, 24);
+	g_assert_cmpint(buf[0], ==, 0x41);
+	g_assert_cmpint(buf[1], ==, 0x00);
+	g_assert_cmpint(buf[2], ==, 0x00);
+	g_assert_cmpint(buf[3], ==, 0x00);
+	g_assert_cmpint(buf[4], ==, 0xff);
+
+	/* payload needs to exist */
+	fu_synaptics_prometheus_device_set_version(device, 10, 1, 1234);
+	stream = g_memory_input_stream_new_from_bytes(fw);
+	firmware2 =
+	    fu_synaptics_prometheus_device_prepare_firmware(FU_DEVICE(device),
+							    stream,
+							    progress,
+							    FU_FIRMWARE_PARSE_FLAG_CACHE_STREAM,
+							    &error);
+	g_assert_no_error(error);
+	g_assert_nonnull(firmware2);
+	blob2 = fu_firmware_get_image_by_id_bytes(firmware2, "mfw-update-payload", &error);
+	g_assert_no_error(error);
+	g_assert_nonnull(blob2);
+	buf = g_bytes_get_data(blob2, &sz);
+	g_assert_cmpint(sz, ==, 2);
+	g_assert_cmpint(buf[0], ==, 'R');
+	g_assert_cmpint(buf[1], ==, 'H');
+}
+
+static void
+fu_synaptics_prometheus_firmware_xml_func(void)
+{
+	gboolean ret;
+	g_autofree gchar *filename = NULL;
+	g_autoptr(GError) error = NULL;
+
+	filename =
+	    g_test_build_filename(G_TEST_DIST, "tests", "synaptics-prometheus.builder.xml", NULL);
+	ret = fu_firmware_roundtrip_from_filename(filename,
+						  "5fa24664fb28e78cbd88970e6026d996fc051550",
+						  FU_FIRMWARE_BUILDER_FLAG_NO_BINARY_COMPARE,
+						  &error);
+	g_assert_no_error(error);
+	g_assert_true(ret);
+}
+
+int
+main(int argc, char **argv)
+{
+	(void)g_setenv("G_TEST_SRCDIR", SRCDIR, FALSE);
+	g_test_init(&argc, &argv, NULL);
+	g_type_ensure(FU_TYPE_SYNAPTICS_PROMETHEUS_FIRMWARE);
+	g_test_add_func("/synaptics-prometheus/firmware",
+			fu_test_synaptics_prometheus_firmware_func);
+	g_test_add_func("/synaptics-prometheus/firmware/xml",
+			fu_synaptics_prometheus_firmware_xml_func);
+	return g_test_run();
+}

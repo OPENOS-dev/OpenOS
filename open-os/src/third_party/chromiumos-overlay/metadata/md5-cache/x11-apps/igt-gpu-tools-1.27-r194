@@ -1,0 +1,16 @@
+BDEPEND=video_cards_intel? ( sys-devel/bison sys-devel/flex ) >=dev-vcs/git-1.8.2.1[curl] !cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=dev-libs/elfutils dev-libs/glib:2 sys-apps/kmod:= sys-libs/llvm-libunwind:= sys-libs/zlib:= sys-process/procps:= virtual/libudev:= >=x11-libs/cairo-1.12.0[X?] >=x11-libs/libdrm-2.4.82[video_cards_amdgpu?,video_cards_intel?,video_cards_nouveau?] >=x11-libs/libpciaccess-0.10 x11-libs/pixman chamelium? ( dev-libs/xmlrpc-c[curl] sci-libs/gsl media-libs/alsa-lib:= ) overlay? ( >=x11-libs/libXrandr-1.3 xv? ( x11-libs/libX11 x11-libs/libXext x11-libs/libXv ) ) runner? ( dev-libs/json-c:= ) unwind? ( sys-libs/libunwind ) valgrind? ( dev-util/valgrind ) doc? ( >=dev-util/gtk-doc-1.25-r1 ) man? ( dev-python/docutils ) overlay? ( >=dev-util/peg-0.1.18 x11-base/xorg-proto ) !cros_host? ( dev-lang/python )
+DESCRIPTION=Intel GPU userland tools
+EAPI=7
+HOMEPAGE=https://01.org/linuxgraphics https://gitlab.freedesktop.org/drm/igt-gpu-tools
+IUSE=+chamelium -doc -man overlay runner -testplan tests unwind valgrind video_cards_amdgpu video_cards_intel video_cards_nouveau video_cards_mediatek video_cards_msm X xv cros_host test cros_host cros_workon_tree_1c9f5911280b29ce258f01972cf96b540340ece3
+KEYWORDS=*
+LICENSE=MIT
+PROPERTIES=live live
+RDEPEND=dev-libs/elfutils dev-libs/glib:2 sys-apps/kmod:= sys-libs/llvm-libunwind:= sys-libs/zlib:= sys-process/procps:= virtual/libudev:= >=x11-libs/cairo-1.12.0[X?] >=x11-libs/libdrm-2.4.82[video_cards_amdgpu?,video_cards_intel?,video_cards_nouveau?] >=x11-libs/libpciaccess-0.10 x11-libs/pixman chamelium? ( dev-libs/xmlrpc-c[curl] sci-libs/gsl media-libs/alsa-lib:= ) overlay? ( >=x11-libs/libXrandr-1.3 xv? ( x11-libs/libX11 x11-libs/libXext x11-libs/libXv ) ) runner? ( dev-libs/json-c:= ) unwind? ( sys-libs/libunwind ) valgrind? ( dev-util/valgrind )
+REQUIRED_USE=|| ( video_cards_amdgpu video_cards_intel video_cards_nouveau video_cards_mediatek video_cards_msm ) overlay? ( video_cards_intel || ( X xv ) ) doc? ( tests )
+RESTRICT=test
+SLOT=0
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	git-r3	c8f4649ab5a3c07ee2b75b12bc446f6a	meson	0b48ece927e974cd82202dc49f391f82	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=753314d8054e40dbea6c4f0e45a29343

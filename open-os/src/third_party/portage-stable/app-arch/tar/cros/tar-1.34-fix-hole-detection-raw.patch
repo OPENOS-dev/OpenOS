@@ -1,0 +1,36 @@
+From 0a6e9e4c36603214bfa74b6acc83033d36eee8c6 Mon Sep 17 00:00:00 2001
+From: Douglas Anderson <dianders@chromium.org>
+Date: Fri, 26 Jan 2024 15:14:27 -0800
+Subject: [PATCH] create: Always check for sparseness if '--hole-detection=raw'
+
+If we're using 'hole-detection=raw' then we're going to be manually
+looking for sparseness in our files. We don't really care about
+whether the OS thinks they're sparse, so don't do the check about the
+number of blocks the OS thinks the file takes.
+
+Without this change if I use "tar --hole-detection=raw -cf" to tar up
+a file that's got lots of zeros (but isn't marked by the OS as
+sparse), when I untar the file then it's still not sparse. With this
+change then the zeros are correctly transformed into sparseness.
+---
+ src/create.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/create.c b/src/create.c
+index d20178cbde7c..09394035e21d 100644
+--- a/src/create.c
++++ b/src/create.c
+@@ -1763,7 +1763,9 @@ dump_file0 (struct tar_stat_info *st, char const *name, char const *p)
+ 	{
+ 	  enum dump_status status;
+ 
+-	  if (fd && sparse_option && ST_IS_SPARSE (st->stat))
++	  if (fd && sparse_option
++	      && (hole_detection == HOLE_DETECTION_RAW
++		  || ST_IS_SPARSE (st->stat)))
+ 	    {
+ 	      status = sparse_dump_file (fd, st);
+ 	      if (status == dump_status_not_implemented)
+-- 
+2.43.0.429.g432eaa2c6b-goog
+

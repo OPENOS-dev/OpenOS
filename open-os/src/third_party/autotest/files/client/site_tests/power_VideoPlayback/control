@@ -1,0 +1,19 @@
+# Description
+# This test records power related statistics while play back video file in various
+# format.
+
+NAME = "power_VideoPlayback"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "ChromeOS Team",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("suite:power_check, suite:power_monitoring")
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_VideoPlayback', pdash_note=pdash_note,
+             tast_bundle_path=args_dict.get('tast_bundle_path'))

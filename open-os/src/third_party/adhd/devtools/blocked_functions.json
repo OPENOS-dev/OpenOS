@@ -1,0 +1,28 @@
+{
+  "blocked_functions": [
+    {
+      "function": "atoi",
+      "replacement": "strtol"
+    },
+    {
+      "function": "atof",
+      "replacement": "strtof"
+    },
+    {
+      "function": "sprintf",
+      "replacement": "snprintf or scnprintf if using the return value"
+    },
+    {
+      "function": "strcpy",
+      "replacement": "strlcpy"
+    },
+    {
+      "function": "strncpy",
+      "replacement": "strlcpy"
+    },
+    {
+      "function": "strdupa",
+      "replacement": "strndupa"
+    }
+  ]
+}

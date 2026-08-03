@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for system loggers
+EAPI=7
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=|| ( app-admin/metalog app-admin/rsyslog app-admin/socklog app-admin/sysklogd app-admin/syslog-ng sys-apps/busybox[syslog] >=sys-apps/systemd-38 )
+SLOT=0
+_md5_=9fdd93ef7b0f1a90fd3f3a2554d44d9f

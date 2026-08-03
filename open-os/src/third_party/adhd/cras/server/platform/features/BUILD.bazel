@@ -1,0 +1,85 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@crate_index//:defs.bzl", "all_crate_deps")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
+load("//rules/cbindgen:rules.bzl", "cras_cbindgen")
+load("//rules/rust:defs.bzl", "cras_rust_library")
+
+cc_library(
+    name = "features",
+    srcs = [
+        "features.inc",
+        "features_backend.h",
+        "features_impl.c",
+        "features_impl.h",
+        "override.h",
+    ],
+    hdrs = ["features.h"],
+    visibility = [
+        "//cras/src/server:__pkg__",
+        "//cras/src/tests:__pkg__",
+    ],
+    deps = [
+        ":backend",
+        "//cras/common:check",
+        "//cras/server:main_message",
+    ],
+)
+
+cc_library(
+    name = "override",
+    hdrs = ["override.h"],
+    visibility = [
+        "//cras/src/server:__pkg__",
+        "//cras/src/tests:__pkg__",
+    ],
+    deps = [":features"],
+)
+
+cc_test(
+    name = "features_test",
+    srcs = [
+        "features_impl.h",
+        "features_test.cc",
+    ],
+    deps = [
+        ":features",
+        "@pkg_config//gtest",
+        "@pkg_config//gtest_main",
+    ],
+)
+
+cras_rust_library(
+    name = "backend",
+    srcs = glob(
+        include = ["src/**/*.rs"],
+    ),
+    crate_name = "cras_features_backend",
+    edition = "2021",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":build_script",
+    ] + all_crate_deps(normal = True),
+)
+
+cras_cbindgen(
+    name = "features_backend_h",
+    out = "features_backend.h",
+    copyright_year = 2025,
+    extra_args = ["--with-include=cras/server/platform/features/features.h"],
+    lib = ":backend",
+)
+
+cargo_build_script(
+    name = "build_script",
+    srcs = ["build.rs"],
+    data = [
+        "features.h",
+        "features.inc",
+        "features_impl.h",
+    ],
+    deps = all_crate_deps(build = True),
+)

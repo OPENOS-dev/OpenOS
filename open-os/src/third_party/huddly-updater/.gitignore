@@ -1,0 +1,15 @@
+# ignore object files
+*.o
+*.o.depends
+*.pic.*
+*.pie.*
+*.swp
+*.tmp
+
+# ignore executable binaries
+huddly-updater
+huddly-hpk-updater
+*-unittest
+
+# ignore unittest output files
+*unittest.*.test

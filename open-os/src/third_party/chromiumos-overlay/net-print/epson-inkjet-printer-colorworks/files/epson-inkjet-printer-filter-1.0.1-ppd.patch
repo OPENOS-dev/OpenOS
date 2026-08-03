@@ -1,0 +1,25 @@
+Use the PPD environment variable instead of querying cupsd to make this
+compatible with cupsfilters and other places that run the filter.
+
+--- a/src/main.c
++++ b/src/main.c
+@@ -142,7 +142,7 @@
+ 			break;
+ 		}
+ 
+-		ppd_path = (char *) cupsGetPPD (argv[0]);
++		ppd_path = getenv("PPD");
+ 		if ( ppd_path == NULL || ppd_path[0] == '\0' )
+ 		{
+ 			break;
+@@ -165,10 +165,6 @@
+ 	if (PPD) {
+ 		ppdClose (PPD);
+ 	}
+-	if ( ppd_path != NULL && ppd_path[0] != '\0' )
+-	{
+-		unlink(ppd_path);
+-	}
+ 
+ 	if (Raster) {
+ 		cupsRasterClose (Raster);

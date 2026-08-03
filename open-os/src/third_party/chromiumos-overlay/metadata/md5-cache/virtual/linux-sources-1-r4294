@@ -1,0 +1,14 @@
+BDEPEND=dev-vcs/git app-misc/jq
+DEFINED_PHASES=info setup unpack
+DESCRIPTION=Chrome OS Kernel virtual package
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=kernel-6_6 kernel-6_1 kernel-5_4 kernel-6_10-enablement kernel-6_12 kernel-upstream-mainline kernel-upstream-next kernel-5_10 kernel-5_15 kernel-upstream cros_host cros_workon_tree_224ea8f5855581f6fcb321e7a641db7fc96e22be_0488374f14a43e6dd356c58db76a5f6681d3571d_f423cc8a36888dcc87c4c6d6e2e18c129d371029_0fb6b3796abbfe79d0bc3be4f1ba4d16932d485f_d14e2324ad49a71c343b24689c2d3ca6db96d426_b43d8b71e5e2f818a4d2051079e55782665984a7_13adbda40a8c6d8a8874ae0965cd5fc89a761a01
+KEYWORDS=*
+LICENSE=metapackage
+PROPERTIES=live
+RDEPEND=kernel-6_6? ( sys-kernel/chromeos-kernel-6_6 ) kernel-6_1? ( sys-kernel/chromeos-kernel-6_1 ) kernel-5_4? ( sys-kernel/chromeos-kernel-5_4 ) kernel-6_10-enablement? ( sys-kernel/chromeos-kernel-6_10-enablement ) kernel-6_12? ( sys-kernel/chromeos-kernel-6_12 ) kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline ) kernel-upstream-next? ( sys-kernel/upstream-kernel-next ) kernel-5_10? ( sys-kernel/chromeos-kernel-5_10 ) kernel-5_15? ( sys-kernel/chromeos-kernel-5_15 ) kernel-upstream? ( sys-kernel/chromeos-kernel-upstream ) !kernel-6_6? ( !sys-kernel/chromeos-kernel-6_6 ) !kernel-6_1? ( !sys-kernel/chromeos-kernel-6_1 ) !kernel-5_4? ( !sys-kernel/chromeos-kernel-5_4 ) !kernel-6_10-enablement? ( !sys-kernel/chromeos-kernel-6_10-enablement ) !kernel-6_12? ( !sys-kernel/chromeos-kernel-6_12 ) !kernel-upstream-mainline? ( !sys-kernel/upstream-kernel-mainline ) !kernel-upstream-next? ( !sys-kernel/upstream-kernel-next ) !kernel-5_10? ( !sys-kernel/chromeos-kernel-5_10 ) !kernel-5_15? ( !sys-kernel/chromeos-kernel-5_15 ) !kernel-upstream? ( !sys-kernel/chromeos-kernel-upstream ) !kernel-6_6? ( !kernel-6_1? ( !kernel-5_4? ( !kernel-6_10-enablement? ( !kernel-6_12? ( !kernel-upstream-mainline? ( !kernel-upstream-next? ( !kernel-5_10? ( !kernel-5_15? ( !kernel-upstream? ( sys-kernel/chromeos-kernel-5_4 ) ) ) ) ) ) ) ) ) )
+REQUIRED_USE=^^ ( kernel-6_6 kernel-6_1 kernel-5_4 kernel-6_10-enablement kernel-6_12 kernel-upstream-mainline kernel-upstream-next kernel-5_10 kernel-5_15 kernel-upstream )
+SLOT=0/1-r4294
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-kernel-versions	3959074f4c4833fe64f70449d3f5fe63	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=f3e40a8065c02095f2870a3ca52cd114

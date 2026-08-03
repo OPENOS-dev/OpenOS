@@ -1,0 +1,30 @@
+From 1c67faaddfc968d56f8a61ca36468a9bd29ae9d4 Mon Sep 17 00:00:00 2001
+From: Nicholas Bishop <nicholasbishop@google.com>
+Date: Fri, 28 Feb 2025 15:05:59 -0500
+Subject: [PATCH] Enable WaDisableGmmLibOffsetInDeriveImage for ICL on Linux
+
+This fixes a color shift when chromecasting from ChromeOS.
+
+Upstream PR: https://github.com/intel/media-driver/pull/1912
+
+Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+---
+ media_driver/linux/gen11/ddi/media_sku_wa_g11.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/media_driver/linux/gen11/ddi/media_sku_wa_g11.cpp b/media_driver/linux/gen11/ddi/media_sku_wa_g11.cpp
+index c22219156..c3b9348ff 100644
+--- a/media_driver/linux/gen11/ddi/media_sku_wa_g11.cpp
++++ b/media_driver/linux/gen11/ddi/media_sku_wa_g11.cpp
+@@ -230,6 +230,8 @@ static bool InitIclMediaWa(struct GfxDeviceInfo *devInfo,
+ 
+     MEDIA_WR_WA(waTable, Wa_Vp9UnalignedHeight, 1);
+ 
++    MEDIA_WR_WA(waTable, WaDisableGmmLibOffsetInDeriveImage, 1);
++
+     return true;
+ }
+ 
+-- 
+2.48.1.711.g2feabab25a-goog
+

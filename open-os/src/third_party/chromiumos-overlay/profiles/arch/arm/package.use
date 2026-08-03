@@ -1,0 +1,6 @@
+# Explicitly disable debug_fission flag so that it will not be enabled and
+# break the build in the case that an arm32 board inherits an arm64 board.
+chromeos-base/chromeos-chrome -debug_fission
+# Disable v4l2-tracer as it can't be compiled with LFS support (which is
+# mandatory, see b:201531268) on this architecture
+media-libs/libv4l -tracer

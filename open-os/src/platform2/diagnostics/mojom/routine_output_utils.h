@@ -1,0 +1,56 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef DIAGNOSTICS_MOJOM_ROUTINE_OUTPUT_UTILS_H_
+#define DIAGNOSTICS_MOJOM_ROUTINE_OUTPUT_UTILS_H_
+
+#include <base/values.h>
+
+#include "diagnostics/mojom/public/cros_healthd_routines.mojom-forward.h"
+
+namespace diagnostics {
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::AudioDriverRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::BluetoothDiscoveryRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::BluetoothPairingRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::BluetoothPowerRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::BluetoothScanningRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::UfsLifetimeRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::FanRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::CameraAvailabilityRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::NetworkBandwidthRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::SensitiveSensorRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValueForV1(
+    const ash::cros_healthd::mojom::SensitiveSensorRoutineDetailPtr& detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetailPtr&
+        detail);
+
+base::DictValue ConvertToValue(
+    const ash::cros_healthd::mojom::BatteryDischargeRoutineDetailPtr& detail);
+
+}  // namespace diagnostics
+
+#endif  // DIAGNOSTICS_MOJOM_ROUTINE_OUTPUT_UTILS_H_

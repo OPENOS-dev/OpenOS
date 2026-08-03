@@ -1,0 +1,15 @@
+BDEPEND=app-arch/xz-utils test? ( dev-lang/perl dev-perl/Expect dev-debug/strace || ( >=dev-lang/python-3.11.0_p2:3.11 ) )
+DEFINED_PHASES=configure install postinst prepare setup test
+DEPEND=!static? ( acl? ( sys-apps/acl ) caps? ( sys-libs/libcap ) gmp? ( dev-libs/gmp:= ) xattr? ( sys-apps/attr ) ) selinux? ( sys-libs/libselinux ) nls? ( virtual/libintl ) static? ( acl? ( sys-apps/acl[static-libs] ) caps? ( sys-libs/libcap ) gmp? ( dev-libs/gmp:=[static-libs] ) xattr? ( sys-apps/attr[static-libs] ) )
+DESCRIPTION=Standard GNU utilities (chmod, cp, dd, ls, sort, tr, head, wc, who,...)
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/coreutils/
+IUSE=acl caps gmp hostname kill multicall nls selinux static test vanilla xattr
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=!static? ( acl? ( sys-apps/acl ) caps? ( sys-libs/libcap ) gmp? ( dev-libs/gmp:= ) xattr? ( sys-apps/attr ) ) selinux? ( sys-libs/libselinux ) nls? ( virtual/libintl ) hostname? ( !sys-apps/net-tools[hostname] ) kill? ( !sys-apps/util-linux[kill] !sys-process/procps[kill] ) !app-misc/realpath !<sys-apps/util-linux-2.13 !<sys-apps/sandbox-2.10-r4 !sys-apps/stat !net-mail/base64 !sys-apps/mktemp !<app-forensics/tct-1.18-r1 !<net-fs/netatalk-2.0.3-r4
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://gnu/coreutils/coreutils-8.32.tar.xz !vanilla? ( mirror://gentoo/coreutils-8.30-patches-01.tar.xz https://dev.gentoo.org/~polynomial-c/dist/coreutils-8.30-patches-01.tar.xz )
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-any-r1	f2f00fb79b5e888b5011d4c51240ae97	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=0b50f2c90c17c121f4814ed9591c8ac5

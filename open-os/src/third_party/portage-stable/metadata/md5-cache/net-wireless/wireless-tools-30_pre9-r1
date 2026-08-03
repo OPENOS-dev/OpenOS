@@ -1,0 +1,12 @@
+BDEPEND=sys-apps/sed
+DEFINED_PHASES=compile install prepare
+DESCRIPTION=A collection of tools to configure IEEE 802.11 wireless LAN cards
+EAPI=7
+HOMEPAGE=http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
+IUSE=multicall
+KEYWORDS=*
+LICENSE=GPL-2
+SLOT=0
+SRC_URI=http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.30.pre9.tar.gz
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=69c2be4100d01fd557a30216e1a2dbd9

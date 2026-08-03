@@ -1,0 +1,1 @@
+cros-camera-super-res-dlc-1.5.0.ebuild

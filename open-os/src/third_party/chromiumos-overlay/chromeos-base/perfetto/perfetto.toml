@@ -1,0 +1,14 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+
+# This package only provides a static library to link against. It's still
+# beneficial to generate the interface layer since it still strips out all
+# the binaries and debug symbols.
+interface_library_allowlist = [
+	"/usr/lib64/libperfetto_sdk.a",
+]

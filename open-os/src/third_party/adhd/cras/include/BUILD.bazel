@@ -1,0 +1,28 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "include",
+    hdrs = glob(["*.h"]),
+    includes = ["."],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "public_headers",
+    srcs = glob(["*.h"]),
+    visibility = ["//dist:__pkg__"],
+)
+
+cc_test(
+    name = "abi_test",
+    srcs = ["abi_test.cc"],
+    deps = [
+        ":include",
+        "@pkg_config//gtest",
+        "@pkg_config//gtest_main",
+    ],
+)

@@ -1,0 +1,346 @@
+/* Copyright 2024 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/dts-v1/;
+#include <st/h7/stm32h743Xg.dtsi>
+#include <st/h7/stm32h743bgtx-pinctrl.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+	model = "Google EC AIC Tester";
+	compatible = "google,dagwood";
+
+	chosen {
+		/* change to &usart1 to move the shell to J3/J4 */
+		zephyr,console = &cdc_acm_uart_shell;
+		zephyr,shell-uart = &cdc_acm_uart_shell;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,dtcm = &dtcm;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		status_led: mcu_pb02 {
+			gpios = <&gpiob 2 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	gpio_keys: gpio-keys {
+		compatible = "gpio-keys";
+		debounce-interval-ms = <3>;
+
+		user_button: mcu_pb01 {
+			gpios = <&gpiob 1 GPIO_ACTIVE_LOW>;
+			zephyr,code = <INPUT_KEY_0>;
+		};
+	};
+
+	aliases {
+		led0 = &status_led;
+		sw0 = &user_button;
+		watchdog0 = &iwdg;
+		die-temp0 = &die_temp;
+	};
+
+	uart_bridge: uart-bridge {
+		compatible = "zephyr,uart-bridge";
+		zephyr,pm-device-runtime-auto;
+		peers = <&cdc_acm_uart_ec &uart4>;
+	};
+
+	uart_bridge_alt: uart-bridge-alt {
+		compatible = "zephyr,uart-bridge";
+		zephyr,pm-device-runtime-auto;
+		peers = <&cdc_acm_uart_ec_alt &uart4>;
+	};
+
+	pp3300_mecc_core: pp3300_mecc_core {
+		compatible = "regulator-fixed";
+		regulator-name = "pp3300_mecc_core";
+		enable-gpios = <&gpiob 8 GPIO_ACTIVE_HIGH>;
+	};
+
+	pp3300_mecc_z: pp3300_mecc_z {
+		compatible = "regulator-fixed";
+		regulator-name = "pp3300_mecc_z";
+		enable-gpios = <&gpiob 9 GPIO_ACTIVE_HIGH>;
+	};
+
+	pp3300_mecc_s: pp3300_mecc_s {
+		compatible = "regulator-fixed";
+		regulator-name = "pp3300_mecc_s";
+		enable-gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
+	};
+
+	ppvar_mecc_vref: ppvar_mecc_vref {
+		compatible = "regulator-fixed";
+		regulator-name = "ppvar_mecc_vref";
+		enable-gpios = <&gpiob 11 GPIO_ACTIVE_HIGH>;
+	};
+
+	pp1800_mecc_z: pp1800_mecc_z {
+		compatible = "regulator-fixed";
+		regulator-name = "pp1800_mecc_z";
+		enable-gpios = <&gpiob 12 GPIO_ACTIVE_HIGH>;
+	};
+
+	pp1800_mecc_s: pp1800_mecc_s {
+		compatible = "regulator-fixed";
+		regulator-name = "pp1800_mecc_s";
+		enable-gpios = <&gpiob 13 GPIO_ACTIVE_HIGH>;
+	};
+
+	pp5000_mecc_z: pp5000_mecc_z {
+		compatible = "regulator-fixed";
+		regulator-name = "pp5000_mecc_z";
+		enable-gpios = <&gpiob 14 GPIO_ACTIVE_HIGH>;
+	};
+
+	ppvar_mecc_rtc: ppvar_mecc_rtc {
+		compatible = "regulator-fixed";
+		regulator-name = "ppvar_mecc_rtc";
+		enable-gpios = <&gpiob 15 GPIO_ACTIVE_HIGH>;
+	};
+
+	aic-pins {
+		compatible = "cros,aic-pins";
+		ec-rst-gpios = <&gpioe 3 GPIO_ACTIVE_LOW>;
+		io-gpios = <&gpioc 2 GPIO_ACTIVE_HIGH>, /* CCD_MODE_L */
+			   <&gpioc 4 GPIO_ACTIVE_HIGH>, /* EN_PP5000_FAN */
+			   <&gpioe 13 GPIO_ACTIVE_HIGH>, /* I2C_MECC_PDC4_INT_L */
+
+			   /* TODO: figure out why some signals are not getting
+			    * through on the NPCX AIC board
+			    */
+
+			   /* KSI */
+			   /* <&gpiok 0 GPIO_ACTIVE_HIGH>, */ /* MCU_OUT_KBD_SCANIN_A_ODL */
+			   <&gpiok 1 GPIO_ACTIVE_HIGH>, /* MCU_OUT_KBD_SCANIN_B_ODL */
+			   <&gpiok 2 GPIO_ACTIVE_HIGH>, /* MCU_OUT_KBD_SCANIN_C_ODL */
+			   /* <&gpiok 3 GPIO_ACTIVE_HIGH>, */ /* MCU_OUT_KBD_SCANIN_D_ODL */
+			   <&gpiok 4 GPIO_ACTIVE_HIGH>, /* MCU_OUT_KBD_SCANIN_E_ODL */
+			   <&gpiok 5 GPIO_ACTIVE_HIGH>, /* MCU_OUT_KBD_SCANIN_F_ODL */
+			   <&gpiok 6 GPIO_ACTIVE_HIGH>, /* MCU_OUT_KBD_SCANIN_G_ODL */
+			   <&gpiok 7 GPIO_ACTIVE_HIGH>, /* MCU_OUT_KBD_SCANIN_H_ODL */
+
+			   /* KSO */
+			   /* <&gpioj 0 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_A */
+			   /* <&gpioj 1 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_B */
+			   <&gpioj 2 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_C */
+			   <&gpioj 3 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_D */
+			   <&gpioj 4 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_E */
+			   <&gpioj 5 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_F */
+			   /* <&gpioj 6 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_G */
+			   /* <&gpioj 7 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_H */
+			   /* <&gpioj 8 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_J */
+			   /* <&gpioj 9 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_K */
+			   <&gpioj 10 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_L */
+			   <&gpioj 11 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_M */
+			   <&gpioj 12 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_N */
+			   <&gpioj 13 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_P */
+			   <&gpioj 14 GPIO_ACTIVE_HIGH>, /* MCU_IN_KBD_SCANOUT_Q */
+			   <&gpioj 15 GPIO_ACTIVE_HIGH>; /* MCU_IN_KBD_SCANOUT_R */
+			   /* <&gpioh 3 GPIO_ACTIVE_HIGH>, */ /* MCU_IN_KBD_SCANOUT_S */
+			   /* <&gpioj 4 GPIO_ACTIVE_HIGH>; */ /* MCU_IN_KBD_SCANOUT_T */
+	};
+
+	npcx-boot {
+		compatible = "cros,npcx-boot";
+		npcx-boot-gpios = <&gpioa 1 GPIO_ACTIVE_LOW>;
+		pinctrl-0 = <&pa1_gpio>;
+		pinctrl-1 = <&uart4_rx_pa1>;
+		pinctrl-names = "gpio", "default";
+	};
+
+	i2c-mux-a {
+		compatible = "cros,i2c-mux";
+		en-gpios = <&gpioi 14 GPIO_ACTIVE_HIGH>;
+		a-gpios = <&gpioi 12 GPIO_ACTIVE_HIGH>,
+			  <&gpioi 13 GPIO_ACTIVE_HIGH>;
+		port-count = <4>;
+	};
+
+	i2c-mux-b {
+		compatible = "cros,i2c-mux";
+		en-gpios = <&gpiof 13 GPIO_ACTIVE_HIGH>;
+		a-gpios = <&gpiof 12 GPIO_ACTIVE_HIGH>;
+		port-count = <2>;
+	};
+};
+
+&pinctrl {
+	pa1_gpio: pa1_gpio {
+		pinmux = <STM32_PINMUX('A', 1, GPIO)>;
+	};
+};
+
+&clk_lsi {
+	status = "okay";
+};
+
+&clk_hsi48 {
+	status = "okay";
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(48)>;
+	status = "okay";
+};
+
+&pll {
+	div-m = <12>;
+	mul-n = <240>;
+	div-p = <2>;
+	div-q = <2>;
+	div-r = <2>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&pll2 {
+	div-m = <24>;
+	mul-n = <120>;
+	div-p = <2>;
+	div-q = <3>;
+	div-r = <2>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(480)>;
+	d1cpre = <1>;
+	hpre = <2>;
+	d1ppre = <2>;
+	d2ppre1 = <2>;
+	d2ppre2 = <2>;
+	d3ppre = <2>;
+};
+
+&pwr {
+	power-supply = "ldo";
+};
+
+/* Debug UART, J3/J4 */
+&usart1 {
+	pinctrl-0 = <&usart1_rx_pb7 &usart1_tx_pb6>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status = "okay";
+};
+
+/* EC UART */
+&uart4 {
+	pinctrl-0 = <&uart4_rx_pa1 &uart4_tx_pa0>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status = "okay";
+};
+
+zephyr_udc0: &usbotg_fs {
+	pinctrl-0 = <&usb_otg_fs_dm_pa11 &usb_otg_fs_dp_pa12>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	cdc_acm_uart_shell: cdc_acm_uart_shell {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "Dagwood shell";
+	};
+	cdc_acm_uart_ec: cdc_acm_uart_ec {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "EC shell";
+	};
+	cdc_acm_uart_ec_alt: cdc_acm_uart_ec_alt {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "EC UART programming";
+	};
+};
+
+&rtc {
+	clocks = <&rcc STM32_CLOCK_BUS_APB4 0x00010000>,
+		 <&rcc STM32_SRC_LSI RTC_SEL(2)>;
+	status = "okay";
+};
+
+/* target interface, connected to the U9 mux */
+&i2c2 {
+	pinctrl-0 = <&i2c2_scl_pf1 &i2c2_sda_pf0>;
+	pinctrl-1 = <&analog_pf1 &analog_pf0>;
+	pinctrl-names = "default", "sleep";
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+
+	eeprom0: eeprom@50 {
+		reg = <0x50>;
+		size = <256>;
+		compatible = "zephyr,i2c-target-eeprom";
+		status = "okay";
+	};
+};
+
+/* target interface, connected to the U11 mux */
+&i2c4 {
+	pinctrl-0 = <&i2c4_scl_pf14 &i2c4_sda_pf15>;
+	pinctrl-1 = <&analog_pf14 &analog_pf15>;
+	pinctrl-names = "default", "sleep";
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+
+	eeprom1: eeprom@51 {
+		reg = <0x51>;
+		size = <256>;
+		compatible = "zephyr,i2c-target-eeprom";
+		status = "okay";
+	};
+};
+
+/* connected to J5, QWIIC port */
+zephyr_i2c: &i2c3 {
+	pinctrl-0 = <&i2c3_scl_ph7 &i2c3_sda_ph8>;
+	pinctrl-1 = <&analog_ph7 &analog_ph8>;
+	pinctrl-names = "default", "sleep";
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&adc1 {
+	pinctrl-0 = <&adc1_inp15_pa3>;
+	pinctrl-names = "default";
+	st,adc-clock-source = "SYNC";
+	st,adc-prescaler = <4>;
+	status = "okay";
+};
+
+&die_temp {
+	status = "okay";
+};
+
+&adc3 {
+	pinctrl-0 = <&adc3_inp5_pf3>;
+	pinctrl-names = "default";
+	st,adc-clock-source = "SYNC";
+	st,adc-prescaler = <4>;
+	status = "okay";
+};
+
+&dac1 {
+	status = "okay";
+	pinctrl-0 = <&dac1_out1_pa4 &dac1_out2_pa5>;
+	pinctrl-names = "default";
+};
+
+&rng {
+	status = "okay";
+};
+
+&backup_sram {
+	status = "okay";
+};
+
+&iwdg1 {
+	status = "okay";
+};

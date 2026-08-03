@@ -1,0 +1,9 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file describes the Bazel-specific metadata (go/cros-bazel-metadata).
+
+[bazel]
+# This package executes the SYSROOT's binaries.
+supports_interface_libraries = false

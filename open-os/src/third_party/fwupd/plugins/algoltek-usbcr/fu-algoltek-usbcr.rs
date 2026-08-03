@@ -1,0 +1,99 @@
+// Copyright 2024 Algoltek, Inc.
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
+#[derive(New, ParseStream, Default)]
+#[repr(C, packed)]
+struct FuStructAgUsbcrFirmwareHdr {
+    reserved: [u8; 11],
+    fw_addr: u16be,
+    fw_len: u16be,
+    reserved: [u8; 495],
+    emmc_ver: u16le = 0x123,
+}
+
+#[derive(New, ParseStream, Default)]
+#[repr(C, packed)]
+struct FuStructAgUsbcrFirmwareInfo {
+    app_ver: u16be,
+    boot_ver: u16be,
+    reserved: [u8; 40],
+    emmc_support_ver: u16be = 0x123,
+    reserved: [u8; 5],
+}
+
+#[repr(u8)]
+enum FuAgUsbcrScsiopVendor {
+    EepromRd = 0xC0,
+    EepromWr,
+    FirmwareRevision = 0xC3,
+    GenericCmd = 0xC7,
+}
+
+#[repr(u8)]
+enum FuAgUsbcr {
+    Wrsr = 0x01,
+    Rdsr = 0x05,
+    Wren,
+    Erase = 0xC7,
+}
+
+#[derive(New, Default)]
+#[repr(C, packed)]
+struct FuStructAgUsbcrFirmwareRevisionCdb {
+    opcode: FuAgUsbcrScsiopVendor == FirmwareRevision,
+    subopcode: u8 == 0x1F,
+    sig: u16be == 0x058F,
+    cmd: u8,
+    subcmd: u8,
+    sig2: u32be == 0x30353846,
+    ramdest: u8,
+    addr:u16be,
+    val:u8,
+    reserved:[u8; 2],
+}
+
+#[derive(New, Default)]
+#[repr(C, packed)]
+struct FuStructAgUsbcrRegCdb {
+    opcode: FuAgUsbcrScsiopVendor == GenericCmd,
+    subopcode: u8 == 0x1F,
+    sig: u16be == 0x058F,
+    cmd: u8,
+    subcmd: u8,
+    sig2: u32be == 0x30353846,
+    ramdest: u8,
+    addr:u16be,
+    val:u8,
+    reserved:[u8; 2],
+}
+
+#[derive(New, Default)]
+#[repr(C, packed)]
+struct FuStructAgUsbcrResetCdb {
+    opcode: FuAgUsbcrScsiopVendor == GenericCmd,
+    subopcode: u8 == 0x1F,
+    sig: u16be == 0x058F,
+    cmd: u8,
+    subcmd: u8,
+    sig2: u32be == 0x30353846,
+    val: u8,
+    val2:u8,
+    reserved:[u8; 4],
+}
+
+#[derive(New, Default)]
+#[repr(C, packed)]
+struct FuStructAgUsbcrSpiCdb {
+    opcode: FuAgUsbcrScsiopVendor == GenericCmd,
+    subopcode: u8 == 0x1F,
+    sig: u16be == 0x058F,
+    cmd: u8,
+    addr: u16be,
+    bufsz: u8,
+    tag: u8,
+    valid: u8,
+    spisig1: u8,
+    spisig2: u8,
+    spicmd: u8,
+    reserved:[u8; 3],
+}

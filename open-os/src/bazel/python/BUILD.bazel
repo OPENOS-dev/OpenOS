@@ -1,0 +1,37 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@pip//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+py_test(
+    name = "pip_test",
+    size = "small",
+    srcs = ["pip_test.py"],
+    python_version = "PY3",
+    deps = [requirement("pylint")],
+)
+
+py_test(
+    name = "python3_test",
+    size = "small",
+    srcs = ["python3_test.py"],
+    data = ["testdata/example.txt"],
+    python_version = "PY3",
+    # TODO(b/348311568): Broken in CI
+    tags = ["manual"],
+    deps = ["@rules_python//python/runfiles"],
+)
+
+compile_pip_requirements(
+    name = "requirements",
+    requirements_in = "requirements.txt",
+    requirements_txt = "requirements_lock.txt",
+)
+
+alias(
+    name = "update_packages",
+    actual = "requirements.update",
+)

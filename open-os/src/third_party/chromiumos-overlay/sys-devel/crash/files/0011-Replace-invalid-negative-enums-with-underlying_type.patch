@@ -1,0 +1,61 @@
+From 234c0d0ef1768815eef0b7373b28f477b1ae3e94 Mon Sep 17 00:00:00 2001
+From: Jordan R Abrahams-Whitehead <ajordanr@google.com>
+Date: Tue, 8 Oct 2024 21:36:52 +0000
+Subject: [PATCH] Replace invalid negative enums with underlying_type
+
+ChromeOS can guarantee we don't need to support pre-C++11
+standards, so we can make use of std::underlying_type here.
+
+Previously, this code abuses an unsigned underflow to check to see
+if an enum value is signed. This is not allowed behaviour in constant
+expressions. In C++11, we can now use `std::underlying_type` to get
+the actual underlying type.
+
+  ./../gdbsupport/enum-flags.h:87:34: error: non-type template argument is not a constant expression
+     87 |     integer_for_size<sizeof (T), static_cast<bool>(T (-1) < T (0))>::type
+        |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  -->8--
+  ./../gdbsupport/enum-flags.h:87:52: note: integer value -1 is outside the valid range of values [0, 15] for the enumeration type 'ui_out_flag'
+     87 |     integer_for_size<sizeof (T), static_cast<bool>(T (-1) < T (0))>::type
+
+There was a patch that disabled the diagnostic around
+this code. Unfortunately, this is now an actual compilation failure
+and merely disabling the diagnostic is insufficient.
+
+In theory, we could do a bigger clean up and replace all of
+`enum_underlying_type` with `std::underlying_type`, but
+we want this patch to be extremely minimal and unobtrusive.
+
+See bug and reviewed CL for details.
+
+BUG=b:371039409
+TEST=built locally for amd64-generic
+---
+ gdbsupport/enum-flags.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/gdb-10.2/gdbsupport/enum-flags.h b/gdb-10.2/gdbsupport/enum-flags.h
+index 9066ea6bd32..0f0f5b53666 100644
+--- a/gdb-10.2/gdbsupport/enum-flags.h
++++ b/gdb-10.2/gdbsupport/enum-flags.h
+@@ -51,6 +51,8 @@
+ 
+ #ifdef __cplusplus
+ 
++#include <type_traits>
++
+ /* Traits type used to prevent the global operator overloads from
+    instantiating for non-flag enums.  */
+ template<typename T> struct enum_flags_type {};
+@@ -82,7 +84,7 @@ template<typename T>
+ struct enum_underlying_type
+ {
+   typedef typename
+-    integer_for_size<sizeof (T), static_cast<bool>(T (-1) < T (0))>::type
++    integer_for_size<sizeof(T), std::is_signed<typename std::underlying_type<T>::type>::value>::type
+     type;
+ };
+ 
+-- 
+2.47.0.rc0.187.ge670bccf7e-goog
+

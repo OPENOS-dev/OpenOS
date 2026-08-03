@@ -1,0 +1,16 @@
+BDEPEND=dev-vcs/git app-misc/jq virtual/pkgconfig
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=media-libs/alsa-lib media-libs/libcras media-sound/sof-tools
+DESCRIPTION=Audio test tools
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/audiotest
+IUSE=-asan asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=media-libs/alsa-lib media-libs/libcras media-sound/sof-tools
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+RESTRICT=!x86? ( !amd64? ( test ) )
+SLOT=0
+_eclasses_=cros-common.mk	9e8d1ee1b6c7bcbbba3cb473b2e4df3e	cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=31e9fc64523c924ac9b61a089180d68b

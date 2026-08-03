@@ -1,0 +1,11 @@
+name: "wasi-sdk"
+description: "WASI-enabled C/C++ toolchain"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://github.com/WebAssembly/wasi-sdk"
+  }
+  version: "33.0"
+  last_upgrade_date { year: 2026 month: 5 day: 1 }
+}

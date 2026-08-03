@@ -1,0 +1,12 @@
+diff --git a/sslh-fork.c b/sslh-fork.c
+index 128c144..c8a035d 100644
+--- a/sslh-fork.c
++++ b/sslh-fork.c
+@@ -180,6 +180,7 @@ void tcp_listener(struct listen_endpoint* endpoint, int num_endpoints, int activ
+     while (1) {
+         in_socket = accept(endpoint[active_endpoint].socketfd, 0, 0);
+         if (cfg.verbose) fprintf(stderr, "accepted fd %d\n", in_socket);
++        if (in_socket < 0) continue;
+ 
+         switch(fork()) {
+         case -1: log_message(LOG_ERR, "fork failed: err %d: %s\n", errno, strerror(errno));

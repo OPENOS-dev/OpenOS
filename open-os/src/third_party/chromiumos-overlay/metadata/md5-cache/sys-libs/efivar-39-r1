@@ -1,0 +1,15 @@
+BDEPEND=test? ( sys-boot/grub:2 )
+DEFINED_PHASES=compile configure prepare
+DEPEND=dev-libs/popt >=sys-kernel/linux-headers-3.18 virtual/pkgconfig
+DESCRIPTION=Tools and library to manipulate EFI variables
+EAPI=7
+HOMEPAGE=https://github.com/rhboot/efivar
+IUSE=doc test
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-libs/popt
+RESTRICT=!test? ( test )
+SLOT=0/1
+SRC_URI=https://github.com/rhboot/efivar/archive/refs/tags/39.tar.gz -> efivar-39.tar.gz
+_eclasses_=cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3fa935746344f6ac892e4ede48cec307

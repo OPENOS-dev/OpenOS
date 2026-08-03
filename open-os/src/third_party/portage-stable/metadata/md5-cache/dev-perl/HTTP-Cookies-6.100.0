@@ -1,0 +1,15 @@
+BDEPEND=!<dev-perl/libwww-perl-6 virtual/perl-Carp >=dev-perl/HTTP-Date-6.0.0 >=dev-perl/HTTP-Message-6.0.0 virtual/perl-Time-Local virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Storage of cookies
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/HTTP-Cookies
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=!<dev-perl/libwww-perl-6 virtual/perl-Carp >=dev-perl/HTTP-Date-6.0.0 >=dev-perl/HTTP-Message-6.0.0 virtual/perl-Time-Local dev-lang/perl:=
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Cookies-6.10.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=20988ca01146a127a02a0ac8f90869b5

@@ -1,0 +1,11 @@
+group:input
+gid:222
+# cras needs access to /dev/input/event*
+# power manager needs to read from /dev/input/event* to observe power
+# button and lid events.
+# cros_healthd needs to access telemetry information, event notifications, and
+# diagnostics under /dev/input/event*. For example:
+#   - Telemetry: Retrieve vendor name.
+#   - Event: HDMI plug-in/out, audio device plug-in/out.
+#   - Diagnostics: Volume button pressed or not.
+users:chronos,cras,healthd_evdev,input,power

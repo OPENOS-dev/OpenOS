@@ -1,0 +1,47 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "n/a"
+NAME = "network_EthernetStressPlug"
+METADATA = {
+    'contacts': ['chromeos-ethernet@google.com'],
+    # ChromeOS > Platform > Technologies > Ethernet
+    'bug_component': 'b:1140301',
+    'criteria': 'Stress-tests simulating plugging/unplugging the ethernet dongle. This test fails if device fails to obtain dhcp through ethernet.',
+    'hw_agnostic': False
+}
+
+
+# Note: This test is currently only intended for manual runs in
+# a "well controlled" enviroment.  This test is primarily intended for
+# use in Ethernet AVL qual and the "records" should land in a related bug.
+# Compare the information recorded with later runs if there is a problem.
+#
+# I strongly encourage users to record the configuration (DUT mfg/model,
+# Ethernet mfg/model, Chrome OS version, BIOS Version, etc.) and test
+# results (histogram of the time to restore link) in a spreadsheet.
+# One can then use the spreadsheet to track differences when there
+# is a regression in a "known" configuration.
+#
+TIME = "SHORT"
+TEST_TYPE = "client"
+
+DOC = "n/a"
+
+# We want the default number of loops per test run
+# to be 100.
+num_iterations = 100
+interface=None # autodetect interface
+
+# Parse comma-separated args.
+for arg in args:
+    for item in arg.split(','):
+        key, val = item.split('=')
+        if key == 'num_iterations':
+            num_iterations = int(val)
+        if key == 'interface':
+            interface = val
+
+job.run_test('network_EthernetStressPlug', num_iterations=num_iterations,
+    interface=interface)

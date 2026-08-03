@@ -1,0 +1,46 @@
+##
+## Copyright 2017 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+config DRIVER_EC_PS8751
+	bool "PS8751 TCPC"
+	depends on DRIVER_EC_CROS
+	default n
+	help
+	  Add support for PS8751 TCPC
+
+if DRIVER_EC_PS8751
+
+config DRIVER_EC_PS8751_FLASH_WINDOW
+	bool "PS8XXX flash window access over I2C"
+	default n
+	help
+	  Enables an alternate scheme for accessing the internal flash
+	  of PS8xxx series TCPCs to achieve 10x faster firmware
+	  updates. The TCPC presents a 256 byte window onto the internal
+	  flash that can be used to read/write its content. For most
+	  PS8xxx family members, the I2C bus must operate at 400 kHz (or
+	  below) for this to work reliably, so this feature depends on
+	  being able to adjust the I2C bus speed at runtime, so make
+	  sure this capability is supported by the EC.
+
+config DRIVER_EC_PS8751_I2C_SPEED_CONTROL
+	bool "PS8xxx I2C bus speed control"
+	default y if DRIVER_EC_PS8751_FLASH_WINDOW
+	default n
+	help
+	  Enable controlling the I2C bus speed between the EC and the
+	  TCPC. This is needed to potentially decrease the bus speed to
+	  400 KHz to support the window based firmware update scheme.
+	  If the I2C bus is normally configured to run at (or below) 400
+	  KHz, this is not required.
+
+endif # DRIVER_EC_PS8751

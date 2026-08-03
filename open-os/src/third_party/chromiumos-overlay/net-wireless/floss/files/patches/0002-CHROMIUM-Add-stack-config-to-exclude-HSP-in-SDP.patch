@@ -1,0 +1,67 @@
+From df58c5ed8dda09ce1f232505d2c4f3473c28d303 Mon Sep 17 00:00:00 2001
+From: howardchung <howardchung@google.com>
+Date: Thu, 27 Apr 2023 09:06:59 +0000
+Subject: [PATCH] CHROMIUM: Add stack config to exclude HSP in SDP
+
+We are not ready to pass HSP in qualification. Therefore, disable it in
+SDP record.
+
+BUG=b:279872890
+TEST=run IOPT/SR/SDSS/BV-02-I
+
+Change-Id: I168e424a96f73d46f1f05227a30db6b9d36b7f5c
+---
+ system/btif/src/btif_hf.cc             | 9 +++++++++
+ system/internal_include/stack_config.h | 1 +
+ system/main/stack_config.cc            | 7 +++++++
+ 3 files changed, 17 insertions(+)
+
+diff --git a/system/btif/src/btif_hf.cc b/system/btif/src/btif_hf.cc
+index a7e09198304..68d495960e9 100644
+--- a/system/btif/src/btif_hf.cc
++++ b/system/btif/src/btif_hf.cc
+@@ -66,2 +66,3 @@
+ #include "internal_include/bt_target.h"
++#include "internal_include/stack_config.h"
+ #include "main/shim/helpers.h"
+@@ -168,4 +169,12 @@ static bool is_active_device(const RawAddress bd_addr) {
+ static tBTA_SERVICE_MASK get_BTIF_HF_SERVICES() {
++#if TARGET_FLOSS
++  if (stack_config_get_interface()->get_pts_excluded_hsp_in_sdp_record()) {
++    return BTA_HFP_SERVICE_MASK;
++  } else {
++    return BTA_HSP_SERVICE_MASK | BTA_HFP_SERVICE_MASK;
++  }
++#else
+   return android::sysprop::bluetooth::Hfp::hf_services().value_or(BTA_HSP_SERVICE_MASK |
+                                                                   BTA_HFP_SERVICE_MASK);
++#endif
+ }
+diff --git a/system/internal_include/stack_config.h b/system/internal_include/stack_config.h
+index febd2a37e24..bdb462e3603 100644
+--- a/system/internal_include/stack_config.h
++++ b/system/internal_include/stack_config.h
+@@ -49,2 +49,3 @@ typedef struct {
+   bool (*get_pts_le_audio_disable_ases_before_stopping)(void);
++  bool (*get_pts_excluded_hsp_in_sdp_record)(void);
+   config_t* (*get_all)(void);
+diff --git a/system/main/stack_config.cc b/system/main/stack_config.cc
+index 20db9be13db..ffebf4fd342 100644
+--- a/system/main/stack_config.cc
++++ b/system/main/stack_config.cc
+@@ -49,2 +49,3 @@ const char* PTS_L2CAP_ECOC_SEND_NUM_OF_SDU = "PTS_L2capEcocSendNumOfSdu";
+ const char* PTS_L2CAP_ECOC_RECONFIGURE = "PTS_L2capEcocReconfigure";
++const char* PTS_EXCLUDE_HSP_IN_SDP_RECORD = "PTS_ExcludeHspInSdpRecord";
+ const char* PTS_BROADCAST_AUDIO_CONFIG_OPTION = "PTS_BroadcastAudioConfigOption";
+@@ -183,2 +184,7 @@ static bool get_pts_le_audio_disable_ases_before_stopping(void) {
+ 
++static bool get_pts_excluded_hsp_in_sdp_record(void) {
++  return config_get_bool(*config, CONFIG_DEFAULT_SECTION,
++                         PTS_EXCLUDE_HSP_IN_SDP_RECORD, false);
++}
++
+ static config_t* get_all(void) { return config.get(); }
+@@ -206,2 +212,3 @@ const stack_config_t interface = {get_pts_avrcp_test,
+                                   get_pts_le_audio_disable_ases_before_stopping,
++                                  get_pts_excluded_hsp_in_sdp_record,
+                                   get_all};

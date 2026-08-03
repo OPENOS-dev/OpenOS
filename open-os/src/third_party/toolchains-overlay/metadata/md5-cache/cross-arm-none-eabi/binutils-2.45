@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/perl sys-apps/texinfo pgo? ( dev-util/dejagnu app-alternatives/bc ) test? ( dev-util/dejagnu app-alternatives/bc ) nls? ( sys-devel/gettext ) zstd? ( virtual/pkgconfig ) sys-devel/bison sys-devel/flex >=app-portage/elt-patches-20170815 sys-devel/gnuconfig
+DEFINED_PHASES=compile configure install postinst postrm preinst prepare test unpack
+DEPEND=>=sys-devel/binutils-config-3 sys-libs/zlib debuginfod? ( dev-libs/elfutils[debuginfod(-)] ) zstd? ( app-arch/zstd:= ) xxhash? ( dev-libs/xxhash )
+DESCRIPTION=Tools necessary to build programs
+EAPI=7
+HOMEPAGE=https://sourceware.org/binutils/
+IUSE=cet debuginfod doc cros_host hardened gprofng multitarget nls pgo +plugins static-libs test vanilla xxhash zstd
+KEYWORDS=*
+LICENSE=GPL-3+
+RDEPEND=>=sys-devel/binutils-config-3 sys-libs/zlib debuginfod? ( dev-libs/elfutils[debuginfod(-)] ) zstd? ( app-arch/zstd:= )
+RESTRICT=!cros_host? ( test ) test? ( test ) splitdebug
+SLOT=arm-none-eabi
+SRC_URI=mirror://gnu/binutils/binutils-2.45.tar.xz https://sourceware.org/pub/binutils/releases/binutils-2.45.tar.xz https://dev.gentoo.org/~dilfridge/distfiles/binutils-2.45.tar.xz https://dev.gentoo.org/~dilfridge/distfiles/binutils-2.45-patches-3.tar.xz
+_eclasses_=eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	gnuconfig	24782b842d9d9de6c82fa360b97d8914	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=96302015233e370db771e907f339d37b

@@ -1,0 +1,23 @@
+{
+  "ec_boot_to_console": 0.2,
+  "ec_capability": {
+    "arm": true,
+    "battery": true,
+    "cbi": false,
+    "charging": true,
+    "keyboard": true,
+    "lid": true,
+    "x86": false
+  },
+  "ec_ro_vbus_bug": true,
+  "firmware_screen": 7,
+  "firmware_screen_rec_mode": 7,
+  "minidiag_enabled": false,
+  "minios_enabled": false,
+  "mode_switcher_type": "keyboard_dev_switcher",
+  "no_broken_screen_in_dev": true,
+  "platform": "gru",
+  "software_sync_update": 6,
+  "usb_a_port_count": -1,
+  "usb_hid_wake_enabled": false
+}

@@ -1,0 +1,27 @@
+From 6067894476deca198036aecb02dfc40f9877e175 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Sergio=20G=C3=B3mez?=
+ <sergio.gdr@collabora.corp-partner.google.com>
+Date: Fri, 4 Oct 2024 10:06:56 -0500
+Subject: [PATCH] Don't force libstdc++ (fix build w/ libc++)
+
+Bug: https://bugs.gentoo.org/784173
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 0dd6e62ca..a1a0ed322 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -906,7 +906,7 @@ if test x$with_tesseract != xno; then
+ 
+         save_cxxflags="$CXXFLAGS"
+         save_ldflags="$LDFLAGS"
+-        cxxflags_to_try="-std=c++17 -stdlib=libstdc++"
++        cxxflags_to_try="-std=c++17"
+         CXXFLAGS_TO_USE=""
+ 
+         AC_MSG_CHECKING([supported C++ compiler flags])
+-- 
+2.45.2
+

@@ -1,0 +1,13 @@
+BDEPEND=virtual/perl-Storable >=dev-perl/XML-NamespaceSupport-1.40.0 >=dev-perl/XML-SAX-0.150.0 dev-perl/XML-SAX-Expat virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=An API for simple XML files
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/XML-Simple
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Storable >=dev-perl/XML-NamespaceSupport-1.40.0 >=dev-perl/XML-SAX-0.150.0 dev-perl/XML-SAX-Expat dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/G/GR/GRANTM/XML-Simple-2.25.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=2529d180c9545043c49fb56abd19f96e

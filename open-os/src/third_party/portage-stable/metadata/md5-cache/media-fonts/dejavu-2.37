@@ -1,0 +1,12 @@
+BDEPEND=fontforge? ( app-i18n/unicode-data dev-perl/Font-TTF >=media-gfx/fontforge-20080429 >media-libs/fontconfig-2.6.0:1.0 >=x11-apps/mkfontscale-1.2.0 ) X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
+DEFINED_PHASES=compile install postinst postrm prepare setup unpack
+DESCRIPTION=DejaVu fonts, bitstream vera with ISO-8859-2 characters
+EAPI=7
+HOMEPAGE=https://dejavu-fonts.github.io/
+IUSE=fontforge X
+KEYWORDS=*
+LICENSE=BitstreamVera
+SLOT=0
+SRC_URI=!fontforge? ( mirror://sourceforge/dejavu/dejavu-fonts-ttf-2.37.tar.bz2 ) fontforge? ( mirror://sourceforge/dejavu/dejavu-fonts-2.37.tar.bz2 )
+_eclasses_=font	9c33e6198000f5ed39b38bdbc30d50fc	xdg-utils	ff2ff954e6b17929574eee4efc5152ba
+_md5_=22d111b5152de22ad1df323684df335e

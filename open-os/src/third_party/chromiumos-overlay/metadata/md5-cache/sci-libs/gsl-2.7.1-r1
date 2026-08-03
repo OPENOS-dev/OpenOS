@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install prepare test
+DEPEND=cblas-external? ( virtual/cblas:= )
+DESCRIPTION=The GNU Scientific Library
+EAPI=7
+HOMEPAGE=https://www.gnu.org/software/gsl/
+IUSE=cblas-external +deprecated static-libs
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=cblas-external? ( virtual/cblas:= )
+SLOT=0/27
+SRC_URI=mirror://gnu/gsl/gsl-2.7.1.tar.gz https://dev.gentoo.org/~sam/distfiles/sci-libs/gsl/gsl-2.7-cblas.patch.bz2
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	libtool	f143db5a74ccd9ca28c1234deffede96	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=9bb301d86b7b9366efcfef076906767e

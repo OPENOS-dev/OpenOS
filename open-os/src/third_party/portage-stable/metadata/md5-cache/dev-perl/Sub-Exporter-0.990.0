@@ -1,0 +1,13 @@
+BDEPEND=virtual/perl-Carp >=dev-perl/Data-OptList-0.100.0 >=dev-perl/Params-Util-0.140.0 >=dev-perl/Sub-Install-0.920.0 dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Sophisticated exporter for custom-built routines
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Sub-Exporter
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Carp >=dev-perl/Data-OptList-0.100.0 >=dev-perl/Params-Util-0.140.0 >=dev-perl/Sub-Install-0.920.0 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/R/RJ/RJBS/Sub-Exporter-0.990.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=2405b24222b6e8a491476f3cb6313a6b

@@ -1,0 +1,7 @@
+cross-armv7m-cros-eabi/binutils arm -amd64 -~amd64
+cross-armv7m-cros-eabi/compiler-rt arm -amd64 -~amd64
+cross-armv7m-cros-eabi/gcc arm -amd64 -~amd64
+cross-armv7m-cros-eabi/gdb arm ~arm -amd64 -~amd64
+cross-armv7m-cros-eabi/libcxx arm -amd64 -~amd64
+cross-armv7m-cros-eabi/llvm-libunwind arm -amd64 -~amd64
+cross-armv7m-cros-eabi/newlib arm ~arm -amd64 -~amd64

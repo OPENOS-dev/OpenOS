@@ -1,0 +1,14 @@
+BDEPEND=dev-libs/wayland-protocols dev-util/wayland-scanner !cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array
+DEFINED_PHASES=compile configure install test
+DEPEND=dev-libs/wayland dev-libs/wayland-protocols !cros_host? ( dev-lang/python )
+DESCRIPTION=Wayland clipboard utilities
+EAPI=7
+HOMEPAGE=https://github.com/bugaevc/wl-clipboard
+IUSE=cros_host test
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=dev-libs/wayland dev-libs/wayland-protocols
+SLOT=0
+SRC_URI=https://github.com/bugaevc/wl-clipboard/archive/v2.2.1.tar.gz -> wl-clipboard-2.2.1.tar.gz
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	meson	0b48ece927e974cd82202dc49f391f82	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c06c8fc5264d848fa612cd04ad813ff1

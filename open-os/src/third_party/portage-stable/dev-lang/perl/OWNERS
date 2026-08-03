@@ -1,0 +1,3 @@
+# The main runtime is needed by many packages in the SDK.
+# NB: This does not imply every perl module is maintained by the build team.
+include chromiumos/owners:v1:/infra/OWNERS.build

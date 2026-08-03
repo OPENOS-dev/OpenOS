@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<use>
+	<flag name='crosvm-trace-marker'>Enable crosvm trace marker to allow tracing. See https://crosvm.dev/book/tracing.html for details.</flag>
+	<flag name='crosvm-video-vaapi'>Enable building the cros-codecs based VAAPI decoder into crosvm.</flag>
+</use>
+</pkgmetadata>

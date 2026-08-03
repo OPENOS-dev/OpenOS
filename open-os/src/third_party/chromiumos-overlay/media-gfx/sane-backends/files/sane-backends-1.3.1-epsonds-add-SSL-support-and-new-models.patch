@@ -1,0 +1,964 @@
+From 2f7f72957298dd587a123d6ee2918f08b8d82185 Mon Sep 17 00:00:00 2001
+From: Ralph Little <skelband@gmail.com>
+Date: Fri, 30 May 2025 22:41:49 -0700
+Subject: [PATCH] epsonds: add SSL support and new models
+
+---
+ acinclude.m4                  |  43 ++++++
+ backend/Makefile.am           |   7 +-
+ backend/epsonds-cmd.c         |   7 +
+ backend/epsonds-net.c         |  41 ++----
+ backend/epsonds-net.h         |   2 +-
+ backend/epsonds-ops.c         |  11 ++
+ backend/epsonds-tcp.c         | 208 ++++++++++++++++++++++++++++
+ backend/epsonds-tcp.h         |  13 ++
+ backend/epsonds.c             | 247 +++++++++++++++++-----------------
+ backend/epsonds.h             |  17 +++
+ configure.ac                  |  10 ++
+ doc/descriptions/epsonds.desc |   5 +
+ 12 files changed, 452 insertions(+), 159 deletions(-)
+ create mode 100644 backend/epsonds-tcp.c
+ create mode 100644 backend/epsonds-tcp.h
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index 90af48dd8..ece9ac788 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -316,6 +316,49 @@ AC_DEFUN([SANE_CHECK_TIFF],
+   AC_SUBST(TIFF_LIBS)
+ ])
+ 
++# Check for OpenSSL 1.1 or higher (optional)
++AC_DEFUN([SANE_CHECK_SSL], [
++
++  SSL_LIBS=""
++  # Check for libssl
++  AC_CHECK_LIB([ssl], [SSL_CTX_new], [
++    have_ssl_lib="yes"
++  ], [
++    have_ssl_lib="no"
++    AC_MSG_WARN([libssl not found. SSL support will be disabled.])
++  ])
++
++  # Check for headers
++  AC_CHECK_HEADER([openssl/ssl.h], [
++    have_ssl_h="yes"
++  ], [
++    have_ssl_h="no"
++    AC_MSG_WARN([Header <openssl/ssl.h> not found. SSL support will be disabled.])
++  ])
++
++  AC_CHECK_HEADER([openssl/crypto.h], [
++    have_crypto_h="yes"
++  ], [
++    have_crypto_h="no"
++    AC_MSG_WARN([Header <openssl/crypto.h> not found. SSL support will be disabled.])
++  ])
++
++  # If all basic checks passed, check version with pkg-config
++  if test "x$have_ssl_lib" = "xyes" && \
++     test "x$have_ssl_h" = "xyes" && \
++     test "x$have_crypto_h" = "xyes"; then
++
++    PKG_CHECK_MODULES([openssl], [openssl >= 1.1], [
++      SSL_LIBS="-lssl -lcrypto"
++      AC_DEFINE([HAVE_OPENSSL], [1], [Define to 1 if OpenSSL is available])
++    ], [
++      AC_MSG_WARN([OpenSSL 1.1 or higher not found. SSL support will be disabled.])
++    ])
++  fi
++
++  AC_SUBST([SSL_LIBS])
++])
++
+ AC_DEFUN([SANE_CHECK_PNG],
+ [
+   AC_CHECK_LIB(png,png_init_io,
+diff --git a/backend/Makefile.am b/backend/Makefile.am
+index 4bf4e6f54..2e9d61d4f 100644
+--- a/backend/Makefile.am
++++ b/backend/Makefile.am
+@@ -712,7 +712,7 @@ EXTRA_DIST += epson2.conf.in
+ 
+ libepsonds_la_SOURCES = epsonds.c epsonds.h epsonds-usb.c epsonds-usb.h epsonds-io.c epsonds-io.h \
+ 		epsonds-cmd.c epsonds-cmd.h epsonds-ops.c epsonds-ops.h epsonds-jpeg.c epsonds-jpeg.h \
+-		epsonds-net.c epsonds-net.h
++		epsonds-net.c epsonds-net.h epsonds-tcp.c epsonds-tcp.h
+ libepsonds_la_CPPFLAGS = $(AM_CPPFLAGS) -DBACKEND_NAME=epsonds
+ 
+ nodist_libsane_epsonds_la_SOURCES = epsonds-s.c
+@@ -724,13 +724,13 @@ libsane_epsonds_la_LIBADD = $(COMMON_LIBS) libepsonds.la ../sanei/sanei_init_deb
+ 				../sanei/sanei_config.lo ../sanei/sanei_config2.lo sane_strstatus.lo \
+ 				../sanei/sanei_usb.lo ../sanei/sanei_scsi.lo \
+ 				../sanei/sanei_tcp.lo ../sanei/sanei_udp.lo \
+-				$(SANEI_SANEI_JPEG_LO) $(JPEG_LIBS) $(USB_LIBS) $(MATH_LIB) $(RESMGR_LIBS) $(SOCKET_LIBS) $(AVAHI_LIBS)
++				$(SANEI_SANEI_JPEG_LO) $(JPEG_LIBS) $(SSL_LIBS) $(USB_LIBS) $(MATH_LIB) $(RESMGR_LIBS) $(SOCKET_LIBS) $(AVAHI_LIBS)
+ else
+ libsane_epsonds_la_LIBADD = $(COMMON_LIBS) libepsonds.la ../sanei/sanei_init_debug.lo ../sanei/sanei_constrain_value.lo \
+ 				../sanei/sanei_config.lo ../sanei/sanei_config2.lo sane_strstatus.lo \
+ 				../sanei/sanei_usb.lo ../sanei/sanei_scsi.lo \
+ 				../sanei/sanei_tcp.lo ../sanei/sanei_udp.lo \
+-				$(SANEI_SANEI_JPEG_LO) $(JPEG_LIBS) $(USB_LIBS) $(MATH_LIB) $(RESMGR_LIBS) $(SOCKET_LIBS)
++				$(SANEI_SANEI_JPEG_LO) $(JPEG_LIBS) $(USB_LIBS) $(SSL_LIBS) $(MATH_LIB) $(RESMGR_LIBS) $(SOCKET_LIBS)
+ endif
+ EXTRA_DIST += epsonds.conf.in
+ 
+@@ -2045,6 +2045,7 @@ PRELOADABLE_BACKENDS_LIBS = \
+     $(LIBV4L_LIBS) $(MATH_LIB) \
+     $(IEEE1284_LIBS) \
+     $(TIFF_LIBS) \
++    $(SSL_LIBS) \
+     $(JPEG_LIBS) \
+     $(GPHOTO2_LIBS) \
+     $(SOCKET_LIBS) \
+diff --git a/backend/epsonds-cmd.c b/backend/epsonds-cmd.c
+index d1cba0915..0474d908b 100644
+--- a/backend/epsonds-cmd.c
++++ b/backend/epsonds-cmd.c
+@@ -740,6 +740,13 @@ static SANE_Status capa_cb(void *userdata, char *token, int len)
+ 
+ 			eds_set_resolution_range(s->hw, min, max);
+ 
++			DBG(1, "resolution min/max %d/%d\n", min, max);
++		} else if (p[0] == 'd') { /*RSMRANGd050i0001200*/
++			int min = decode_value(p, 4);
++			int max = decode_value(p + 4, 8);
++
++			eds_set_resolution_range(s->hw, min, max);
++
+ 			DBG(1, "resolution min/max %d/%d\n", min, max);
+ 		}
+ 	}
+diff --git a/backend/epsonds-net.c b/backend/epsonds-net.c
+index 87b44b493..062de758e 100644
+--- a/backend/epsonds-net.c
++++ b/backend/epsonds-net.c
+@@ -27,6 +27,7 @@
+ 
+ #include "epsonds.h"
+ #include "epsonds-net.h"
++#include "epsonds-tcp.h"
+ 
+ #include "byteorder.h"
+ 
+@@ -34,10 +35,10 @@
+ 
+ 
+ static ssize_t
+-epsonds_net_read_raw(epsonds_scanner *s, unsigned char *buf, ssize_t wanted,
++epsonds_net_read_raw(epsonds_scanner *s, unsigned char *buf, size_t wanted,
+ 		       SANE_Status *status)
+ {
+-	DBG(15, "%s: wanted: %ld\n", __func__, wanted);
++	DBG(15, "%s: wanted: %zu\n", __func__, wanted);
+ 
+ 	if (wanted == 0)
+ 	{
+@@ -45,27 +46,10 @@ epsonds_net_read_raw(epsonds_scanner *s, unsigned char *buf, ssize_t wanted,
+ 		return 0;
+ 	}
+ 
+-	int ready;
+ 	ssize_t read = -1;
+-	fd_set readable;
+-	struct timeval tv;
++	read = epsonds_tcp_read(s, buf, wanted);
+ 
+-	tv.tv_sec = 10;
+-	tv.tv_usec = 0;
+-
+-	FD_ZERO(&readable);
+-	FD_SET(s->fd, &readable);
+-
+-	ready = select(s->fd + 1, &readable, NULL, NULL, &tv);
+-	if (ready > 0) {
+-		read = sanei_tcp_read(s->fd, buf, wanted);
+-	} else {
+-		DBG(15, "%s: select failed: %d\n", __func__, ready);
+-	}
+-
+-	*status = SANE_STATUS_GOOD;
+-
+-	if (read < wanted) {
++	if ((read < 0) || ((size_t)read < wanted)) {
+ 		*status = SANE_STATUS_IO_ERROR;
+ 	}
+ 
+@@ -73,7 +57,7 @@ epsonds_net_read_raw(epsonds_scanner *s, unsigned char *buf, ssize_t wanted,
+ }
+ 
+ static ssize_t
+-epsonds_net_read_buf(epsonds_scanner *s, unsigned char *buf, ssize_t wanted,
++epsonds_net_read_buf(epsonds_scanner *s, unsigned char *buf, size_t wanted,
+ 		       SANE_Status * status)
+ {
+ 	ssize_t read = 0;
+@@ -103,14 +87,9 @@ epsonds_net_read_buf(epsonds_scanner *s, unsigned char *buf, ssize_t wanted,
+ }
+ 
+ ssize_t
+-epsonds_net_read(epsonds_scanner *s, unsigned char *buf, ssize_t wanted,
++epsonds_net_read(epsonds_scanner *s, unsigned char *buf, size_t wanted,
+ 		       SANE_Status * status)
+ {
+-	if (wanted < 0) {
+-		*status = SANE_STATUS_INVAL;
+-		return 0;
+-	}
+-
+ 	size_t size;
+ 	ssize_t read = 0;
+ 	unsigned char header[12];
+@@ -250,15 +229,15 @@ epsonds_net_write(epsonds_scanner *s, unsigned int cmd, const unsigned char *buf
+ 	if ((cmd >> 8) == 0x20 && (buf_size || reply_len)) {
+ 
+ 		// send header + data header
+-		sanei_tcp_write(s->fd, packet, 12 + 8);
++		epsonds_tcp_write(s, packet, 12 + 8);
+ 
+ 	} else {
+-		sanei_tcp_write(s->fd, packet, 12);
++		epsonds_tcp_write(s, packet, 12);
+ 	}
+ 
+ 	// send payload
+ 	if (buf_size)
+-		sanei_tcp_write(s->fd, buf, buf_size);
++		epsonds_tcp_write(s, buf, buf_size);
+ 
+ 	free(packet);
+ 
+diff --git a/backend/epsonds-net.h b/backend/epsonds-net.h
+index 2431c3594..8faa4d618 100644
+--- a/backend/epsonds-net.h
++++ b/backend/epsonds-net.h
+@@ -6,7 +6,7 @@
+ 
+ typedef void (*Device_Found_CallBack) (const char* name, const char* ip);
+ 
+-extern ssize_t epsonds_net_read(struct epsonds_scanner *s, unsigned char *buf, ssize_t buf_size,
++extern ssize_t epsonds_net_read(struct epsonds_scanner *s, unsigned char *buf, size_t buf_size,
+ 				SANE_Status *status);
+ extern size_t epsonds_net_write(struct epsonds_scanner *s, unsigned int cmd, const unsigned char *buf,
+ 				size_t buf_size, size_t reply_len,
+diff --git a/backend/epsonds-ops.c b/backend/epsonds-ops.c
+index 56194c428..9c90a3f46 100644
+--- a/backend/epsonds-ops.c
++++ b/backend/epsonds-ops.c
+@@ -257,6 +257,17 @@ eds_init_parameters(epsonds_scanner *s)
+ 			s->params.pixels_per_line, s->params.lines, dpi);
+ 	}
+ 
++	/* right aligned? */
++	if (s->hw->alignment == 2) {
++
++		SANE_Int offset = ((SANE_UNFIX(s->hw->x_range->max) / MM_PER_INCH) * dpi) + 0.5;
++
++		s->left += ((offset - s->params.pixels_per_line) );
++
++		DBG(5, "%s: right-aligned to tlx %d tly %d brx %d bry %d [dots @ %d dpi]\n",
++			__func__, s->left, s->top,
++			s->params.pixels_per_line, s->params.lines, dpi);
++	}
+ 	/*
+ 	 * Calculate bytes_per_pixel and bytes_per_line for
+ 	 * any color depths.
+diff --git a/backend/epsonds-tcp.c b/backend/epsonds-tcp.c
+new file mode 100644
+index 000000000..6a2638fc0
+--- /dev/null
++++ b/backend/epsonds-tcp.c
+@@ -0,0 +1,208 @@
++#define DEBUG_DECLARE_ONLY
++
++#include "epsonds.h"
++#include "epsonds-net.h"
++#include "epsonds-tcp.h"
++#include "epsonds-io.h"
++#include "sane/sanei_tcp.h"
++#include "sane/config.h"
++#include <ctype.h>
++#ifdef HAVE_OPENSSL
++#include <openssl/ssl.h>
++#include <openssl/err.h>
++#endif
++#include <limits.h>
++
++#include "sane/sanei_debug.h"
++
++
++
++#ifdef HAVE_SYS_TIME_H
++# include <sys/time.h>
++#endif
++
++typedef struct epsonds_scanner epsonds_scanner;
++
++SANE_Status epsonds_tcp_open(epsonds_scanner* s, const char *host, int port) {
++
++    SANE_Status status = SANE_STATUS_GOOD;
++
++    if(s == NULL || host == NULL) {
++        return SANE_STATUS_INVAL;
++    }
++
++    status = sanei_tcp_open(&s->hw->name[4], port, &s->fd);
++    if (status == SANE_STATUS_GOOD) {
++
++        ssize_t read;
++        struct timeval tv;
++        unsigned char buf[5];
++
++        tv.tv_sec = 5;
++        tv.tv_usec = 0;
++
++        setsockopt(s->fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,  sizeof(tv));
++
++        s->netlen = 0;
++		DBG(5, "host = %s\n", &s->hw->name[4]);
++
++        DBG(32, "awaiting welcome message\n");
++        /* the scanner sends a kind of welcome msg */
++        // XXX check command type, answer to connect is 0x80
++        read = eds_recv(s, buf, 5, &status);
++        if (read != 5) {
++            sanei_tcp_close(s->fd);
++            s->fd = -1;
++            status = SANE_STATUS_INVAL;
++        }
++        else {
++            return SANE_STATUS_GOOD;
++        }
++#ifdef HAVE_OPENSSL
++        SSL_CTX *ssl = NULL;
++        BIO *bio = NULL;
++        crypt_context *crypt_ctx = NULL;
++
++        crypt_ctx = (crypt_context*)malloc(sizeof(crypt_context));
++        if(crypt_ctx  == NULL) {
++            return SANE_STATUS_INVAL;
++        }
++
++        ssl = SSL_CTX_new( TLS_client_method());
++        if (ssl == NULL) {
++            free(crypt_ctx);
++            return SANE_STATUS_INVAL;
++        }
++
++
++        bio = BIO_new_ssl_connect(ssl);
++        if (bio == NULL) {
++            SSL_CTX_free(ssl);
++            free(crypt_ctx);
++            return SANE_STATUS_INVAL;
++        }
++
++        char port_s[5];
++        snprintf(port_s, sizeof(port_s), "%d", port);
++
++        DBG(1, "port_s=%s", port_s);
++        BIO_set_conn_hostname(bio, host);
++        BIO_set_conn_port(bio, port_s);
++
++        BIO_set_ssl_renegotiate_timeout(bio, 2);
++
++        if (BIO_do_connect(bio) <= 0) {
++            BIO_free_all(bio);
++            SSL_CTX_free(ssl);
++            free(crypt_ctx);
++            return SANE_STATUS_INVAL;
++        }
++
++        crypt_ctx->bio = bio;
++        crypt_ctx->ssl = ssl;
++
++        s -> cryptContext = crypt_ctx;
++
++        read = eds_recv(s, buf, 5, &status);
++        if (read != 5) {
++            epsonds_tcp_close(s);
++            s->fd = -1;
++            return SANE_STATUS_INVAL;
++        }
++#endif
++    }
++    return status;
++}
++
++void epsonds_tcp_close(epsonds_scanner* s) {
++#ifdef HAVE_OPENSSL
++    if(s->cryptContext == NULL) {
++        sanei_tcp_close(s->fd);
++    }
++    else {
++        BIO_free_all(s->cryptContext->bio);
++        s->cryptContext->bio = NULL;
++        SSL_CTX_free(s->cryptContext->ssl);
++        s->cryptContext->ssl= NULL;
++        free(s->cryptContext);
++        s->cryptContext = NULL;
++    }
++#else
++    sanei_tcp_close(s->fd);
++#endif
++    s->fd = -1;
++}
++
++ssize_t epsonds_tcp_read(epsonds_scanner* s, unsigned char *buf, size_t wanted) {
++    ssize_t read = -1;
++
++#ifdef HAVE_OPENSSL
++    if(s->cryptContext == NULL) {
++        int ready;
++        fd_set readable;
++        struct timeval tv;
++
++        tv.tv_sec = 10;
++        tv.tv_usec = 0;
++
++        FD_ZERO(&readable);
++        FD_SET(s->fd, &readable);
++
++        ready = select(s->fd + 1, &readable, NULL, NULL, &tv);
++        if (ready > 0) {
++            read = sanei_tcp_read(s->fd, buf, wanted);
++        } else {
++            DBG(15, "%s: select failed: %d\n", __func__, ready);
++        }
++    }
++    else {
++        size_t bytes_recv = 0;
++        int rc = 1;
++
++        while (bytes_recv < wanted && rc > 0)
++        {
++            rc = BIO_read(s->cryptContext->bio, buf+bytes_recv, wanted-bytes_recv);
++            if (rc > 0)
++                bytes_recv += rc;
++            DBG(1, "wanted=%zu, bytes_recv:%zu, rc=%d\n", wanted, bytes_recv, rc);
++        }
++
++        read = bytes_recv;
++    }
++#else
++        int ready;
++        fd_set readable;
++        struct timeval tv;
++
++        tv.tv_sec = 10;
++        tv.tv_usec = 0;
++
++        FD_ZERO(&readable);
++        FD_SET(s->fd, &readable);
++
++        ready = select(s->fd + 1, &readable, NULL, NULL, &tv);
++        if (ready > 0) {
++            read = sanei_tcp_read(s->fd, buf, wanted);
++        } else {
++            DBG(15, "%s: select failed: %d\n", __func__, ready);
++        }
++#endif
++
++    return read;
++}
++
++ssize_t epsonds_tcp_write(epsonds_scanner* s, const unsigned char *buf, size_t count) {
++#ifdef HAVE_OPENSSL
++    if(s->cryptContext == NULL) {
++        return sanei_tcp_write(s->fd, buf, count);
++    }
++    else {
++        if(INT_MAX < count) {
++            return -1;
++        }
++        return BIO_write(s->cryptContext->bio, buf, count);
++    }
++#else
++    return sanei_tcp_write(s->fd, buf, count);
++#endif
++}
+diff --git a/backend/epsonds-tcp.h b/backend/epsonds-tcp.h
+new file mode 100644
+index 000000000..c772b1690
+--- /dev/null
++++ b/backend/epsonds-tcp.h
+@@ -0,0 +1,13 @@
++
++#ifndef _EPSONDS_TCP_H_
++#define _EPSONDS_TCP_H_
++
++#include <sys/types.h>
++#include "../include/sane/sane.h"
++
++extern void epsonds_tcp_close(struct epsonds_scanner* s);
++extern SANE_Status epsonds_tcp_open(struct epsonds_scanner* s, const char *host, int port);
++extern ssize_t epsonds_tcp_read(struct epsonds_scanner* s, unsigned char *buf, size_t wanted);
++extern  ssize_t epsonds_tcp_write(struct epsonds_scanner* s, const unsigned char *buf, size_t count);
++
++#endif
+diff --git a/backend/epsonds.c b/backend/epsonds.c
+index e7b673660..aae7bfecd 100644
+--- a/backend/epsonds.c
++++ b/backend/epsonds.c
+@@ -64,6 +64,11 @@
+ #include "epsonds-ops.h"
+ #include "epsonds-jpeg.h"
+ #include "epsonds-net.h"
++#include "epsonds-tcp.h"
++
++#ifdef HAVE_OPENSSL
++#include <openssl/ssl.h>
++#endif
+ 
+ static SANE_Status
+ setvalue(SANE_Handle handle, SANE_Int option, void *value, SANE_Int *info);
+@@ -1186,83 +1191,85 @@ typedef struct
+     char		productName[50]; // ESCI/2 procduct name
+ 	char 		deviceID[50]; // device ID (same as bonjour mdl name)
+     int  lutID; // look up table no
++	int  hardwareLUT;
+ }epsonds_profile_map;
+ 
+ const  epsonds_profile_map epsonds_models_predefined[] = {
+-  {0x0145, "DS-5500","DS-5500", 7},
+-  {0x0145, "DS-6500","DS-6500", 7},
+-  {0x0145, "DS-7500","DS-7500", 7},
+-  {0x0146, "DS-50000","DS-50000", 7},
+-  {0x0146, "DS-60000","DS-60000", 7},
+-  {0x0146, "DS-70000","DS-70000", 7},
+-  {0x014C, "DS-510","DS-510", 7},
+-  {0x0150, "DS-560","DS-560", 7},
+-  {0x0152, "DS-40","DS-40", 7},
+-  {0x014D, "DS-760","DS-760", 7},
+-  {0x014D, "DS-860","DS-860", 7},
+-  {0x0154, "DS-520","DS-520", 7},
+-  {0x08BC, "PID 08BC","PX-M7050 Series", 7},
+-  {0x08BC, "PID 08BC","WF-8510 Series", 7},
+-  {0x08BC, "PID 08BC","WF-8590 Series", 7},
+-  {0x08CC, "PID 08CC","PX-M7050FX Series", 7},
+-  {0x08CC, "PID 08CC","WF-R8590 Series", 7},
+-  {0x0165, "DS-410","DS-410", 7},
+-  {0x016C, "ES-50","ES-50", 6},
+-  {0x0160, "DS-70","DS-70", 6},
+-  {0x016D, "ES-55R","ES-55R", 6},
+-  {0x018C, "RR-60","RR-60", 6},
+-  {0x016E, "ES-60W","ES-60W", 6},
+-  {0x0166, "DS-80W","DS-80W", 6},
+-  {0x016F, "ES-65WR","ES-65WR", 6},
+-  {0x018B, "RR-70W","RR-70W", 6},
+-  {0x016E, "ES-60WW","ES-60WW", 6},
+-  {0x016E, "ES-60WB","ES-60WB", 6},
+-  {0x015C, "DS-1630","DS-1630", 4},
+-  {0x015D, "DS-1610","DS-1610", 4},
+-  {0x015E, "DS-1660W","DS-1660W", 4},
+-  {0x0159, "DS-310","DS-310", 5},
+-  {0x0159, "ES-200","ES-200", 5},
+-  {0x0162, "DS-320","DS-320", 5},
+-  {0x015A, "DS-360W","DS-360W", 5},
+-  {0x015A, "ES-300W","ES-300W", 5},
+-  {0x0177, "ES-300WR","ES-300WR", 5},
+-  {0x0181, "ES-400II","ES-400II", 2},
+-  {0x0183, "DS-535II","DS-535II", 2},
+-  {0x0184, "DS-531","DS-531", 2},
+-  {0x0182, "DS-530II","DS-530II", 2},
+-  {0x0185, "ES-500WII","ES-500WII", 2},
+-  {0x0188, "DS-571W","DS-571W", 2},
+-  {0x0187, "DS-575WII","DS-575WII", 2},
+-  {0x0186, "DS-570WII","DS-570WII", 2},
+-  {0x017F, "ES-580W","ES-580W", 2},
+-  {0x0180, "RR-600W","RR-600W", 2},
+-  {0x0167, "DS-535","DS-535", 2},
+-  {0x017A, "DS-535H","DS-535H", 2},
+-  {0x0156, "ES-400","ES-400", 2},
+-  {0x0155, "DS-530","DS-530", 2},
+-  {0x016B, "FF-680W","FF-680W", 2},
+-  {0x0157, "DS-570W","DS-570W", 2},
+-  {0x0157, "ES-500W","ES-500W", 2},
+-  {0x0169, "DS-575W","DS-575W", 2},
+-  {0x0176, "ES-500WR","ES-500WR", 2},
+-  {0x114E, "PID 114E","EW-052A Series", 7},
+-  {0x114E, "PID 114E","XP-2100 Series", 7},
+-  {0x1135, "PID 1135","ET-2700 Series", 7},
+-  {0x1135, "PID 1135","L4150 Series", 7},
+-  {0x114A, "PID 114A","ET-M2140 Series", 7},
+-  {0x114A, "PID 114A","M2140 Series", 7},
+-  {0x114F, "PID 114F","ET-M3140 Series", 7},
+-  {0x114F, "PID 114F","M3140 Series", 7},
+-  {0x1143, "PID 1143","L3150 Series", 7},
+-  {0x1143, "PID 1143","ET-2710 Series", 7},
+-  {0x118A, "PID 118A","ET-2810 Series", 7},
+-  {0x118A, "PID 118A","L3250 Series", 7},
+-  {0x119B, "PID 119B","XP-2150 Series", 7},
+-  {0x11B1, "PID 11B1","XP-2200 Series", 7},
+-  {0x0193, "ES-C220","ES-C220", 5},
+-  {0x018F, "DS-C330","DS-C330", 5},
+-  {0x0191, "DS-C490","DS-C490", 5},
+-  {0x00, "","", 0x00 }
++  {0x0145, "DS-5500","DS-5500", 7, 0},
++  {0x0145, "DS-6500","DS-6500", 7, 0},
++  {0x0145, "DS-7500","DS-7500", 7, 0},
++  {0x0146, "DS-50000","DS-50000", 7, 0},
++  {0x0146, "DS-60000","DS-60000", 7, 0},
++  {0x0146, "DS-70000","DS-70000", 7, 0},
++  {0x014C, "DS-510","DS-510", 7, 0},
++  {0x0150, "DS-560","DS-560", 7, 0},
++  {0x0152, "DS-40","DS-40", 7, 0},
++  {0x014D, "DS-760","DS-760", 7, 0},
++  {0x014D, "DS-860","DS-860", 7, 0},
++  {0x0154, "DS-520","DS-520", 7, 0},
++  {0x08BC, "PID 08BC","PX-M7050 Series", 7, 0},
++  {0x08BC, "PID 08BC","WF-8510 Series", 7, 0},
++  {0x08BC, "PID 08BC","WF-8590 Series", 7, 0},
++  {0x08CC, "PID 08CC","PX-M7050FX Series", 7, 0},
++  {0x08CC, "PID 08CC","WF-R8590 Series", 7, 0},
++  {0x0165, "DS-410","DS-410", 7, 0},
++  {0x016C, "ES-50","ES-50", 6, 0},
++  {0x0160, "DS-70","DS-70", 6, 0},
++  {0x016D, "ES-55R","ES-55R", 6, 0},
++  {0x018C, "RR-60","RR-60", 6, 0},
++  {0x016E, "ES-60W","ES-60W", 6, 0},
++  {0x0166, "DS-80W","DS-80W", 6, 0},
++  {0x016F, "ES-65WR","ES-65WR", 6, 0},
++  {0x018B, "RR-70W","RR-70W", 6, 0},
++  {0x016E, "ES-60WW","ES-60WW", 6, 0},
++  {0x016E, "ES-60WB","ES-60WB", 6, 0},
++  {0x015C, "DS-1630","DS-1630", 4, 0},
++  {0x015D, "DS-1610","DS-1610", 4, 0},
++  {0x015E, "DS-1660W","DS-1660W", 4, 0},
++  {0x0159, "DS-310","DS-310", 5, 0},
++  {0x0159, "ES-200","ES-200", 5, 0},
++  {0x0162, "DS-320","DS-320", 5, 0},
++  {0x015A, "DS-360W","DS-360W", 5, 0},
++  {0x015A, "ES-300W","ES-300W", 5, 0},
++  {0x0177, "ES-300WR","ES-300WR", 5, 0},
++  {0x0181, "ES-400II","ES-400II", 2, 0},
++  {0x0183, "DS-535II","DS-535II", 2, 0},
++  {0x0184, "DS-531","DS-531", 2, 0},
++  {0x0182, "DS-530II","DS-530II", 2, 0},
++  {0x0185, "ES-500WII","ES-500WII", 2, 0},
++  {0x0188, "DS-571W","DS-571W", 2, 0},
++  {0x0187, "DS-575WII","DS-575WII", 2, 0},
++  {0x0186, "DS-570WII","DS-570WII", 2, 0},
++  {0x017F, "ES-580W","ES-580W", 2, 0},
++  {0x0180, "RR-600W","RR-600W", 2, 0},
++  {0x0167, "DS-535","DS-535", 2, 0},
++  {0x017A, "DS-535H","DS-535H", 2, 0},
++  {0x0156, "ES-400","ES-400", 2, 0},
++  {0x0155, "DS-530","DS-530", 2, 0},
++  {0x016B, "FF-680W","FF-680W", 2, 0},
++  {0x0157, "DS-570W","DS-570W", 2, 0},
++  {0x0157, "ES-500W","ES-500W", 2, 0},
++  {0x0169, "DS-575W","DS-575W", 2, 0},
++  {0x0176, "ES-500WR","ES-500WR", 2, 0},
++  {0x114E, "PID 114E","EW-052A Series", 7, 0},
++  {0x114E, "PID 114E","XP-2100 Series", 7, 0},
++  {0x1135, "PID 1135","ET-2700 Series", 7, 0},
++  {0x1135, "PID 1135","L4150 Series", 7, 0},
++  {0x114A, "PID 114A","ET-M2140 Series", 7, 0},
++  {0x114A, "PID 114A","M2140 Series", 7, 0},
++  {0x114F, "PID 114F","ET-M3140 Series", 7, 0},
++  {0x114F, "PID 114F","M3140 Series", 7, 0},
++  {0x1143, "PID 1143","L3150 Series", 7, 0},
++  {0x1143, "PID 1143","ET-2710 Series", 7, 0},
++  {0x118A, "PID 118A","ET-2810 Series", 7, 0},
++  {0x118A, "PID 118A","L3250 Series", 7, 0},
++  {0x119B, "PID 119B","XP-2150 Series", 7, 0},
++  {0x11B1, "PID 11B1","XP-2200 Series", 7, 0},
++  {0x0193, "ES-C220","ES-C220", 5, 0},
++  {0x018F, "DS-C330","DS-C330", 5, 0},
++  {0x0191, "DS-C490","DS-C490", 5, 0},
++  {0x0198, "DS-1730","DS-1730", 5, 1},
++  {0x00, "","", 0x00 , 0x00}
+ };
+ 
+ typedef struct
+@@ -1384,9 +1391,13 @@ close_scanner(epsonds_scanner *s)
+ 		sane_cancel(s);
+ 	}
+ 
++#ifdef HAVE_OPENSSL
++	if (s->fd == -1 && s->cryptContext == NULL)
++		goto free;
++#else
+ 	if (s->fd == -1)
+ 		goto free;
+-
++#endif
+ 	if (s->locked) {
+ 		DBG(7, " unlocking scanner\n");
+ 		esci2_fin(s);
+@@ -1394,7 +1405,7 @@ close_scanner(epsonds_scanner *s)
+ 
+ 	if (s->hw->connection == SANE_EPSONDS_NET) {
+ 		epsonds_net_unlock(s);
+-		sanei_tcp_close(s->fd);
++		epsonds_tcp_close(s);
+ 	} else if (s->hw->connection == SANE_EPSONDS_USB) {
+ 		sanei_usb_close(s->fd);
+ 	}
+@@ -1415,40 +1426,23 @@ open_scanner(epsonds_scanner *s)
+ 	SANE_Status status = SANE_STATUS_INVAL;
+ 
+ 	DBG(7, "%s: %s\n", __func__, s->hw->sane.name);
+-
++#ifdef HAVE_OPENSSL
++	if (s->fd != -1 || s->cryptContext != NULL) {
++		DBG(5, "scanner is already open: fd = %d\n", s->fd);
++		return SANE_STATUS_GOOD;	/* no need to open the scanner */
++	}
++#else
+ 	if (s->fd != -1) {
+ 		DBG(5, "scanner is already open: fd = %d\n", s->fd);
+ 		return SANE_STATUS_GOOD;	/* no need to open the scanner */
+ 	}
++#endif
+ 
+ 	if (s->hw->connection == SANE_EPSONDS_NET) {
+-		unsigned char buf[5];
+-
+ 		/* device name has the form net:ipaddr */
+-		status = sanei_tcp_open(&s->hw->name[4], 1865, &s->fd);
++		status = epsonds_tcp_open(s, &s->hw->name[4], 1865);
+ 		if (status == SANE_STATUS_GOOD) {
+ 
+-			ssize_t read;
+-			struct timeval tv;
+-
+-			tv.tv_sec = 5;
+-			tv.tv_usec = 0;
+-
+-			setsockopt(s->fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,  sizeof(tv));
+-
+-			s->netlen = 0;
+-
+-			DBG(32, "awaiting welcome message\n");
+-
+-			/* the scanner sends a kind of welcome msg */
+-			// XXX check command type, answer to connect is 0x80
+-			read = eds_recv(s, buf, 5, &status);
+-			if (read != 5) {
+-				sanei_tcp_close(s->fd);
+-				s->fd = -1;
+-				return SANE_STATUS_IO_ERROR;
+-			}
+-
+ 			DBG(32, "welcome message received, locking the scanner...\n");
+ 
+ 			/* lock the scanner for use by sane */
+@@ -1457,9 +1451,7 @@ open_scanner(epsonds_scanner *s)
+ 				DBG(1, "%s cannot lock scanner: %s\n", s->hw->sane.name,
+ 					sane_strstatus(status));
+ 
+-				sanei_tcp_close(s->fd);
+-				s->fd = -1;
+-
++				epsonds_tcp_close(s);
+ 				return status;
+ 			}
+ 
+@@ -1622,6 +1614,7 @@ device_detect(const char *name, int type, SANE_Status *status)
+ 
+ 
+ 	s->hw->lut_id = 0;
++	s->hw->has_hardware_lut = SANE_FALSE;
+ 
+ 	for (int i = 0; i < stProfileMapArray.used; i++) {
+ 
+@@ -1638,6 +1631,8 @@ device_detect(const char *name, int type, SANE_Status *status)
+ 			}
+ 			{// set lutid
+ 				s->hw->lut_id = map->lutID;
++				if (map->hardwareLUT)
++					s->hw->has_hardware_lut = SANE_TRUE;
+ 			}
+ 			break;
+ 		}
+@@ -2649,11 +2644,11 @@ sane_get_parameters(SANE_Handle handle, SANE_Parameters *params)
+ 
+ 	SANE_Status status = SANE_STATUS_GOOD;
+ 
+-	status = get_next_image(s);
+ 
+ 	// if size auto, update page size value
+ 	if(s->val[OPT_ADF_CRP].w)
+ 	{
++		status = get_next_image(s);
+ 		// frontside
+ 		if (s->current == &s->front)
+ 		{
+@@ -2949,14 +2944,17 @@ sane_start(SANE_Handle handle)
+ 	}
+ 
+ 	/* set GMM */
+-	if (s->params.depth == 1)
+-	{
+-		sprintf(buf, "#GMMUG10");
+-	} else
+-	{
+-		sprintf(buf, "#GMMUG18");
++	if (!s->hw->has_hardware_lut) {
++		if (s->params.depth == 1)
++		{
++			sprintf(buf, "#GMMUG10");
++		} else
++		{
++			sprintf(buf, "#GMMUG18");
++		}
++		strcat(cmd, buf);
+ 	}
+-	strcat(cmd, buf);
++
+ 
+ 	/* resolution (RSMi not always supported) */
+ 
+@@ -3004,21 +3002,18 @@ sane_start(SANE_Handle handle)
+ 
+ 	strcat(cmd, buf);
+ 
+-
+ 	int pos = 0;
+-
++	for (int i = 0; i < CMD_BUF_SIZE; i++)
+ 	{
+-		for (int i = 0; i < CMD_BUF_SIZE; i++)
++		// find end of string
++		if(cmd[i] == 0)
+ 		{
+-			// find end of string
+-			if(cmd[i] == 0)
+-			{
+-				pos = i;
+-				break;
+-			}
++			pos = i;
++			break;
+ 		}
++	}
+ 
+-
++	if (!s->hw->has_hardware_lut) {
+ 		if (s->params.format == SANE_FRAME_GRAY && s->params.depth == 8) {
+ 			DBG(10, "SANE_FRAME_GRAY\n");
+ 			cmd[pos++] = '#';
+@@ -3113,7 +3108,7 @@ sane_start(SANE_Handle handle)
+ 		cmd[pos] = 0;
+ 
+ 	}
+-	{// Set Color Matrix
++	if (!s->hw->has_hardware_lut) { // Set Color Matrix
+ 		if (s->params.format == SANE_FRAME_RGB && s->hw->lut_id != 0 )/*Color Matrix Target devide and color Scan*/
+ 		{
+ 			ColorMatrix matrix;
+@@ -3584,7 +3579,11 @@ sane_read(SANE_Handle handle, SANE_Byte *data, SANE_Int max_length, SANE_Int *le
+ {
+ 	epsonds_scanner *s = (epsonds_scanner *)handle;
+ 	SANE_Int read = 0;
+-
++	SANE_Status status = SANE_STATUS_GOOD;
++	status = get_next_image(s);
++	if (status != SANE_STATUS_GOOD) {
++		return status;
++	}
+ 	if (s->canceling)
+ 	{
+ 		esci2_can(s);
+diff --git a/backend/epsonds.h b/backend/epsonds.h
+index 7f1b6509b..accd283b4 100644
+--- a/backend/epsonds.h
++++ b/backend/epsonds.h
+@@ -21,6 +21,8 @@
+ #define mode_params epsonds_mode_params
+ #define source_list epsonds_source_list
+ 
++#include "sane/config.h"
++
+ #ifdef HAVE_SYS_IOCTL_H
+ #include <sys/ioctl.h>
+ #endif
+@@ -37,6 +39,10 @@
+ #include <sys/types.h>
+ #endif
+ 
++#ifdef HAVE_OPENSSL
++#include <openssl/ssl.h>
++#endif
++
+ #include <string.h> /* for memset and memcpy */
+ #include <stdio.h>
+ 
+@@ -149,6 +155,7 @@ struct epsonds_device
+ 	SANE_Range tpu_y_range;	        /* transparency unit y range */
+ 
+ 	SANE_Int lut_id;
++	SANE_Bool has_hardware_lut;
+ };
+ 
+ typedef struct epsonds_device epsonds_device;
+@@ -159,6 +166,12 @@ typedef struct ring_buffer
+ 	SANE_Int fill, size;
+ 
+ } ring_buffer;
++#ifdef HAVE_OPENSSL
++typedef struct crypt_context {
++    SSL_CTX *ssl;
++    BIO *bio;
++} crypt_context;
++#endif
+ 
+ /* an instance of a scanner */
+ 
+@@ -206,6 +219,10 @@ struct epsonds_scanner
+ 	SANE_Int   needToConvertBW;
+ 
+ 	SANE_Int   scanEnd;
++#ifdef HAVE_OPENSSL
++	crypt_context *cryptContext;
++#endif
++
+  };
+ 
+ typedef struct epsonds_scanner epsonds_scanner;
+diff --git a/configure.ac b/configure.ac
+index 6807c6823..9f5388b94 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -116,6 +116,7 @@ SANE_CHECK_IEEE1284
+ SANE_CHECK_PTHREAD
+ SANE_CHECK_LOCKING
+ SANE_CHECK_GPHOTO2
++SANE_CHECK_SSL
+ 
+ dnl **************************************************************
+ dnl Check for V4L availability
+@@ -863,6 +864,15 @@ echo "Avahi support: `eval eval echo ${with_avahi}`"
+ echo "cURL support:  `eval eval echo ${with_libcurl}`"
+ echo "POPPLER_GLIB support:  `eval eval echo ${with_poppler_glib}`"
+ echo "SNMP support:  `eval eval echo ${with_snmp}`"
++echo -n "SSL support:   "
++if test "x$SSL_LIBS" != "x"; then
++	echo "yes"
++else
++	echo "no"
++fi
++
++
++
+ echo "-> The following backends will be built:"
+ for backend in ${BACKENDS} ; do
+   echo $ECHO_N "${backend} "
+diff --git a/doc/descriptions/epsonds.desc b/doc/descriptions/epsonds.desc
+index 7e31a1869..d487f93c9 100644
+--- a/doc/descriptions/epsonds.desc
++++ b/doc/descriptions/epsonds.desc
+@@ -373,3 +373,8 @@
+ :interface  "USB"
+ :usbid      "0x04b8" "0x0191"
+ :status     :complete
++
++:model      "DS-1730"
++:interface  "USB"
++:usbid      "0x04b8" "0x0198"
++:status     :complete
+-- 
+2.50.0.727.gbf7dc18ff4-goog
+

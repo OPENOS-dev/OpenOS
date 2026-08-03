@@ -1,0 +1,24 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+filegroup(
+    name = "binman_src",
+    srcs = glob(["files/tools/binman/**"]),
+)
+
+filegroup(
+    name = "binman_path",
+    srcs = ["files/tools/binman/binman"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "binman",
+    srcs = [":binman_src"],
+    main = "//:files/tools/binman/main.py",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@zephyr_py_deps_pylibfdt//:pkg",
+    ],
+)

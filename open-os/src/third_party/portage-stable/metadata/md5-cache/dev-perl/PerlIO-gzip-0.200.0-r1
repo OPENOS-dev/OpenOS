@@ -1,0 +1,13 @@
+BDEPEND=sys-libs/zlib virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=sys-libs/zlib dev-lang/perl
+DESCRIPTION=PerlIO layer to gzip/gunzip
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/PerlIO-gzip
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=sys-libs/zlib dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/N/NW/NWCLARK/PerlIO-gzip-0.20.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=95a5dc297989fd00c7dcec4a807cc6fb

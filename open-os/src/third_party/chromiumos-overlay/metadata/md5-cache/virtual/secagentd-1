@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS Security Agent virtual package that will only install secagentd on platforms with a supported kernel.
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=kernel-5_4
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=!kernel-5_4? ( chromeos-base/secagentd )
+SLOT=0
+_md5_=188363b4709d9a61322fffcb0936620d

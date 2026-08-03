@@ -1,0 +1,39 @@
+From c2208c8ba2c204e8f66c5d48aef8eb12211426f5 Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Tue, 30 Jan 2024 16:17:42 -0700
+Subject: [PATCH] Bind socket for epson2 network discovery
+
+When performing network discovery for epson2 backend, bind the broadcast
+socket so clients can expect a known port to be used (for instance, if
+needing to open a firewall port).
+---
+ backend/epson2.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/backend/epson2.c b/backend/epson2.c
+index cfc2aca..ef2eff9 100644
+--- a/backend/epson2.c
++++ b/backend/epson2.c
+@@ -397,6 +397,19 @@ e2_network_discovery(void)
+ 	if (status != SANE_STATUS_GOOD)
+ 		return;
+ 
++  // Bind fd to a specific port so if firewall access is needed a known port can
++  // be opened.
++	struct sockaddr_in local;
++	memset(&local, 0, sizeof(local));
++	local.sin_family = AF_INET;
++	local.sin_addr.s_addr = INADDR_ANY;
++	local.sin_port = htons(1865);
++	if (bind(fd, &local, sizeof(local)) != 0) {
++		DBG(5, "%s, unable to bind to discovery socket\n", __func__);
++		sanei_udp_close(fd);
++		return;
++	}
++
+ 	sanei_udp_write_broadcast(fd, 3289, (unsigned char *) query, 15);
+ 
+ 	DBG(5, "%s, sent discovery packet\n", __func__);
+-- 
+2.43.0.429.g432eaa2c6b-goog
+

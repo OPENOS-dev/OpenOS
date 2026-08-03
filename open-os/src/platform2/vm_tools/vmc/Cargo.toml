@@ -1,0 +1,28 @@
+[package]
+name = "vmc"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+build = "build.rs"
+edition = "2021"
+
+[[bin]]
+name = "vmc"
+path = "vmc.rs"
+
+[profile.release]
+lto = true
+panic = 'abort'
+overflow-checks = true
+
+[workspace]
+
+[dependencies]
+dbus = { version = "0.9.7", features = ["stdfd"] }
+getopts = "0.2"
+libc = "0.2.44"
+libchromeos = { path = "../../libchromeos-rs", features = ["chromeos-module"] } # provided by ebuild
+protobuf = "3.2"
+system_api = { path = "../../system_api" } # provided by ebuild
+
+[build-dependencies]
+protobuf-codegen = "3.2"

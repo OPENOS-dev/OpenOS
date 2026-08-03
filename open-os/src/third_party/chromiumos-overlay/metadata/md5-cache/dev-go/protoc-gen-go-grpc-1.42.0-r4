@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/cncf-xds dev-go/ep-gcp dev-go/protobuf dev-go/protobuf-legacy-api
+DESCRIPTION=This tool generates Go language bindings of services in protobuf definition files for gRPC.
+EAPI=7
+HOMEPAGE=https://grpc.io/
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-go/cncf-xds dev-go/ep-gcp dev-go/protobuf dev-go/protobuf-legacy-api
+RESTRICT=binchecks
+SLOT=0
+SRC_URI=https://github.com/grpc/grpc-go/archive/v1.42.0.tar.gz -> github.com-grpc-grpc-go-v1.42.0.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=81f86208e2737593396bad406a879d85

@@ -1,0 +1,44 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package coral;
+
+message Language {
+  // BCP-47 language code like "en", "fr", "zh" etc.
+  string locale = 1;
+  // The confidence score of the language detected (range: 0~1).
+  float confidence = 2;
+}
+
+message EmbeddingRecord {
+  // The vector of embedding.
+  repeated float values = 1;
+
+  // The update timestamp of this embedding.
+  // It is the milliseconds since the epoch time .
+  int64 updated_time_ms = 2;
+
+  // The safety verdict of the entry. True means pass, and false means fail.
+  optional bool safety_verdict = 3;
+
+  // List of classified language codes, in decreasing confidence level.
+
+  // Another boolean field is needed because we want to distinguish between the
+  // two cases where the classification has never been done for this entry yet,
+  // and that the classification resulted in an empty languages array.
+  bool has_language_array = 4;
+  repeated Language languages = 5;
+}
+
+message EmbeddingRecords {
+  // The records are used like a cache, so the key should capture anything
+  // which could possibly affect the result embedding. From the entity content
+  // to the embedding prompt, also embedding model versions, etc.
+  map<string, EmbeddingRecord> records = 1;
+
+  // The version of the safety model that made the (cached) safety verdicts.
+  optional int32 safety_servion = 2;
+}

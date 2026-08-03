@@ -1,0 +1,17 @@
+# Description
+# This test makes sure that power_Display works.
+
+NAME = "power_Display.fast"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark.",
+    "hw_agnostic": False
+}
+ATTRIBUTES = ""
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_Display', secs_per_page=2, tag=NAME.split('.')[1],
+             pdash_note=pdash_note, seconds_period=1)

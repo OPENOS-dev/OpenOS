@@ -1,0 +1,39 @@
+b/408234206: the #define setlocale(...) in system.h turns those into a parse error
+with a new-enough version of libcxx, as these have calls to `::setlocale(a, b);`
+in headers: `::(b);` does not parse as valid C++.
+
+This patch replaces setlocale with a definition that parses correctly in these
+cases, but traps at runtime.
+
+The known places where this `#define` actually runs are pieces of code that
+_do not query_ for `setlocale` in their configure scripts. Moreover, these
+pieces of code expect to never call `setlocale`. Hence:
+
+- If this expectation holds true, this only needs to parse correctly.
+- If it does not hold true, the `__builtin_trap()` will make those cases
+  obvious, and can be addressed as they're revealed.
+
+diff --git a/libcpp/system.h b/libcpp/system.h
+index 37fc262..71a160d 100644
+--- a/libcpp/system.h
++++ b/libcpp/system.h
+@@ -272,7 +272,18 @@ extern int errno;
+ #endif
+ 
+ #ifndef HAVE_SETLOCALE
+-# define setlocale(category, locale) (locale)
++/*
++ * CrOS-local: some configure files _simply do not check_ for HAVE_SETLOCALE.
++ * With a new-enough LLVM, this `#define` of `setlocale` will have libcxx headers like:
++ * void foo() { ::setlocale(bar, baz); }
++ * turn into
++ * void foo() { ::((baz)); }
++ * which is a parse error.
++ * Since those files don't check for setlocale, they shouldn't be using it, so
++ * try crashing on uses.
++ */
++inline char * __setlocale_nop(int, const char *) { __builtin_trap(); }
++# define setlocale(category, locale) __setlocale_nop((category), (locale))
+ #endif
+ 
+ #ifdef ENABLE_NLS

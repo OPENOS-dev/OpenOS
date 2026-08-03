@@ -1,0 +1,91 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test", "rust_test_suite")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+exports_files(
+    ["Cargo.toml"],
+    visibility = ["//bazel/rust:__pkg__"],
+)
+
+rust_library(
+    name = "alchemist_lib",
+    srcs = glob(
+        ["src/**/*.rs"],
+    ),
+    compile_data = glob(
+        ["src/**/*"],
+        exclude = [
+            "src/**/*.rs",
+        ],
+    ),
+    crate_name = "alchemist",
+    proc_macro_deps = [
+        "@alchemy_crates//:strum_macros",
+    ],
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["//visibility:public"],
+    deps = [
+        "//bazel/portage/common/portage/version",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:base64",
+        "@alchemy_crates//:hex",
+        "@alchemy_crates//:itertools",
+        "@alchemy_crates//:lazy_static",
+        "@alchemy_crates//:nix",
+        "@alchemy_crates//:nom",
+        "@alchemy_crates//:nom-regex",
+        "@alchemy_crates//:nom_locate",
+        "@alchemy_crates//:once_cell",
+        "@alchemy_crates//:rayon",
+        "@alchemy_crates//:regex",
+        "@alchemy_crates//:serde",
+        "@alchemy_crates//:serde_json",
+        "@alchemy_crates//:sha2",
+        "@alchemy_crates//:strum",
+        "@alchemy_crates//:tempfile",
+        "@alchemy_crates//:tera",
+        "@alchemy_crates//:toml",
+        "@alchemy_crates//:tracing",
+        "@alchemy_crates//:url",
+        "@alchemy_crates//:walkdir",
+    ],
+)
+
+rust_test(
+    name = "alchemist_lib_test",
+    size = "small",
+    crate = ":alchemist_lib",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "@alchemy_crates//:pretty_assertions",
+        "@alchemy_crates//:proptest",
+        "@alchemy_crates//:shell-escape",
+    ],
+)
+
+rust_test_suite(
+    name = "integration_tests",
+    srcs = glob(["tests/**"]),
+    data = [
+        "//bazel/portage/bin/alchemist/src/bin/alchemist:testdata",
+    ],
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "//bazel/portage/bin/alchemist/src/bin/alchemist",
+        "//bazel/portage/common/testutil",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:tempfile",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":alchemist_lib",
+    enabled = False,
+    tests = [":alchemist_lib_test"],
+)

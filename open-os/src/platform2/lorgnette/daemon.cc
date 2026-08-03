@@ -1,0 +1,122 @@
+// Copyright 2013 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "lorgnette/daemon.h"
+
+#include <sysexits.h>
+
+#include <string>
+#include <utility>
+
+#include <base/functional/bind.h>
+#include <base/logging.h>
+#include <base/run_loop.h>
+#include <base/task/single_thread_task_runner.h>
+#include <base/time/time.h>
+#include <chromeos/dbus/service_constants.h>
+
+#include "lorgnette/dbus_service_adaptor.h"
+#include "lorgnette/libsane_wrapper_impl.h"
+#include "lorgnette/sane_client.h"
+#include "lorgnette/sane_client_impl.h"
+#include "lorgnette/usb/libusb_wrapper.h"
+#include "lorgnette/usb/libusb_wrapper_impl.h"
+
+using std::string;
+
+namespace lorgnette {
+
+// static
+const char Daemon::kScanGroupName[] = "scanner";
+const char Daemon::kScanUserName[] = "saned";
+
+namespace {
+
+constexpr base::TimeDelta kMaxDiscoverySessionTime = base::Minutes(60);
+constexpr base::TimeDelta kMaxScannerHandleIdleTime = base::Minutes(60);
+constexpr base::TimeDelta kTimeoutCheckInterval = base::Seconds(2);
+
+}  // namespace
+
+Daemon::Daemon() : DBusServiceDaemon(kManagerServiceName, "/ObjectManager") {}
+
+Daemon::~Daemon() {}
+
+int Daemon::OnInit() {
+  int return_code = brillo::DBusServiceDaemon::OnInit();
+  if (return_code != EX_OK) {
+    return return_code;
+  }
+
+  PostponeShutdown(kNormalShutdownTimeout);
+
+  return EX_OK;
+}
+
+void Daemon::RegisterDBusObjectsAsync(
+    brillo::dbus_utils::AsyncEventSequencer* sequencer) {
+  libsane_ = LibsaneWrapperImpl::Create();
+  sane_client_ = SaneClientImpl::Create(libsane_.get());
+  libusb_ = LibusbWrapperImpl::Create();
+  auto manager =
+      std::make_unique<Manager>(base::BindRepeating(&Daemon::PostponeShutdown,
+                                                    weak_factory_.GetWeakPtr()),
+                                sane_client_.get());
+  device_tracker_.reset(new DeviceTracker(sane_client_.get(), libusb_.get()));
+  dbus_service_.reset(
+      new DBusServiceAdaptor(std::move(manager), device_tracker_.get(),
+                             base::BindRepeating(&Daemon::OnDebugChanged,
+                                                 weak_factory_.GetWeakPtr())));
+  dbus_service_->RegisterAsync(object_manager_.get(), sequencer);
+}
+
+void Daemon::OnShutdown(int* return_code) {
+  LOG(INFO) << "Shutting down";
+  dbus_service_.reset();
+  brillo::DBusServiceDaemon::OnShutdown(return_code);
+}
+
+void Daemon::OnTimeout() {
+  // While there are active discovery sessions, they get a long timeout.  Once
+  // there are no active sessions, the normal short timeout from the last
+  // discovery session activity applies.
+  base::TimeDelta idle_time =
+      base::Time::Now() - device_tracker_->LastDiscoverySessionActivity();
+  base::TimeDelta discovery_timeout =
+      device_tracker_->NumActiveDiscoverySessions() > 0
+          ? kMaxDiscoverySessionTime
+          : kTimeoutCheckInterval;
+  if (idle_time < discovery_timeout) {
+    PostponeShutdown(kTimeoutCheckInterval);
+    return;
+  }
+
+  // TODO(b/276909624): Change this logic to match the discovery session logic
+  // above.
+  if (device_tracker_->NumOpenScanners() > 0) {
+    base::TimeDelta idle_time =
+        base::Time::Now() - device_tracker_->LastOpenScannerActivity();
+    if (idle_time < kMaxScannerHandleIdleTime) {
+      PostponeShutdown(kTimeoutCheckInterval);
+      return;
+    }
+  }
+
+  LOG(INFO) << "Exiting after timeout";
+  Quit();
+}
+
+void Daemon::OnDebugChanged() {
+  LOG(INFO) << "Exiting after debug config changed.";
+  Quit();
+}
+
+void Daemon::PostponeShutdown(base::TimeDelta delay) {
+  shutdown_callback_.Reset(
+      base::BindOnce(&Daemon::OnTimeout, weak_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, shutdown_callback_.callback(), delay);
+}
+
+}  // namespace lorgnette

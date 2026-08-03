@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Copyright 2024 The ChromiumOS Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<node name="/org/chromium/Farfetchd"
+    xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+  <interface name="org.chromium.Farfetchd">
+  <method name="PreloadFile">
+    <tp:docstring>
+        Read file into cache using pread.
+    </tp:docstring>
+    <arg name="path" type="s" direction="in"/>
+    <arg name="reply" type="b" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  <method name="PreloadFileMmap">
+    <tp:docstring>
+        Read file into cache using mmap.
+    </tp:docstring>
+    <arg name="path" type="s" direction="in"/>
+    <arg name="reply" type="b" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  <method name="PreloadFileAsync">
+    <tp:docstring>
+        Read file into cache using readahead.
+    </tp:docstring>
+    <arg name="path" type="s" direction="in"/>
+    <arg name="reply" type="b" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+
+  <!-- Tracing methods -->
+  <method name="StartTrace">
+    <tp:docstring>
+        Start a new trace session and return its unique ID.
+    </tp:docstring>
+    <arg name="app_name" type="s" direction="in"/>
+    <arg name="process_names" type="as" direction="in"/>
+    <arg name="path_allowlist" type="as" direction="in"/>
+    <arg name="path_denylist" type="as" direction="in"/>
+    <arg name="trace_id" type="s" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  <method name="StopTrace">
+    <tp:docstring>
+        Stops tracing and begins asynchronous processing of the collected data.
+    </tp:docstring>
+    <arg name="trace_id" type="s" direction="in"/>
+    <arg name="success" type="b" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  <method name="CancelTrace">
+    <tp:docstring>
+        Immediately aborts an active trace session identified by |trace_id| and discards data.
+    </tp:docstring>
+    <arg name="trace_id" type="s" direction="in"/>
+    <arg name="success" type="b" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  <method name="GetTraceStatus">
+    <tp:docstring>
+        Returns the current state string for the trace session. Empty string if |trace_id| unknown.
+    </tp:docstring>
+    <arg name="trace_id" type="s" direction="in"/>
+    <arg name="status" type="s" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  <method name="GetTracePath">
+    <tp:docstring>
+        Returns the path to the final trace file if processing is complete.
+        Returns empty string if trace is not ready or failed.
+    </tp:docstring>
+    <arg name="trace_id" type="s" direction="in"/>
+    <arg name="path" type="s" direction="out"/>
+    <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+  </method>
+  </interface>
+</node>

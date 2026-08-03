@@ -1,0 +1,9 @@
+module(
+    name = "openos_overlay",
+    version = "1.0.0",
+)
+
+# Bazel version pin (ChromiumOS R151 toolchain)
+bazel_dep(name = "rules_pkg", version = "0.10.1")
+bazel_dep(name = "platforms", version = "0.0.9")
+bazel_dep(name = "bazel_skylib", version = "1.6.1")

@@ -1,0 +1,140 @@
+From cba0d2f51806066785f602d17208b78bb50ae5ef Mon Sep 17 00:00:00 2001
+From: Rocket Ma <marocketbd@gmail.com>
+Date: Thu, 2 Apr 2026 10:23:36 -0700
+Subject: [PATCH] stdio-common: Fix heap overflow in scanf %mc pattern [BZ
+ #34008]
+
+* stdio-common/vfscanf-internal.c: when `WIDTH` in `%WIDTHmc` or
+`%WIDTHmC` greater than 1024, user could read one more byte into heap,
+leading into off-by-one overflow.
+
+This patch fixes Bug 34008[1].
+
+[1]: https://sourceware.org/bugzilla/show_bug.cgi?id=34008
+
+Use support/check.h for regression test
+
+[Adrian: This is a clean cherry-pick from the ML v3 to fix the CVE
+ since the upstream remaining changes are mostly cosmetic]
+
+Cherry-picked-from: https://patchwork.ozlabs.org/project/glibc/patch/20260402172336.253214-1-marocketbd@gmail.com/
+Signed-off-by: Rocket Ma <marocketbd@gmail.com>
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+---
+ stdio-common/Makefile               |  1 +
+ stdio-common/bug-vfscanf-internal.c | 59 +++++++++++++++++++++++++++++
+ stdio-common/vfscanf-internal.c     |  6 +--
+ 3 files changed, 63 insertions(+), 3 deletions(-)
+ create mode 100644 stdio-common/bug-vfscanf-internal.c
+
+diff --git a/stdio-common/Makefile b/stdio-common/Makefile
+index 210944837e..ec3fff246b 100644
+--- a/stdio-common/Makefile
++++ b/stdio-common/Makefile
+@@ -200,6 +200,7 @@ aux := \
+ 
+ tests := \
+   bug-vfprintf-nargs \
++  bug-vfscanf-internal \
+   bug1 \
+   bug3 \
+   bug4 \
+diff --git a/stdio-common/bug-vfscanf-internal.c b/stdio-common/bug-vfscanf-internal.c
+new file mode 100644
+index 0000000000..54ab192e50
+--- /dev/null
++++ b/stdio-common/bug-vfscanf-internal.c
+@@ -0,0 +1,59 @@
++#include <stddef.h>
++#include <stdio.h>
++#include <string.h>
++#include <wchar.h>
++#include <stdlib.h>
++#include <malloc.h>
++#include <support/check.h>
++
++static size_t
++get_cookie (size_t *chunk)
++{
++/* heap related test need to ignore out-of-bound access */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Warray-bounds"
++  return chunk[-1] & ~1; /* ignore prev_inuse bit */
++#pragma GCC diagnostic pop
++}
++
++#if __SIZEOF_POINTER__ == 8
++#  define WIDTH 0x409
++#  define SCANFSTR "%1033mc"
++#else /* 32bit target? */
++#  define WIDTH 0x40d
++#  define SCANFSTR "%1037mc"
++#endif
++#define CHUNKSZ 0x410
++static int
++do_test (void)
++{
++  char *input = malloc (WIDTH + 1);
++  TEST_VERIFY (input != NULL);
++  memset (input, 'A', WIDTH);
++  input[WIDTH] = '\0';
++
++  /* THIS TEST UNIT REQUIRE SOME HEAP LAYOUT! Which is related to
++   current ptmalloc, when malloc is updated, this test may be inaccurate.
++   Anyway, we should construct a case where we allocate a chunk just
++   lower than scanf-alloced chunk to detect if heap overflow happens. */
++  void *hole = malloc (WIDTH - 1);
++  size_t *guard = malloc (0x20);
++  if ((size_t) hole + CHUNKSZ != (size_t) guard)
++    {
++      puts ("Unexpected heap layout: \"guard\" is not adjacent to \"hole\"");
++      return 77;
++    }
++  size_t cookie = get_cookie (guard);
++  free (hole);
++
++  char *buf = NULL;
++  TEST_VERIFY (sscanf (input, SCANFSTR, &buf) != -1);
++  TEST_VERIFY (buf != NULL);
++  TEST_VERIFY (get_cookie (guard) == cookie);
++
++  free (buf);
++  free (input);
++  return 0;
++}
++
++#include <support/test-driver.c>
+diff --git a/stdio-common/vfscanf-internal.c b/stdio-common/vfscanf-internal.c
+index 63b9246e47..6c56ecba69 100644
+--- a/stdio-common/vfscanf-internal.c
++++ b/stdio-common/vfscanf-internal.c
+@@ -863,7 +863,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ 			  /* Enlarge the buffer.  */
+ 			  size_t newsize
+ 			    = strsize
+-			      + (strsize >= width ? width - 1 : strsize);
++			      + (strsize >= width ? width : strsize);
+ 
+ 			  str = (char *) realloc (*strptr, newsize);
+ 			  if (str == NULL)
+@@ -936,7 +936,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ 		      && wstr == (wchar_t *) *strptr + strsize)
+ 		    {
+ 		      size_t newsize
+-			= strsize + (strsize > width ? width - 1 : strsize);
++			= strsize + (strsize > width ? width : strsize);
+ 		      /* Enlarge the buffer.  */
+ 		      wstr = (wchar_t *) realloc (*strptr,
+ 						  newsize * sizeof (wchar_t));
+@@ -991,7 +991,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ 		    && wstr == (wchar_t *) *strptr + strsize)
+ 		  {
+ 		    size_t newsize
+-		      = strsize + (strsize > width ? width - 1 : strsize);
++		      = strsize + (strsize > width ? width : strsize);
+ 		    /* Enlarge the buffer.  */
+ 		    wstr = (wchar_t *) realloc (*strptr,
+ 						newsize * sizeof (wchar_t));
+-- 
+2.47.3
+

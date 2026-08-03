@@ -1,0 +1,86 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+        exclude: .*\.svg
+    -   id: trailing-whitespace
+        exclude: .*\.svg
+    -   id: check-toml
+    -   id: check-merge-conflict
+
+  - repo: local
+    hooks:
+    - id: isort
+      name: isort (Docker)
+      entry: xcgd/isort isort
+      language: docker_image
+      types: [python]
+
+    - id: black
+      name: Black (Docker)
+      entry: pyfound/black:25.1.0 black
+      language: docker_image
+      types: [python]
+
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.3.4
+    hooks:
+    - id: pylint
+      name: pylint
+      exclude: ^hooks/
+      types: [python]
+      additional_dependencies:
+        - pylint-protobuf==0.22.0
+        - protobuf==6.33.4
+      args:
+        [
+          "--load-plugins=pylint_protobuf",
+          "-rn", # Only display messages
+          "-sn", # Don't display the score
+        ]
+
+  - repo: local
+    hooks:
+    - id: ui-lint
+      name: ui-lint
+      entry: node:25
+      language: docker_image
+      args: ["bash", "-c", "cd src/ui && npm install --legacy-peer-deps && npm run lint"]
+      files: ^src/ui/
+      pass_filenames: false
+
+  - repo: local
+    hooks:
+    - id: banned-words
+      stages: [pre-commit, commit-msg]
+      name: banned-words
+      entry: hooks/banned-words.py
+      language: python
+      types: [text]
+
+  - repo: local
+    hooks:
+    - id: copyright
+      name: copyright
+      entry: hooks/copyright.py
+      language: python
+      types: [text]
+      exclude: |
+            (?x)^(
+                docs/.*|
+                .*md|
+                .*\.hex|
+                .gitignore|
+                LICENSE|
+                LICENCE|
+                DIR_METADATA|
+                PRESUBMIT.cfg|
+                .*\.json
+            )$

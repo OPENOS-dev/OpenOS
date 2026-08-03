@@ -1,0 +1,46 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [ ":fax-pnh-filter" ]
+  if (use.test) {
+    deps += [ ":token_replacer_testrunner" ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libchrome",
+  ]
+}
+
+executable("fax-pnh-filter") {
+  configs += [ ":target_defaults" ]
+  sources = [
+    "main.cc",
+    "token_replacer.cc",
+  ]
+}
+
+
+if (use.test) {
+  pkg_config("test_config") {
+    pkg_deps = [ "libchrome-test" ]
+  }
+
+  executable("token_replacer_testrunner") {
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+      ":test_config",
+    ]
+    sources = [
+      "token_replacer.cc",
+      "token_replacer_test.cc",
+    ]
+    deps = [ "//common-mk/testrunner" ]
+  }
+}

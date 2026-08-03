@@ -1,0 +1,37 @@
+From 4a56b2e3c1d9b8a76d54c3b2a109876543210b7 Mon Sep 17 00:00:00 2001
+From: Stefan Reinauer <reinauer@chromium.org>
+Date: Tue, 17 Mar 2026 13:00:00 -0700
+Subject: [PATCH] core: Silently drop incoming advertisements for localhost
+
+Advertising services with 'localhost' as the hostname on public
+interfaces is illegal and can trigger a mDNS 'Cache Flush' packet storm
+due to conflicts with the host's own loopback mapping. Silently
+dropping these records prevents the conflict resolution loop and
+mitigates the resulting DoS without impacting legitimate services.
+
+--- a/avahi-core/server.c
++++ b/avahi-core/server.c
+@@ -932,6 +932,23 @@
+         if (!(record = avahi_dns_packet_consume_record(p, &cache_flush)))
+             goto fail;
+ 
++        /* Silently drop incoming address records for "localhost" variations
++         * (e.g., "localhost", "localhost.local", "localhost-8.local" from ARC)
++         * to mitigate mDNS cache flush storms from misconfigured clients/containers.
++         */
++        if (record->key->type == AVAHI_DNS_TYPE_A || record->key->type == AVAHI_DNS_TYPE_AAAA) {
++            const char prefix[] = "localhost";
++            const size_t len = sizeof(prefix) - 1;
++            if (strncmp(record->key->name, prefix, len) == 0) {
++                char next_char = record->key->name[len];
++
++                if (next_char == '\0' || next_char == '.' || next_char == '-' || next_char == '_') {
++                    avahi_record_unref(record);
++                    continue;
++                }
++            }
++        }
++
+         if (!avahi_key_is_pattern(record->key)) {
+             avahi_cache_update(i->cache, record, cache_flush, a);
+             avahi_response_scheduler_incoming(i->response_scheduler, record, cache_flush);

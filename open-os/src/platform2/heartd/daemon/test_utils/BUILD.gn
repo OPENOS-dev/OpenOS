@@ -1,0 +1,20 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+if (use.test) {
+  source_set("test_utils") {
+    pkg_deps = [
+      "libchrome",
+      "libmojo",
+      "libpower_manager-client",
+      "libpower_manager-client-test",
+    ]
+    sources = [
+      "heartd_testrunner.cc",
+      "mock_dbus_connector.cc",
+    ]
+  }
+}

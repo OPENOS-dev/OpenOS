@@ -1,0 +1,29 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Metadata information for which CVEs do not affect ChromeOS or have been
+# patched in.
+#
+# For more information, see:
+#     http://go/third-party-package-remediation-playbook#special-case-back-ported-patches
+third_party {
+  security {
+    # ChromeOS > Infra > Toolchain
+    tag: "vuln_reporting:buganizer_component:1034879"
+    tag: "vuln_reporting:contact_emails:crossecsheriff@google.com"
+
+    # Our 2.45 source tarballs contain fixes for these CVEs.
+    mitigated_security_patch: "CVE-2025-7545"
+    mitigated_security_patch: "CVE-2025-7546"
+    mitigated_security_patch: "CVE-2025-8224"
+    # We have specific patches to 2.45 for these CVEs.
+    mitigated_security_patch: "CVE-2025-11082"
+    mitigated_security_patch: "CVE-2025-11083"
+    mitigated_security_patch: "CVE-2025-69649"
+    # NOTE(b/492528148): This CVE does not have a patch, but does have messed
+    # up metadata. It's only applicable to 2.46. If we upgrade to that, we
+    # should pick 81e90cf63a10ad11772c2437c8f2a88f1a00c739.
+    mitigated_security_patch: "CVE-2025-69650"
+  }
+}

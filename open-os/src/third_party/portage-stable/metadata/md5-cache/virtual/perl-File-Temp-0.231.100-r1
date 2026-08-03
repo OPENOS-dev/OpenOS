@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for File-Temp
+EAPI=7
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=|| ( =dev-lang/perl-5.42* ~perl-core/File-Temp-0.231.100 )
+SLOT=0
+_md5_=4a4510797e5d53fc4adaa225e087b8a6

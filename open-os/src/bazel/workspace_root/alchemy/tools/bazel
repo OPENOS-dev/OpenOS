@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""The entrypoint to bazel.
+
+This script adds various chromeos-specific command-line options.
+"""
+
+import dataclasses
+import getpass
+import hashlib
+import itertools
+import json
+import os
+import pathlib
+import subprocess
+import sys
+import time
+from typing import List, NoReturn, Optional
+
+
+_INVOCATION_NAME_PREFIX = "invocations/build-"
+
+
+def fail(msg: str) -> NoReturn:
+    """Aborts the script execution with the supplied message."""
+    print(f"ERROR: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def get_workspace() -> pathlib.Path:
+    """Returns the Bazel workspace path."""
+    cwd = pathlib.Path.cwd()
+    for parent in itertools.chain([cwd], cwd.parents):
+        if (
+            parent.joinpath(".repo").is_dir()
+            or parent.joinpath(".supermanifest").is_file()
+        ):
+            return parent.joinpath("src").resolve()
+    fail("Working directory is not a bazel workspace")
+
+
+def get_current_build_url() -> Optional[str]:
+    """Returns the current build URL if this is a CI build."""
+    # Scrape the LUCI build ID from LUCI_CONTEXT.
+    # More info:
+    # https://chromium.googlesource.com/infra/luci/luci-py/+/HEAD/client/LUCI_CONTEXT.md
+    #
+    # TODO(b/311706335): Read the buildbucket ID from BAPI instead of
+    # LUCI_CONTEXT when that's available.
+    luci_context = os.environ.get("LUCI_CONTEXT", None)
+    if luci_context is None:
+        return None
+    # Match the ID group: "invocations/build-<ID>" from the resultDB field.
+    with open(luci_context, "r", encoding="utf-8") as f:
+        invocation_name = json.load(f)["resultdb"]["current_invocation"]["name"]
+    if not invocation_name.startswith(_INVOCATION_NAME_PREFIX):
+        fail(f"Invalid invocation name {invocation_name!r}")
+    buildbucket_id = int(invocation_name[len(_INVOCATION_NAME_PREFIX) :])
+    return f"https://ci.chromium.org/ui/b/{buildbucket_id}"
+
+
+@dataclasses.dataclass(frozen=True)
+class BazelOptions:
+    """Computed options for the main/nested Bazel server."""
+
+    # Start-up options to be passed to the main Bazel server.
+    startup_options: List[str]
+    # The command to be passed to the main Bazel server.
+    command: str
+    # Arguments of the command, including options and positional arguments.
+    command_options_and_args: List[str]
+    # Start-up options to be passed to the nested Bazel server.
+    nested_startup_options: List[str]
+
+
+def compute_options(
+    args: List[str],
+    bazel_real: str,
+    workspace: pathlib.Path,
+) -> Optional[BazelOptions]:
+    """Computes options for the real Bazel invocation.
+
+    Args:
+        args: Arguments passed to the current bazel wrapper.
+        bazel_real: The path of the real Bazel binary.
+        workspace: The path of the current workspace.
+
+    Returns:
+        None if we failed to compute options and should fall back to the real
+        Bazel; otherwise, computed options.
+    """
+    startup_options = []
+
+    # Allow users to have a bazelrc file shared between all chromiumos
+    # checkouts, since ~/.bazelrc also has non-chromiumos stuff.
+    chromiumos_rc = os.path.expanduser("~/.chromiumos.bazelrc")
+    if os.path.exists(chromiumos_rc):
+        startup_options.append(f"--bazelrc={chromiumos_rc}")
+
+    checksum = hashlib.md5(str(workspace).encode("utf-8")).hexdigest()
+    output_base = os.path.expanduser(
+        f"~/.cache/bazel/_bazel_{getpass.getuser()}/{checksum}"
+    )
+
+    # Parse the command line.
+    command = None
+    command_options_and_args = None
+    for i, arg in enumerate(args):
+        if arg.startswith("--"):
+            startup_options.append(arg)
+            if arg.startswith("--output_base="):
+                output_base = arg.split("=", 1)[1]
+        else:
+            command = args[i]
+            command_options_and_args = args[i + 1 :]
+            break
+    if command is None:
+        return None
+    assert command_options_and_args is not None
+
+    nested_command_options = []
+
+    current_build_url = get_current_build_url()
+    if current_build_url:
+        opt = f"--build_metadata=cros/luci/build_url={current_build_url}"
+        command_options_and_args.insert(0, opt)
+        nested_command_options.append(opt)
+
+    # Compute the repository rule environment for the nested bazel.
+    nested_output_base = f"{output_base}_nested"
+    nested_startup_options = startup_options + [
+        "--output_base",
+        nested_output_base,
+    ]
+    # --host_jvm_debug is likely intended for outer bazel invocation, so do not
+    # pass this arg to nested_bazel_opts.
+    base_command = [bazel_real, *nested_startup_options]
+    if "--host_jvm_debug" in base_command:
+        base_command.remove("--host_jvm_debug")
+    nested_data = {
+        "base_command": base_command,
+        "common_opts": nested_command_options,
+        "nested_output_base": nested_output_base,
+    }
+    command_options_and_args.insert(
+        0, f"--repo_env=NESTED_BAZEL={json.dumps(nested_data)}"
+    )
+
+    return BazelOptions(
+        startup_options=startup_options,
+        command=command,
+        command_options_and_args=command_options_and_args,
+        nested_startup_options=nested_startup_options,
+    )
+
+
+def maintain_nested_bazel(bazel_real: str, options: BazelOptions) -> None:
+    """Brings up or shuts down the nested bazel server as needed."""
+    if options.command == "shutdown":
+        print("Shutting down nested bazel server")
+        subprocess.run(
+            [bazel_real, *options.nested_startup_options, "shutdown"],
+            check=True,
+        )
+        print("Shutting down main bazel server")
+    else:
+        # Repo rules are run in a process wrapper, and the "child subreaper"
+        # ensures that the bazel server is killed after the repo rule finishes.
+        # See github.com/bazelbuild/bazel/issues/20447
+        # To solve this, we just start the nested server on every bazel
+        # invocation by running "bazel version" to ensure it's allways running.
+
+        # This is too slow for the hot path, so we detach it. We technically
+        # could hit a race condition where the server is started by the repo
+        # rule rather than here, but it:
+        # * Doesn't affect correctness, only the performance of that invocation.
+        # * Will be corrected in the following invocation.
+        # * Is very rare.
+        # pylint: disable=consider-using-with
+        subprocess.Popen(
+            [bazel_real, *options.nested_startup_options, "version"],
+            # Suppress stdout/stderr to avoid the confusing two "starting bazel
+            # server and connecting".
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            close_fds=True,
+        )
+
+
+def main(args: List[str]) -> NoReturn:
+    """The main function of the script."""
+    # We expect BAZEL_REAL to be set by Bazel.
+    bazel_real = os.environ.get("BAZEL_REAL", None)
+    if not bazel_real:
+        fail("BAZEL_REAL must be set.")
+
+    workspace = get_workspace()
+    options = compute_options(args, bazel_real, workspace)
+    if options is None:
+        # Let bazel display its own error listing available commands.
+        os.execv(bazel_real, [bazel_real, *args])
+
+    maintain_nested_bazel(bazel_real, options)
+
+    # Update the .now file on every bazel invocation for forced cache-busting.
+    (workspace / "bazel/.now").write_text(f"{time.time()}")
+
+    os.execv(
+        bazel_real,
+        [
+            bazel_real,
+            *options.startup_options,
+            options.command,
+            *options.command_options_and_args,
+        ],
+    )
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

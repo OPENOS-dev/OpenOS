@@ -1,0 +1,169 @@
+#!/bin/sh
+
+reset_message="CHROMIUM: Reset tree to "
+
+usage() {
+	cat <<EOF
+Usage: $0 <cros-branch> <upstream-tag> <bug-number>
+
+It will invoke these sub-commands in order
+
+  $ $0 rev-list-branch <cros-branch>
+  $ $0 create-amended-branch <name> <cros-branch> <extra-commit-message>
+  $ $0 create-reset-branch <name> <cros-branch> <upstream-tag> <extra-commit-message>
+  $ $0 cherry-pick-branch <cros-branch>
+
+rev-list-branch lists all downstream commits on <cros-branch>.
+
+create-amended-branch creates a new branch <name> from <cros-branch>, with
+commit messages of all downstream commits amended.
+
+create-reset-branch creates a new branch <name> from <cros-branch>, with a
+merge commit to reset the tree to <upstream-tag>.
+
+cherry-pick-branch cherry-picks all downstream commits from <cros-branch> to
+the current branch.
+EOF
+
+	exit 1
+}
+
+find_reset_commit() {
+	git rev-list -1 --grep="^$reset_message" "$@"
+}
+
+rev_list_branch() {
+	if [ $# -lt 1 ]; then
+		usage
+	fi
+	branch="$1"
+
+	reset_commit=$(find_reset_commit "$branch")
+	git rev-list --oneline "$reset_commit..$branch"
+}
+
+create_amended_branch() {
+	if [ $# -lt 3 ]; then
+		usage
+	fi
+	name="$1"
+	branch="$2"
+	extra_msg="$3"
+
+	reset_commit=$(find_reset_commit "$branch")
+	downstream_commits=$(git rev-list --reverse "$reset_commit..$branch")
+
+	# create a branch with no downstream commits
+	git checkout -b "$name" "$reset_commit"
+
+	# cherry-pick all downstream commits with the commit messages amended
+	for commit in $downstream_commits; do
+		git cherry-pick -n "$commit"
+
+		# get the raw commit message, with outdated  gerrit tags stripped
+		msg=$(git show -s --format=%B "$commit" | sed -n \
+			-e "/^Change-Id:/d" \
+			-e "/^Reviewed-on:/q;p")
+
+		if echo "$msg" | grep -q "^ORIGINAL_BUG="; then
+			# already amended; strip outdated BUG= and TEST=
+			msg=$(echo "$msg" | sed "/^\(BUG\|TEST\)=/d")
+		else
+			# amend BUG= and TEST= by prefixing ORIGINAL_ to them
+			msg=$(echo "$msg" | sed "s/^\(BUG\|TEST\)=/ORIGINAL_\1=/")
+		fi
+
+		(echo "$msg"; echo; echo -e "$extra_msg") | git commit -q -F -
+		echo "Amended $(git show -s --oneline "$commit")"
+	done
+}
+
+create_reset_branch() {
+	if [ $# -lt 4 ]; then
+		usage
+	fi
+	name="$1"
+	branch="$2"
+	tag="$3"
+	extra_msg="$4"
+
+	# create the reset commit (which is a merge commit)
+	parent1="$branch"
+	parent2="$tag^{commit}"
+	tree="$tag^{tree}"
+	msg=$(echo "$reset_message$tag"; echo; echo -e "$extra_msg")
+	commit=$(git commit-tree -p "$parent1" -p "$parent2" -m "$msg" "$tree")
+
+	# create a branch pointing to the merge commit
+	git checkout -b "$name" "$commit"
+	git commit --amend --no-edit
+}
+
+cherry_pick_branch() {
+	if [ $# -lt 1 ]; then
+		usage
+	fi
+	branch="$1"
+
+	reset_commit=$(find_reset_commit "$branch")
+	git cherry-pick "$reset_commit..$branch"
+}
+
+uprev() {
+	if [ $# -lt 3 ]; then
+		usage
+	fi
+	branch="$1"
+	tag="$2"
+	bug="$3"
+	test="Cts{Deqp,Graphics,NativeHardware}TestCases"
+	extra_msg="BUG=b:$bug\nTEST=$test"
+
+	amended_branch="uprev-$(basename "$branch")-amended"
+	reset_branch="uprev-$(basename "$branch")-to-$(basename "$tag")"
+
+	echo "$branch has these downstream commits:"
+	rev_list_branch "$branch"
+	echo
+	read -p "Are you sure you want to uprev $branch to $tag? [y/N] " key
+	if [ "$key" != "y" ]; then
+		exit 0
+	fi
+
+	create_amended_branch "$amended_branch" "$branch" "$extra_msg"
+	create_reset_branch "$reset_branch" "$branch" "$tag" "$extra_msg"
+
+	echo "Cherry-picking $amended_branch to $reset_branch"
+	sleep 1
+	cherry_pick_branch "$amended_branch"
+
+	echo
+	echo "$reset_branch is the uprev branch"
+	echo -e "$extra_msg"
+}
+
+set -e
+
+if [ $# -lt 1 ]; then
+	usage
+fi
+cmd="$1"
+shift
+
+case "$cmd" in
+	rev-list-branch)
+		rev_list_branch "$@"
+		;;
+	create-amended-branch)
+		create_amended_branch "$@"
+		;;
+	create-reset-branch)
+		create_reset_branch "$@"
+		;;
+	cherry-pick-branch)
+		cherry_pick_branch "$@"
+		;;
+	*)
+		uprev "$cmd" "$@"
+		;;
+esac

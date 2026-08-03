@@ -1,0 +1,31 @@
+[
+  // Policy of heartd for mojo service manager.
+  {
+    "identity": "u:r:cros_heartd:s0",
+    "own": [
+      "HeartdControl",
+      "HeartdHeartbeatService"
+    ]
+  },
+  {
+    "identity": "u:r:cros_browser:s0",
+    "request": [
+      "HeartdControl",
+      "HeartdHeartbeatService"
+    ]
+  },
+  {
+    "identity": "u:r:cros_heartd_tool:s0",
+    "request": [
+      "HeartdControl",
+      "HeartdHeartbeatService"
+    ]
+  },
+  {
+    "identity": "u:r:cros_ssh_session:s0",
+    "request": [
+      "HeartdControl",
+      "HeartdHeartbeatService"
+    ]
+  }
+]

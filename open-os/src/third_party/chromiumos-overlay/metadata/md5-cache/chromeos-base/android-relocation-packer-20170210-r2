@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install
+DEPEND=dev-libs/elfutils
+DESCRIPTION=Tool for packed relocations in Android.
+EAPI=7
+HOMEPAGE=https://android.googlesource.com/platform/bionic/
+IUSE=cros-debug
+KEYWORDS=*
+LICENSE=Apache-2.0 BSD-Google
+RDEPEND=dev-libs/elfutils
+SLOT=0
+SRC_URI=https://android.googlesource.com/platform/bionic/+archive/43801a50b071279c58d8d3b4d06ce26b39e57a4e/tools/relocation_packer.tar.gz -> android-relocation-packer-20170210.tar.gz https://android.googlesource.com/platform/system/core/+archive/f2e615c7b88d5558deadab7b093f9e82cb3c1bba/base/include.tar.gz -> android-system-core-base-20170210.tar.gz
+_eclasses_=cros-debug	24f14e41660a7626765c7cf71ea9cdc7	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=8599f4576dd6441fe1af692b4c5c53a5

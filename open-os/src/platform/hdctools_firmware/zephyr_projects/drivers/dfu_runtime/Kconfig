@@ -1,0 +1,31 @@
+# Copyright 2023 The ChromiumOS Authors.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config DFU_RUNTIME
+	bool "Enable USB DFU Runtime"
+	help
+	  Enable DFU Runtime
+
+if DFU_RUNTIME
+
+config DFU_HAS_APP_VERSION_STRING
+	bool "Has app version string"
+	default y if DFU_ENABLE_APP_VERSION_STRING
+	help
+	  Enable app version string support, requires DFU_APP_VERSION_STRING
+
+config DFU_APP_VERSION_STRING
+	string "Insert version string"
+	depends on DFU_HAS_APP_VERSION_STRING
+	help
+	  Add a default app version string
+
+config DFU_APP_VERSION_STRING_IDX
+	int "Set app version string index in descriptor"
+	default 4 if DFU_HAS_APP_VERSION_STRING
+	default 0
+	help
+	  Control index of app version string
+
+endif # DFU_RUNTIME

@@ -1,0 +1,299 @@
+From 55ac846c72b20bf16c49a136cfe373040e5cffeb Mon Sep 17 00:00:00 2001
+From: Brett Brotherton <bbrotherton@google.com>
+Date: Thu, 2 Apr 2026 13:53:26 -0700
+Subject: [PATCH] Replace base::ByteSwap with std::byteswap
+
+Migrate from using `base::ByteSwap` to the standard C++23
+`std::byteswap` function for byte order swapping in AVRCP packet
+building. This involves including `<bit>` instead of
+`<base/sys_byteorder.h>`.
+
+Bug: 474077758
+Flag: EXEMPT PURE_REFACTOR
+Test: atest net_test_btpackets
+Change-Id: Ie87300c33b53b445087c5ef737c0278762f9cfa2
+---
+ system/packet/avrcp/avrcp_browse_packet.cc    |  4 +-
+ system/packet/avrcp/avrcp_packet.cc           |  4 +-
+ system/packet/avrcp/change_path.cc            |  8 ++--
+ system/packet/avrcp/get_folder_items.cc       | 42 +++++++++----------
+ system/packet/avrcp/get_item_attributes.cc    |  8 ++--
+ system/packet/avrcp/get_play_status_packet.cc |  6 +--
+ .../packet/avrcp/get_total_number_of_items.cc |  6 +--
+ .../avrcp/register_notification_packet.cc     | 14 +++----
+ system/packet/avrcp/set_browsed_player.cc     | 10 ++---
+ system/packet/avrcp/vendor_packet.cc          | 10 ++---
+ 10 files changed, 56 insertions(+), 56 deletions(-)
+
+diff --git a/system/packet/avrcp/avrcp_browse_packet.cc b/system/packet/avrcp/avrcp_browse_packet.cc
+index 4947d3ffb9..321131ff1f 100644
+--- a/system/packet/avrcp/avrcp_browse_packet.cc
++++ b/system/packet/avrcp/avrcp_browse_packet.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -48,3 +48,3 @@ void BrowsePacketBuilder::PushHeader(const std::shared_ptr<::bluetooth::Packet>&
+   AddPayloadOctets1(pkt, (uint8_t)pdu_);
+-  AddPayloadOctets2(pkt, base::ByteSwap(length));
++  AddPayloadOctets2(pkt, std::byteswap(length));
+ }
+diff --git a/system/packet/avrcp/avrcp_packet.cc b/system/packet/avrcp/avrcp_packet.cc
+index c20de532c3..f6d7856b0a 100644
+--- a/system/packet/avrcp/avrcp_packet.cc
++++ b/system/packet/avrcp/avrcp_packet.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -63,3 +63,3 @@ bool PacketBuilder::PushCompanyId(const std::shared_ptr<::bluetooth::Packet>& pk
+                                   uint32_t company_id) {
+-  company_id = base::ByteSwap(company_id);
++  company_id = std::byteswap(company_id);
+   for (int i = 0; i < 3; i++) {
+diff --git a/system/packet/avrcp/change_path.cc b/system/packet/avrcp/change_path.cc
+index 08071e0cca..f9b2eb852e 100644
+--- a/system/packet/avrcp/change_path.cc
++++ b/system/packet/avrcp/change_path.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -54,3 +54,3 @@ bool ChangePathResponseBuilder::Serialize(const std::shared_ptr<::bluetooth::Pac
+ 
+-  AddPayloadOctets4(pkt, base::ByteSwap(num_items_in_folder_));
++  AddPayloadOctets4(pkt, std::byteswap(num_items_in_folder_));
+   return true;
+@@ -109,5 +109,5 @@ bool ChangePathRequestBuilder::Serialize(const std::shared_ptr<::bluetooth::Pack
+ 
+-  AddPayloadOctets2(pkt, base::ByteSwap(uid_counter_));
++  AddPayloadOctets2(pkt, std::byteswap(uid_counter_));
+   AddPayloadOctets1(pkt, static_cast<uint8_t>(direction_));
+-  AddPayloadOctets8(pkt, base::ByteSwap(folder_uid_));
++  AddPayloadOctets8(pkt, std::byteswap(folder_uid_));
+   return true;
+diff --git a/system/packet/avrcp/get_folder_items.cc b/system/packet/avrcp/get_folder_items.cc
+index 4227adfd73..fd89b131c5 100644
+--- a/system/packet/avrcp/get_folder_items.cc
++++ b/system/packet/avrcp/get_folder_items.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -83,5 +83,5 @@ bool GetFolderItemsResponseBuilder::Serialize(const std::shared_ptr<::bluetooth:
+ 
+-  AddPayloadOctets2(pkt, base::ByteSwap(uid_counter_));
++  AddPayloadOctets2(pkt, std::byteswap(uid_counter_));
+   uint16_t num_items = items_.size();
+-  AddPayloadOctets2(pkt, base::ByteSwap(num_items));
++  AddPayloadOctets2(pkt, std::byteswap(num_items));
+ 
+@@ -148,4 +148,4 @@ void GetFolderItemsResponseBuilder::PushMediaPlayerItem(
+   uint16_t item_len = item.size() - 3;
+-  AddPayloadOctets2(pkt, base::ByteSwap(item_len));  // Item length
+-  AddPayloadOctets2(pkt, base::ByteSwap(item.id_));  // Player ID
++  AddPayloadOctets2(pkt, std::byteswap(item_len));  // Item length
++  AddPayloadOctets2(pkt, std::byteswap(item.id_));  // Player ID
+   AddPayloadOctets1(pkt, 0x01);                      // Player Type
+@@ -177,5 +177,5 @@ void GetFolderItemsResponseBuilder::PushMediaPlayerItem(
+ 
+-  AddPayloadOctets2(pkt, base::ByteSwap((uint16_t)0x006a));
++  AddPayloadOctets2(pkt, std::byteswap((uint16_t)0x006a));
+   uint16_t name_len = item.name_.size();
+-  AddPayloadOctets2(pkt, base::ByteSwap(name_len));
++  AddPayloadOctets2(pkt, std::byteswap(name_len));
+ 
+@@ -190,4 +190,4 @@ void GetFolderItemsResponseBuilder::PushFolderItem(const std::shared_ptr<::bluet
+   uint16_t item_len = item.size() - 3;
+-  AddPayloadOctets2(pkt, base::ByteSwap(item_len));
+-  AddPayloadOctets8(pkt, base::ByteSwap(item.uid_));
++  AddPayloadOctets2(pkt, std::byteswap(item_len));
++  AddPayloadOctets8(pkt, std::byteswap(item.uid_));
+   AddPayloadOctets1(pkt, item.folder_type_);
+@@ -195,5 +195,5 @@ void GetFolderItemsResponseBuilder::PushFolderItem(const std::shared_ptr<::bluet
+   AddPayloadOctets2(pkt,
+-                    base::ByteSwap((uint16_t)0x006a));  // UTF-8 Character Set
++                    std::byteswap((uint16_t)0x006a));  // UTF-8 Character Set
+   uint16_t name_len = item.name_.size();
+-  AddPayloadOctets2(pkt, base::ByteSwap(name_len));
++  AddPayloadOctets2(pkt, std::byteswap(name_len));
+   for (const uint8_t byte : item.name_) {
+@@ -207,9 +207,9 @@ void GetFolderItemsResponseBuilder::PushMediaElementItem(
+   uint16_t item_len = item.size() - 3;
+-  AddPayloadOctets2(pkt, base::ByteSwap(item_len));
+-  AddPayloadOctets8(pkt, base::ByteSwap(item.uid_));
++  AddPayloadOctets2(pkt, std::byteswap(item_len));
++  AddPayloadOctets8(pkt, std::byteswap(item.uid_));
+   AddPayloadOctets1(pkt, 0x00);  // Media Type Audio
+   AddPayloadOctets2(pkt,
+-                    base::ByteSwap((uint16_t)0x006a));  // UTF-8 Character Set
++                    std::byteswap((uint16_t)0x006a));  // UTF-8 Character Set
+   uint16_t name_len = item.name_.size();
+-  AddPayloadOctets2(pkt, base::ByteSwap(name_len));
++  AddPayloadOctets2(pkt, std::byteswap(name_len));
+   for (const uint8_t byte : item.name_) {
+@@ -220,5 +220,5 @@ void GetFolderItemsResponseBuilder::PushMediaElementItem(
+   for (const auto& entry : item.attributes_) {
+-    AddPayloadOctets4(pkt, base::ByteSwap((uint32_t)entry.attribute()));
++    AddPayloadOctets4(pkt, std::byteswap((uint32_t)entry.attribute()));
+     AddPayloadOctets2(pkt,
+-                      base::ByteSwap((uint16_t)0x006a));  // UTF-8 Character Set
++                      std::byteswap((uint16_t)0x006a));  // UTF-8 Character Set
+ 
+@@ -227,3 +227,3 @@ void GetFolderItemsResponseBuilder::PushMediaElementItem(
+ 
+-    AddPayloadOctets2(pkt, base::ByteSwap(attr_len));
++    AddPayloadOctets2(pkt, std::byteswap(attr_len));
+     for (const uint8_t byte : attr_val) {
+@@ -335,4 +335,4 @@ bool GetFolderItemsRequestBuilder::Serialize(const std::shared_ptr<::bluetooth::
+   AddPayloadOctets1(pkt, static_cast<uint8_t>(scope_));
+-  AddPayloadOctets4(pkt, base::ByteSwap(start_item_));
+-  AddPayloadOctets4(pkt, base::ByteSwap(end_item_));
++  AddPayloadOctets4(pkt, std::byteswap(start_item_));
++  AddPayloadOctets4(pkt, std::byteswap(end_item_));
+ 
+@@ -346,3 +346,3 @@ bool GetFolderItemsRequestBuilder::Serialize(const std::shared_ptr<::bluetooth::
+   for (const auto& attr : requested_attrs_) {
+-    AddPayloadOctets4(pkt, base::ByteSwap(static_cast<uint32_t>(attr)));
++    AddPayloadOctets4(pkt, std::byteswap(static_cast<uint32_t>(attr)));
+   }
+diff --git a/system/packet/avrcp/get_item_attributes.cc b/system/packet/avrcp/get_item_attributes.cc
+index d480996332..ccfd1cbf0e 100644
+--- a/system/packet/avrcp/get_item_attributes.cc
++++ b/system/packet/avrcp/get_item_attributes.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -78,7 +78,7 @@ bool GetItemAttributesResponseBuilder::Serialize(const std::shared_ptr<::bluetoo
+   for (const auto& entry : entries_) {
+-    AddPayloadOctets4(pkt, base::ByteSwap((uint32_t)entry.attribute()));
++    AddPayloadOctets4(pkt, std::byteswap((uint32_t)entry.attribute()));
+     uint16_t character_set = 0x006a;  // UTF-8
+-    AddPayloadOctets2(pkt, base::ByteSwap(character_set));
++    AddPayloadOctets2(pkt, std::byteswap(character_set));
+     uint16_t value_length = entry.value().length();
+-    AddPayloadOctets2(pkt, base::ByteSwap(value_length));
++    AddPayloadOctets2(pkt, std::byteswap(value_length));
+     for (const uint8_t byte : entry.value()) {
+diff --git a/system/packet/avrcp/get_play_status_packet.cc b/system/packet/avrcp/get_play_status_packet.cc
+index 96a31ae777..30d8455deb 100644
+--- a/system/packet/avrcp/get_play_status_packet.cc
++++ b/system/packet/avrcp/get_play_status_packet.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -45,4 +45,4 @@ bool GetPlayStatusResponseBuilder::Serialize(const std::shared_ptr<::bluetooth::
+ 
+-  AddPayloadOctets4(pkt, base::ByteSwap(song_length_));
+-  AddPayloadOctets4(pkt, base::ByteSwap(song_position_));
++  AddPayloadOctets4(pkt, std::byteswap(song_length_));
++  AddPayloadOctets4(pkt, std::byteswap(song_position_));
+   AddPayloadOctets1(pkt, play_status_);
+diff --git a/system/packet/avrcp/get_total_number_of_items.cc b/system/packet/avrcp/get_total_number_of_items.cc
+index 454813d43b..7b4ef9fe9b 100644
+--- a/system/packet/avrcp/get_total_number_of_items.cc
++++ b/system/packet/avrcp/get_total_number_of_items.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -56,4 +56,4 @@ bool GetTotalNumberOfItemsResponseBuilder::Serialize(
+   }
+-  AddPayloadOctets2(pkt, base::ByteSwap(uid_counter_));
+-  AddPayloadOctets4(pkt, base::ByteSwap(num_items_in_folder_));
++  AddPayloadOctets2(pkt, std::byteswap(uid_counter_));
++  AddPayloadOctets4(pkt, std::byteswap(num_items_in_folder_));
+   return true;
+diff --git a/system/packet/avrcp/register_notification_packet.cc b/system/packet/avrcp/register_notification_packet.cc
+index bf97f16ba3..3b68ce6dce 100644
+--- a/system/packet/avrcp/register_notification_packet.cc
++++ b/system/packet/avrcp/register_notification_packet.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ #include <bluetooth/log.h>
+@@ -208,3 +208,3 @@ bool RegisterNotificationResponseBuilder::Serialize(
+     case Event::TRACK_CHANGED: {
+-      AddPayloadOctets8(pkt, base::ByteSwap(data_union_.track_uid));
++      AddPayloadOctets8(pkt, std::byteswap(data_union_.track_uid));
+       break;
+@@ -212,3 +212,3 @@ bool RegisterNotificationResponseBuilder::Serialize(
+     case Event::PLAYBACK_POS_CHANGED: {
+-      AddPayloadOctets4(pkt, base::ByteSwap(data_union_.playback_pos));
++      AddPayloadOctets4(pkt, std::byteswap(data_union_.playback_pos));
+       break;
+@@ -228,4 +228,4 @@ bool RegisterNotificationResponseBuilder::Serialize(
+     case Event::ADDRESSED_PLAYER_CHANGED: {
+-      AddPayloadOctets2(pkt, base::ByteSwap(data_union_.addressed_player.player_id));
+-      AddPayloadOctets2(pkt, base::ByteSwap(data_union_.addressed_player.uid_counter));
++      AddPayloadOctets2(pkt, std::byteswap(data_union_.addressed_player.player_id));
++      AddPayloadOctets2(pkt, std::byteswap(data_union_.addressed_player.uid_counter));
+       break;
+@@ -233,3 +233,3 @@ bool RegisterNotificationResponseBuilder::Serialize(
+     case Event::UIDS_CHANGED: {
+-      AddPayloadOctets2(pkt, base::ByteSwap(data_union_.uid_counter));
++      AddPayloadOctets2(pkt, std::byteswap(data_union_.uid_counter));
+       break;
+@@ -299,3 +299,3 @@ bool RegisterNotificationRequestBuilder::Serialize(
+ 
+-  AddPayloadOctets4(pkt, base::ByteSwap(interval_));
++  AddPayloadOctets4(pkt, std::byteswap(interval_));
+ 
+diff --git a/system/packet/avrcp/set_browsed_player.cc b/system/packet/avrcp/set_browsed_player.cc
+index cbbad06879..934f5c74c3 100644
+--- a/system/packet/avrcp/set_browsed_player.cc
++++ b/system/packet/avrcp/set_browsed_player.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ 
+@@ -67,5 +67,5 @@ bool SetBrowsedPlayerResponseBuilder::Serialize(const std::shared_ptr<::bluetoot
+   }
+-  AddPayloadOctets2(pkt, base::ByteSwap(uid_counter_));
+-  AddPayloadOctets4(pkt, base::ByteSwap(num_items_in_folder_));
+-  AddPayloadOctets2(pkt, base::ByteSwap((uint16_t)0x006a));  // UTF-8
++  AddPayloadOctets2(pkt, std::byteswap(uid_counter_));
++  AddPayloadOctets4(pkt, std::byteswap(num_items_in_folder_));
++  AddPayloadOctets2(pkt, std::byteswap((uint16_t)0x006a));  // UTF-8
+   AddPayloadOctets1(pkt, folder_depth_);
+@@ -77,3 +77,3 @@ bool SetBrowsedPlayerResponseBuilder::Serialize(const std::shared_ptr<::bluetoot
+   uint16_t folder_name_len = folder_name_.size();
+-  AddPayloadOctets2(pkt, base::ByteSwap(folder_name_len));
++  AddPayloadOctets2(pkt, std::byteswap(folder_name_len));
+   for (auto it = folder_name_.begin(); it != folder_name_.end(); it++) {
+diff --git a/system/packet/avrcp/vendor_packet.cc b/system/packet/avrcp/vendor_packet.cc
+index 0e26dd02fc..b0d6d9a007 100644
+--- a/system/packet/avrcp/vendor_packet.cc
++++ b/system/packet/avrcp/vendor_packet.cc
+@@ -18,3 +18,3 @@
+ 
+-#include <base/sys_byteorder.h>
++#include <bit>
+ #include <bluetooth/log.h>
+@@ -60,3 +60,3 @@ void VendorPacketBuilder::PushHeader(const std::shared_ptr<::bluetooth::Packet>&
+   AddPayloadOctets1(pkt, static_cast<uint8_t>(packet_type_));
+-  AddPayloadOctets2(pkt, base::ByteSwap(parameter_length));
++  AddPayloadOctets2(pkt, std::byteswap(parameter_length));
+ }
+@@ -65,7 +65,7 @@ bool VendorPacketBuilder::PushAttributeValue(const std::shared_ptr<::bluetooth::
+                                              const AttributeEntry& entry) {
+-  AddPayloadOctets4(pkt, base::ByteSwap(static_cast<uint32_t>(entry.attribute())));
++  AddPayloadOctets4(pkt, std::byteswap(static_cast<uint32_t>(entry.attribute())));
+   uint16_t character_set = 0x006a;  // UTF-8
+-  AddPayloadOctets2(pkt, base::ByteSwap(character_set));
++  AddPayloadOctets2(pkt, std::byteswap(character_set));
+   uint16_t value_length = entry.value().length();
+-  AddPayloadOctets2(pkt, base::ByteSwap(value_length));
++  AddPayloadOctets2(pkt, std::byteswap(value_length));
+   for (int i = 0; i < value_length; i++) {

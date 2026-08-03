@@ -1,0 +1,27 @@
+As mentioned in the comment, `backtrace` leads to the cmake
+machinery here globbing /usr/include/*.h and trying to inspect
+_everything_ there at multiple points during the cmake configure step.
+
+If any file is removed or reinstalled concurrently with this, this
+build may break.
+
+Since backtraces aren't super important for this very narrow usage
+of LLVM, ignore it.
+
+diff --git a/llvm/cmake/config-ix.cmake b/llvm/cmake/config-ix.cmake
+index b78c1b3..695ff9f 100644
+--- a/llvm/cmake/config-ix.cmake
++++ b/llvm/cmake/config-ix.cmake
+@@ -253,7 +253,11 @@ endif()
+ 
+ # function checks
+ check_symbol_exists(arc4random "stdlib.h" HAVE_DECL_ARC4RANDOM)
+-find_package(Backtrace)
++# b/440331822: comment out `Backtrace`, since that leads to
++# cmake scanning all of /usr/include for headers; if anything
++# installs to that concurrently with cmake invocations in this package,
++# cmake will break.
++#find_package(Backtrace)
+ set(HAVE_BACKTRACE ${Backtrace_FOUND})
+ set(BACKTRACE_HEADER ${Backtrace_HEADER})
+ 

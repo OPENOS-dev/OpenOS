@@ -1,0 +1,366 @@
+// SPDX-License-Identifier: GPL-2.0
+
+#include <assert.h>
+#include <commonlib/device_tree.h>
+#include <libpayload.h>
+#include <lp_vboot.h>
+#include <stdint.h>
+#include <tlcl.h>
+#include <ctype.h>
+
+#include "base/ranges.h"
+#include "base/timestamp.h"
+#include "boot/dt_util.h"
+#include "vboot/boot.h"
+#include "vboot/stages.h"
+#include "vboot/secdata_tpm.h"
+
+void dt_update_chosen(struct device_tree *tree, struct boot_info *bi)
+{
+	int ret;
+	union {
+		struct {
+			u8 tpm_buf[64];
+		};
+		struct {
+			uint64_t kaslr;
+			uint16_t phys_kaslr;
+			uint8_t rng[54];
+		};
+	} *seed = xzalloc(sizeof(*seed));
+	uint32_t size;
+	const char *cmd_line = bi->cmd_line;
+	static const char * const path[] = { "chosen", NULL };
+	struct device_tree_node *node = dt_find_node(tree->root, path,
+						     NULL, NULL, 1);
+
+	/* Update only if non-NULL cmd line */
+	if (cmd_line)
+		dt_add_string_prop(node, "bootargs", cmd_line);
+
+	if (CONFIG(MOCK_TPM))
+		return;
+
+	ret = TlclGetRandom(seed->tpm_buf, sizeof(seed->tpm_buf), &size);
+	if (ret || size != sizeof(seed->tpm_buf)) {
+		printf("TPM failed to populate kASLR seed buffer.\n");
+		if (!vboot_in_recovery()) {
+			struct vb2_context *ctx = vboot_get_context();
+			vb2api_fail(ctx, VB2_RECOVERY_RW_TPM_R_ERROR, ret);
+			vb2ex_commit_data(ctx);
+			reboot();
+		}
+		/* In recovery we'd rather continue with a weak seed than risk
+		   tripping up the kernel. We don't expect untrusted code to run
+		   there anyway, so kernel exploits are less of a concern. */
+	}
+	timestamp_mix_in_randomness(seed->tpm_buf, sizeof(seed->tpm_buf));
+
+	/* Save the physical KASLR seed for Depthcharge use */
+	bi->phys_kaslr = seed->phys_kaslr;
+
+	dt_add_u64_prop(node, "kaslr-seed", seed->kaslr);
+	dt_add_bin_prop(node, "rng-seed", seed->rng, sizeof(seed->rng));
+}
+
+typedef struct ReservedMemoryParams {
+	struct device_tree *tree;
+	bool no_map;
+} ReservedMemoryParams;
+
+static void update_reserved_memory(uint64_t start, uint64_t end, void *data)
+{
+	ReservedMemoryParams *params = (ReservedMemoryParams *)data;
+	char name[32];
+	snprintf(name, sizeof(name), "region@%" PRIx64, start);
+
+	dt_add_reserved_memory_region(params->tree, name, NULL, start,
+				      end - start, params->no_map);
+}
+
+static void sub_from_ranges(uint64_t start, uint64_t end, void *data)
+{
+	ranges_sub((Ranges *)data, start, end);
+}
+
+typedef struct EntryParams {
+	unsigned int addr_cells;
+	unsigned int size_cells;
+	void *data;
+} EntryParams;
+
+static uint64_t max_range(unsigned int size_cells)
+{
+	// Split up ranges who's sizes are too large to fit in #size-cells.
+	// The largest value we can store isn't a power of two, so we'll round
+	// down to make the math easier.
+	return 0x1ULL << (size_cells * 32 - 1);
+}
+
+static void count_entries(u64 start, u64 end, void *pdata)
+{
+	EntryParams *params = (EntryParams *)pdata;
+	unsigned int *count = (unsigned int *)params->data;
+	u64 size = end - start;
+	u64 max_size = max_range(params->size_cells);
+	*count += ALIGN_UP(size, max_size) / max_size;
+}
+
+static void update_mem_property(u64 start, u64 end, void *pdata)
+{
+	EntryParams *params = (EntryParams *)pdata;
+	u8 *data = (u8 *)params->data;
+	u64 full_size = end - start;
+	while (full_size) {
+		const u64 max_size = max_range(params->size_cells);
+		const u64 size = MIN(max_size, full_size);
+
+		dt_write_int(data, start, params->addr_cells * sizeof(u32));
+		data += params->addr_cells * sizeof(uint32_t);
+		start += size;
+
+		dt_write_int(data, size, params->size_cells * sizeof(u32));
+		data += params->size_cells * sizeof(uint32_t);
+		full_size -= size;
+	}
+	params->data = data;
+}
+
+#define MEMORY_ALIGNMENT (1 * MiB)
+
+typedef struct AlignParams {
+	Ranges *mem;
+	Ranges *reserved;
+} AlignParams;
+
+static void align_ram_range(u64 start, u64 end, void *pdata)
+{
+	AlignParams *params = (AlignParams *)pdata;
+	uint64_t new_start = ALIGN_UP(start, MEMORY_ALIGNMENT);
+	uint64_t new_end = ALIGN_DOWN(end, MEMORY_ALIGNMENT);
+
+	if (new_start >= new_end)
+		return;
+
+	if (new_start > start)
+		ranges_add(params->reserved, start, new_start);
+
+	if (new_start < new_end)
+		ranges_add(params->mem, new_start, new_end);
+
+	if (new_end < end)
+		ranges_add(params->reserved, new_end, end);
+}
+
+void dt_update_memory(struct device_tree *tree)
+{
+	Ranges mem;
+	Ranges reserved;
+	Ranges cbmem;
+	Ranges available;
+	struct device_tree_node *node;
+	u32 addr_cells = 2, size_cells = 1;
+	dt_read_cell_props(tree->root, &addr_cells, &size_cells);
+
+	// First remove all existing device_type="memory" nodes, then add ours.
+	list_for_each(node, tree->root->children, list_node) {
+		const char *devtype = dt_find_string_prop(node, "device_type");
+		if (devtype && !strcmp(devtype, "memory"))
+			list_remove(&node->list_node);
+	}
+	node = xzalloc(sizeof(*node));
+	node->name = "memory";
+	list_insert_after(&node->list_node, &tree->root->children);
+	dt_add_string_prop(node, "device_type", "memory");
+
+	dt_init_reserved_memory_node(tree);
+
+	// Read memory info from coreboot
+	ranges_init(&available);
+	ranges_init(&reserved);
+	ranges_init(&cbmem);
+
+	/* Collect all available memranges to form `/memory` nodes,
+	   collect non-RAM regions in `reserved`, and specifically
+	   track regions with `CB_MEM_TABLE` tag in `cbmem`. */
+	for (int i = 0; i < lib_sysinfo.n_memranges; i++) {
+		struct memrange *range = &lib_sysinfo.memrange[i];
+		uint64_t start = range->base;
+		uint64_t end = range->base + range->size;
+
+		ranges_add(&available, start, end);
+		if (range->type != CB_MEM_RAM)
+			ranges_add(&reserved, start, end);
+		if (range->type == CB_MEM_TABLE)
+			ranges_add(&cbmem, start, end);
+	}
+
+	/*
+	 * Kernel likes its available memory areas at least 1MB aligned, let's
+	 * trim the regions such that unaligned padding is added to reserved
+	 * memory.
+	 */
+	ranges_init(&mem);
+	AlignParams align_params = { .mem = &mem, .reserved = &reserved };
+	ranges_for_each(&available, &align_ram_range, &align_params);
+
+	// Subtract `cbmem` from `reserved`.
+	ranges_for_each(&cbmem, &sub_from_ranges, &reserved);
+
+	// pvmfw is managed separately, remove it from `cbmem`.
+	if (lib_sysinfo.pvmfw_size)
+		ranges_sub(&cbmem, (uint64_t)lib_sysinfo.pvmfw,
+			   (uint64_t)lib_sysinfo.pvmfw + lib_sysinfo.pvmfw_size);
+
+	/* Update the device tree with both `no-map` and mapped reserved regions.
+	   CBMEM regions are both carved out and explicitly reserved. */
+	ReservedMemoryParams reserved_params = { .tree = tree, .no_map = true };
+	ranges_for_each(&reserved, &update_reserved_memory, &reserved_params);
+
+	ReservedMemoryParams cbmem_params = { .tree = tree, .no_map = false };
+	ranges_for_each(&cbmem, &update_reserved_memory, &cbmem_params);
+
+	// Count the amount of 'reg' entries we need (account for size limits).
+	unsigned int count = 0;
+	EntryParams count_params = { addr_cells, size_cells, &count };
+	ranges_for_each(&mem, &count_entries, &count_params);
+
+	// Allocate the right amount of space and fill up the entries.
+	size_t length = count * (addr_cells + size_cells) * sizeof(u32);
+	void *data = xmalloc(length);
+	EntryParams add_params = { addr_cells, size_cells, data };
+	ranges_for_each(&mem, &update_mem_property, &add_params);
+	assert(add_params.data - data == length);
+
+	// Assemble the final property and add it to the device tree.
+	dt_add_bin_prop(node, "reg", data, length);
+}
+
+void dt_add_ramdisk(struct device_tree *tree, void *ramdisk_addr,
+		    size_t ramdisk_size)
+{
+	static const char * const path[] = { "chosen", NULL };
+	struct device_tree_node *node = dt_find_node(tree->root, path,
+						     NULL, NULL, 1);
+
+	/* Warning: this assumes the ramdisk is currently located below 4GiB. */
+	u32 start = (uintptr_t)ramdisk_addr;
+	u32 end = start + ramdisk_size;
+
+	dt_add_u32_prop(node, "linux,initrd-start", start);
+	dt_add_u32_prop(node, "linux,initrd-end", end);
+}
+
+/*
+ * Add a node with linux,pkvm-guest-firmware-memory compatible under
+ * reserved-memory node reg pointing to the given address and size.
+ * This shall be ran after fit_load() has been called.
+ */
+int dt_add_pvmfw(struct device_tree *tree, void *pvmfw_addr, size_t pvmfw_size)
+{
+	if (!dt_add_reserved_memory_region(tree, "pkvm_guest_firmware",
+			 "linux,pkvm-guest-firmware-memory",
+			 (uintptr_t)pvmfw_addr, pvmfw_size, true))
+		return -1;
+	return 0;
+}
+
+static int add_pkvm_drng_node(struct device_tree *tree, void *seed_addr, size_t seed_size)
+{
+	if (!dt_add_reserved_memory_region(tree, "pkvm-drng-seed", "google,pkvm-drng",
+				 (uintptr_t)seed_addr, seed_size, true))
+		return -1;
+	return 0;
+}
+
+#define ANDROID_PKVM_DRNG_SEED_SIZE 128
+
+int dt_add_pkvm_drng(struct device_tree *tree, struct boot_info *bi)
+{
+	uint8_t *seed_buf;
+	uint32_t status;
+
+	timestamp_add_now(TS_PKVM_DRNG_SEED_START);
+
+	/* Put seed after the pvmfw and align to page */
+	seed_buf = (uint8_t *)ALIGN_UP((uintptr_t)bi->pvmfw_addr + bi->pvmfw_size, 4096);
+	/* Make sure there's enough space left in pvmfw buffer */
+	if (((uintptr_t)seed_buf - (uintptr_t)bi->pvmfw_addr) + ANDROID_PKVM_DRNG_SEED_SIZE >
+	    bi->pvmfw_buffer_size) {
+		printf("No enough space for pKVM DRNG seed in pvmfw buffer\n");
+		return -1;
+	}
+
+	status = secdata_generate_randomness(seed_buf, ANDROID_PKVM_DRNG_SEED_SIZE);
+	if (status != TPM_SUCCESS) {
+		printf("Failed to generate pKVM DRNG seed\n");
+		return -1;
+	}
+
+	timestamp_add_now(TS_PKVM_DRNG_SEED_DONE);
+
+	return add_pkvm_drng_node(tree, seed_buf, ANDROID_PKVM_DRNG_SEED_SIZE);
+}
+
+static bool dt_node_is_available(struct device_tree_node *node)
+{
+	const char *status = dt_find_string_prop(node, "status");
+
+	if (!status)
+		return true;
+
+	if (!strcmp(status, "ok") || !strcmp(status, "okay"))
+		return true;
+
+	return false;
+}
+
+void dt_collect_reserved_memory_ranges(struct device_tree *tree, Ranges *ranges)
+{
+	static const char * const path[] = { "reserved-memory", NULL };
+	struct device_tree_node *res_mem_node;
+	struct device_tree_node *child;
+	uint32_t addr_cells, size_cells;
+
+	ranges_init(ranges);
+
+	if (!tree || !tree->root)
+		return;
+	/*
+	 * Traverse static memory reservation block (reserve_map) to collect
+	 * regions like the FDT footprint.
+	 */
+	struct device_tree_reserve_map_entry *entry;
+	list_for_each(entry, tree->reserve_map, list_node) {
+		if (entry->size > 0)
+			ranges_add(ranges, entry->start,
+				   entry->start + entry->size);
+	}
+
+	res_mem_node = dt_find_node(tree->root, path, &addr_cells, &size_cells, 0);
+	if (!res_mem_node)
+		return;
+
+	list_for_each(child, res_mem_node->children, list_node) {
+		struct device_tree_region regions[16];
+		const void *data;
+		size_t size;
+
+		if (!dt_node_is_available(child))
+			continue;
+
+		/* Only read if 'reg' property exists */
+		dt_find_bin_prop(child, "reg", &data, &size);
+		if (!data)
+			continue;
+
+		size_t count = dt_read_reg_prop(child, addr_cells, size_cells,
+						regions, ARRAY_SIZE(regions));
+		assert(count <= ARRAY_SIZE(regions));
+		for (size_t i = 0; i < count; i++) {
+			if (regions[i].size > 0)
+				ranges_add(ranges, regions[i].addr,
+					   regions[i].addr + regions[i].size);
+		}
+	}
+}

@@ -1,0 +1,10 @@
+DEFINED_PHASES=configure install postinst prepare
+DESCRIPTION=Miscellaneous files
+EAPI=7
+HOMEPAGE=https://savannah.gnu.org/projects/miscfiles/
+IUSE=minimal
+KEYWORDS=*
+LICENSE=GPL-2 unicode
+SLOT=0
+SRC_URI=mirror://gnu/miscfiles/miscfiles-1.5.tar.gz https://dev.gentoo.org/~whissi/dist/miscfiles/UnicodeData-10.0.0.txt.xz
+_md5_=469ddb6f44b7cce2485504914cee66cf

@@ -1,0 +1,15 @@
+BDEPEND=nls? ( sys-devel/gettext ) >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=configure install prepare
+DEPEND=sys-fs/e2fsprogs ldap? ( >=net-nds/openldap-2.3.35:= ) netlink? ( sys-apps/dbus dev-libs/libnl:3 ) rpc? ( elibc_glibc? ( sys-libs/glibc[-rpc(-)] ) net-libs/libtirpc:= net-libs/rpcsvc-proto ) tcpd? ( sys-apps/tcp-wrappers )
+DESCRIPTION=Linux quota tools
+EAPI=7
+HOMEPAGE=https://sourceforge.net/projects/linuxquota/
+IUSE=ldap netlink nls rpc tcpd
+KEYWORDS=*
+LICENSE=GPL-2
+PDEPEND=rpc? ( net-nds/rpcbind )
+RDEPEND=sys-fs/e2fsprogs ldap? ( >=net-nds/openldap-2.3.35:= ) netlink? ( sys-apps/dbus dev-libs/libnl:3 ) rpc? ( elibc_glibc? ( sys-libs/glibc[-rpc(-)] ) net-libs/libtirpc:= net-libs/rpcsvc-proto ) tcpd? ( sys-apps/tcp-wrappers )
+SLOT=0
+SRC_URI=mirror://sourceforge/linuxquota/quota-4.06.tar.gz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	libtool	f143db5a74ccd9ca28c1234deffede96	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=bea9eeb9e2635a39419a1208aa974787

@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for imagemagick command line tools
+EAPI=7
+IUSE=jpeg perl postscript png svg tiff
+KEYWORDS=*
+RDEPEND=svg? ( media-gfx/imagemagick[jpeg?,perl?,postscript?,png?,svg,tiff?] ) !svg? ( || ( media-gfx/imagemagick[jpeg?,perl?,postscript?,png?,tiff?] media-gfx/graphicsmagick[imagemagick,jpeg?,perl?,postscript?,png?,tiff?] ) )
+SLOT=0
+_md5_=3142bda3c4f6273a372e228844fbc7cf

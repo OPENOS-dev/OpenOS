@@ -1,0 +1,20 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "platform_PrinterPpds.core_test"
+METADATA = {
+    "contacts": ["project-bolton@google.com", "pawliczek@google.com"],
+    "bug_component": "b:167231",
+    "criteria": "The test fails in case of malfunctioning of CUPS printing stack (cupsd, cupstestppd, cups filters) for at least one of tested PPD files.",
+}
+TEST_TYPE = "client"
+ATTRIBUTES = "suite:bvt-perbuild, suite:distributed_lab_qual_bvt_shard2"
+JOB_RETRIES = 0
+HW_DEPS = ['cups']
+
+job.run_test(
+        'platform_PrinterPpds',
+        path_docs='docs',
+        path_ppds='ppds_core',
+        path_digests='digests')

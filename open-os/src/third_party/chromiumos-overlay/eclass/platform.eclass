@@ -1,0 +1,392 @@
+# Copyright 2014 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+# @ECLASS: platform.eclass
+# @MAINTAINER:
+# ChromiumOS Build Team
+# @BUGREPORTS:
+# Please report bugs via http://crbug.com/new (with label Build)
+# @VCSURL: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/HEAD/eclass/@ECLASS@
+# @BLURB: helper eclass for building Chromium package in src/platform2
+# @DESCRIPTION:
+# Packages in src/platform2 are in active development. We want builds to be
+# incremental and fast. This centralized the logic needed for this.
+
+if [[ -z "${_ECLASS_PLATFORM}" ]]; then
+_ECLASS_PLATFORM=1
+
+# Check for EAPI 7+.
+case "${EAPI:-0}" in
+[0123456]) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
+esac
+
+# @ECLASS-VARIABLE: WANT_LIBCHROME
+# @DESCRIPTION:
+# Set to yes if the package needs libchrome.
+: "${WANT_LIBCHROME:=yes}"
+
+# @ECLASS-VARIABLE: WANT_LIBBRILLO
+# @DESCRIPTION:
+# Set to yes if the package needs libbrillo.
+: "${WANT_LIBBRILLO:=${WANT_LIBCHROME}}"
+
+# @ECLASS-VARIABLE: PLATFORM_SUBDIR
+# @DESCRIPTION:
+# Subdir in src/platform2 where the package is located.
+
+# @ECLASS-VARIABLE: PLATFORM_NATIVE_TEST
+# @DESCRIPTION:
+# If set to yes, run the test only for amd64 and x86.
+: "${PLATFORM_NATIVE_TEST:=no}"
+
+# @ECLASS-VARIABLE: PLATFORM_HOST_DEV_TEST
+# @DESCRIPTION:
+# If set to yes, make the full host's /dev available.  This is needed for tests
+# that interact with e.g. /dev/loop nodes.
+: "${PLATFORM_HOST_DEV_TEST:=no}"
+
+# @ECLASS-VARIABLE: PLATFORM_BUILD
+# @DESCRIPTION:
+# Indicates whether this is a platform build by setting a non-empty value.
+: "${PLATFORM_BUILD:=1}"
+
+# @ECLASS-VARIABLE: PLATFORM_ARC_BUILD
+# @DESCRIPTION:
+# Set to yes if the package is built by ARC toolchain.
+: "${PLATFORM_ARC_BUILD:=no}"
+
+# @ECLASS-VARIABLE: OUT
+# @DESCRIPTION:
+# Path where build artifacts will end up.  Exported from this eclass when
+# platform_src_unpack is called; not intended to be set in ebuilds that inherit
+# this eclass.
+
+# @ECLASS-VARIABLE: PLATFORM_PARALLEL_GTEST_TEST
+# @DESCRIPTION:
+# Flag to only use job while running the test runner. The default is to use
+#  $(makeopt_jobs) while running the test.
+: "${PLATFORM_PARALLEL_GTEST_TEST:=yes}"
+
+inherit cros-debug cros-fuzzer cros-sanitizers cros-workon \
+	cros-python311-suppress-leak-detection flag-o-matic platform2-test \
+	cros-toolchain-funcs multiprocessing
+
+# Define these so they can be appended to.
+BDEPEND=""
+DEPEND=""
+RDEPEND=""
+
+[[ "${WANT_LIBCHROME}" == "yes" ]] && inherit libchrome
+
+# Sanity check: libbrillo can't exist without libchrome.
+if [[ "${WANT_LIBBRILLO}" == "yes" ]]; then
+	if [[ "${WANT_LIBCHROME}" == "no" ]]; then
+		die "libbrillo requires libchrome"
+	fi
+	# shellcheck disable=SC2154
+	DEPEND+=" >=chromeos-base/libbrillo-0.0.1-r${REQUIRED_LIBBRILLO_EBUILD_VERSION}:="
+	RDEPEND+=" >=chromeos-base/libbrillo-0.0.1-r${REQUIRED_LIBBRILLO_EBUILD_VERSION}:="
+fi
+
+# While not all packages utilize USE=test, it's common to write gn conditionals
+# based on the flag.  Add it to the eclass so ebuilds don't have to duplicate it
+# everywhere even if they otherwise aren't using the flag.
+IUSE="
+	compdb_only
+	compilation_database
+	cros_host
+	function_elimination_experiment
+	lto_experiment
+	test
+"
+
+# Similarly to above, we use gtest (includes gmock) for unittests in platform2
+# packages. Add the dep all the time even if a few packages wouldn't use it as
+# it doesn't add any real overhead. As we often use the FRIEND_TEST macro
+# provided by gtest/gtest_prod.h in regular class definitions, the gtest
+# dependency is needed outside test as well.
+DEPEND+="
+	cros_host? ( dev-util/gn )
+	>=dev-cpp/gtest-1.10.0:=
+"
+
+# platform2.py imports chromite. This means we need chromite present in the
+# python site-packages.
+BDEPEND+="
+	dev-util/gn
+	dev-util/ninja
+"
+
+# @FUNCTION: platform_gen_compilation_database
+# @DESCRIPTION:
+# Generates a compilation database for use by language servers.
+platform_gen_compilation_database() {
+	local db_chroot="${OUT}/compile_commands_chroot.json"
+
+	ninja -C "${OUT}" -t compdb cc cxx > "${db_chroot}" || die
+
+	# Make relative include paths absolute.
+	sed -i -e "s:-I\./:-I${OUT}/:g" "${db_chroot}" || die
+
+	local compdb_no_chroot="/mnt/host/source/chromite/ide_tooling/scripts/compdb_no_chroot"
+	# shellcheck disable=SC2154
+	< "${db_chroot}" \
+	"${compdb_no_chroot}" "${EXTERNAL_TRUNK_PATH}" \
+	> "${OUT}/compile_commands_no_chroot.json" || die
+
+	echo \
+"compile_commands_*.json are compilation databases for ${CATEGORY}/${PN}. The
+files can be used by tools that support the commonly used JSON compilation
+database format.
+
+To use the compilation database with an IDE or other tools outside of the
+chroot create a symlink named 'compile_commands.json' in the ${PN} source
+directory (outside of the chroot) to compile_commands_no_chroot.json. Also
+make sure that you have libc++ installed:
+
+	$ sudo apt-get install libc++-dev
+" > "${OUT}/compile_commands.txt" || die
+}
+
+platform() {
+	local platform2_py="${PLATFORM_TOOLDIR}/platform2.py"
+	local action="$1"
+	shift
+
+	local libdir="/usr/$(get_libdir)"
+	local cache_dir="$(cros-workon_get_build_dir)"
+	if [[ ${PLATFORM_ARC_BUILD} == "yes" ]]; then
+		# shellcheck disable=SC2154
+		export SYSROOT="${ARC_SYSROOT}"
+		libdir="/vendor/$(get_libdir)"
+		# shellcheck disable=SC2154
+		cache_dir="${BUILD_DIR}"
+	fi
+	if [[ "${WANT_LIBCHROME}" == "yes" ]]; then
+		export BASE_VER="$(libchrome_ver)"
+	fi
+	local cmd=(
+		"${platform2_py}"
+		--libdir="${libdir}"
+		--use_flags="${USE}"
+		--action="${action}"
+		--cache_dir="${cache_dir}"
+		--platform_subdir="${PLATFORM_SUBDIR}"
+		"$@"
+	)
+	if use cros_host; then
+		cmd+=( --host )
+	fi
+	if [[ "${CROS_WORKON_INCREMENTAL_BUILD}" != "1" ]]; then
+		cmd+=( --disable_incremental )
+	fi
+	if [[ "${action}" != "test_all" ]]; then
+		cmd+=(--jobs="$(makeopts_jobs)")
+	else
+		# The default is to run tests with platform2.py with --jobs="$(makeopt_jobs)",
+		# with the exception being when a package has explicitly disabled parallel gtest
+		# or the platform is not native.
+		if [[ "${PLATFORM_PARALLEL_GTEST_TEST}" == "yes" ]]  && platform_is_native ; then
+			cmd+=(--jobs="$(makeopts_jobs)")
+		else
+			cmd+=(--jobs=1)
+		fi
+	fi
+
+	suppress_python311_leak_detection
+
+	"${cmd[@]}" || die
+	# The stdout from this function used in platform_src_install
+
+	undo_suppress_python311_leak_detection
+}
+
+platform_is_native() {
+	use amd64 || use x86
+}
+
+platform_src_unpack() {
+	cros-workon_src_unpack
+	if [[ ${#CROS_WORKON_DESTDIR[@]} -gt 1 || "${CROS_WORKON_OUTOFTREE_BUILD}" != "1" ]]; then
+		S+="/platform2"
+	fi
+	PLATFORM_TOOLDIR="${S}/common-mk"
+	S+="/${PLATFORM_SUBDIR}"
+	export OUT="$(cros-workon_get_build_dir)/out/Default"
+}
+
+platform_test() {
+	local platform2_test_py="${PLATFORM_TOOLDIR}/platform2_test.py"
+
+	local action="$1"
+	local bin="$2"
+	local run_as_root="$3"
+	local native_gtest_filter="$4"
+	local qemu_gtest_filter="$5"
+
+	local gtest_filter
+	platform_is_native \
+		&& gtest_filter=${native_gtest_filter} \
+		|| gtest_filter=${qemu_gtest_filter:-${native_gtest_filter}}
+
+	local cmd=(
+		"${platform2_test_py}"
+		--action="${action}"
+		--sysroot="${SYSROOT}"
+	)
+	if use cros_host; then
+		cmd+=( --host )
+	fi
+	if [[ "${PLATFORM_HOST_DEV_TEST}" == "yes" ]]; then
+		cmd+=( --bind-mount-dev )
+	fi
+	if [[ "${run_as_root}" == "1" ]]; then
+		cmd+=( --run_as_root )
+	fi
+
+	if [[ "${action}" == "run" &&  "${PLATFORM_PARALLEL_GTEST_TEST}" == "yes" ]] && platform_is_native; then
+		# This makes the default as parallel jobs until the dependencies' unit tests
+		# are rewritten to be run parallelly.
+		# If this branch is not entered, then the default is 1, which is defined in
+		# platform2_test.py script.
+		cmd+=(--jobs="$(makeopts_jobs)")
+	fi
+
+	# Only add these options if they're specified ... leads to cleaner output
+	# for developers to read.
+	[[ -n ${gtest_filter} ]] && cmd+=( --gtest_filter="${gtest_filter}" )
+	[[ -n ${P2_TEST_FILTER} ]] && cmd+=( --user_gtest_filter="${P2_TEST_FILTER}" )
+
+	suppress_python311_leak_detection
+
+	cmd+=(
+		--
+		"${bin}"
+	)
+	[[ -n "${P2_VMODULE}" ]] && cmd+=( --vmodule="${P2_VMODULE}" )
+	echo "${cmd[@]}"
+	"${cmd[@]}"
+	local ret=$?
+	if [[ ${ret} -ne 0 ]]; then
+		if [[ ${WHOAMI} == "chrome-bot" ]]; then
+			if [[ ${ret} -ge 100 ]]; then
+				einfo "Dumping dmesg log"
+				dmesg
+				einfo "End of dmesg log"
+			fi
+
+			# TODO(b/403097958): Workaround incomplete log output flushing.
+			sleep 1
+		fi
+		die "command failed: ${bin}: exit status ${ret}"
+	fi
+
+	undo_suppress_python311_leak_detection
+}
+
+# @FUNCTION: platform_fuzzer_install
+# @DESCRIPTION:
+# Installs fuzzer targets in one common location for all fuzzing projects.
+# @USAGE: <owners file> <fuzzer binary> [--dict dict_file] \
+#	[--options options_file] [extra files ...]
+platform_fuzzer_install() {
+	fuzzer_install "$@"
+}
+
+platform_src_compile() {
+	use compdb_only || platform "compile" "all"
+
+	(use compilation_database || use compdb_only) && platform_gen_compilation_database
+}
+
+platform_configure() {
+	platform "configure" "$@"
+}
+
+platform_src_configure() {
+	cros-debug-add-NDEBUG
+	append-lfs-flags
+	sanitizers-setup-env
+	if use test && use amd64 && platform_is_native && tc-is-cross-compiler; then
+		# Do not use target specific flags when building for unit tests.
+		# As the build machine may not support the generated instructions.
+		# This only helps the code being rebuilt during unit tests, e.g.
+		# libraries that are not rebuilt can still cause SIGILLs etc.
+		append-flags '-march=x86-64-v2'
+	fi
+	platform_configure "$@"
+}
+
+platform_src_test() {
+	# We pass SRC along so unittests can access data files in their checkout.
+	# It's also the name used by the common.mk framework.
+	export SRC="${S}"
+
+	platform_test "pre_test"
+	[[ "${PLATFORM_NATIVE_TEST}" == "yes" ]] && ! platform_is_native &&
+		ewarn "Skipping unittests for non-x86: ${PN}" && return 0
+
+	# Make sure this is available to platform2_test.py when run via platform2.py.
+	export PLATFORM_HOST_DEV_TEST
+	if [[ "$(type -t platform_pkg_test)" == "function" ]]; then
+		platform_pkg_test
+	else
+		platform test_all
+	fi
+}
+
+platform_src_install() {
+	local line
+	(
+	# Subshell so `insopts` and `insinto` and such don't mess up ebuild runtime.
+	while read -ra line; do
+		echo "${line[@]}"
+		# shellcheck disable=SC2294
+		eval "${line[@]}"
+	done < <(platform install || die "platform install was failed.")
+	)
+
+	use compilation_database && platform_install_compilation_database
+}
+
+platform_install_dbus_client_lib() {
+	local libname=${1:-${PN}}
+
+	local client_includes=/usr/include/${libname}-client
+	local client_test_includes=/usr/include/${libname}-client-test
+
+	# Install DBus proxy headers.
+	insinto "${client_includes}/${libname}"
+	doins "${OUT}/gen/include/${libname}/dbus-proxies.h"
+	insinto "${client_test_includes}/${libname}"
+	doins "${OUT}/gen/include/${libname}/dbus-proxy-mocks.h"
+
+	if [[ -f "lib${libname}-client.pc.in" ]]; then
+		# Install pkg-config for client libraries.
+		ewarn "generate_pc_file.sh is deprecated.  Please switch to generate_pkg_config in BUILD.gn."
+		"${PLATFORM_TOOLDIR}/generate_pc_file.sh" \
+			"${OUT}" "lib${libname}-client" "${client_includes}" ||
+			die "Error generating lib${libname}-client.pc file"
+		"${PLATFORM_TOOLDIR}/generate_pc_file.sh" \
+			"${OUT}" "lib${libname}-client-test" "${client_test_includes}" ||
+			die "Error generating lib${libname}-client-test.pc file"
+		insinto "/usr/$(get_libdir)/pkgconfig"
+		doins "${OUT}/lib${libname}-client.pc"
+		doins "${OUT}/lib${libname}-client-test.pc"
+	fi
+}
+
+# @FUNCTION: platform_install_compilation_database
+# @DESCRIPTION:
+# Installs compilation database files to
+# /build/compilation_database/${CATEGORY}/${PN}.
+platform_install_compilation_database() {
+	insinto "/build/compilation_database/${CATEGORY}/${PN}"
+
+	doins "${OUT}/compile_commands.txt"
+	doins "${OUT}/compile_commands_chroot.json"
+	doins "${OUT}/compile_commands_no_chroot.json"
+}
+
+fi
+
+EXPORT_FUNCTIONS src_compile src_test src_configure src_unpack src_install

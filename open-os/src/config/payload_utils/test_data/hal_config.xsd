@@ -1,0 +1,358 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<!-- Naming style: the attribute names of elements uses "smallcase-and-dash" style.  -->
+
+  <xs:simpleType name="ModemTypeEn">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="FM101"/>
+      <xs:enumeration value="FM350"/>
+      <xs:enumeration value="RW101"/>
+      <xs:enumeration value="RW135"/>
+      <xs:enumeration value="RW350"/>
+      <xs:enumeration value="EM060"/>
+      <xs:enumeration value="LCUK54"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="FormFactorTypeEn">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CLAMSHELL"/>
+      <xs:enumeration value="CONVERTIBLE"/>
+      <xs:enumeration value="DETACHABLE"/>
+      <xs:enumeration value="CHROMEBASE"/>
+      <xs:enumeration value="CHROMEBOX"/>
+      <xs:enumeration value="CHROMEBIT"/>
+      <xs:enumeration value="CHROMESLATE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="StorageTypeEn">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="EMMC"/>
+      <xs:enumeration value="NVME"/>
+      <xs:enumeration value="SATA"/>
+      <xs:enumeration value="UFS"/>
+      <xs:enumeration value="BRIDGED_EMMC"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="StylusTypeEn">
+    <xs:annotation>
+      <xs:documentation>Stylus present and garaged type or not.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="GARAGED"/>
+      <xs:enumeration value="NON_GARAGED"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="IdentityType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="sku-id"/>
+      <xs:element type="xs:string" name="model"/>
+      <xs:element type="xs:string" name="frid"/>
+      <xs:element type="xs:string" name="custom-label-tag" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CellularConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="firmware-variant" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The modem firmware file to flash onto the modem</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="modem-type" type="ModemTypeEn" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FingerprintConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="board" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies the fingerprint board in use.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="fingerprint-sensor-type" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of FP sensor. Currently describes whether FP is overlapped on the power button or not.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="ro-version" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>RO version for the fingerprint firmware for the FPMCU specified by the "board" property. If not specified, the default RO version for the FPMCU is used.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="sensor-location" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specifies the location of the fingerprint sensor.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FirmwareConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="firmware-manifest-key" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The key is used by the firmware updater to select the AP/EC firmware bundle.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="firmware-config" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Firmware config(FW_CONFIG) value. This is used by AP and EC firmware for SKU specific configuration during boot</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="ufsc" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Unified Firmware and second source config value. This is used by AP and EC firmware for SKU specific configuration during boot</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AudioConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="audio-config-dir" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The model-specific config directory name.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="soundcard" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Internal sound card name.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="VideoConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="video-codec-suffix" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Suffix to media codec configuration files.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CameraConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="media-profile-suffix" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>This is used to set ro.media.xml_variant.profiles, which derives the media_profile.xml file for the given SKU. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HardwareFeaturesType">
+    <xs:sequence>
+      <xs:element type="FormFactorTypeEn" name="form-factor" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The form factor of the device (e.g., CLAMSHELL, CONVERTIBLE).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="touchscreen-support" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Screen touch support present.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Beginning of WiFi related types -->
+  <xs:simpleType name="WiFiChipType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="intel"/>
+      <xs:enumeration value="mtk"/>
+      <xs:enumeration value="rtw"/>
+      <xs:enumeration value="qcom"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PowerValueType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="255"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="PowerConfigType">
+    <xs:sequence>
+      <xs:element name="PowerLimit" type="PowerValueType"/>
+      <xs:element name="PowerOffset" type="PowerValueType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RegDomainType">
+    <xs:sequence>
+      <xs:element name="PowerConfig.2g" type="PowerConfigType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="PowerConfig.5g" type="PowerConfigType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PowerTableType">
+    <xs:sequence>
+      <xs:element name="PowerConfig.2g" type="PowerConfigType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="PowerConfig.5g" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.5g_1" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.5g_2" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.5g_3" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.5g_4" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g_1" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g_2" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g_3" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g_4" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g_5" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerConfig.6g_6" type="PowerConfigType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SarSpecType">
+    <xs:all>
+      <xs:element name="RegDomain.fcc" type="RegDomainType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RegDomain.eu" type="RegDomainType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RegDomain.other" type="RegDomainType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerTable.tablet" type="PowerTableType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="PowerTable.clamshell" type="PowerTableType" minOccurs="1" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="WifiConfigType">
+    <xs:sequence>
+      <xs:element name="Chip" type="WiFiChipType" minOccurs="1"/>
+      <xs:element name="MTKConfig" type="SarSpecType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="RTWConfig" type="SarSpecType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- End of WiFi related section -->
+
+  <xs:complexType name="LocationType">
+    <xs:sequence>
+      <xs:element name="modifier" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProximityLocationType">
+    <xs:sequence>
+      <xs:element name="radio-type-wifi" type="LocationType" minOccurs="0"/>
+      <xs:element name="radio-type-cellular" type="LocationType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SemtechChannelType">
+    <xs:sequence>
+      <xs:element name="channel" type="xs:string" minOccurs="1"/>
+      <xs:element name="hardwaregain" type="xs:string" minOccurs="0"/>
+      <xs:element name="thresh-falling" type="xs:string" minOccurs="0"/>
+      <xs:element name="thresh-falling-hysteresis" type="xs:string" minOccurs="0"/>
+      <xs:element name="thresh-rising" type="xs:string" minOccurs="0"/>
+      <xs:element name="thresh-rising-hysteresis" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SemtechSensorConfigurationType">
+    <xs:sequence>
+      <xs:element name="channel0" type="SemtechChannelType" minOccurs="1"/>
+      <xs:element name="channel1" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="channel2" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="channel3" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="channel4" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="channel5" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="channel6" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="channel7" type="SemtechChannelType" minOccurs="0"/>
+      <xs:element name="sampling-frequency" type="xs:string" minOccurs="0"/>
+      <xs:element name="thresh-falling-period" type="xs:string" minOccurs="0"/>
+      <xs:element name="thresh-rising-period" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SemtechProximityConfigurationType">
+    <xs:sequence>
+      <xs:element name="location" type="ProximityLocationType" minOccurs="1"/>
+      <xs:element name="semtech-config" type="SemtechSensorConfigurationType" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProximityConfigurationType">
+    <xs:sequence>
+      <xs:element name="semtech-proximity" type="SemtechProximityConfigurationType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StorageConfigurationType">
+    <xs:sequence>
+      <xs:element type="StorageTypeEn" name="storage-type" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Non-volatile storage type.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="KeyboardConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:boolean" name="backlight-support" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Keyboard backlight present.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="kb-default-brightness" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Keyboard backlight default brightness.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="kb-backlight-steps" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>User-selectable backlight steps in increasing order.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StylusConfigurationType">
+    <xs:sequence>
+      <xs:element type="StylusTypeEn" name="stylus-type" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScreenConfigurationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="screen-size" minOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Touch screen size in diagonal length in milliinch.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HalConfigType">
+    <xs:sequence>
+      <xs:element name="Identity" type="IdentityType"/>
+      <xs:element name="CellularConfiguration" type="CellularConfigurationType" minOccurs="0"/>
+      <xs:element name="FingerprintConfiguration" type="FingerprintConfigurationType" minOccurs="0"/>
+      <xs:element name="FirmwareConfiguration" type="FirmwareConfigurationType" minOccurs="0"/>
+      <xs:element name="AudioConfiguration" type="AudioConfigurationType" minOccurs="0"/>
+      <xs:element name="VideoConfiguration" type="VideoConfigurationType" minOccurs="0"/>
+      <xs:element name="CameraConfiguration" type="CameraConfigurationType" minOccurs="0"/>
+      <xs:element name="HardwareFeaturesConfiguration" type="HardwareFeaturesType" minOccurs="0"/>
+      <xs:element name="WifiConfiguration" type="WifiConfigType" minOccurs="0"/>
+      <xs:element name="StorageConfiguration" type="StorageConfigurationType" minOccurs="0"/>
+      <xs:element name="KeyboardConfiguration" type="KeyboardConfigurationType" minOccurs="0"/>
+      <xs:element name="StylusConfiguration" type="StylusConfigurationType" minOccurs="0"/>
+      <xs:element name="ScreenConfiguration" type="ScreenConfigurationType" minOccurs="0"/>
+      <xs:element name="ProximityConfiguration" type="ProximityConfigurationType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="HalConfigurations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="HalConfig" type="HalConfigType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

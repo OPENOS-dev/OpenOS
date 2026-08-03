@@ -1,0 +1,14 @@
+DEFINED_PHASES=configure install preinst prepare
+DEPEND=dev-lang/perl dev-perl/libintl-perl unicode? ( dev-perl/Text-Unidecode dev-perl/Unicode-EastAsianWidth )
+DESCRIPTION=Perl script that converts Texinfo to HTML
+EAPI=7
+HOMEPAGE=http://www.nongnu.org/texi2html/
+IUSE=unicode
+KEYWORDS=*
+LICENSE=GPL-2+ || ( GPL-2 CC-BY-SA-1.0 ) Texinfo-manual LGPL-2+ MIT
+RDEPEND=dev-lang/perl dev-perl/libintl-perl unicode? ( dev-perl/Text-Unidecode dev-perl/Unicode-EastAsianWidth )
+RESTRICT=test
+SLOT=0
+SRC_URI=mirror://nongnu/texi2html/texi2html-5.0.tar.bz2
+_eclasses_=prefix	e51c7882b7b721e54e684f7eb143cbfe
+_md5_=cda2a9485662fc47479025a78081c965

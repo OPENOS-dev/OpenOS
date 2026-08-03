@@ -1,0 +1,10 @@
+# Open-OS Profile Defaults
+ARCH="amd64"
+USE="${USE} openos-branding -chrome-branding -google-branding"
+USE="${USE} pulseaudio alsa cups"
+USE="${USE} -telemetry -crash-report -metrics"
+USE="${USE} -chrome-sync -chrome-signin"
+USE="${USE} -google-api -google-cast"
+USE="${USE} fdroid -google-play"
+USE="${USE} oobe_skip_to_login oobe_skip_postlogin"
+USE="${USE} opk packagekit"

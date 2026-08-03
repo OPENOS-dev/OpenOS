@@ -1,0 +1,12 @@
+BDEPEND=app-arch/cabextract X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
+DEFINED_PHASES=install postinst postrm setup unpack
+DESCRIPTION=Microsoft's TrueType core fonts
+EAPI=7
+HOMEPAGE=http://corefonts.sourceforge.net/
+IUSE=X tahoma X
+KEYWORDS=*
+LICENSE=MSttfEULA
+SLOT=0
+SRC_URI=mirror://gentoo/EUupdate.EXE mirror://sourceforge/corefonts/andale32.exe mirror://sourceforge/corefonts/arialb32.exe mirror://sourceforge/corefonts/comic32.exe mirror://sourceforge/corefonts/courie32.exe mirror://sourceforge/corefonts/georgi32.exe mirror://sourceforge/corefonts/impact32.exe mirror://sourceforge/corefonts/webdin32.exe mirror://sourceforge/corefonts/wd97vwr32.exe
+_eclasses_=font	9c33e6198000f5ed39b38bdbc30d50fc
+_md5_=7f455ec15baa7e03d4158ead91d98e1b

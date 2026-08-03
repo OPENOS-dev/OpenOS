@@ -1,0 +1,15 @@
+diff --git a/ufs_cmds.c b/ufs_cmds.c
+index ff67df1..b98e598 100644
+--- a/ufs_cmds.c
++++ b/ufs_cmds.c
+@@ -82,7 +82,9 @@ struct desc_field_offset device_desc_field_name[] = {
+ 	{"dExtendedUFSFeaturesSupport",	0x4F, DWORD},
+ 	{"bWriteBoosterBufferPreserveUserSpaceEn", 0x53, BYTE},
+ 	{"bWriteBoosterBufferType",	0x54, BYTE},
+-	{"dNumSharedWriteBoosterBufferAllocUnits", 0x55, DWORD}
++	{"dNumSharedWriteBoosterBufferAllocUnits", 0x55, DWORD},
++	{"Reserved10", 0x5A, DWORD},
++	{"Reserved11", 0x5E, WORD},
+ };
+ 
+ struct desc_field_offset device_config_desc_field_name[] = {

@@ -1,0 +1,21 @@
+diff --git a/external/nvidia-video-samples/src/vk_video_decoder/include/NvVideoParser/nvVulkanVideoUtils.h b/external/nvidia-video-samples/src/vk_video_decoder/include/NvVideoParser/nvVulkanVideoUtils.h
+--- a/external/nvidia-video-samples/src/vk_video_decoder/include/NvVideoParser/nvVulkanVideoUtils.h
++++ b/external/nvidia-video-samples/src/vk_video_decoder/include/NvVideoParser/nvVulkanVideoUtils.h
+@@ -18,5 +18,7 @@
+ #define _NVVULKANVIDEOUTILS_H_
+ 
+ #include <algorithm>
++#include <cmath>
++#include <cstdlib>
+ #include <limits.h>
+ 
+diff --git a/external/nvidia-video-samples/src/vk_video_decoder/libs/NvVideoParser/src/VulkanH265Parser.cpp b/external/nvidia-video-samples/src/vk_video_decoder/libs/NvVideoParser/src/VulkanH265Parser.cpp
+--- a/external/nvidia-video-samples/src/vk_video_decoder/libs/NvVideoParser/src/VulkanH265Parser.cpp
++++ b/external/nvidia-video-samples/src/vk_video_decoder/libs/NvVideoParser/src/VulkanH265Parser.cpp
+@@ -22,5 +22,7 @@
+ 
+ #include <limits>
++#include <cmath>
++#include <cstdlib>
+ #include "VulkanVideoParserIf.h"
+ #include "nvVulkanh265ScalingList.h"

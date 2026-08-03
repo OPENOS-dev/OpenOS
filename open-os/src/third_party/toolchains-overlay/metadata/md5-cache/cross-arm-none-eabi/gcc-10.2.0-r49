@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go cxx? ( || ( cross-arm-none-eabi-bootstrap/gcc cross-arm-none-eabi/gcc ) ) cross-arm-none-eabi/binutils
+DEFINED_PHASES=compile configure install postinst postrm prepare
+DEPEND=>=sys-libs/zlib-1.1.4 >=sys-devel/gcc-config-1.6 virtual/libiconv >=dev-libs/gmp-4.3.2 >=dev-libs/mpc-0.8.1 >=dev-libs/mpfr-2.4.2 graphite? ( >=dev-libs/cloog-0.18.0 >=dev-libs/isl-0.11.1 ) test? ( >=dev-util/dejagnu-1.4.4 >=sys-devel/autogen-5.5.4 ) >=sys-apps/texinfo-4.8 >=sys-devel/bison-1.875 cxx? ( cross-arm-none-eabi/glibc )
+DESCRIPTION=The GNU Compiler Collection. Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14.
+EAPI=7
+IUSE=cet gcc_repo gcj git_gcc go graphite gtk hardened hardfp llvm_libgcc mounted_gcc multilib +nls cxx openmp test tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
+KEYWORDS=*
+LICENSE=GPL-3 LGPL-3 libgcc FDL-1.2
+PDEPEND=>=sys-devel/gcc-config-2.3
+RDEPEND=>=sys-libs/zlib-1.1.4 >=sys-devel/gcc-config-1.6 virtual/libiconv >=dev-libs/gmp-4.3.2 >=dev-libs/mpc-0.8.1 >=dev-libs/mpfr-2.4.2 graphite? ( >=dev-libs/cloog-0.18.0 >=dev-libs/isl-0.11.1 ) !cross-arm-none-eabi-bootstrap/gcc
+RESTRICT=strip
+SLOT=arm-none-eabi
+SRC_URI=mirror://gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.xz https://dev.gentoo.org/~slyfox/distfiles/gcc-10.2.0-patches-6.tar.bz2
+_eclasses_=binutils-funcs	c47b476da5a526b9a6bff8ec8798a1aa	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=bb782eac72b94a88b75ce4f3f25ec78e

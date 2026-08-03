@@ -1,0 +1,123 @@
+From 148fffef8a36a8f72b0d7372536c973e15857138 Mon Sep 17 00:00:00 2001
+From: Nikolaus Rath <Nikolaus@rath.org>b
+Date: Tue, 22 Nov 2016 15:05:52 -0800
+Subject: [BACKPORT] Add FUSE_PARALLEL_DIROPS support
+
+This is a squished commit of the following three commits with
+modification for libfuse 2. 
+
+
+---
+commit 3296ad988ddb59eb7bbac21b9f67d60cf38ca6bf (libfuse 3.0.0)
+Added support for FUSE_PARALLEL_DIROPS
+
+Enabled by default since we haven't released libfuse 3.0 yet :-).
+
+Fixes #112.
+
+---
+
+commit c9905341ea34ff9acbc11b3c53ba8bcea35eeed8 (lifuse 3.16.2)
+Pass FUSE_PARALLEL_DIROPS to kernel (#861)
+
+This tells the kernel that parallel lookup/readdir operations are
+supported. This is enabled by default but was not passed to the kernel
+so you always get the synchronized version.
+
+---
+commit 2c736f516f28dfb5c58aff345c668a5ea6386295 (lifuse 3.16.2)
+Don't set FUSE_CAP_PARALLEL_DIROPS by default
+
+Allowing parallel dir operations could result in a crash in a filesystem
+implementation that is not prepared for this.
+
+To be safe keep this flag off by default (this is not a regression, since
+there was no public release where this flag wasn't ignored).
+
+If the filesystem wants better performance, then it should set this flag
+explicitly.
+
+Fixes: c990534 ("Pass FUSE_PARALLEL_DIROPS to kernel (#861)")
+---
+ include/fuse_common.h | 10 ++++++++++
+ include/fuse_kernel.h |  2 ++
+ lib/fuse_lowlevel.c   |  8 ++++++++
+ 3 files changed, 20 insertions(+)
+
+diff --git a/include/fuse_common.h b/include/fuse_common.h
+index a4d980d..4dda3bd 100644
+--- a/include/fuse_common.h
++++ b/include/fuse_common.h
+@@ -113,6 +113,16 @@ struct fuse_file_info {
+ #define FUSE_CAP_FLOCK_LOCKS	(1 << 10)
+ #define FUSE_CAP_IOCTL_DIR	(1 << 11)
+ 
++/**
++ * Indicates support for parallel directory operations. If this flag
++ * is unset, the FUSE kernel module will ensure that lookup() and
++ * readdir() requests are never issued concurrently for the same
++ * directory.
++ *
++ * This feature is enabled by default when supported by the kernel.
++ */
++#define FUSE_CAP_PARALLEL_DIROPS        (1 << 18)
++
+ /**
+  * Ioctl flags
+  *
+diff --git a/include/fuse_kernel.h b/include/fuse_kernel.h
+index c632b58..3504005 100644
+--- a/include/fuse_kernel.h
++++ b/include/fuse_kernel.h
+@@ -198,6 +198,7 @@ struct fuse_file_lock {
+  * FUSE_EXPORT_SUPPORT: filesystem handles lookups of "." and ".."
+  * FUSE_DONT_MASK: don't apply umask to file mode on create operations
+  * FUSE_FLOCK_LOCKS: remote locking for BSD style file locks
++ * FUSE_PARALLEL_DIROPS: allow parallel lookups and readdir
+  */
+ #define FUSE_ASYNC_READ		(1 << 0)
+ #define FUSE_POSIX_LOCKS	(1 << 1)
+@@ -207,6 +208,7 @@ struct fuse_file_lock {
+ #define FUSE_BIG_WRITES		(1 << 5)
+ #define FUSE_DONT_MASK		(1 << 6)
+ #define FUSE_FLOCK_LOCKS	(1 << 10)
++#define FUSE_PARALLEL_DIROPS (1 << 18)
+ 
+ /**
+  * CUSE INIT request/reply flags
+diff --git a/lib/fuse_lowlevel.c b/lib/fuse_lowlevel.c
+index ff03c63..db92fad 100644
+--- a/lib/fuse_lowlevel.c
++++ b/lib/fuse_lowlevel.c
+@@ -1790,6 +1790,8 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+ 			f->conn.capable |= FUSE_CAP_DONT_MASK;
+ 		if (arg->flags & FUSE_FLOCK_LOCKS)
+ 			f->conn.capable |= FUSE_CAP_FLOCK_LOCKS;
++		if (arg->flags & FUSE_PARALLEL_DIROPS)
++			f->conn.capable |= FUSE_CAP_PARALLEL_DIROPS;
+ 	} else {
+ 		f->conn.async_read = 0;
+ 		f->conn.max_readahead = 0;
+@@ -1812,6 +1814,10 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+ 	if (req->f->conn.proto_minor >= 18)
+ 		f->conn.capable |= FUSE_CAP_IOCTL_DIR;
+ 
++	/* Enable PARALLEL_DIROPS by default if supported. */
++	if (f->conn.capable & FUSE_CAP_PARALLEL_DIROPS)
++		f->conn.want |= FUSE_CAP_PARALLEL_DIROPS;
++
+ 	if (f->atomic_o_trunc)
+ 		f->conn.want |= FUSE_CAP_ATOMIC_O_TRUNC;
+ 	if (f->op.getlk && f->op.setlk && !f->no_remote_posix_lock)
+@@ -1856,6 +1862,8 @@ static void do_init(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+ 		outarg.flags |= FUSE_DONT_MASK;
+ 	if (f->conn.want & FUSE_CAP_FLOCK_LOCKS)
+ 		outarg.flags |= FUSE_FLOCK_LOCKS;
++	if (f->conn.want & FUSE_CAP_PARALLEL_DIROPS)
++		outarg.flags |= FUSE_PARALLEL_DIROPS;
+ 	outarg.max_readahead = f->conn.max_readahead;
+ 	outarg.max_write = f->conn.max_write;
+ 	if (f->conn.proto_minor >= 13) {
+-- 
+2.43.0.472.g3155946c3a-goog
+

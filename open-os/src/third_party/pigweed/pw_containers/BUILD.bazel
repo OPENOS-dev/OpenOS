@@ -1,0 +1,1399 @@
+# Copyright 2020 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_python//sphinxdocs:sphinx_docs_library.bzl", "sphinx_docs_library")
+load("//pw_bloat:pw_size_diff.bzl", "pw_size_diff")
+load("//pw_bloat:pw_size_table.bzl", "pw_size_table")
+load("//pw_build:compatibility.bzl", "incompatible_with_mcu")
+load("//pw_unit_test:pw_cc_test.bzl", "pw_cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+# Module configuration
+
+cc_library(
+    name = "config",
+    hdrs = ["public/pw_containers/config.h"],
+    strip_include_prefix = "public",
+    deps = [":config_override"],
+)
+
+label_flag(
+    name = "config_override",
+    build_setting_default = "//pw_build:default_module_config",
+)
+
+# Libraries
+
+cc_library(
+    name = "algorithm",
+    hdrs = [
+        "public/pw_containers/algorithm.h",
+        "public/pw_containers/internal/algorithm_internal.h",
+    ],
+    strip_include_prefix = "public",
+)
+
+cc_library(
+    name = "bitset",
+    hdrs = ["public/pw_containers/bitset.h"],
+    strip_include_prefix = "public",
+    deps = ["//third_party/fuchsia:stdcompat"],
+)
+
+pw_cc_test(
+    name = "bitset_test",
+    srcs = ["bitset_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":bitset",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+cc_library(
+    name = "intrusive_item",
+    srcs = ["intrusive_item.cc"],
+    hdrs = ["public/pw_containers/internal/intrusive_item.h"],
+    implementation_deps = ["//pw_assert:check"],
+    strip_include_prefix = "public",
+)
+
+cc_library(
+    name = "intrusive_list_common",
+    hdrs = [
+        "public/pw_containers/internal/intrusive_list.h",
+        "public/pw_containers/internal/intrusive_list_item.h",
+        "public/pw_containers/internal/intrusive_list_iterator.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = ["//visibility:private"],
+    deps = [":intrusive_item"],
+)
+
+cc_library(
+    name = "intrusive_forward_list",
+    hdrs = ["public/pw_containers/intrusive_forward_list.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":config",
+        ":intrusive_list_common",
+    ],
+)
+
+cc_library(
+    name = "intrusive_list",
+    hdrs = ["public/pw_containers/intrusive_list.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":config",
+        ":intrusive_list_common",
+        ":legacy_intrusive_list",
+    ],
+)
+
+cc_library(
+    name = "intrusive_queue",
+    srcs = ["intrusive_queue.cc"],
+    hdrs = [
+        "public/pw_containers/internal/intrusive_queue.h",
+        "public/pw_containers/intrusive_queue.h",
+    ],
+    strip_include_prefix = "public",
+    deps = [
+        ":intrusive_forward_list",
+        ":intrusive_list_common",
+    ],
+)
+
+cc_library(
+    name = "legacy_intrusive_list",
+    hdrs = ["public/pw_containers/internal/legacy_intrusive_list.h"],
+    strip_include_prefix = "public",
+    visibility = [":__subpackages__"],
+    deps = [":intrusive_forward_list"],
+)
+
+cc_library(
+    name = "aa_tree",
+    srcs = [
+        "aa_tree.cc",
+        "aa_tree_item.cc",
+    ],
+    hdrs = [
+        "public/pw_containers/internal/aa_tree.h",
+        "public/pw_containers/internal/aa_tree_item.h",
+        "public/pw_containers/internal/aa_tree_iterator.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = [":__subpackages__"],
+    deps = [
+        ":intrusive_item",
+        "//pw_assert:assert",
+        "//pw_bytes:packed_ptr",
+        "//pw_function",
+    ],
+)
+
+cc_library(
+    name = "intrusive_map",
+    hdrs = ["public/pw_containers/intrusive_map.h"],
+    strip_include_prefix = "public",
+    deps = [":aa_tree"],
+)
+
+cc_library(
+    name = "intrusive_multimap",
+    hdrs = ["public/pw_containers/intrusive_multimap.h"],
+    strip_include_prefix = "public",
+    deps = [":aa_tree"],
+)
+
+cc_library(
+    name = "intrusive_set",
+    hdrs = ["public/pw_containers/intrusive_set.h"],
+    strip_include_prefix = "public",
+    deps = [":aa_tree"],
+)
+
+cc_library(
+    name = "intrusive_multiset",
+    hdrs = ["public/pw_containers/intrusive_multiset.h"],
+    strip_include_prefix = "public",
+    deps = [":aa_tree"],
+)
+
+cc_library(
+    name = "iterator",
+    hdrs = [
+        "public/pw_containers/iterator.h",
+        "public/pw_containers/ptr_iterator.h",
+    ],
+    strip_include_prefix = "public",
+    deps = ["//pw_polyfill"],
+)
+
+cc_library(
+    name = "common",
+    hdrs = [
+        "public/pw_containers/internal/traits.h",
+        "public/pw_containers/internal/wrap.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = ["//:__subpackages__"],
+)
+
+cc_library(
+    name = "deque_common",
+    hdrs = [
+        "public/pw_containers/internal/deque_iterator.h",
+        "public/pw_containers/internal/generic_deque.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":common",
+        "//pw_assert:assert",
+        "//pw_numeric:checked_arithmetic",
+        "//pw_span",
+        "//third_party/fuchsia:stdcompat",
+    ],
+)
+
+cc_library(
+    name = "deque",
+    hdrs = ["public/pw_containers/deque.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":deque_common",
+        ":storage",
+        "//pw_allocator",
+        "//pw_assert:assert",
+    ],
+)
+
+cc_library(
+    name = "dynamic_deque",
+    hdrs = ["public/pw_containers/dynamic_deque.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":deque_common",
+        "//pw_allocator",
+        "//pw_numeric:saturating_arithmetic",
+    ],
+)
+
+cc_library(
+    name = "dynamic_hash_map",
+    hdrs = ["public/pw_containers/dynamic_hash_map.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":dynamic_deque",
+        ":dynamic_ptr_vector",
+        ":functional",
+        "//pw_allocator",
+        "//pw_assert:assert",
+        "//pw_preprocessor",
+    ],
+)
+
+cc_library(
+    name = "dynamic_map",
+    hdrs = ["public/pw_containers/dynamic_map.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":common",
+        ":intrusive_map",
+        "//pw_allocator",
+        "//pw_assert:assert",
+    ],
+)
+
+cc_library(
+    name = "inline_deque",
+    hdrs = ["public/pw_containers/inline_deque.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":deque_common",
+        ":raw_storage",
+        "//pw_assert:assert",
+        "//pw_toolchain:constexpr_tag",
+    ],
+)
+
+cc_library(
+    name = "queue_common",
+    hdrs = ["public/pw_containers/internal/generic_queue.h"],
+    strip_include_prefix = "public",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":deque_common",
+    ],
+)
+
+cc_library(
+    name = "dynamic_queue",
+    hdrs = ["public/pw_containers/dynamic_queue.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":dynamic_deque",
+        ":queue_common",
+    ],
+)
+
+cc_library(
+    name = "inline_queue",
+    hdrs = [
+        "public/pw_containers/inline_queue.h",
+    ],
+    strip_include_prefix = "public",
+    deps = [
+        ":inline_deque",
+        ":queue_common",
+    ],
+)
+
+cc_library(
+    name = "queue",
+    hdrs = ["public/pw_containers/queue.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":deque",
+        ":queue_common",
+    ],
+)
+
+cc_library(
+    name = "generic_var_len_entry_queue",
+    srcs = [
+        "var_len_entry.cc",
+        "var_len_entry_queue_iterator.cc",
+    ],
+    hdrs = [
+        "public/pw_containers/internal/generic_var_len_entry_queue.h",
+        "public/pw_containers/internal/var_len_entry.h",
+        "public/pw_containers/internal/var_len_entry_iterator.h",
+        "public/pw_containers/internal/var_len_entry_queue_iterator.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":algorithm",
+        ":common",
+        "//pw_assert:assert",
+        "//pw_bytes",
+        "//pw_preprocessor",
+        "//pw_span",
+        "//pw_span:cast",
+        "//pw_varint",
+    ],
+)
+
+cc_library(
+    name = "generic_var_len_entry_queue_testing",
+    testonly = True,
+    hdrs = [
+        "public/pw_containers/test/generic_var_len_entry_queue_testing.h",
+    ],
+    strip_include_prefix = "public",
+    deps = ["//pw_unit_test"],
+)
+
+cc_library(
+    name = "inline_var_len_entry_queue",
+    srcs = ["inline_var_len_entry_queue.cc"],
+    hdrs = ["public/pw_containers/inline_var_len_entry_queue.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":generic_var_len_entry_queue",
+        ":raw_storage",
+        "//pw_bytes",
+        "//pw_preprocessor",
+        "//pw_span",
+        "//pw_toolchain:constexpr_tag",
+        "//pw_varint",
+    ],
+)
+
+cc_library(
+    name = "var_len_entry_queue",
+    hdrs = ["public/pw_containers/var_len_entry_queue.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":generic_var_len_entry_queue",
+        ":raw_storage",
+        "//pw_span",
+    ],
+)
+
+cc_library(
+    name = "vector",
+    hdrs = [
+        "public/pw_containers/vector.h",
+    ],
+    strip_include_prefix = "public",
+    deps = [
+        ":storage",
+        "//pw_assert:assert",
+        "//pw_preprocessor",
+        "//pw_toolchain:constexpr_tag",
+    ],
+)
+
+cc_library(
+    name = "dynamic_vector",
+    hdrs = ["public/pw_containers/dynamic_vector.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":dynamic_deque",
+        ":iterator",
+        "//pw_allocator",
+    ],
+)
+
+cc_library(
+    name = "dynamic_ptr_vector",
+    hdrs = ["public/pw_containers/dynamic_ptr_vector.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":dynamic_vector",
+        "//pw_allocator",
+    ],
+)
+
+cc_library(
+    name = "filtered_view",
+    hdrs = ["public/pw_containers/filtered_view.h"],
+    strip_include_prefix = "public",
+    deps = [
+        "//pw_assert:assert",
+        "//pw_preprocessor",
+    ],
+)
+
+cc_library(
+    name = "flat_map",
+    hdrs = ["public/pw_containers/flat_map.h"],
+    strip_include_prefix = "public",
+    deps = ["//pw_assert:assert"],
+)
+
+cc_library(
+    name = "functional",
+    hdrs = ["public/pw_containers/functional.h"],
+    strip_include_prefix = "public",
+)
+
+cc_library(
+    name = "raw_storage",
+    hdrs = ["public/pw_containers/internal/raw_storage.h"],
+    strip_include_prefix = "public",
+    visibility = [":__subpackages__"],
+)
+
+cc_library(
+    name = "storage",
+    hdrs = ["public/pw_containers/storage.h"],
+    strip_include_prefix = "public",
+    deps = [":algorithm"],
+)
+
+cc_library(
+    name = "test_helpers",
+    testonly = True,
+    srcs = ["test_helpers.cc"],
+    hdrs = [
+        "public/pw_containers/internal/container_tests.h",
+        "public/pw_containers/internal/test_helpers.h",
+    ],
+    implementation_deps = ["//pw_assert:check"],
+    strip_include_prefix = "public",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        ":algorithm",
+        "//pw_unit_test",
+    ],
+)
+
+cc_library(
+    name = "to_array",
+    hdrs = ["public/pw_containers/to_array.h"],
+    strip_include_prefix = "public",
+)
+
+cc_library(
+    name = "wrapped_iterator",
+    hdrs = ["public/pw_containers/wrapped_iterator.h"],
+    strip_include_prefix = "public",
+)
+
+cc_library(
+    name = "optional",
+    hdrs = [
+        "public/pw_containers/internal/optional.h",
+        "public/pw_containers/internal/optional_data.h",
+    ],
+    strip_include_prefix = "public",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//pw_assert:assert",
+        "//pw_preprocessor",
+    ],
+)
+
+# Unit tests
+
+pw_cc_test(
+    name = "algorithm_test",
+    srcs = ["algorithm_test.cc"],
+    deps = [
+        ":algorithm",
+        ":flat_map",
+        ":intrusive_list",
+        ":vector",
+        "//pw_span",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+pw_cc_test(
+    name = "filtered_view_test",
+    srcs = ["filtered_view_test.cc"],
+    features = ["-ctad_warnings"],
+    deps = [
+        ":algorithm",
+        ":filtered_view",
+        ":flat_map",
+        ":intrusive_list",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "flat_map_test",
+    srcs = [
+        "flat_map_test.cc",
+    ],
+    deps = [
+        ":flat_map",
+        "//pw_polyfill",
+    ],
+)
+
+pw_cc_test(
+    name = "functional_test",
+    srcs = [
+        "functional_test.cc",
+    ],
+    deps = [
+        ":functional",
+    ],
+)
+
+pw_cc_test(
+    name = "inline_var_len_entry_queue_test",
+    srcs = [
+        "inline_var_len_entry_queue_test.cc",
+        "pw_containers_private/inline_var_len_entry_queue_test_oracle.h",
+    ],
+    deps = [
+        ":generic_var_len_entry_queue_testing",
+        ":inline_var_len_entry_queue",
+        "//pw_assert:assert",
+        "//pw_bytes",
+        "//pw_span",
+        "//pw_varint",
+    ],
+)
+
+pw_cc_test(
+    name = "var_len_entry_queue_test",
+    srcs = ["var_len_entry_queue_test.cc"],
+    deps = [
+        ":generic_var_len_entry_queue",
+        ":generic_var_len_entry_queue_testing",
+        ":var_len_entry_queue",
+        "//pw_assert:check",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "vector_test",
+    srcs = [
+        "vector_test.cc",
+    ],
+    has_nc_test = True,
+    deps = [
+        ":test_helpers",
+        ":vector",
+    ],
+)
+
+pw_cc_test(
+    name = "dynamic_vector_test",
+    srcs = ["dynamic_vector_test.cc"],
+    deps = [
+        ":dynamic_vector",
+        ":test_helpers",
+        "//pw_allocator:testing",
+    ],
+)
+
+pw_cc_test(
+    name = "dynamic_ptr_vector_test",
+    srcs = ["dynamic_ptr_vector_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":dynamic_ptr_vector",
+        ":test_helpers",
+        "//pw_allocator:testing",
+        "//pw_unit_test",
+    ],
+)
+
+pw_cc_test(
+    name = "deque_test",
+    srcs = ["deque_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":deque",
+        ":test_helpers",
+        "//pw_allocator:null_allocator",
+        "//pw_allocator:testing",
+        "//pw_assert:assert",
+        "//pw_polyfill",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "fixed_deque_allocated_common_test",
+    srcs = ["fixed_deque_allocated_common_test.cc"],
+    deps = [
+        ":deque",
+        ":test_helpers",
+        "//pw_allocator:testing",
+    ],
+)
+
+pw_cc_test(
+    name = "fixed_deque_static_common_test",
+    srcs = ["fixed_deque_static_common_test.cc"],
+    deps = [
+        ":deque",
+        ":test_helpers",
+    ],
+)
+
+pw_cc_test(
+    name = "dynamic_deque_test",
+    srcs = ["dynamic_deque_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":algorithm",
+        ":dynamic_deque",
+        ":test_helpers",
+        "//pw_allocator:null_allocator",
+        "//pw_allocator:testing",
+        "//pw_polyfill",
+        "//pw_unit_test",
+    ],
+)
+
+pw_cc_test(
+    name = "dynamic_hash_map_test",
+    srcs = ["dynamic_hash_map_test.cc"],
+    deps = [
+        ":dynamic_hash_map",
+        ":test_helpers",
+        "//pw_allocator:testing",
+    ],
+)
+
+pw_cc_test(
+    name = "dynamic_map_test",
+    srcs = ["dynamic_map_test.cc"],
+    deps = [
+        ":dynamic_map",
+        ":test_helpers",
+        "//pw_allocator:testing",
+    ],
+)
+
+pw_cc_test(
+    name = "inline_deque_test",
+    srcs = [
+        "inline_deque_test.cc",
+    ],
+    has_nc_test = True,
+    deps = [
+        ":inline_deque",
+        ":test_helpers",
+    ],
+)
+
+pw_cc_test(
+    name = "dynamic_queue_test",
+    srcs = ["dynamic_queue_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":dynamic_queue",
+        ":test_helpers",
+        "//pw_allocator:testing",
+        "//pw_unit_test",
+    ],
+)
+
+pw_cc_test(
+    name = "inline_queue_test",
+    srcs = [
+        "inline_queue_test.cc",
+    ],
+    has_nc_test = True,
+    deps = [
+        ":algorithm",
+        ":inline_queue",
+        ":test_helpers",
+    ],
+)
+
+pw_cc_test(
+    name = "queue_test",
+    srcs = ["queue_test.cc"],
+    deps = [
+        ":queue",
+        ":test_helpers",
+        "//pw_allocator:testing",
+    ],
+)
+
+pw_cc_test(
+    name = "raw_storage_test",
+    srcs = [
+        "raw_storage_test.cc",
+    ],
+    deps = [
+        ":raw_storage",
+        ":test_helpers",
+    ],
+)
+
+pw_cc_test(
+    name = "storage_test",
+    srcs = ["storage_test.cc"],
+    deps = [
+        ":storage",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+pw_cc_test(
+    name = "to_array_test",
+    srcs = ["to_array_test.cc"],
+    deps = [":to_array"],
+)
+
+pw_cc_test(
+    name = "var_len_entry_test",
+    srcs = ["var_len_entry_test.cc"],
+    deps = [
+        ":generic_var_len_entry_queue",
+        ":var_len_entry_queue",
+        "//pw_bytes",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+pw_cc_test(
+    name = "var_len_entry_iterator_test",
+    srcs = ["var_len_entry_iterator_test.cc"],
+    deps = [
+        ":generic_var_len_entry_queue",
+        ":var_len_entry_queue",
+        "//pw_bytes",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+pw_cc_test(
+    name = "var_len_entry_queue_iterator_test",
+    srcs = ["var_len_entry_queue_iterator_test.cc"],
+    deps = [
+        ":generic_var_len_entry_queue",
+        ":var_len_entry_queue",
+        "//pw_bytes",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+pw_cc_test(
+    name = "wrapped_iterator_test",
+    srcs = ["wrapped_iterator_test.cc"],
+    deps = [":wrapped_iterator"],
+)
+
+pw_cc_test(
+    name = "ptr_iterator_test",
+    srcs = ["ptr_iterator_test.cc"],
+    deps = [":iterator"],
+)
+
+pw_cc_test(
+    name = "intrusive_forward_list_test",
+    srcs = ["intrusive_forward_list_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_forward_list",
+        ":vector",
+        "//pw_preprocessor",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_list_test",
+    srcs = ["intrusive_list_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_list",
+        ":vector",
+        "//pw_preprocessor",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_queue_test",
+    srcs = ["intrusive_queue_test.cc"],
+    deps = [
+        ":intrusive_queue",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_map_test",
+    srcs = ["intrusive_map_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_map",
+        ":intrusive_multimap",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_multimap_test",
+    srcs = ["intrusive_multimap_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_map",
+        ":intrusive_multimap",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_set_test",
+    srcs = ["intrusive_set_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_multiset",
+        ":intrusive_set",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_multiset_test",
+    srcs = ["intrusive_multiset_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_multiset",
+        ":intrusive_set",
+        "//pw_span",
+    ],
+)
+
+pw_cc_test(
+    name = "intrusive_item_test",
+    srcs = ["intrusive_item_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":intrusive_forward_list",
+        ":intrusive_list",
+        ":intrusive_map",
+        ":intrusive_multimap",
+        ":intrusive_multiset",
+        ":intrusive_set",
+    ],
+)
+
+cc_library(
+    name = "optional_tuple",
+    hdrs = ["public/pw_containers/optional_tuple.h"],
+    strip_include_prefix = "public",
+    deps = [
+        ":bitset",
+        "//pw_assert:assert",
+        "//pw_polyfill",
+        "//third_party/fuchsia:stdcompat",
+    ],
+)
+
+pw_cc_test(
+    name = "optional_tuple_test",
+    srcs = ["optional_tuple_test.cc"],
+    has_nc_test = True,
+    deps = [
+        ":optional_tuple",
+        ":test_helpers",
+        "//pw_polyfill",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+pw_cc_test(
+    name = "optional_test",
+    srcs = ["optional_test.cc"],
+    deps = [
+        ":optional",
+        ":test_helpers",
+        "//pw_unit_test",
+        "//pw_unit_test:constexpr",
+    ],
+)
+
+filegroup(
+    name = "doxygen",
+    srcs = [
+        "public/pw_containers/algorithm.h",
+        "public/pw_containers/bitset.h",
+        "public/pw_containers/deque.h",
+        "public/pw_containers/dynamic_deque.h",
+        "public/pw_containers/dynamic_hash_map.h",
+        "public/pw_containers/dynamic_map.h",
+        "public/pw_containers/dynamic_ptr_vector.h",
+        "public/pw_containers/dynamic_queue.h",
+        "public/pw_containers/dynamic_vector.h",
+        "public/pw_containers/filtered_view.h",
+        "public/pw_containers/flat_map.h",
+        "public/pw_containers/functional.h",
+        "public/pw_containers/inline_deque.h",
+        "public/pw_containers/inline_queue.h",
+        "public/pw_containers/inline_var_len_entry_queue.h",
+        "public/pw_containers/internal/aa_tree.h",
+        "public/pw_containers/internal/generic_deque.h",
+        "public/pw_containers/internal/generic_queue.h",
+        "public/pw_containers/internal/generic_var_len_entry_queue.h",
+        "public/pw_containers/internal/intrusive_list.h",
+        "public/pw_containers/internal/optional.h",
+        "public/pw_containers/internal/var_len_entry.h",
+        "public/pw_containers/internal/var_len_entry_iterator.h",
+        "public/pw_containers/internal/var_len_entry_queue_iterator.h",
+        "public/pw_containers/intrusive_forward_list.h",
+        "public/pw_containers/intrusive_list.h",
+        "public/pw_containers/intrusive_map.h",
+        "public/pw_containers/intrusive_multimap.h",
+        "public/pw_containers/intrusive_multiset.h",
+        "public/pw_containers/intrusive_queue.h",
+        "public/pw_containers/intrusive_set.h",
+        "public/pw_containers/optional_tuple.h",
+        "public/pw_containers/ptr_iterator.h",
+        "public/pw_containers/queue.h",
+        "public/pw_containers/storage.h",
+        "public/pw_containers/to_array.h",
+        "public/pw_containers/vector.h",
+        "public/pw_containers/wrapped_iterator.h",
+    ],
+)
+
+sphinx_docs_library(
+    name = "docs",
+    srcs = [
+        "Kconfig",
+        "docs.rst",
+        "lists.rst",
+        "maps.rst",
+        "multiple_containers.rst",
+        "queues.rst",
+        "sets.rst",
+        "storage_test.cc",
+        "utilities.rst",
+        "vectors.rst",
+        ":lists_size_report",
+        ":maps_size_report",
+        ":queues_size_report",
+        ":sets_size_report",
+        ":vectors_size_report",
+        "//pw_containers/examples:docs",
+    ],
+    prefix = "pw_containers/",
+    target_compatible_with = incompatible_with_mcu(),
+)
+
+pw_size_diff(
+    name = "intrusive_list_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveList",
+    target = "//pw_containers/size_report:intrusive_list_base",
+)
+
+pw_size_diff(
+    name = "intrusive_list_alternate_type_size_diff",
+    base = "//pw_containers/size_report:intrusive_list_base",
+    label = "Additional IntrusiveList with different item type",
+    target = "//pw_containers/size_report:intrusive_list_alternate_type",
+)
+
+pw_size_diff(
+    name = "intrusive_forward_list_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveForwardList",
+    target = "//pw_containers/size_report:intrusive_forward_list_base",
+)
+
+pw_size_diff(
+    name = "intrusive_forward_list_alternate_type_size_diff",
+    base = "//pw_containers/size_report:intrusive_forward_list_base",
+    label = "Additional IntrusiveForwardList with different item type",
+    target = "//pw_containers/size_report:intrusive_forward_list_alternate_type",
+)
+
+pw_size_diff(
+    name = "intrusive_list_and_forward_list_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveForwardList and IntrusiveList",
+    target = "//pw_containers/size_report:intrusive_list_and_forward_list",
+)
+
+pw_size_table(
+    name = "lists_size_report",
+    reports = [
+        ":intrusive_list_base_size_diff",
+        ":intrusive_list_alternate_type_size_diff",
+        ":intrusive_forward_list_base_size_diff",
+        ":intrusive_forward_list_alternate_type_size_diff",
+        ":intrusive_list_and_forward_list_size_diff",
+    ],
+)
+
+pw_size_diff(
+    name = "dynamic_hash_map_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "DynamicHashMap",
+    target = "//pw_containers/size_report:dynamic_hash_map_base",
+)
+
+pw_size_diff(
+    name = "dynamic_hash_map_alternate_value_size_diff",
+    base = "//pw_containers/size_report:dynamic_hash_map_base",
+    label = "Additional DynamicHashMap with different value type",
+    target = "//pw_containers/size_report:dynamic_hash_map_alternate_value",
+)
+
+pw_size_diff(
+    name = "dynamic_hash_map_alternate_types_size_diff",
+    base = "//pw_containers/size_report:dynamic_hash_map_base",
+    label = "Additional DynamicHashMap with different key and value types",
+    target = "//pw_containers/size_report:dynamic_hash_map_alternate_types",
+)
+
+pw_size_diff(
+    name = "dynamic_map_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "DynamicMap",
+    target = "//pw_containers/size_report:dynamic_map_base",
+)
+
+pw_size_diff(
+    name = "dynamic_map_alternate_value_size_diff",
+    base = "//pw_containers/size_report:dynamic_map_base",
+    label = "Additional DynamicMap with different value type",
+    target = "//pw_containers/size_report:dynamic_map_alternate_value",
+)
+
+pw_size_diff(
+    name = "dynamic_map_alternate_types_size_diff",
+    base = "//pw_containers/size_report:dynamic_map_base",
+    label = "Additional DynamicMap with different key and value types",
+    target = "//pw_containers/size_report:dynamic_map_alternate_types",
+)
+
+pw_size_diff(
+    name = "flat_map_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "FlatMap",
+    target = "//pw_containers/size_report:flat_map_base",
+)
+
+pw_size_diff(
+    name = "flat_map_alternate_types_size_diff",
+    base = "//pw_containers/size_report:flat_map_base",
+    label = "Additional FlatMap with different key and value types",
+    target = "//pw_containers/size_report:flat_map_alternate_types",
+)
+
+pw_size_diff(
+    name = "intrusive_map_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveMap",
+    target = "//pw_containers/size_report:intrusive_map_base",
+)
+
+pw_size_diff(
+    name = "intrusive_map_alternate_key_size_diff",
+    base = "//pw_containers/size_report:intrusive_map_base",
+    label = "Additional IntrusiveMap with different key type",
+    target = "//pw_containers/size_report:intrusive_map_alternate_key",
+)
+
+pw_size_diff(
+    name = "intrusive_map_alternate_types_size_diff",
+    base = "//pw_containers/size_report:intrusive_map_base",
+    label = "Additional IntrusiveMap with different key and value types",
+    target = "//pw_containers/size_report:intrusive_map_alternate_types",
+)
+
+pw_size_diff(
+    name = "intrusive_multimap_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveMultiMap",
+    target = "//pw_containers/size_report:intrusive_multimap_base",
+)
+
+pw_size_diff(
+    name = "intrusive_multimap_alternate_key_size_diff",
+    base = "//pw_containers/size_report:intrusive_multimap_base",
+    label = "Additional IntrusiveMultiMap with different key type",
+    target = "//pw_containers/size_report:intrusive_multimap_alternate_key",
+)
+
+pw_size_diff(
+    name = "intrusive_multimap_alternate_types_size_diff",
+    base = "//pw_containers/size_report:intrusive_multimap_base",
+    label = "Additional IntrusiveMultiMap with different key and value types",
+    target = "//pw_containers/size_report:intrusive_multimap_alternate_types",
+)
+
+pw_size_diff(
+    name = "intrusive_map_and_multimap_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveMap and IntrusiveMultiMap",
+    target = "//pw_containers/size_report:intrusive_map_and_multimap",
+)
+
+pw_size_diff(
+    name = "std_map_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "std::map",
+    target = "//pw_containers/size_report:std_map_base",
+)
+
+pw_size_diff(
+    name = "std_map_alternate_value_size_diff",
+    base = "//pw_containers/size_report:std_map_base",
+    label = "Additional std::map with different value type",
+    target = "//pw_containers/size_report:std_map_alternate_value",
+)
+
+pw_size_diff(
+    name = "std_map_alternate_types_size_diff",
+    base = "//pw_containers/size_report:std_map_base",
+    label = "Additional std::map with different key and value types",
+    target = "//pw_containers/size_report:std_map_alternate_types",
+)
+
+pw_size_diff(
+    name = "std_unordered_map_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "std::unordered_map",
+    target = "//pw_containers/size_report:std_unordered_map_base",
+)
+
+pw_size_diff(
+    name = "std_unordered_map_alternate_value_size_diff",
+    base = "//pw_containers/size_report:std_unordered_map_base",
+    label = "Additional std::unordered_map with different value type",
+    target = "//pw_containers/size_report:std_unordered_map_alternate_value",
+)
+
+pw_size_diff(
+    name = "std_unordered_map_alternate_types_size_diff",
+    base = "//pw_containers/size_report:std_unordered_map_base",
+    label = "Additional std::unordered_map with different key and value types",
+    target = "//pw_containers/size_report:std_unordered_map_alternate_types",
+)
+
+pw_size_table(
+    name = "maps_size_report",
+    reports = [
+        ":std_unordered_map_base_size_diff",
+        ":std_unordered_map_alternate_value_size_diff",
+        ":std_unordered_map_alternate_types_size_diff",
+        ":dynamic_hash_map_base_size_diff",
+        ":dynamic_hash_map_alternate_value_size_diff",
+        ":dynamic_hash_map_alternate_types_size_diff",
+        ":std_map_base_size_diff",
+        ":std_map_alternate_value_size_diff",
+        ":std_map_alternate_types_size_diff",
+        ":dynamic_map_base_size_diff",
+        ":dynamic_map_alternate_value_size_diff",
+        ":dynamic_map_alternate_types_size_diff",
+        ":flat_map_base_size_diff",
+        ":flat_map_alternate_types_size_diff",
+        ":intrusive_map_base_size_diff",
+        ":intrusive_map_alternate_key_size_diff",
+        ":intrusive_map_alternate_types_size_diff",
+        ":intrusive_multimap_base_size_diff",
+        ":intrusive_multimap_alternate_key_size_diff",
+        ":intrusive_multimap_alternate_types_size_diff",
+        ":intrusive_map_and_multimap_size_diff",
+    ],
+)
+
+pw_size_diff(
+    name = "inline_deque_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "InlineDeque",
+    target = "//pw_containers/size_report:inline_deque_base",
+)
+
+pw_size_diff(
+    name = "inline_deque_alternate_type_size_diff",
+    base = "//pw_containers/size_report:inline_deque_base",
+    label = "Additional InlineDeque with different item type",
+    target = "//pw_containers/size_report:inline_deque_alternate_type",
+)
+
+pw_size_diff(
+    name = "inline_queue_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "InlineQueue",
+    target = "//pw_containers/size_report:inline_queue_base",
+)
+
+pw_size_diff(
+    name = "inline_queue_alternate_type_size_diff",
+    base = "//pw_containers/size_report:inline_queue_base",
+    label = "Additional InlineQueue with different item type",
+    target = "//pw_containers/size_report:inline_queue_alternate_type",
+)
+
+pw_size_diff(
+    name = "inline_deque_and_queue_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "InlineDeque and InlineQueue",
+    target = "//pw_containers/size_report:inline_deque_and_queue",
+)
+
+pw_size_diff(
+    name = "dynamic_deque_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "DynamicDeque",
+    target = "//pw_containers/size_report:dynamic_deque_base",
+)
+
+pw_size_diff(
+    name = "dynamic_deque_alternate_type_size_diff",
+    base = "//pw_containers/size_report:dynamic_deque_base",
+    label = "Additional DynamicDeque with different item type",
+    target = "//pw_containers/size_report:dynamic_deque_alternate_type",
+)
+
+pw_size_diff(
+    name = "fixed_deque_static_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "FixedDeque (static)",
+    target = "//pw_containers/size_report:fixed_deque_static_base",
+)
+
+pw_size_diff(
+    name = "fixed_deque_static_alternate_type_size_diff",
+    base = "//pw_containers/size_report:fixed_deque_static_base",
+    label = "Additional FixedDeque (static) with different item type",
+    target = "//pw_containers/size_report:fixed_deque_static_alternate_type",
+)
+
+pw_size_diff(
+    name = "fixed_deque_dynamic_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "FixedDeque (dynamic)",
+    target = "//pw_containers/size_report:fixed_deque_dynamic_base",
+)
+
+pw_size_diff(
+    name = "fixed_deque_dynamic_alternate_type_size_diff",
+    base = "//pw_containers/size_report:fixed_deque_dynamic_base",
+    label = "Additional FixedDeque (dynamic) with different item type",
+    target = "//pw_containers/size_report:fixed_deque_dynamic_alternate_type",
+)
+
+pw_size_diff(
+    name = "fixed_deque_static_and_dynamic_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "FixedDeque (static and dynamic)",
+    target = "//pw_containers/size_report:fixed_deque_static_and_dynamic",
+)
+
+pw_size_diff(
+    name = "std_deque_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "std::deque",
+    target = "//pw_containers/size_report:std_deque_base",
+)
+
+pw_size_diff(
+    name = "std_deque_alternate_type_size_diff",
+    base = "//pw_containers/size_report:std_deque_base",
+    label = "Additional std::deque with different item type",
+    target = "//pw_containers/size_report:std_deque_alternate_type",
+)
+
+pw_size_table(
+    name = "queues_size_report",
+    reports = [
+        ":std_deque_base_size_diff",
+        ":std_deque_alternate_type_size_diff",
+        ":dynamic_deque_base_size_diff",
+        ":dynamic_deque_alternate_type_size_diff",
+        ":fixed_deque_static_base_size_diff",
+        ":fixed_deque_static_alternate_type_size_diff",
+        ":fixed_deque_dynamic_base_size_diff",
+        ":fixed_deque_dynamic_alternate_type_size_diff",
+        ":fixed_deque_static_and_dynamic_size_diff",
+        ":inline_deque_base_size_diff",
+        ":inline_deque_alternate_type_size_diff",
+        ":inline_queue_base_size_diff",
+        ":inline_queue_alternate_type_size_diff",
+        ":inline_deque_and_queue_size_diff",
+    ],
+)
+
+pw_size_diff(
+    name = "intrusive_set_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveSet",
+    target = "//pw_containers/size_report:intrusive_set_base",
+)
+
+pw_size_diff(
+    name = "intrusive_set_alternate_type_size_diff",
+    base = "//pw_containers/size_report:intrusive_set_base",
+    label = "Additional IntrusiveSet with different item type",
+    target = "//pw_containers/size_report:intrusive_set_alternate_type",
+)
+
+pw_size_diff(
+    name = "intrusive_multiset_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveMultiSet",
+    target = "//pw_containers/size_report:intrusive_multiset_base",
+)
+
+pw_size_diff(
+    name = "intrusive_multiset_alternate_type_size_diff",
+    base = "//pw_containers/size_report:intrusive_multiset_base",
+    label = "Additional IntrusiveMultiSet with different item type",
+    target = "//pw_containers/size_report:intrusive_multiset_alternate_type",
+)
+
+pw_size_diff(
+    name = "intrusive_set_and_multiset_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "IntrusiveSet and IntrusiveMultiSet",
+    target = "//pw_containers/size_report:intrusive_set_and_multiset",
+)
+
+pw_size_table(
+    name = "sets_size_report",
+    reports = [
+        ":intrusive_set_base_size_diff",
+        ":intrusive_set_alternate_type_size_diff",
+        ":intrusive_multiset_base_size_diff",
+        ":intrusive_multiset_alternate_type_size_diff",
+        ":intrusive_set_and_multiset_size_diff",
+    ],
+)
+
+pw_size_diff(
+    name = "vector_base_size_diff",
+    base = "//pw_containers/size_report:base",
+    label = "Vector",
+    target = "//pw_containers/size_report:vector_base",
+)
+
+pw_size_diff(
+    name = "vector_alternate_size_size_diff",
+    base = "//pw_containers/size_report:vector_base",
+    label = "Additional Vector with the same item type but different size",
+    target = "//pw_containers/size_report:vector_alternate_size",
+)
+
+pw_size_diff(
+    name = "vector_alternate_type_size_diff",
+    base = "//pw_containers/size_report:vector_base",
+    label = "Additional Vector with different item type but same size",
+    target = "//pw_containers/size_report:vector_alternate_type",
+)
+
+pw_size_table(
+    name = "vectors_size_report",
+    reports = [
+        ":vector_base_size_diff",
+        ":vector_alternate_size_size_diff",
+        ":vector_alternate_type_size_diff",
+    ],
+)

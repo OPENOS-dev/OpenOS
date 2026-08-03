@@ -1,0 +1,225 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(
+    default_visibility = ["//:__subpackages__"],
+)
+
+cc_library(
+    name = "dump",
+    hdrs = ["dump.h"],
+    # Uncomment this to enable DBG() macro for debugging.
+    # defines = ["DBG_FORCE_ENABLE"],
+    deps = [
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_binary(
+    name = "dump_test",
+    testonly = True,
+    srcs = ["dump_test.cc"],
+    local_defines = ["DBG_FORCE_ENABLE"],
+    deps = [
+        ":dump",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "log",
+    srcs = ["log.cc"],
+    hdrs = ["log.h"],
+    # For program_invocation_short_name in <errno.h>
+    local_defines = ["_GNU_SOURCE"],
+    deps = [
+        ":dump",
+        "@com_google_absl//absl/cleanup",
+        "@com_google_absl//absl/log:absl_check",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/strings:str_format",
+        "@org_tensorflow//tensorflow/lite/tools:command_line_flags",
+    ],
+)
+
+cc_binary(
+    name = "log_test",
+    testonly = True,
+    srcs = ["log_test.cc"],
+    args = ["--v=2"],
+    deps = [
+        ":log",
+        "//common/test_util:log_fixture",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "minimal_logging",
+    hdrs = ["minimal_logging.h"],
+    deps = [
+        ":log",
+        "@com_google_absl//absl/strings:str_format",
+        "@org_tensorflow//tensorflow/lite:minimal_logging",
+    ],
+)
+
+cc_binary(
+    name = "minimal_logging_test",
+    testonly = True,
+    srcs = ["minimal_logging_test.cc"],
+    deps = [
+        ":minimal_logging",
+        "//common/test_util:log_fixture",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "scoped_fd",
+    srcs = ["scoped_fd.cc"],
+    hdrs = ["scoped_fd.h"],
+)
+
+cc_library(
+    name = "scoped_ahwb",
+    srcs = ["scoped_ahwb.cc"],
+    hdrs = ["scoped_ahwb.h"],
+    deps = [
+        "//android:hardware_buffer",
+    ],
+)
+
+cc_library(
+    name = "simple_model_builder",
+    srcs = ["simple_model_builder.cc"],
+    hdrs = ["simple_model_builder.h"],
+    deps = [
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:c_api_types",
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/tools/serialization:writer_lib",
+    ],
+)
+
+cc_binary(
+    name = "simple_model_builder_test",
+    testonly = True,
+    srcs = ["simple_model_builder_test.cc"],
+    deps = [
+        ":simple_model_builder",
+        "@com_google_absl//absl/random",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "single_op_model_builder",
+    srcs = ["single_op_model_builder.cc"],
+    hdrs = ["single_op_model_builder.h"],
+    deps = [
+        ":log",
+        ":simple_model_builder",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_binary(
+    name = "single_op_model_builder_test",
+    testonly = True,
+    srcs = ["single_op_model_builder_test.cc"],
+    deps = [
+        ":single_op_model_builder",
+        "@com_google_absl//absl/random",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "async_driver",
+    srcs = ["async_driver.cc"],
+    hdrs = ["async_driver.h"],
+    deps = [
+        "//android:hardware_buffer",
+        "//common:scoped_ahwb",
+        "@com_google_absl//absl/cleanup",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:str_format",
+        "@org_tensorflow//tensorflow/lite:framework",
+        "@org_tensorflow//tensorflow/lite/core/async/c:task",
+        "@org_tensorflow//tensorflow/lite/delegates/utils:async_type_helpers",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
+
+cc_binary(
+    name = "async_delegate_test",
+    testonly = True,
+    srcs = [
+        "async_delegate_test.cc",
+        "//android:libnativewindow.so",
+    ],
+    deps = [
+        ":async_driver",
+        ":simple_model_builder",
+        "//android:hardware_buffer",
+        "//common/test_util:fp16_compare",
+        "//common/test_util:stable_delegate_env",
+        "@com_google_absl//absl/random",
+        "@com_google_googletest//:gtest",
+        "@org_tensorflow//tensorflow/lite:framework",
+        "@org_tensorflow//tensorflow/lite/core/async/interop/c:attribute_map",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
+
+cc_library(
+    name = "sync_driver",
+    srcs = ["sync_driver.cc"],
+    hdrs = ["sync_driver.h"],
+    deps = [
+        "@org_tensorflow//tensorflow/lite:framework",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
+
+cc_binary(
+    name = "sync_driver_test",
+    testonly = True,
+    srcs = [
+        "sync_driver_test.cc",
+    ],
+    deps = [
+        ":simple_model_builder",
+        ":sync_driver",
+        "//common/test_util:aligned_tflite_buffer_allocator",
+        "//common/test_util:fp16_compare",
+        "//common/test_util:stable_delegate_env",
+        "@com_google_absl//absl/random",
+        "@com_google_googletest//:gtest",
+        "@org_tensorflow//tensorflow/lite:framework",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "simple_async_delegate",
+    srcs = ["simple_async_delegate.cc"],
+    hdrs = ["simple_async_delegate.h"],
+    generate_opaque_delegate_target = True,
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/c:c_api",
+        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",
+        "@org_tensorflow//tensorflow/lite/c:c_api_types",
+        "@org_tensorflow//tensorflow/lite/c:common",
+    ],
+    deps = [
+        "@org_tensorflow//tensorflow/lite:array",
+        "@org_tensorflow//tensorflow/lite/kernels/internal:compatibility",
+    ],
+)

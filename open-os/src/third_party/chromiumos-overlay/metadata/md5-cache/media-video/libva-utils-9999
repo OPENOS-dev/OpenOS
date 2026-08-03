@@ -1,0 +1,15 @@
+BDEPEND=virtual/pkgconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4 dev-vcs/git app-misc/jq
+DEFINED_PHASES=configure info prepare setup unpack
+DEPEND=>=x11-libs/libva-2.0.0:= >=x11-libs/libdrm-2.4
+DESCRIPTION=Collection of utilities and tests for VA-API
+EAPI=7
+HOMEPAGE=https://01.org/linuxmedia/vaapi
+IUSE=test cros_host cros_workon_tree_
+KEYWORDS=~*
+LICENSE=MIT
+PROPERTIES=live
+RDEPEND=>=x11-libs/libva-2.0.0:= >=x11-libs/libdrm-2.4
+RESTRICT=!test? ( test )
+SLOT=0
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	libtool	f143db5a74ccd9ca28c1234deffede96	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=018dbda42f0751bc24e92db02639dea3

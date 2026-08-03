@@ -1,0 +1,4 @@
+# Members have read access to the device policy in /var/lib/devicesettings.
+group:policy-readers
+gid:303
+users:attestation,chronos,flex_hwis,hardware_verifier,secagentd,shill,u2f

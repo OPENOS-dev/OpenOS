@@ -1,0 +1,34 @@
+From d0acc1fa9164fe0eb9237645180a645b0ad0bba6 Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Fri, 13 Dec 2024 09:18:58 -0700
+Subject: [PATCH] add arm64 support for loading libraries
+
+---
+ src/libloader.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/libloader.c b/src/libloader.c
+index fa115a1..ddab2ce 100644
+--- a/src/libloader.c
++++ b/src/libloader.c
+@@ -45,7 +45,7 @@ int	LoadCupsLibrary(CUPSLIB_FUNCTION* cupsfun)
+ 		"/usr/local/lib/libcups.dylib",
+ 		"/usr/local/lib/libcups.2.dylib",
+ #else
+-#ifdef __x86_64__
++#if defined(__x86_64__) || defined(__aarch64__)
+ 		// try 64 bit libraries on 64 bit system
+ 		"/usr/lib64/libcups.so",
+ 		"/usr/lib64/libcups.so.2",
+@@ -250,7 +250,7 @@ int	LoadGsLibrary(GSLIB_FUNCTION* gsfun)
+ 		"/usr/lib/libgs.8.dylib",
+ 		"/usr/local/lib/libgs.dylib",
+ 		"/usr/local/lib/libgs.8.dylib",
+-#elif defined(__x86_64__)
++#elif defined(__x86_64__) || defined(__aarch64__)
+ 		// try 64 bit libraries on 64 bit system
+ 		"/usr/lib64/libgs.so",
+ 		"/usr/lib64/libgs.so.8",
+-- 
+2.47.1.613.gc27f4b7a9f-goog
+

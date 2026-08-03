@@ -1,0 +1,13 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DESCRIPTION=A tool for speaking to the NIST ACVP server.
+EAPI=7
+HOMEPAGE=https://boringssl.googlesource.com/boringssl/+/master/util/fipstools/acvp/acvptool/
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD-Google SSLeay
+RESTRICT=binchecks strip
+SLOT=0
+SRC_URI=https://boringssl.googlesource.com/boringssl/+archive/6ba98ff60144f60aba589b4d6121689528fbae76.tar.gz -> boringssl.googlesource.com-boringssl-6ba98ff60144f60aba589b4d6121689528fbae76.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=d06ea2e328b54009e8d8424909a97573

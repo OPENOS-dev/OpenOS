@@ -1,0 +1,157 @@
+#!/bin/bash
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This opens various servo consoles using cu, from outside the chroot,
+# automatically getting the correct console from dut-control. This
+# also tees the output to a secondary logfile.
+#
+# The recommended way to use this is to setup an alias, e.g. add this in
+# your .bashrc (outside the chroot):
+# alias dut-console="~/chromiumos/src/platform/dev/contrib/dut-console"
+# And then simply run:
+# dut-console -c ec
+#
+# The script also allows to connect to different servod port, e.g.
+# dut-console -c cpu -p 9998
+
+CONTRIB_DIR="$(dirname "$(readlink -f "$0")")"
+# Script is stored in $CROS_SDK/src/platform/dev/contrib
+CROS_SDK="${CONTRIB_DIR}/../../../.."
+
+kdmx_pid=
+
+# Loads script libraries.
+. "${CONTRIB_DIR}/common.sh" || exit 1
+
+FLAGS_HELP='dut-control [flags]
+
+Opens CPU/EC servo console using "cu", outputs to both terminal, and an output
+file named "log-${type}[-${port}].log" in the current directory.
+
+The recommended way to use this is to setup an alias, e.g. add this in your
+.bashrc (outside the chroot):
+# alias dut-console="~/chromiumos/src/platform/dev/contrib/dut-console"
+And then simply run:
+# dut-console -c ec
+'
+
+DEFINE_string console "cpu" \
+  "Opens a console, one of cpu, ec, cr50, fpmcu, servo_micro, servo_v4" c
+DEFINE_integer port "" "Servod port" p
+DEFINE_boolean kdmx "${FLAGS_FALSE}" \
+  "Start kdmx proxy for kgdb (only makes sense for cpu console)" k
+
+# Parse command line.
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+
+if [[ "$#" -ne 0 ]]; then
+  echo "Extraneous arguments on command line: $@"
+  flags_help
+  exit 2
+fi
+
+# Only now can we die on error.  shflags functions leak non-zero error codes,
+# so will die prematurely if 'set -e' is specified before now.
+set -e
+
+cleanup() {
+  trap - INT TERM ERR EXIT
+
+  if [[ -n "${kdmx_pid}" ]]; then
+    kill "${kdmx_pid}" 2>/dev/null
+  fi
+}
+
+get_pty() {
+  local pty_name="$1"
+  local port="${2:-9999}"
+  local args=()
+
+  python3 -c \
+"import xmlrpc.client;
+servo = xmlrpc.client.ServerProxy('http://localhost:${port}');
+print('%s' % servo.get('${pty_name}'))"
+}
+
+find_cu() {
+  if ! hash cu; then
+    echo "Please install cu first:" >&2
+    echo "sudo apt-get install cu" >&2
+    exit 1
+  fi
+}
+
+main() {
+  local kdmx
+  local pty
+  local pty_name
+  local outlog
+
+  find_cu
+
+  trap cleanup INT TERM ERR EXIT
+
+  pty_name="${FLAGS_console}_uart_pty"
+  pty="$(get_pty "${pty_name}" "${FLAGS_port}")"
+
+  if [[ ! -e "${pty}" ]]; then
+    echo "Cannot find pty ${pty_name}." >&2
+    exit 1
+  fi
+
+  outlog="log-${FLAGS_console}"
+  if [[ -n "${FLAGS_port}" ]]; then
+    outlog="${outlog}-${FLAGS_port}"
+  fi
+  outlog="${outlog}.log"
+
+  if [[ "${FLAGS_kdmx}" -eq "${FLAGS_TRUE}" ]]; then
+    if ! hash kdmx; then
+      echo "Please build and put kdmx in your PATH first." >&2
+      echo "See https://chromium.googlesource.com/chromiumos/docs/+/HEAD/kernel_development.md" >&2
+      exit 1
+    fi
+
+    # Note that we hardcode kdmx pty file location in the /tmp directory of the
+    # chroot. This should be ok as there is normally only one user, and only
+    # a single instance of dut-console/kdmx can run per console/servod instance.
+    local spath_in="/tmp/kdmx_${FLAGS_console}"
+    if [[ -n "${FLAGS_port}" ]]; then
+      spath_in="${spath_in}_${FLAGS_port}"
+    fi
+    local spath="${CROS_SDK}/out${spath_in}"
+    local spath_pty="${spath}_trm"
+    local spath_log="${spath}_log"
+
+    # Make sure we do not use a stale pty file
+    rm -f "${spath_pty}"
+
+    echo "Muxing ${pty_name}:${pty} with kdmx..."
+    kdmx -n -p "${pty}" -s "${spath}" > "${spath_log}" 2>&1 &
+    kdmx_pid="$!"
+    # Give kdmx enough time to start and create pty file
+    sleep 0.5
+
+    pty="$(cat "${spath_pty}" 2>/dev/null || true)"
+    if [[ -z "${pty}" ]]; then
+      echo "kdmx failed to start:" >&2
+      cat "${spath_log}" >&2
+      exit 1
+    fi
+    echo "You can now use kdbg inside the chroot with a command like:"
+    echo '${CROSS_ARCH}-gdb \
+        /build/${BOARD}/usr/lib/debug/boot/vmlinux \
+        -iex "add-auto-load-safe-path /build/${BOARD}/usr/lib/debug/boot/vmlinux-gdb.py" \
+        -ex "target remote $(cat '"${spath_in}"'_gdb)"'
+  fi
+
+  echo "Opening ${pty_name}:${pty}..."
+  echo "Log in ${outlog}, type <enter>~. to exit."
+
+  stdbuf -oL cu --nostop -l "${pty}" | tee "${outlog}"
+}
+
+main

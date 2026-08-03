@@ -1,0 +1,30 @@
+# Copyright 2019 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+CROS_WORKON_INCREMENTAL_BUILD="1"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk chromeos-config libmems .gn"
+
+PLATFORM_SUBDIR="libmems"
+
+inherit cros-workon platform
+
+DESCRIPTION="MEMS support library for Chromium OS."
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/libmems"
+
+LICENSE="BSD-Google"
+KEYWORDS="~*"
+IUSE=""
+
+COMMON_DEPEND="
+	chromeos-base/chromeos-config-tools:=
+	chromeos-base/system_api:=
+	net-libs/libiio:=
+	virtual/libudev:=
+"
+RDEPEND="${COMMON_DEPEND}"
+DEPEND="${COMMON_DEPEND}"

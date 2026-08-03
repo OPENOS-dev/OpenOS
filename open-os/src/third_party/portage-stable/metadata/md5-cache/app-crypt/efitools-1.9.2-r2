@@ -1,0 +1,13 @@
+DEFINED_PHASES=prepare
+DEPEND=!static? ( dev-libs/openssl:0= ) sys-apps/util-linux app-crypt/sbsigntools dev-perl/File-Slurp static? ( dev-libs/openssl:0=[static-libs(+)] ) sys-apps/help2man sys-boot/gnu-efi virtual/pkgconfig
+DESCRIPTION=Tools for manipulating UEFI secure boot platforms
+EAPI=6
+HOMEPAGE=https://git.kernel.org/cgit/linux/kernel/git/jejb/efitools.git
+IUSE=static
+KEYWORDS=*
+LICENSE=GPL-2 LGPL-2.1
+RDEPEND=!static? ( dev-libs/openssl:0= ) sys-apps/util-linux
+SLOT=0
+SRC_URI=https://git.kernel.org/pub/scm/linux/kernel/git/jejb/efitools.git/snapshot/efitools-1.9.2.tar.gz
+_eclasses_=desktop	b1d22ac8bdd4679ab79c71aca235009d	epatch	ed88001f77c6dd0d5f09e45c1a5b480e	estack	686eaab303305a908fd57b2fd7617800	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	ltprune	2729691420b6deeda2a90b1f1183fb55	multilib	2477ebe553d3e4d2c606191fe6c33602	preserve-libs	ef207dc62baddfddfd39a164d9797648	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	vcs-clean	2a0f74a496fa2b1552c4f3398258b7bf
+_md5_=028ff4d36f3da8c89a6b8d3dd070105f

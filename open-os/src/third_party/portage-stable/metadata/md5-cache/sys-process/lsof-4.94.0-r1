@@ -1,0 +1,15 @@
+BDEPEND=sys-apps/groff rpc? ( virtual/pkgconfig )
+DEFINED_PHASES=compile configure install postinst prepare
+DEPEND=rpc? ( net-libs/libtirpc ) selinux? ( sys-libs/libselinux )
+DESCRIPTION=Lists open files for running Unix processes
+EAPI=7
+HOMEPAGE=https://github.com/lsof-org/lsof
+IUSE=examples ipv6 rpc selinux
+KEYWORDS=*
+LICENSE=lsof
+RDEPEND=rpc? ( net-libs/libtirpc ) selinux? ( sys-libs/libselinux )
+RESTRICT=test
+SLOT=0
+SRC_URI=https://github.com/lsof-org/lsof/archive/4.94.0.tar.gz -> lsof-4.94.0.tar.gz
+_eclasses_=flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=7c74078f4d83ab44eb68e994ca26987d

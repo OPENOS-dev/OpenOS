@@ -1,0 +1,42 @@
+# Copyright 2017 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Defines the Chromium OS style for automatic reformatting.
+# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# Please keep all directives after this one sorted alphabetically.
+BasedOnStyle: Chromium
+
+# This defaults to 'Auto'. Explicitly set it so behavior is consistent.
+Standard: c++20
+
+# Always end files with a newline.
+InsertNewlineAtEOF: true
+
+# This is permitted by the Google and Chromium style guides, and existing code
+# uses it heavily.
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# NOLINT(reason) is used heavily by existing code.
+CommentPragmas: 'NOLINT:.*'
+
+# From upstream: crrev/c/4097043.
+InsertBraces: true
+
+# Group includes into four distinct groups and sort them case insensitively.
+IncludeBlocks: Regroup
+IncludeIsMainRegex: '([-_](test|unittest))?$'
+SortIncludes: CaseInsensitive
+IncludeCategories:
+  # C system includes
+  - Regex:           '^<((arpa|linux|net|netinet|sys)\/([0-9a-z_-]+\/)?)?[0-9a-z_-]+\.h>$'
+    Priority:        1
+  # C++ system includes
+  - Regex:           '^<[0-9a-z_-]+>$'
+    Priority:        2
+  # Other system libraries
+  - Regex:           '^<.*'
+    Priority:        3
+  # Other includes
+  - Regex:           '.*'
+    Priority:        4

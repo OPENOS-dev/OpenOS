@@ -1,0 +1,15 @@
+{
+  "file_format_version" : "1.0.0",
+  "layer" : {
+    "name": "VK_LAYER_INSIGHT_layer",
+    "type": "GLOBAL",
+    "library_path": "libInsightLayer.so",
+    "api_version": "1.3.0",
+    "implementation_version": "1",
+    "description": "Insight Layer",
+    "functions": {
+      "vkGetInstanceProcAddr": "VK_LAYER_insight_GetInstanceProcAddr",
+      "vkGetDeviceProcAddr": "VK_LAYER_insight_GetDeviceProcAddr"
+    }
+  }
+}

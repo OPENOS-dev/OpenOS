@@ -1,0 +1,21 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config STM32_UCPD
+        bool "USBC TCPC device controller driver"
+        depends on SOC_FAMILY_STM32
+        default y
+	select USE_STM32_LL_BUS
+	select USE_STM32_LL_SYSTEM
+	select USE_STM32_LL_RCC
+	select USE_STM32_LL_DMA
+        select USE_STM32_LL_UCPD
+	select USE_STM32_LL_USB
+	select USE_STM32_HAL_PCD
+	select USE_STM32_HAL_PCD_EX
+        help
+          Enable USBC TCPC support on the STM32 G0, G4, L5, and U5 family of
+          processors.
+
+source "Kconfig.zephyr"

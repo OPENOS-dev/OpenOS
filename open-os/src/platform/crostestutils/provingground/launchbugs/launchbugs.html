@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ChromeOS Launch Bugs go/launchbugs </title>
+</head>
+
+<body>
+  <script type = "text/javascript" src="js/getParameters.js"></script>
+  <script>
+    var base_url = 'https://launch.corp.google.com/launches?'
+    // Add milestone, TEs, and Approver to launch url and redirect to it
+    function UpdateUrlsWithParams(milestone, team, tester, approver) {
+      var src = base_url.concat('&q=calendarId:2197 <team><milestone><tester><approver>')
+      // Milestone
+      if (!milestone) {
+        console.log('No Milestone provided')
+        milestone = ''
+      }
+      else {
+        milestone = ' ("Stable Target Milestone":"' + milestone + '" OR "Stable Experiment Target Milestone":"' + milestone + '")'
+      }
+      src = src.replace(/<milestone>/g, milestone)
+      // Team Logic
+      if (!team) {
+        console.log('No Team provided')
+        team = ''
+      }
+      else {
+        team = ' underteamid:' + GetTeamId(team)
+      }
+      src = src.replace(/<team>/g, team)
+      // TE
+      if (!tester) {
+        console.log('No TE provided')
+        tester = ''
+      }
+      else if (tester == "new") {
+        console.log('No testers assigned')
+        tester = ' te:NULL'
+      }
+      else {
+        // TODO: Remove this replacement once b/237097115 is fixed
+        tester = tester.replace(/%2C/g, '" OR "')
+        // Verify if multiple TEs provided
+        tester = ' ("te":("' +tester.replace(/,/g, '" OR "')+ '") OR ("EngProd owners":("' +tester.replace(/,/g, '" OR "') + '")))'
+      }
+      src = src.replace(/<tester>/g, tester)
+      // EngProd Bit Approver
+      if (!approver) {
+        console.log('No Approver provided')
+        approver = ''
+      }
+      else {
+        // TODO: Remove this replacement once b/237097115 is fixed
+        approver = approver.replace(/%2C/g, '" OR "')
+        // Verify if multiple Approvers provided
+        approver =  ' "EngProd owners":("' +approver.replace(/,/g, '" OR "') + '")'
+      }
+      src = src.replace(/<approver>/g, approver)
+      window.location.replace(src);
+    }
+    // Get Params
+    // If user is requesting help, redirect to go link helper image
+    if (GetURLParameter('help')){
+      window.location.replace('https://screenshot.googleplex.com/7B3hsgkmYUxfB3N.png');
+    }
+    else{
+      var m = GetURLParameter('m')
+      var team = GetURLParameter('team')
+      var te = GetURLParameter('te')
+      var approver = GetURLParameter('a')
+      UpdateUrlsWithParams(m, team, te, approver)
+    }
+  </script>
+</body>
+</html>

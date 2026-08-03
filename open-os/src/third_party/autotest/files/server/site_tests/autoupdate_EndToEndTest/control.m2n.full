@@ -1,0 +1,48 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import logging
+from autotest_lib.client.common_lib import error
+from autotest_lib.client.common_lib import utils
+
+AUTHOR = "kyleshima, ChromiumOS"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Test autoupdate from the latest stable version."
+}
+NAME = "autoupdate_EndToEndTest.m2n.full"
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:au-m2n"
+JOB_RETRIES = 2
+
+DOC = """
+This tests an M-to-N update. That means it will update from the current stable
+version for this board to ToT. autoupdate_EndToEndTest runs as part of paygen
+and is kicked off differently from other tests. autoupdateEndToEndTest.m2n.full
+will run the same as the other autoupdate tests, so we can detect any
+differences between the two test environments and catch test-breaking changes
+earlier.
+
+Refer to autoupdate_Basic's control.delta file for instructions on how to run
+this test locally from your workstation.
+
+Note: for m2n tests, the source version is the currently serving stable channel
+version.
+
+"""
+
+from autotest_lib.client.common_lib import utils
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('autoupdate_EndToEndTest', host=host, test_conf=None,
+                 m2n=True, **args_dict)
+
+job.parallel_simple(run, machines)

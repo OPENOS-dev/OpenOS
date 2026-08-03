@@ -1,0 +1,13 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is used to influence the ebuild to bazel translation process, see
+# https://chromium.googlesource.com/chromiumos/bazel/+/HEAD/docs/advanced.md
+[bazel]
+
+# odmld loads stable delegates that uses these two libraries.
+interface_library_allowlist = [
+    "/usr/lib64/libdelegate_loader.a",
+    "/usr/lib64/libtflite_settings_json_parser.a",
+]

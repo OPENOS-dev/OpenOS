@@ -1,0 +1,74 @@
+Remove overload.h dependency
+
+Our version of abseil does not yet have overload.h.
+this is only available in newer versions of abseil.
+
+We can replace it with the good ol' fashioned invokable
+visitor.
+
+--- autofdo-3dafe34db0eb53af146cf782124f788ceaf6a9aa/lazy_evaluator.h	2024-09-06 17:21:21.000000000 +0000
++++ autofdo-3dafe34db0eb53af146cf782124f788ceaf6a9aa_new/lazy_evaluator.h	2025-01-09 23:26:15.618670742 +0000
+@@ -7,7 +7,6 @@
+ #include <variant>
+ 
+ #include "third_party/abseil/absl/functional/any_invocable.h"
+-#include "third_party/abseil/absl/functional/overload.h"
+ 
+ namespace devtools_crosstool_autofdo {
+ 
+@@ -55,24 +54,8 @@
+   const Output& Evaluate() {
+     // If the output is available, return it. Otherwise, make it
+     // available and return it.
+-    return std::visit(
+-        absl::Overload(
+-            [](const std::tuple<Output>& output) -> const Output& {
+-              return std::get<Output>(output);
+-            },
+-            [this](const InputsAndAdapter&) -> const Output& {
+-              // Extract the input.
+-              InputsAndAdapter inputs_and_adapter =
+-                  std::get<InputsAndAdapter>(std::move(inputs_or_output_));
+-              // Produce the output.
+-              inputs_or_output_.template emplace<std::tuple<Output>>(
+-                  std::apply(std::move(inputs_and_adapter.adapter),
+-                             std::move(inputs_and_adapter.inputs)));
+-              // Since input_or_output_ now contains an output, Evaluate() will
+-              // return a reference to the output.
+-              return Evaluate();
+-            }),
+-        inputs_or_output_);
++    InputOutputVisitor visitor(this);
++    return std::visit(visitor, inputs_or_output_);
+   }
+ 
+  private:
+@@ -82,6 +65,28 @@
+     absl::AnyInvocable<Output(Inputs...)> adapter;
+   };
+ 
++  struct InputOutputVisitor {
++    LazyEvaluator<Output(Inputs...)> *capturedLazyEvaluator_;
++
++    const Output& operator()(const std::tuple<Output>& output) {
++      return std::get<Output>(output);
++    }
++
++    const Output& operator()(const InputsAndAdapter&) {
++      // Extract the input.
++      InputsAndAdapter inputs_and_adapter =
++          std::get<InputsAndAdapter>(std::move(capturedLazyEvaluator_->inputs_or_output_));
++      // Produce the output.
++      capturedLazyEvaluator_->inputs_or_output_.template emplace<std::tuple<Output>>(
++          std::apply(std::move(inputs_and_adapter.adapter),
++                     std::move(inputs_and_adapter.inputs)));
++      // Since input_or_output_ now contains an output, Evaluate() will
++      // return a reference to the output.
++      return capturedLazyEvaluator_->Evaluate();
++    }
++  };
++
++
+   std::variant<InputsAndAdapter, std::tuple<Output>> inputs_or_output_;
+ };
+ }  // namespace devtools_crosstool_autofdo

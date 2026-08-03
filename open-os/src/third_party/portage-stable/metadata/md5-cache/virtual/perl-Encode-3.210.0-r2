@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for Encode
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* =dev-lang/perl-5.40* ~perl-core/Encode-3.210.0 ) !<perl-core/Encode-3.210.0 !>perl-core/Encode-3.210.0-r999
+SLOT=0
+_md5_=0bd0d2af5cf78d127f0a5c8768da31a7

@@ -1,0 +1,27 @@
+# Editor state
+*~
+.vscode
+
+# Python
+__pycache__
+*.egg-info
+*.pyc
+
+# Build output
+/borealis-dlc
+/*_rootfs.img*
+/vm_kernel*
+/credits.html
+/metadata*.xml
+/missing_mappings*.txt
+/public-borealis-tast-binaries-*.tar.zst
+
+# Build internals
+termina_tools*.tbz*
+/build/stamp/*
+/vendor/*/out/*
+/build/sommelier
+
+# Debugging
+/breakpad.tar*
+/breakpad.tbz*

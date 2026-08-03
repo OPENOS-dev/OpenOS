@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This hook asserts that there are "File format not recognized"-type errors
+# in the build logs, that may result from using objcopy/strip binaries
+# built for a different architecture.
+# This is done to avoid shipping non-stripped binaries.
+
+# Main entry point for this hook.
+check_debug_symbol_strip_errors() {
+  # Allow packages with known issues to skip the hook for now.
+  # Do not add more packages here.
+  case "${CATEGORY}/${PN}" in
+    # TODO(b/207412216): export STRIP=: does not work with Makefile
+    sys-apps/hdparm) return ;;
+  esac
+
+  # Set arguments to "${T}/build.log" if none given.
+  [[ $# -eq 0 ]] && set -- "${T}/build.log"
+
+  unstripped_files=$(grep -e "Unable to recognise the format of the input" \
+                          -e "File format not recognized" "$@" | \
+                          grep -v "grep")
+  if [[ -n "${unstripped_files}" ]]; then
+    die "objcopy/strip failed to recognize the format of some files:
+${unstripped_files}
+  Is your toolchain using the right architecture?"
+  fi
+}
+
+check_debug_symbol_strip_errors "$@"
+: # guarantee successful exit
+
+# vim:ft=sh

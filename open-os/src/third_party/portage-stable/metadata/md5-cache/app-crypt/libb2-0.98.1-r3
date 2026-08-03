@@ -1,0 +1,14 @@
+BDEPEND=>=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.5-r1:1.16 >=sys-devel/automake-1.15.1-r2:1.15 ) >=sys-devel/autoconf-2.69 >=dev-build/libtool-2.4
+DEFINED_PHASES=compile configure install prepare pretend setup test
+DEPEND=openmp? ( || ( >=sys-devel/gcc-4.2:*[openmp] sys-devel/clang-runtime:*[openmp] ) )
+DESCRIPTION=C library providing BLAKE2b, BLAKE2s, BLAKE2bp, BLAKE2sp
+EAPI=7
+HOMEPAGE=https://github.com/BLAKE2/libb2
+IUSE=static-libs native-cflags openmp abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64
+KEYWORDS=*
+LICENSE=CC0-1.0
+RDEPEND=openmp? ( || ( >=sys-devel/gcc-4.2:*[openmp] sys-devel/clang-runtime:*[openmp] ) )
+SLOT=0
+SRC_URI=https://github.com/BLAKE2/libb2/archive/73d41c8255a991ed2adea41c108b388d9d14b449.tar.gz -> libb2-0.98.1.tar.gz
+_eclasses_=autotools	4efb7fe6eb4ad7fa00f3b26b7efc3c47	libtool	f143db5a74ccd9ca28c1234deffede96	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=9747508138ab0238c84b2d5a5a4fe3bc

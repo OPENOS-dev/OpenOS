@@ -1,0 +1,11 @@
+BDEPEND=app-arch/xz-utils
+DEFINED_PHASES=compile install
+DESCRIPTION=Collection of patches for libtool.eclass
+EAPI=7
+HOMEPAGE=https://gitweb.gentoo.org/proj/elt-patches.git/
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=sys-apps/gentoo-functions
+SLOT=0
+SRC_URI=https://dev.gentoo.org/~grobian/distfiles/elt-patches-20210924.tar.xz https://dev.gentoo.org/~vapier/dist/elt-patches-20210924.tar.xz
+_md5_=445e391a2867e6019234fbdd418b407c

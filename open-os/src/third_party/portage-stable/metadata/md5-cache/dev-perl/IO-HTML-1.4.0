@@ -1,0 +1,13 @@
+BDEPEND=virtual/perl-Carp >=virtual/perl-Encode-2.100.0 >=virtual/perl-Exporter-5.570.0 >=virtual/perl-ExtUtils-MakeMaker-6.300.0 dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Open an HTML file with automatic charset detection
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/IO-HTML
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Carp >=virtual/perl-Encode-2.100.0 >=virtual/perl-Exporter-5.570.0 dev-lang/perl:=
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/C/CJ/CJM/IO-HTML-1.004.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=3b702fa893a30b9d2b6b61bdf438dad7

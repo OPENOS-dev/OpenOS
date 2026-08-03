@@ -1,0 +1,299 @@
+[
+  {
+    "name": "CrOSLateBootSchedTrace",
+    "commands": [
+      {
+        "name": "Mkdir",
+        "path": "/sys/kernel/tracing/instances/schedtrace/"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/tracing/instances/schedtrace/events/sched/sched_switch/enable",
+        "value": "1"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/tracing/instances/schedtrace/events/sched/sched_switch/trigger",
+        "value": "stacktrace if prev_state & 7"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/tracing/instances/schedtrace/events/sched/sched_migrate_task/enable",
+        "value": "1"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/tracing/instances/schedtrace/events/sched/sched_waking/enable",
+        "value": "1"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/kernel/tracing/instances/"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootCpuidleMenu",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/devices/system/cpu/cpuidle/current_governor",
+        "value": "menu"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/devices/system/cpu/cpuidle/current_governor"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootCpuidleTEO",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/devices/system/cpu/cpuidle/current_governor",
+        "value": "teo"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/devices/system/cpu/cpuidle/current_governor"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootSchedUtilHints40",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/ui/cpu.uclamp.min",
+        "value": "40"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/chrome_renderers/cpu.uclamp.min",
+        "value": "40"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/chrome_renderers/foreground/cpu.uclamp.min",
+        "value": "40"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/fs/cgroup/cpu/ui/cpu.uclamp.min"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootSchedUtilHints60",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/ui/cpu.uclamp.min",
+        "value": "60"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/chrome_renderers/cpu.uclamp.min",
+        "value": "60"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/chrome_renderers/foreground/cpu.uclamp.min",
+        "value": "60"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/fs/cgroup/cpu/ui/cpu.uclamp.min"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootSchedUtilHints80",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/ui/cpu.uclamp.min",
+        "value": "80"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/chrome_renderers/cpu.uclamp.min",
+        "value": "80"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/fs/cgroup/cpu/chrome_renderers/foreground/cpu.uclamp.min",
+        "value": "80"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/fs/cgroup/cpu/ui/cpu.uclamp.min"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootTestFeature",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/run/featured_test/test_write",
+        "value": "test_featured"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/run/featured_test/test_write"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootHighResOff",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/timer_highres",
+        "value": "0"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/sched_aggressive_next_balance",
+        "value": "0"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/sched_min_load_balance_interval",
+        "value": "16"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/proc/sys/kernel/timer_highres"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootHighResOffGlobal",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/timer_highres",
+        "value": "0"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/sched_aggressive_next_balance",
+        "value": "0"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/sched_min_load_balance_interval",
+        "value": "16"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/proc/sys/kernel/timer_highres"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootEEVDF",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/kernel/sched_use_eevdf",
+        "value": "1"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/proc/sys/kernel/sched_use_eevdf"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootArcVmVcpuBoost",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/module/kvm/parameters/kvm_pv_sched",
+        "value": "1"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/module/kvm/parameters/kvm_pv_sched"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootEEVDFEligibility",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/debug/sched/features",
+        "value": "NO_ENFORCE_ELIGIBILITY"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/debug/sched/features",
+        "value": "NO_RUN_TO_PARITY"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/debug/sched/features",
+        "value": "NO_PLACE_LAG"
+      },
+      {
+        "name": "WriteFile",
+        "path": "/sys/kernel/debug/sched/features",
+        "value": "NO_PLACE_DEADLINE_INITIAL"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/sys/kernel/debug/sched/features"
+      }
+    ]
+  },
+  {
+    "name": "CrOSLateBootDirtyWritebackMaxBytes",
+    "commands": [
+      {
+        "name": "WriteFile",
+        "path": "/proc/sys/vm/dirty_background_ratio_max_bytes",
+        "value": "409600000"
+      },
+     {
+        "name": "WriteFile",
+        "path": "/proc/sys/vm/dirty_ratio_max_bytes",
+        "value": "1699840000"
+      }
+    ],
+    "support_check_commands": [
+      {
+        "name": "FileExists",
+        "path": "/proc/sys/vm/dirty_background_ratio_max_bytes"
+      }
+    ]
+  }
+]

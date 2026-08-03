@@ -1,0 +1,99 @@
+# Copyright 2018 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI="7"
+
+inherit cros-constants libchrome cros-protobuf
+
+DESCRIPTION="Packages tools for termina VM containers"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/vm_tools"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+IUSE="vm_borealis lib_resourced"
+# This ebuild doesn't build _new_ binaries. The binaries it installs should
+# already be stripped. This avoids causing broken debug files to be generated.
+RESTRICT="strip"
+
+S="${WORKDIR}"
+
+RDEPEND="
+	x11-themes/cros-adapta
+"
+DEPEND="
+	chromeos-base/chunnel
+	chromeos-base/vmmms_client
+	!vm_borealis? ( chromeos-base/sommelier )
+	chromeos-base/vm_guest_tools
+	chromeos-base/crash-reporter
+	net-libs/grpc:=
+	!vm_borealis? ( media-libs/mesa )
+	!vm_borealis? ( x11-apps/xkbcomp )
+	!vm_borealis? ( x11-base/xwayland )
+	!vm_borealis? ( chromeos-base/crostini-metric-reporter )
+"
+
+src_install() {
+	local tools=(
+		"/sbin/crash_reporter"
+		"/usr/bin/chunnel"
+		"/usr/bin/garcon"
+		"/usr/bin/guest_service_failure_notifier"
+		"/usr/bin/maitred"
+		"/usr/bin/notificationd"
+		"/usr/sbin/vshd"
+		"/usr/bin/vmmms_client"
+		"/usr/bin/core2md"
+		"/usr/bin/vm_syslog"
+		"/usr/bin/sommelier"
+		"/usr/bin/upgrade_container"
+		"/usr/bin/wayland_demo"
+		"/usr/bin/Xwayland"
+		"/usr/bin/x11_demo"
+		"/usr/bin/xkbcomp"
+		"/usr/bin/crostini_metric_reporter"
+		"/usr/bin/port_listener"
+	)
+	"${CHROMITE_BIN_DIR}"/lddtree --root="${SYSROOT}" --bindir=/bin \
+			--libdir=/lib --generate-wrappers \
+			--copy-non-elfs \
+			--copy-to-tree="${WORKDIR}"/container_pkg/ \
+			"${tools[@]}"
+
+	# These libraries are dlopen()'d so lddtree doesn't know about them.
+	local dlopen_libs=(
+		"/$(get_libdir)/libnss_compat.so.2" \
+		"/$(get_libdir)/libnss_files.so.2" \
+		"/$(get_libdir)/libnss_nis.so.2" \
+		"/$(get_libdir)/libnss_dns.so.2"
+	)
+	if ! use vm_borealis; then
+		dlopen_libs+=(
+			"/usr/$(get_libdir)/dri/i965_dri.so" \
+			"/usr/$(get_libdir)/dri/swrast_dri.so" \
+			"/usr/$(get_libdir)/dri/virtio_gpu_dri.so" \
+			"/usr/$(get_libdir)/libwayland-egl.so.1" \
+			"/usr/$(get_libdir)/libEGL.so.1" \
+			"/usr/$(get_libdir)/libGLESv2.so.2" \
+		)
+	fi
+	if use lib_resourced; then
+		dlopen_libs+=(
+			"/usr/$(get_libdir)/libresourceD.so" \
+		)
+	fi
+
+	mapfile -t dlopen_libs < <("${CHROMITE_BIN_DIR}"/lddtree --root="${SYSROOT}" --list "${dlopen_libs[@]}")
+
+	cp -aL "${dlopen_libs[@]}" "${WORKDIR}"/container_pkg/lib/
+
+	# Baguette's custom build system needs /etc/crash_reporter_logs.conf
+	# packaged with the Termina tools.
+	mkdir -p "${WORKDIR}/container_pkg/etc"
+	cp "${SYSROOT}/etc/crash_reporter_logs.conf" "${WORKDIR}/container_pkg/etc" || die
+
+	insinto /opt/google/cros-containers
+	insopts -m0755
+	doins -r "${WORKDIR}"/container_pkg/*
+}

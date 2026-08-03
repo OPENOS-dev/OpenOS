@@ -1,0 +1,22 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+futex: 1
+brk: 1
+# TODO(b/333978583): Document why prctl is required.
+prctl: arg0 == PR_SET_NAME || arg0 == PR_SET_KEEPCAPS || arg0 == PR_SET_SECCOMP
+close: 1
+exit_group: 1
+# TODO(b/333978583): Document why ioctl is required.
+ioctl: arg1 == TCGETS
+newfstatat: 1
+fstat: 1
+unlinkat: 1
+lseek: 1
+restart_syscall: 1
+exit: 1
+rt_sigreturn: 1
+clock_getres: 1
+clock_gettime: 1
+gettimeofday: 1

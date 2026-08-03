@@ -1,0 +1,46 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+rust_binary(
+    name = "action_wrapper",
+    srcs = glob(["src/*.rs"]),
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["//visibility:public"],
+    deps = [
+        "//bazel/portage/common/chrome_trace",
+        "//bazel/portage/common/cliutil",
+        "//bazel/portage/common/fileutil",
+        "//bazel/portage/common/processes",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:clap",
+        "@alchemy_crates//:nix",
+        "@alchemy_crates//:path-absolutize",
+        "@alchemy_crates//:serde_json",
+        "@alchemy_crates//:tempfile",
+    ],
+)
+
+rust_test(
+    name = "action_wrapper_test",
+    size = "small",
+    crate = ":action_wrapper",
+    data = [":action_wrapper"] + glob(["testdata/**"]),
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "@alchemy_crates//:libc",
+        "@alchemy_crates//:regex",
+        "@alchemy_crates//:tempfile",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":action_wrapper",
+    enabled = False,
+    tests = [":action_wrapper_test"],
+)

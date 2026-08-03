@@ -1,0 +1,15 @@
+BDEPEND=virtual/perl-File-Spec virtual/perl-Scalar-List-Utils virtual/perl-ExtUtils-MakeMaker test? ( >=virtual/perl-Test-Simple-0.960.0 ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=An object representing a stack trace
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Devel-StackTrace
+IUSE=test
+KEYWORDS=*
+LICENSE=Artistic-2
+RDEPEND=virtual/perl-File-Spec virtual/perl-Scalar-List-Utils dev-lang/perl:=
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/D/DR/DROLSKY/Devel-StackTrace-2.04.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=262f912b10752d5326d3486b209ca6c1

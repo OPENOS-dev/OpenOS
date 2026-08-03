@@ -1,0 +1,8 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+cros_post_src_prepare_bogus_paths() {
+	# Stop egg_info from putting bogus paths in SOURCES.txt.
+	sed -i -e '/include_package_data=True,/s/^/#/' setup.py || die
+}

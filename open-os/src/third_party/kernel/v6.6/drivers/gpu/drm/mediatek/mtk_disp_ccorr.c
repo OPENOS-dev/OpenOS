@@ -1,0 +1,255 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2021 MediaTek Inc.
+ */
+
+#include <linux/clk.h>
+#include <linux/component.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/soc/mediatek/mtk-cmdq.h>
+
+#include "mtk_crtc.h"
+#include "mtk_ddp_comp.h"
+#include "mtk_disp_drv.h"
+#include "mtk_drm_drv.h"
+
+#define DISP_CCORR_EN				0x0000
+#define CCORR_EN					BIT(0)
+#define DISP_CCORR_CFG				0x0020
+#define CCORR_RELAY_MODE				BIT(0)
+#define CCORR_ENGINE_EN					BIT(1)
+#define CCORR_GAMMA_OFF					BIT(2)
+#define CCORR_WGAMUT_SRC_CLIP				BIT(3)
+#define DISP_CCORR_SIZE				0x0030
+#define DISP_CCORR_COEF_0			0x0080
+#define DISP_CCORR_COEF_1			0x0084
+#define DISP_CCORR_COEF_2			0x0088
+#define DISP_CCORR_COEF_3			0x008C
+#define DISP_CCORR_COEF_4			0x0090
+
+struct mtk_disp_ccorr_data {
+	u32 matrix_bits;
+	enum mtk_ddp_comp_id mandatory_ccorr;
+};
+
+struct mtk_disp_ccorr {
+	struct clk *clk;
+	void __iomem *regs;
+	struct mtk_ddp_comp ddp_comp;
+	struct cmdq_client_reg cmdq_reg;
+	const struct mtk_disp_ccorr_data	*data;
+};
+
+int mtk_ccorr_clk_enable(struct device *dev)
+{
+	struct mtk_disp_ccorr *ccorr = dev_get_drvdata(dev);
+
+	return clk_prepare_enable(ccorr->clk);
+}
+
+void mtk_ccorr_clk_disable(struct device *dev)
+{
+	struct mtk_disp_ccorr *ccorr = dev_get_drvdata(dev);
+
+	clk_disable_unprepare(ccorr->clk);
+}
+
+void mtk_ccorr_config(struct device *dev, unsigned int w,
+			     unsigned int h, unsigned int vrefresh,
+			     unsigned int bpc, struct cmdq_pkt *cmdq_pkt)
+{
+	struct mtk_disp_ccorr *ccorr = dev_get_drvdata(dev);
+	u32 cfg_val = CCORR_ENGINE_EN | CCORR_RELAY_MODE | CCORR_GAMMA_OFF;
+
+	mtk_ddp_write(cmdq_pkt, w << 16 | h, &ccorr->cmdq_reg, ccorr->regs, DISP_CCORR_SIZE);
+	mtk_ddp_write(cmdq_pkt, cfg_val, &ccorr->cmdq_reg, ccorr->regs, DISP_CCORR_CFG);
+}
+
+void mtk_ccorr_start(struct device *dev)
+{
+	struct mtk_disp_ccorr *ccorr = dev_get_drvdata(dev);
+
+	writel(CCORR_EN, ccorr->regs + DISP_CCORR_EN);
+}
+
+void mtk_ccorr_stop(struct device *dev)
+{
+	struct mtk_disp_ccorr *ccorr = dev_get_drvdata(dev);
+
+	writel_relaxed(0x0, ccorr->regs + DISP_CCORR_EN);
+}
+
+void mtk_ccorr_ctm_set(struct device *dev, struct drm_crtc_state *state,
+		       struct cmdq_pkt *cmdq_pkt)
+{
+	struct mtk_disp_ccorr *ccorr = dev_get_drvdata(dev);
+	struct mtk_ddp_comp *comp = &ccorr->ddp_comp;
+	struct drm_property_blob *blob = state->ctm;
+	struct drm_color_ctm *ctm;
+	const u64 *input;
+	uint16_t coeffs[9] = { 0 };
+	int i;
+	u32 matrix_bits = ccorr->data->matrix_bits;
+	u32 cfg_val = 0;
+
+	if (!blob)
+		return;
+
+	if (comp->id != ccorr->data->mandatory_ccorr)
+		return;
+
+	ctm = (struct drm_color_ctm *)blob->data;
+	input = ctm->matrix;
+
+	for (i = 0; i < ARRAY_SIZE(coeffs); i++)
+		coeffs[i] = drm_color_ctm_s31_32_to_qm_n(input[i], 2, matrix_bits);
+
+	for (i = 0; i < ARRAY_SIZE(coeffs); i++) {
+		/*
+		 * Adjusts the coefficient to fit within the hardware's expected format.
+		 * If the sign bit (matrix_bits + 1) is set, indicating a negative value:
+		 * Steps:
+		 * 1. Mask the coefficient to keep only the lower 'matrix_bits' bits.
+		 * 2. Invert coefficient.
+		 * 3. Add 1 to the inverted coefficient to perform two's complement negation.
+		 * 4. Mask the result to ensure it fits within 'matrix_bits + 1' bits.
+		 */
+		if (coeffs[i] & BIT(matrix_bits + 1))
+			coeffs[i] = (~(coeffs[i] & GENMASK(matrix_bits, 0)) + 1)
+					& GENMASK(matrix_bits + 1, 0);
+	}
+
+	mtk_ddp_write(cmdq_pkt, coeffs[0] << 16 | coeffs[1], &ccorr->cmdq_reg,
+                      ccorr->regs, DISP_CCORR_COEF_0);
+	mtk_ddp_write(cmdq_pkt, coeffs[2] << 16 | coeffs[3], &ccorr->cmdq_reg,
+                      ccorr->regs, DISP_CCORR_COEF_1);
+	mtk_ddp_write(cmdq_pkt, coeffs[4] << 16 | coeffs[5], &ccorr->cmdq_reg,
+                      ccorr->regs, DISP_CCORR_COEF_2);
+	mtk_ddp_write(cmdq_pkt, coeffs[6] << 16 | coeffs[7], &ccorr->cmdq_reg,
+                      ccorr->regs, DISP_CCORR_COEF_3);
+	mtk_ddp_write(cmdq_pkt, coeffs[8] << 16, &ccorr->cmdq_reg, ccorr->regs,
+                      DISP_CCORR_COEF_4);
+
+	/* Disable RELAY mode to pass the processed image */
+	cfg_val = CCORR_ENGINE_EN | CCORR_GAMMA_OFF;
+
+	mtk_ddp_write(cmdq_pkt, cfg_val, &ccorr->cmdq_reg, ccorr->regs, DISP_CCORR_CFG);
+}
+
+static int mtk_disp_ccorr_bind(struct device *dev, struct device *master,
+			       void *data)
+{
+	return 0;
+}
+
+static void mtk_disp_ccorr_unbind(struct device *dev, struct device *master,
+				  void *data)
+{
+}
+
+static const struct component_ops mtk_disp_ccorr_component_ops = {
+	.bind	= mtk_disp_ccorr_bind,
+	.unbind	= mtk_disp_ccorr_unbind,
+};
+
+static int mtk_disp_ccorr_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct mtk_disp_ccorr *priv;
+	struct resource *res;
+	int ret;
+	enum mtk_ddp_comp_id comp_id;
+
+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	priv->clk = devm_clk_get(dev, NULL);
+	if (IS_ERR(priv->clk)) {
+		dev_err(dev, "failed to get ccorr clk\n");
+		return PTR_ERR(priv->clk);
+	}
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	priv->regs = devm_ioremap_resource(dev, res);
+	if (IS_ERR(priv->regs)) {
+		dev_err(dev, "failed to ioremap ccorr\n");
+		return PTR_ERR(priv->regs);
+	}
+
+	comp_id = mtk_ddp_comp_get_id(dev->of_node, MTK_DISP_CCORR);
+	if (comp_id < 0) {
+		dev_err(dev, "Failed to identify by alias: %d\n", comp_id);
+		return comp_id;
+	}
+
+	ret = mtk_ddp_comp_init(dev, dev->of_node, &priv->ddp_comp, comp_id);
+	if (ret) {
+		dev_err(dev, "Failed to initialize component: %d\n", ret);
+		return ret;
+	}
+#if IS_REACHABLE(CONFIG_MTK_CMDQ)
+	ret = cmdq_dev_get_client_reg(dev, &priv->cmdq_reg, 0);
+	if (ret)
+		dev_dbg(dev, "get mediatek,gce-client-reg fail!\n");
+#endif
+
+	priv->data = of_device_get_match_data(dev);
+	platform_set_drvdata(pdev, priv);
+
+	ret = component_add(dev, &mtk_disp_ccorr_component_ops);
+	if (ret)
+		dev_err(dev, "Failed to add component: %d\n", ret);
+
+	return ret;
+}
+
+static void mtk_disp_ccorr_remove(struct platform_device *pdev)
+{
+	component_del(&pdev->dev, &mtk_disp_ccorr_component_ops);
+}
+
+static const struct mtk_disp_ccorr_data mt8183_ccorr_driver_data = {
+	.matrix_bits = 10,
+	.mandatory_ccorr = DDP_COMPONENT_CCORR0,
+};
+
+static const struct mtk_disp_ccorr_data mt8192_ccorr_driver_data = {
+	.matrix_bits = 11,
+	.mandatory_ccorr = DDP_COMPONENT_CCORR0,
+};
+
+static const struct mtk_disp_ccorr_data mt8196_ccorr_driver_data = {
+	.matrix_bits = 11,
+	.mandatory_ccorr = DDP_COMPONENT_CCORR0,
+};
+
+static const struct mtk_disp_ccorr_data mt8189_ccorr_driver_data = {
+	.matrix_bits = 11,
+	.mandatory_ccorr = DDP_COMPONENT_CCORR0,
+};
+
+static const struct of_device_id mtk_disp_ccorr_driver_dt_match[] = {
+	{ .compatible = "mediatek,mt8183-disp-ccorr",
+	  .data = &mt8183_ccorr_driver_data},
+	{ .compatible = "mediatek,mt8189-disp-ccorr",
+	  .data = &mt8189_ccorr_driver_data},
+	{ .compatible = "mediatek,mt8192-disp-ccorr",
+	  .data = &mt8192_ccorr_driver_data},
+	{ .compatible = "mediatek,mt8196-disp-ccorr",
+	  .data = &mt8196_ccorr_driver_data},
+	{},
+};
+MODULE_DEVICE_TABLE(of, mtk_disp_ccorr_driver_dt_match);
+
+struct platform_driver mtk_disp_ccorr_driver = {
+	.probe		= mtk_disp_ccorr_probe,
+	.remove_new	= mtk_disp_ccorr_remove,
+	.driver		= {
+		.name	= "mediatek-disp-ccorr",
+		.owner	= THIS_MODULE,
+		.of_match_table = mtk_disp_ccorr_driver_dt_match,
+	},
+};

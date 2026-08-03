@@ -1,0 +1,116 @@
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_fls_header",
+    ":install_headers",
+    ":install_pkg_config",
+    ":libdm-bht",
+    ":verity",
+  ]
+  if (use.cros_host) {
+    deps += [ ":install_subtool" ]
+  }
+  if (use.test) {
+    deps += [
+      ":blake2b_hasher_test",
+      ":verity_tests",
+    ]
+  }
+}
+
+pkg_config("target_defaults") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "openssl",
+  ]
+  include_dirs = [ "include" ]
+}
+
+shared_library("libdm-bht") {
+  sources = [
+    "blake2b/blake2b.cc",
+    "dm-bht.cc",
+    "dm_verity_table.cc",
+    "file_hasher.cc",
+    "hasher.cc",
+    "verity_action.cc",
+    "verity_mode.cc",
+  ]
+  install_path = "lib"
+  configs += [ ":target_defaults" ]
+}
+
+executable("verity") {
+  sources = [ "verity_main.cc" ]
+  configs += [ ":target_defaults" ]
+  install_path = "bin"
+  deps = [ ":libdm-bht" ]
+}
+
+install_config("install_pkg_config") {
+  sources = [ "libdm-bht.pc" ]
+  install_path = "${libdir}/pkgconfig"
+}
+
+install_config("install_headers") {
+  sources = [
+    "dm-bht-userspace.h",
+    "dm-bht.h",
+    "dm_verity_table.h",
+    "file_hasher.h",
+    "verity_action.h",
+    "verity_mode.h",
+  ]
+  install_path = "/usr/include/verity"
+}
+
+install_config("install_fls_header") {
+  sources = [ "include/asm-generic/bitops/fls.h" ]
+  install_path = "/usr/include/verity/asm-generic/bitops/"
+}
+
+install_config("install_subtool") {
+  sources = [ "subtool.textproto" ]
+  install_path = "/etc/cros/sdk-packages.d/verity"
+}
+
+if (use.test) {
+  executable("blake2b_hasher_test") {
+    sources = [
+      "blake2b/blake2b.cc",
+      "hasher.cc",
+      "hasher_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    deps = [ "//common-mk/testrunner" ]
+    run_test = true
+  }
+
+  executable("verity_tests") {
+    sources = [
+      "dm-bht_test.cc",
+      "dm_verity_table_test.cc",
+      "file_hasher_test.cc",
+      "verity_action_test.cc",
+      "verity_mode_test.cc",
+    ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults",
+    ]
+    deps = [
+      ":libdm-bht",
+      "//common-mk/testrunner",
+    ]
+    run_test = true
+  }
+}

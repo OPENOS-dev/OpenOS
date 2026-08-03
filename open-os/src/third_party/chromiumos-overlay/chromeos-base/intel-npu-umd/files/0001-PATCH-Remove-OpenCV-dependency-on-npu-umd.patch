@@ -1,0 +1,28 @@
+From 3727d1b0a9ffb8969389443abaf3d2ba002de2a8 Mon Sep 17 00:00:00 2001
+From: Vivek Trambadiya <vivek.dilipbhai.trambadiya@intel.com>
+Date: Wed, 25 Sep 2024 18:23:28 +0530
+Subject: [PATCH] [PATCH]:Remove-OpenCV-dependency-on-npu-umd.
+
+Removes opencv dependency
+---
+ validation/umd-test/CMakeLists.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/validation/umd-test/CMakeLists.txt b/validation/umd-test/CMakeLists.txt
+index 7cc1ec49c9e9..358ccbdeeaa9 100644
+--- a/validation/umd-test/CMakeLists.txt
++++ b/validation/umd-test/CMakeLists.txt
+@@ -12,7 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ add_subdirectory(utilities)
+ 
+ find_package(OpenVINO QUIET COMPONENTS Runtime)
+-find_package(OpenCV QUIET)
++if(ENABLE_OPENCV)
++           find_package(OpenCV QUIET)
++endif()
+ find_package(OpenCL QUIET)
+ 
+ add_executable(${PROJECT_NAME}
+-- 
+2.46.0
+

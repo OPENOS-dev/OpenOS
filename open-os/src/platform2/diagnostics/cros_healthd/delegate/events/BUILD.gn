@@ -1,0 +1,46 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("events") {
+  sources = [
+    "audio_jack_evdev_delegate.cc",
+    "power_button_evdev_delegate.cc",
+    "stylus_evdev_delegate.cc",
+    "stylus_garage_evdev_delegate.cc",
+    "touchpad_evdev_delegate.cc",
+    "touchscreen_evdev_delegate.cc",
+    "volume_button_evdev_delegate.cc",
+  ]
+  public_pkg_deps = [ "libmojo" ]
+  public_deps = [
+    "//diagnostics/cros_healthd/delegate/utils",
+    "//diagnostics/cros_healthd/mojom:executor_mojo_bindings",
+  ]
+  deps = [ "//diagnostics/mojom/public:libcros_healthd_mojo_bindings" ]
+}
+
+if (use.test) {
+  source_set("test") {
+    sources = [
+      "audio_jack_evdev_delegate_test.cc",
+      "power_button_evdev_delegate_test.cc",
+      "stylus_evdev_delegate_test.cc",
+      "stylus_garage_evdev_delegate_test.cc",
+      "touchpad_evdev_delegate_test.cc",
+      "touchscreen_evdev_delegate_test.cc",
+      "volume_button_evdev_delegate_test.cc",
+    ]
+    pkg_deps = [
+      "libchrome-test",
+      "libmojo",
+    ]
+    deps = [
+      ":events",
+      "//diagnostics/base:healthd_testrunner",
+      "//diagnostics/cros_healthd/delegate/utils",
+      "//diagnostics/cros_healthd/mojom:executor_mojo_bindings",
+      "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+    ]
+  }
+}

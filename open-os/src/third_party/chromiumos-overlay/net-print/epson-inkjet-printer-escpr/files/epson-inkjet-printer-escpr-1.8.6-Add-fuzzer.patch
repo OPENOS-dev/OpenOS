@@ -1,0 +1,94 @@
+From 4b07c6ad05582a5fe303fc224e86222511a5321a Mon Sep 17 00:00:00 2001
+From: Nathan Muggli <nmuggli@google.com>
+Date: Fri, 11 Jul 2025 17:53:53 -0600
+Subject: [PATCH] Add fuzzer for this epson filter
+
+---
+ src/Makefile.am |  8 ++++++++
+ src/wrapper.c   | 12 ++++++++++--
+ src/wrapper.h   | 10 ++++++++++
+ 3 files changed, 28 insertions(+), 2 deletions(-)
+ create mode 100644 src/wrapper.h
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index d5979de..06e0fad 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -20,6 +20,14 @@ AM_LDFLAGS = -lpthread -lm
+ cupsfilterdir = $(CUPS_FILTER_DIR)
+ ESCPR_LIB_DIR	=	../escprlib
+ 
++# fuzzer
++epson_escpr_fuzzerdir = $(cupsfilterdir)
++epson_escpr_fuzzer_PROGRAMS = epson_escpr_fuzzer
++epson_escpr_fuzzer_SOURCES = epson_escpr_fuzzer.c stdin_util.c $(epson_escpr_wrapper_SOURCES)
++epson_escpr_fuzzer_CFLAGS = $(epson_escpr_wrapper_CFLAGS) -DFUZZING
++epson_escpr_fuzzer_LDADD = $(epson_escpr_LDADD)
++epson_escpr_fuzzer_LDFLAGS = -fsanitize=fuzzer
++
+ cupsfilter_PROGRAMS =\
+ 	epson-escpr \
+ 	epson-escpr-wrapper
+diff --git a/src/wrapper.c b/src/wrapper.c
+index 71b8afb..ce19049 100644
+--- a/src/wrapper.c
++++ b/src/wrapper.c
+@@ -21,6 +21,8 @@
+ #  include <config.h>
+ #endif
+ 
++#include "wrapper.h"
++
+ #include <errno.h>
+ #include <cups/cups.h>
+ #include <cups/ppd.h>
+@@ -83,6 +85,12 @@ static void debug_msg(const char *fmt, ...){
+ 	return;
+ }
+ 
++#ifndef FUZZING
++int main (int argc, char *argv[]) {
++  return EpsonEscprPrintJob(argc, argv);
++}
++#endif
++
+ /*
+  * $$$ CUPS Filter Options $$$
+  *
+@@ -100,7 +108,7 @@ static void debug_msg(const char *fmt, ...){
+  * filename - The request file
+  */
+ int
+-main (int argc, char *argv[])
++EpsonEscprPrintJob(int argc, char *argv[])
+ {
+ 	int fd;			/* file descriptor */
+ 	FILE *pfp;
+@@ -438,7 +446,7 @@ get_option_for_ppd (const char *printer, filter_option_t *filter_opt_p)
+ 	char *tok;
+ 
+ 	/* Get option from PPD. */
+-	ppd_path = (char *) cupsGetPPD (printer);
++	ppd_path = getenv("PPD");
+ 	ppd_p = ppdOpenFile (ppd_path);
+ 	if(NULL == ppd_p){
+ 		return 1;
+diff --git a/src/wrapper.h b/src/wrapper.h
+new file mode 100644
+index 0000000..4462da0
+--- /dev/null
++++ b/src/wrapper.h
+@@ -0,0 +1,10 @@
++// Copyright 2025 The ChromiumOS Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef EPSON_INKJET_ESCPR_WRAPPER_H_
++#define EPSON_INKJET_ESCPR_WRAPPER_H_
++
++int EpsonEscprPrintJob(int argc, char *argv[]);
++
++#endif
+-- 
+2.50.0.727.gbf7dc18ff4-goog
+

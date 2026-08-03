@@ -1,0 +1,60 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("fetchers") {
+  sources = [
+    "boot_performance.cc",
+    "display_fetcher.cc",
+    "graphics_fetcher.cc",
+    "psr_fetcher.cc",
+    "thermal_fetcher.cc",
+    "touchpad_fetcher.cc",
+  ]
+  libs = [ "bootstat" ]
+  public_pkg_deps = [
+    "libbrillo",
+    "libchrome",
+  ]
+  defines = [ "USE_MESA_REVEN=${use.mesa_reven}" ]
+  pkg_deps = [
+    "egl",
+    "glesv2",
+    "libec",
+    "libmetrics",
+    "re2",
+  ]
+  public_deps = [
+    "//diagnostics/cros_healthd/mojom:executor_mojo_bindings",
+    "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+  ]
+  deps = [
+    "//diagnostics/base",
+    "//diagnostics/cros_healthd/delegate/utils",
+  ]
+}
+
+if (use.test) {
+  source_set("test") {
+    sources = [
+      "boot_performance_test.cc",
+      "display_fetcher_test.cc",
+      "graphics_fetcher_test.cc",
+      "psr_fetcher_test.cc",
+      "thermal_fetcher_test.cc",
+      "touchpad_fetcher_test.cc",
+    ]
+    pkg_deps = [
+      "libbrillo",
+      "libchrome",
+    ]
+    deps = [
+      ":fetchers",
+      "//diagnostics/base",
+      "//diagnostics/base:healthd_testrunner",
+      "//diagnostics/base:test_support",
+      "//diagnostics/cros_healthd/delegate/utils:test_support",
+      "//diagnostics/mojom/public:libcros_healthd_mojo_bindings",
+    ]
+  }
+}

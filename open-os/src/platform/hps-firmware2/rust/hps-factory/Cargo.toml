@@ -1,0 +1,51 @@
+[package]
+name = "hps-factory"
+version = "0.1.0"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[dependencies]
+application = { path = "../application" }
+anyhow = "1.0.38"
+clap = { version = "3.1.0", features = ["derive"] }
+ed25519-compact = { version = "1", default-features = false, features = [ "pem", "std", "opt_size" ] }
+embedded-hal = "0.2.6"
+fpga_app = { path = "../fpga_app" }
+host_dev_common = { path = "../host_dev_common" }
+hps_interface = { path = "../hps_interface" }
+libstage0 = { path = "../libstage0" }
+linux-embedded-hal = "0.3.1"
+log = "0.4.14"
+# mcp2221 support is optional, since we only currently support statically
+# linking if this is disabled.
+mcp2221 = { path = "../mcp2221", optional = true }
+mcu_common = { path = "../mcu_common" }
+indicatif = "0.16.2"
+simple_logger = { version = "1.13.0", default-features = false }
+stm32_bootloader_client = { path = "../stm32_bootloader_client", features = ["std"] }
+unix_socket = { path = "../unix_socket"}
+
+[build-dependencies]
+anyhow = "1.0.38"
+clap_derive = "3.1.0"
+hmac-sha256 = "0.1.6"
+mcu_common = { path = "../mcu_common", features = [ "dev" ] }
+sign-rom = { path = "../sign-rom" }
+
+[features]
+default = [
+    "image-transfer",
+    "mcp2221",
+    "all-embedded-firmware",
+]
+
+image-transfer = [ "mcu_common/image-transfer", "fpga_app/image-transfer" ]
+all-embedded-firmware = [
+    "built-in-fpga-bitstream",
+    "built-in-fpga-rom",
+    "built-in-mcu-rom"
+]
+built-in-fpga-bitstream = []
+built-in-fpga-rom = []
+built-in-mcu-rom = []
+stage0-from-source = []

@@ -1,0 +1,39 @@
+From b13652269c7cebdee091d6feac87b0946a0a4856 Mon Sep 17 00:00:00 2001
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date: Fri, 18 Jan 2019 11:18:17 -0800
+Subject: [PATCH] BACKPORT: Input: Add FULL_SCREEN, ASPECT_RATIO,
+ SELECTIVE_SCREENSHOT key
+
+Smashing the following commits into this patch to define the
+KEY_FULL_SCREEN
+KEY_ASPECT_RATIO
+KEY_SELECTIVE_SCREENSHOT
+
+Commit 07ba9e7be423 (Input: document meanings of KEY_SCREEN and KEY_ZOOM)
+Commit 3b059da9835c (Input: allocate keycode for "Selective Screenshot" key)
+COmmit fbf66796a0ae (Input: move the new KEY_SELECTIVE_SCREENSHOT keycode)
+
+Signed-off-by: Rajat Jain <rajatja@google.com>
+BUG=b:146501925
+TEST=Build
+Change-Id: I3bdf4f954b252617434cb7137a06a3226ba3ea27
+---
+ include/uapi/linux/input-event-codes.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/uapi/linux/input-event-codes.h b/include/uapi/linux/input-event-codes.h
+index 05d8b4f4..16a00044 100644
+--- a/include/uapi/linux/input-event-codes.h
++++ b/include/uapi/linux/input-event-codes.h
+@@ -699,6 +699,9 @@
+ #define KEY_MAX			0x2ff
+ #define KEY_CNT			(KEY_MAX+1)
+ 
++/* Select an area of screen to be copied */
++#define KEY_SELECTIVE_SCREENSHOT	0x27a
++
+ /*
+  * Relative axes
+  */
+-- 
+2.45.2

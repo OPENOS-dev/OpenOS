@@ -1,0 +1,15 @@
+BDEPEND=dev-python/docutils
+DEFINED_PHASES=compile install postinst test
+DEPEND=care? ( app-arch/libarchive:0= ) sys-libs/talloc care? ( dev-libs/uthash ) elibc_musl? ( sys-libs/queue-standalone ) test? ( dev-util/valgrind )
+DESCRIPTION=User-space implementation of chroot, mount --bind, and binfmt_misc
+EAPI=7
+HOMEPAGE=https://proot-me.github.io
+IUSE=care doc test
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=care? ( app-arch/libarchive:0= ) sys-libs/talloc
+RESTRICT=test
+SLOT=0
+SRC_URI=https://github.com/proot-me/PRoot/archive/v5.4.0.tar.gz -> proot-5.4.0.tar.gz
+_eclasses_=cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3a1efca8884c46e6b5996b83afff1614

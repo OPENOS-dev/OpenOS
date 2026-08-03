@@ -1,0 +1,91 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/deps.gni")
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [
+    ":install_libcrossystem_headers",
+    ":libcrossystem",
+    ":libcrossystem-test",
+    ":libcrossystem_pc",
+  ]
+  if (use.test) {
+    deps += [ ":libcrossystem_tests" ]
+  }
+}
+
+pkg_config("target_defaults_pkg_deps") {
+  pkg_deps = [
+    "libbrillo",
+    "libchrome",
+    "vboot_host",
+  ]
+}
+
+shared_library("libcrossystem") {
+  sources = [
+    "crossystem.cc",
+    "crossystem_impl.cc",
+  ]
+  configs += [ ":target_defaults_pkg_deps" ]
+  install_path = "lib"
+}
+
+install_config("install_libcrossystem_headers") {
+  sources = [
+    "crossystem.h",
+    "crossystem_fake.h",
+    "crossystem_vboot_interface.h",
+  ]
+  install_path = "/usr/include/libcrossystem"
+}
+
+generate_pkg_config("libcrossystem-test_pc") {
+  name = "libcrossystem-test"
+  output_name = "libcrossystem-test"
+  description = "libcrossystem test library"
+  version = "0.1"
+
+  libs = [ "-lcrossystem-test" ]
+  install = true
+}
+
+shared_library("libcrossystem-test") {
+  sources = [ "crossystem_fake.cc" ]
+  configs += [ ":target_defaults_pkg_deps" ]
+  deps = [ ":libcrossystem-test_pc" ]
+  if (use.cros_host) {
+    install_path = "lib"
+  } else {
+    install_path = "/usr/local/lib"
+  }
+}
+
+generate_pkg_config("libcrossystem_pc") {
+  name = "libcrossystem"
+  output_name = "libcrossystem"
+  description = "Library to get Chromium OS system properties"
+  version = "0.1"
+
+  libs = [ "-lcrossystem" ]
+  install = true
+}
+
+if (use.test) {
+  executable("libcrossystem_tests") {
+    sources = [ "crossystem_test.cc" ]
+    configs += [
+      "//common-mk:test",
+      ":target_defaults_pkg_deps",
+    ]
+    run_test = true
+    deps = [
+      ":libcrossystem",
+      ":libcrossystem-test",
+      "//common-mk/testrunner",
+    ]
+  }
+}

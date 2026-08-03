@@ -1,0 +1,39 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, ChromiumOS"
+NAME = "autoupdate_Basic.m2n.full"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Tests an M-to-N update with user login between versions."
+}
+TIME = "MEDIUM"
+TEST_TYPE = "server"
+ATTRIBUTES = "suite:bvt-inline, suite:distributed_lab_qual_bvt_shard1"
+JOB_RETRIES = 2
+DOC = """
+This tests an M-to-N update. That means it will update from the current stable
+version for this board to ToT. This test will be used in the CQ to ensure
+changes don't break autoupdate.
+
+Refer to control.delta for instructions on how to run this test locally.
+
+Note: for m2n tests, the source version is the currently serving stable channel
+version.
+
+"""
+
+from autotest_lib.client.common_lib import utils
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    host = hosts.create_host(machine)
+    job.run_test('autoupdate_Basic', host=host, full_payload=True,
+    		 m2n=True, **args_dict)
+
+job.parallel_simple(run, machines)

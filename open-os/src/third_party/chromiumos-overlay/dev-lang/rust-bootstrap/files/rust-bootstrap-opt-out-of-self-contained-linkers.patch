@@ -1,0 +1,23 @@
+As referenced in b/459782820#comment9 and comments beforehand, using
+self-contained linkers break our structure here somewhat.
+
+Upstream now provides an option to explicitly opt-out of self-contained
+linking, as of
+https://github.com/rust-lang/rust/commit/902cec2bc6997748e2ca47c11dba8acc673806d1
+
+Once that lands in rust-bootstrap (1.93?), this patch should be replaced with
+the appropriate `default-linker-linux-override = "off"` config entry.
+
+diff --git a/src/bootstrap/src/core/build_steps/compile.rs b/src/bootstrap/src/core/build_steps/compile.rs
+index aea8f85..59fe0d0 100644
+--- a/src/bootstrap/src/core/build_steps/compile.rs
++++ b/src/bootstrap/src/core/build_steps/compile.rs
+@@ -1362,7 +1362,7 @@ pub fn rustc_cargo_env(builder: &Builder<'_>, cargo: &mut Cargo, target: TargetS
+     }
+ 
+     // Enable rustc's env var for `rust-lld` when requested.
+-    if builder.config.lld_enabled {
++    if false && builder.config.lld_enabled {
+         cargo.env("CFG_USE_SELF_CONTAINED_LINKER", "1");
+     }
+ 

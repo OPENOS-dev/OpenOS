@@ -1,0 +1,35 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+
+.image-dialog-content {
+    margin: 10px;
+    padding: 0;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+
+}
+
+
+
+.bold {
+    padding-left: 3px;
+}
+
+.hwid-probe-form {
+    width: 200px;
+}
+
+.dolos-mat-form {
+    display: flex;
+    align-self: left;
+    justify-content: left;
+    padding: 0px;
+}
+
+mat-form-field {
+    width: 100%;
+}

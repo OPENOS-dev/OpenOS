@@ -1,0 +1,48 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+rust_library(
+    name = "durabletree",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "durabletree",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["//bazel/portage:__subpackages__"],
+    deps = [
+        "//bazel/portage/common/fileutil",
+        "//bazel/portage/common/testutil",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:itertools",
+        "@alchemy_crates//:nix",
+        "@alchemy_crates//:serde",
+        "@alchemy_crates//:serde_json",
+        "@alchemy_crates//:tar",
+        "@alchemy_crates//:tracing",
+        "@alchemy_crates//:walkdir",
+        "@alchemy_crates//:xattr",
+        "@alchemy_crates//:zstd",
+    ],
+)
+
+rust_test(
+    name = "durabletree_test",
+    size = "small",
+    crate = ":durabletree",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "@alchemy_crates//:hex",
+        "@alchemy_crates//:libc",
+        "@alchemy_crates//:sha2",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":durabletree",
+    enabled = False,
+    tests = [":durabletree_test"],
+)

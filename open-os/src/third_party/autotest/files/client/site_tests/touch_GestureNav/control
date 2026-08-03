@@ -1,0 +1,17 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = "touch_GestureNav"
+METADATA = {
+    "contacts": ["chromeos-tango@google.com"],
+    "bug_component": "b:167253",
+    "criteria": "Two finger swipe can navigate back and forth.",
+    "hw_agnostic": False,
+    'variant_category': '{"name": "Touchpad_SoC_Controller_Variant-def-plus-kernelnext"}',
+}
+ATTRIBUTES = "suite:touch_replay_touchpad, group:release-health, release-health_touch"
+TEST_TYPE = "client"
+DEPENDENCIES = "touchpad"
+
+job.run_test('touch_GestureNav')

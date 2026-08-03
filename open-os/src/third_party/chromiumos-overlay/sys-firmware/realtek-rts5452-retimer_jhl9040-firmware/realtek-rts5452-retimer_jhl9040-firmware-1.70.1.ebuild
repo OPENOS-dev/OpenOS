@@ -1,0 +1,1 @@
+realtek-rts5452-retimer_jhl9040-firmware-1.60.1.ebuild

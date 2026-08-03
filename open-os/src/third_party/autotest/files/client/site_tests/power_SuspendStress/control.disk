@@ -1,0 +1,25 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# Runs eight minutes of suspend/resume cycles in the background of a file I/O bench.
+
+NAME = "power_SuspendStress.disk"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "bug_component": "b:1361410",
+    "criteria": "This test is a functional test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("suite:jailed_build")
+TEST_TYPE = "client"
+
+DURATION=480
+INIT_DELAY=10
+
+job.parallel([lambda: job.run_test('power_SuspendStress', tag='disk',
+                                   duration=DURATION, init_delay=INIT_DELAY, min_suspend=7)],
+             [lambda: job.run_test('hardware_StorageFio',
+                                   quicktest=True, test_length=INIT_DELAY+DURATION+30,
+                                   tag='power_SuspendStress')])

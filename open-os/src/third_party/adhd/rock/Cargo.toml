@@ -1,0 +1,13 @@
+[package]
+name = "rock"
+version = "0.1.0"
+edition = "2021"
+authors = ["The ChromiumOS Authors"]
+
+[dependencies]
+audio_processor = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+float-cmp = { workspace = true }
+hound = { workspace = true }
+rustfft = { workspace = true }

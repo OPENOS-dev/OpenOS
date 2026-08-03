@@ -1,0 +1,176 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+use crate::util::check_sha256_hash;
+use anyhow::{bail, Result};
+use base64::Engine;
+use camino::Utf8Path;
+use command_run::Command;
+use sha2::{Digest, Sha256};
+
+const CURL: &str = "curl";
+const GSUTIL: &str = "gsutil";
+
+pub struct GsResource {
+    bucket: String,
+    key: String,
+    public: bool,
+}
+
+impl GsResource {
+    /// Create a new `GsResource`.
+    pub fn new(bucket: &str, key: String) -> Self {
+        Self {
+            bucket: bucket.to_string(),
+            key,
+            public: false,
+        }
+    }
+
+    /// Create a new `GsResource` for an object that is known to be
+    /// public.
+    pub fn new_public(bucket: &str, key: String) -> Self {
+        Self {
+            bucket: bucket.to_string(),
+            key,
+            public: true,
+        }
+    }
+
+    /// Format the resource as a "gs://" URL.
+    fn gs_url(&self) -> String {
+        format!("gs://{}/{}", self.bucket, self.key)
+    }
+
+    /// Format the resource as an "https://" URL. This URL is only valid
+    /// for public objects.
+    fn https_resource(&self) -> HttpsResource {
+        HttpsResource::new(format!(
+            "https://storage.googleapis.com/{}/{}",
+            self.bucket, self.key
+        ))
+    }
+
+    /// Download a file from GS into a `Vec<u8>`.
+    fn download_to_vec(&self) -> Result<Vec<u8>> {
+        let output = Command::with_args(GSUTIL, ["cat", &self.gs_url()])
+            .enable_capture()
+            .run()?;
+        Ok(output.stdout)
+    }
+
+    /// Download a file from GS into a `String`.
+    pub fn download_to_string(&self) -> Result<String> {
+        let data = self.download_to_vec()?;
+        Ok(String::from_utf8(data)?)
+    }
+
+    /// Download a file from GS directly to disk.
+    ///
+    /// `dst` must be a full file path, not a directory, and it must not
+    /// already exist.
+    pub fn download_to_file(&self, dst: &Utf8Path) -> Result<()> {
+        // Check that we're not accidentally overwriting an existing file.
+        assert!(!dst.exists());
+
+        // If the file is public, download it with curl instead of
+        // gsutil. This avoids needing to install gsutil at all for the
+        // default behavior of `cargo xtask setup`.
+        if self.public {
+            self.https_resource().download_to_file(dst)?;
+        } else {
+            Command::with_args(GSUTIL, ["cp", &self.gs_url(), dst.as_str()]).run()?;
+        }
+
+        Ok(())
+    }
+}
+
+fn curl_command() -> Command {
+    Command::with_args(
+        CURL,
+        [
+            // Exit non-zero if the server returns an error.
+            "--fail",
+            // Follow redirects.
+            "--location",
+        ],
+    )
+}
+
+/// Downloader for HTTPS resources.
+///
+/// Internally this uses the `curl` program to avoid adding a bunch of
+/// dependencies to xtask.
+pub struct HttpsResource {
+    url: String,
+    base64_decode: bool,
+    expected_sha256: Option<String>,
+}
+
+impl HttpsResource {
+    pub fn new<S: Into<String>>(url: S) -> Self {
+        let url: String = url.into();
+
+        // Make sure everything is downloaded over https.
+        assert!(url.starts_with("https://"));
+
+        Self {
+            url,
+            expected_sha256: None,
+            base64_decode: false,
+        }
+    }
+
+    /// Decode a base64 file after downloading it.
+    pub fn enable_base64_decode(&mut self) {
+        self.base64_decode = true;
+    }
+
+    /// Check the SHA-256 of the downloaded resource.
+    ///
+    /// If base64 decoding is enabled, this is the hash after decoding.
+    pub fn set_expected_sha256(&mut self, sha256: &str) {
+        assert_eq!(sha256.len(), 64);
+        self.expected_sha256 = Some(sha256.to_string());
+    }
+
+    /// Download a file into a `Vec<u8>`.
+    pub fn download_to_vec(&self) -> Result<Vec<u8>> {
+        let url = &self.url;
+        let mut data = curl_command().add_arg(url).enable_capture().run()?.stdout;
+        if self.base64_decode {
+            data = base64::engine::general_purpose::STANDARD_NO_PAD.decode(data)?
+        }
+        if let Some(expected_sha256) = &self.expected_sha256 {
+            let actual_sha256 = format!("{:x}", Sha256::digest(&data));
+            if actual_sha256 != *expected_sha256 {
+                bail!("unexpected SHA-256 hash of {url}: {actual_sha256} != {expected_sha256}");
+            }
+        }
+        Ok(data)
+    }
+
+    /// Download a file to disk.
+    ///
+    /// `dst` must be a full file path, not a directory, and it must not
+    /// already exist.
+    pub fn download_to_file(&self, dst: &Utf8Path) -> Result<()> {
+        // Check that we're not accidentally overwriting an existing file.
+        assert!(!dst.exists());
+
+        // Not supported yet.
+        assert!(!self.base64_decode);
+
+        curl_command()
+            .add_args(["--output", dst.as_str(), &self.url])
+            .run()?;
+
+        if let Some(expected_sha256) = &self.expected_sha256 {
+            check_sha256_hash(dst, expected_sha256)?;
+        }
+
+        Ok(())
+    }
+}

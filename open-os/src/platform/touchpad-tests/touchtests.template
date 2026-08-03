@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# the INSTALL_DIR variable is set at install time
+FILE_PATH=`readlink -f $0`
+INSTALL_DIR=`dirname $FILE_PATH`
+
+TESTS_DIR=$INSTALL_DIR/tests
+REPLAY_TOOL=$INSTALL_DIR/replay
+FRAMEWORK_DIR=$INSTALL_DIR/framework
+
+PYTHONPATH=FRAMEWORK_DIR TESTS_DIR=$TESTS_DIR REPLAY_TOOL=$REPLAY_TOOL \
+	python $FRAMEWORK_DIR/main.py $*

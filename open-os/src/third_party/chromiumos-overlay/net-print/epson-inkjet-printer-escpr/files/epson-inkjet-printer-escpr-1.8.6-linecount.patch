@@ -1,0 +1,16 @@
+Correct calculation of remaining lines once there
+are fewer than CUPS_READ_LINE left.
+
+See b/410000713
+
+--- a/src/wrapper.c
++++ b/src/wrapper.c
+@@ -430,7 +430,7 @@
+ 			}
+ 			total_read += readpixels;
+ 	
+-			left_lines -= CUPS_READ_LINE;
++			left_lines -= cups_read_lines;
+ 
+ 		}//while (pixel data)
+ 

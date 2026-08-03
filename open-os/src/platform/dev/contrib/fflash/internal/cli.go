@@ -1,0 +1,94 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package internal
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"strconv"
+	"time"
+
+	"chromium.googlesource.com/chromiumos/platform/dev-util.git/contrib/fflash/internal/ssh"
+	"github.com/alecthomas/kingpin"
+)
+
+func cliParse(args []string) (target string, opts Options, err error) {
+	const (
+		yes  = "yes"
+		no   = "no"
+		auto = "auto"
+	)
+
+	app := kingpin.New("fflash", "")
+	app.HelpFlag.Short('h')
+	app.Arg("dut-host", "the ssh target of the dut").Required().StringVar(&target)
+	app.Flag("gs", "gs:// directory to flash. Use with caution!").StringVar(&opts.GS)
+	app.Flag("R", "release number. ex: 105 or 105-14989.0.0").Short('R').StringVar(&opts.VersionString)
+	app.Flag("board",
+		"flash from gs://chromeos-image-archive/${board}-release/R*. Use with caution!").
+		StringVar(&opts.Board)
+	app.Flag("snapshot", "flash a snapshot build").BoolVar(&opts.Snapshot)
+	app.Flag("postsubmit", "flash a postsubmit build").BoolVar(&opts.Postsubmit)
+	app.Flag("port", "port number to connect to on the dut-host").Short('p').StringVar(&opts.Port)
+	app.Flag("dry-run", "print the target image version but do not actually flash it").BoolVar(&opts.DryRun)
+	app.Flag("ssh-connect-timeout",
+		fmt.Sprintf("connect timeout for the SSH command; defaults to %v", ssh.DefaultConnectTimeout)).
+		DurationVar(&opts.SSHConnectTimeout)
+	rootfsVerification := app.Flag(
+		"rootfs-verification",
+		"whether rootfs verification on the new root is enabled. "+
+			"Choices: yes, no (default)",
+	).Default(no).Enum(yes, no)
+	app.Flag("payload", "Path to the JSON encoded raw payload file to send to dut-agent").
+		PlaceHolder("FILE").StringVar(&opts.PayloadFile)
+	clobberStateful := app.Flag(
+		"clobber-stateful",
+		"whether to clobber the stateful partition. Choices: yes, no (default)").Default(no).Enum(yes, no)
+	clearTpmOwner := app.Flag(
+		"clear-tpm-owner",
+		"whether to clear the TPM owner on reboot. "+
+			" Choices: yes, no, auto (default, follows --clobber-stateful)",
+	).Default(auto).Enum(auto, yes, no)
+
+	if _, err := app.Parse(args); err != nil {
+		return target, opts, fmt.Errorf("error: %w, try --help", err)
+	}
+
+	if opts.VersionString != "" {
+		r, err := strconv.Atoi(opts.VersionString)
+		if err == nil {
+			opts.MilestoneNum = r
+			opts.VersionString = ""
+		} else {
+			// The -R is removed from the parser, add it back.
+			opts.VersionString = "R" + opts.VersionString
+		}
+	}
+	opts.DisableRootfsVerification = (*rootfsVerification == no)
+	opts.ClobberStateful = (*clobberStateful == yes)
+	if *clearTpmOwner == auto {
+		opts.ClearTpmOwner = opts.ClobberStateful
+	} else {
+		opts.ClearTpmOwner = (*clearTpmOwner == yes)
+	}
+
+	return target, opts, nil
+}
+
+func CLIMain(ctx context.Context, t0 time.Time, args []string) error {
+	target, opts, err := cliParse(args)
+	if err != nil {
+		return err
+	}
+
+	if err := Main(ctx, t0, target, &opts); err != nil {
+		return err
+	}
+
+	log.Println("DUT flashed successfully")
+
+	return nil
+}

@@ -1,0 +1,5 @@
+group:intel-pmt
+gid:431
+# This group is to grant read access of Intel PMT telemetry nodes to heartd,
+# because they need access w/o being root.
+users:heartd

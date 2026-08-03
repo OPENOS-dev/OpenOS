@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of build-time packages that are needed for building boards. These are built on a per-board basis instead of part of the SDK. Generally first party projects that are updated frequently should be here. 'broot' is short for 'build root'; see the portage BROOT variable.
+EAPI=7
+HOMEPAGE=https://dev.chromium.org/
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=virtual/target-chromium-os-sdk-broot
+SLOT=0
+_md5_=7b7b6b0d6e3a8f63d27e8e319d6b0867

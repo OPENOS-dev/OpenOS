@@ -1,0 +1,64 @@
+From 3ce86b900d1f832faa6970e569e89604d89a209a Mon Sep 17 00:00:00 2001
+From: Aaron Massey <aaronmassey@google.com>
+Date: Wed, 24 Apr 2024 16:46:34 +0000
+Subject: [PATCH] CHROMEOS: fujitsu: Remove pfu conflicting backends
+
+We have the better quality SANE PFU backend for some scanner
+devices. We should favor that backend instead of the upstream SANE
+backends' versions.
+
+Remove aforementioned backends.
+
+BUG=b:328231232
+TEST=CQ
+TEST=Flash dedede and see single scanner option
+---
+ backend/fujitsu.conf.in | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/backend/fujitsu.conf.in b/backend/fujitsu.conf.in
+index 61d02668a..84bce5cff 100644
+--- a/backend/fujitsu.conf.in
++++ b/backend/fujitsu.conf.in
+@@ -151,9 +151,6 @@ usb 0x04c5 0x132c
+ #fi-7280
+ usb 0x04c5 0x132d
+ 
+-#fi-7160
+-usb 0x04c5 0x132e
+-
+ #fi-7260
+ usb 0x04c5 0x132f
+ 
+@@ -256,9 +253,6 @@ usb 0x04c5 0x1522
+ #ScanSnap iX1500
+ usb 0x04c5 0x159f
+ 
+-#fi-800R
+-usb 0x04c5 0x15fc
+-
+ #fi-7900
+ usb 0x04c5 0x160a
+ 
+@@ -280,9 +274,6 @@ usb 0x04c5 0x15fd
+ #fi-8290
+ usb 0x04c5 0x15fe
+ 
+-#fi-8170
+-usb 0x04c5 0x15ff
+-
+ #fi-8270
+ usb 0x04c5 0x1600
+ 
+@@ -307,8 +298,5 @@ usb 0x04c5 0x1630
+ ######################################
+ # Ricoh-only scanners
+ 
+-#fi-8040
+-usb 0x05ca 0x0307
+-
+ #fi-70F"
+ usb 0x05ca 0x0308
+-- 
+2.46.0.184.g6999bdac58-goog
+

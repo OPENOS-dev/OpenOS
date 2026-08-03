@@ -1,0 +1,13 @@
+BDEPEND=app-arch/unzip
+DEFINED_PHASES=install
+DESCRIPTION=Chromium OS language pack for extra Japanese fonts
+EAPI=7
+HOMEPAGE=https://moji.or.jp/mojikiban/font/
+IUSE=dlc
+KEYWORDS=*
+LICENSE=IPAfont
+REQUIRED_USE=dlc
+SLOT=0
+SRC_URI=https://dforest.watch.impress.co.jp/library/i/ipamjfont/10750/ipamjm00601.zip
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	dlc	768f1474a752d1b824c04c5695593433
+_md5_=5973725ac7e835e1e5baeffc34694ebc

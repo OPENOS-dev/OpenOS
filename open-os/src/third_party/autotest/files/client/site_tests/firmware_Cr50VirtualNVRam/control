@@ -1,0 +1,20 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "apronin"
+NAME = "firmware_Cr50VirtualNVRam"
+METADATA = {
+        "contacts": ["chromeos-faft@google.com", "jbettis@chromium.org"],
+        "bug_component": "b:792402", # ChromeOS > Platform > Enablement > Firmware > FAFT
+        "criteria": "Test vNVRAM functionality in cr50"
+}
+TIME = "SHORT"
+TEST_TYPE = "Client"
+
+DOC = """
+Verifies basic read functionality for vNVRAM indices, and checks
+the correct permissions are enforced.
+"""
+
+job.run_test('firmware_Cr50VirtualNVRam')

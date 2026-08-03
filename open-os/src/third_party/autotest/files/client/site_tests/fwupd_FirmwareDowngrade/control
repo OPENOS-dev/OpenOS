@@ -1,0 +1,38 @@
+# Copyright (c) 2023 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "Ricardo Canuelo <ricardo.canuelo@collabora.com>"
+NAME = "fwupd_FirmwareDowngrade"
+METADATA = {
+    "contacts": ["chromeos-fwupd@google.com", "bleung@google.com", "ricardo.canuelo@collabora.com"],
+    "bug_component": "b:857851", # ChromeOS > Platform > Services > Peripherals > Firmware Update - fwupd
+    "hw_agnostic": True,
+    "author": "Ricardo Canuelo <ricardo.canuelo@collabora.com>",
+    "criteria": "Make sure that a device firmware can be downgraded with fwupd.",
+    "purpose": "Downgrades the firmware of a device to the previous version."
+}
+TIME = "SHORT"
+TEST_TYPE = "client"
+ATTRIBUTES = "suite:fwupd_downgrade"
+
+DOC = """
+Downgrades the firmware of a device to the previous version. The device
+is supposed to be working and updatable, and fwupd is expected to work
+normally. Exceptional cases are treated as test errors.
+"""
+
+# Argument 'device_id' is mandatory. It can be the fwupd instance id of
+# the device or any of its GUIDs
+# Argument 'cert_id' is the Certificate ID used for signing reports,
+# could be omitted.
+args_dict = utils.args_to_dict(args)
+try:
+    cert_id = args_dict.get('cert_id', cert_id)
+except NameError:
+    cert_id = args_dict.get('cert_id', '')
+try:
+    device_id = args_dict.get('device_id', device_id)
+except NameError:
+    device_id = args_dict.get('device_id', '')
+job.run_test('fwupd_FirmwareDowngrade', device_id=device_id, cert_id=cert_id)

@@ -1,0 +1,737 @@
+// Copyright 2014 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "cryptohome/cryptohome_metrics.h"
+
+#include <cerrno>
+#include <iterator>
+#include <string>
+#include <utility>
+
+#include <base/logging.h>
+#include <base/strings/strcat.h>
+#include <base/strings/string_util.h>
+#include <base/strings/stringprintf.h>
+#include <metrics/metrics_library.h>
+#include <metrics/timer.h>
+
+#include "cryptohome/auth_blocks/auth_block_type.h"
+
+namespace cryptohome {
+
+namespace {
+
+struct TimerHistogramParams {
+  TimerType timer_type;
+  const char* metric_name;
+  int min_sample;
+  int max_sample;
+  int num_buckets;
+};
+
+constexpr char kCryptohomeErrorHistogram[] = "Cryptohome.Errors";
+constexpr char kCryptohomeRevokeCredentialResultHistogram[] =
+    "Cryptohome.%s.RevokeCredentialResult";
+constexpr char kCryptohomeDeletedUserProfilesHistogram[] =
+    "Cryptohome.DeletedUserProfiles";
+constexpr char kCryptohomeGCacheFreedDiskSpaceInMbHistogram[] =
+    "Cryptohome.GCache.FreedDiskSpaceInMb";
+constexpr char kCryptohomeCacheVaultFreedDiskSpaceInMbHistogram[] =
+    "Cryptohome.FreedCacheVaultDiskSpaceInMb";
+constexpr char kCryptohomeDaemonStoreCacheFreedDiskSpaceInMbHistogram[] =
+    "Cryptohome.FreedDaemonStoreCacheDiskSpaceInMb";
+constexpr char
+    kCryptohomeDaemonStoreCacheMountedUsersFreedDiskSpaceInMbHistogram[] =
+        "Cryptohome.FreedDaemonStoreCacheMountedUsersDiskSpaceInMb";
+constexpr char kCryptohomeFreeDiskSpaceTotalTimeHistogram[] =
+    "Cryptohome.FreeDiskSpaceTotalTime2";
+constexpr char kCryptohomeLoginDiskCleanupTotalTime[] =
+    "Cryptohome.LoginDiskCleanupTotalTime";
+constexpr char kCryptohomeFreeDiskSpaceTotalFreedInMbHistogram[] =
+    "Cryptohome.FreeDiskSpaceTotalFreedInMb";
+constexpr char kCryptohomeFreeDiskSpaceDuringLoginTotalFreedInMbHistogram[] =
+    "Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb";
+constexpr char kCryptohomeTimeBetweenFreeDiskSpaceHistogram[] =
+    "Cryptohome.TimeBetweenFreeDiskSpace";
+constexpr char kCryptohomeDiskCleanupProgressHistogram[] =
+    "Cryptohome.DiskCleanupProgress";
+constexpr char kCryptohomeDiskCleanupResultHistogram[] =
+    "Cryptohome.DiskCleanupResult";
+constexpr char kCryptohomeLoginDiskCleanupProgressHistogram[] =
+    "Cryptohome.LoginDiskCleanupProgress";
+constexpr char kCryptohomeLoginDiskCleanupResultHistogram[] =
+    "Cryptohome.LoginDiskCleanupResult";
+constexpr char kCryptohomeLoginDiskCleanupAvailableSpaceHistogram[] =
+    "Cryptohome.LoginDiskCleanupAvailableSpace";
+constexpr char kHomedirEncryptionTypeHistogram[] =
+    "Cryptohome.HomedirEncryptionType";
+constexpr char kOOPMountOperationResultHistogram[] =
+    "Cryptohome.OOPMountOperationResult";
+constexpr char kOOPMountCleanupResultHistogram[] =
+    "Cryptohome.OOPMountCleanupResult";
+constexpr char kRecoveryPrepareForRemovalResultHistogram[] =
+    "Cryptohome.%s.PrepareForRemovalResult";
+constexpr char kCreateAuthBlockTypeHistogram[] =
+    "Cryptohome.CreateAuthBlockType";
+constexpr char kDeriveAuthBlockTypeHistogram[] =
+    "Cryptohome.DeriveAuthBlockType";
+constexpr char kSelectFactorAuthBlockTypeHistogram[] =
+    "Cryptohome.SelectFactorAuthBlockType";
+constexpr char kLegacyCodePathUsageHistogramPrefix[] =
+    "Cryptohome.LegacyCodePathUsage";
+constexpr char kAuthFactorBackingStoreConfig[] =
+    "Cryptohome.AuthFactorBackingStoreConfig";
+constexpr char kMaskedDownloadsItems[] = "Cryptohome.MaskedDownloadsItems";
+constexpr char kDownloadsMigrationStatus[] =
+    "Cryptohome.DownloadsBindMountMigrationStatus";
+constexpr char kFingerprintEnrollSignal[] =
+    "Cryptohome.Fingerprint.EnrollSignal";
+constexpr char kFingerprintAuthSignal[] = "Cryptohome.Fingerprint.AuthSignal";
+
+constexpr char kNumUserHomeDirectories[] =
+    "Platform.DiskUsage.NumUserHomeDirectories";
+
+constexpr char kBackendCertProviderUpdateCertResult[] =
+    "Cryptohome.RecoverableKeyStore.ProviderUpdateCertResult";
+constexpr char kVerifyAndParseBackendCertResult[] =
+    "Cryptohome.RecoverableKeyStore.VerifyAndParseCertResult";
+
+// Histogram parameters. This should match the order of 'TimerType'.
+// Min and max samples are in milliseconds.
+constexpr TimerHistogramParams kTimerHistogramParams[] = {
+    // A note on the PKCS#11 initialization time:
+    // Max sample for PKCS#11 initialization time is 100s; we are interested
+    // in recording the very first PKCS#11 initialization time, which may be a
+    // lengthy one. Subsequent initializations are fast (under 1s) because they
+    // just check if PKCS#11 was previously initialized, returning immediately.
+    // These will all fall into the first histogram bucket.
+    {kPkcs11InitTimer, "Cryptohome.TimeToInitPkcs11", 1000, 100000, 50},
+    {kMountExTimer, "Cryptohome.TimeToMountEx", 0, 40000, 150},
+
+    {kMountGuestExTimer, "Cryptohome.TimeToMountGuestEx", 0, 4000, 50},
+    // This is only being reported from the out-of-process helper so it's
+    // covered by the same 3-second timeout.
+    {kPerformEphemeralMountTimer, "Cryptohome.TimeToPerformEphemeralMount", 0,
+     3000, 50},
+    // Non-ephemeral mounts are currently mounted in-process but it makes sense
+    // to keep the same scale for them as ephemeral mounts.
+    {kPerformMountTimer, "Cryptohome.TimeToPerformMount", 0, 3000, 50},
+    // The time to generate the ECC auth value in TpmEccAuthBlock.
+    {kGenerateEccAuthValueTimer, "Cryptohome.TimeToGenerateEccAuthValue", 0,
+     5000, 50},
+    // The time for AuthSession to add an auth factor with VaultKeyset.
+    {kAuthSessionAddAuthFactorVKTimer,
+     "Cryptohome.TimeToAuthSessionAddAuthFactorVK", 0, 6000, 60},
+    // The time for AuthSession to add an auth factor with USS.
+    {kAuthSessionAddAuthFactorUSSTimer,
+     "Cryptohome.TimeToAuthSessionAddAuthFactorUSS", 0, 6000, 60},
+    // The time for AuthSession to authenticate an auth factor with VaultKeyset.
+    {kAuthSessionAuthenticateAuthFactorVKTimer,
+     "Cryptohome.TimeToAuthSessionAuthenticateAuthFactorVK", 0, 6000, 60},
+    // The time for AuthSession to authenticate an auth factor with USS.
+    {kAuthSessionAuthenticateAuthFactorUSSTimer,
+     "Cryptohome.TimeToAuthSessionAuthenticateAuthFactorUSS", 0, 6000, 60},
+    {kAuthSessionUpdateAuthFactorVKTimer,
+     "Cryptohome.TimeToAuthSessionUpdateAuthFactorVK", 0, 6000, 60},
+    {kAuthSessionUpdateAuthFactorUSSTimer,
+     "Cryptohome.TimeToAuthSessionUpdateAuthFactorUSS", 0, 6000, 60},
+    {kAuthSessionRemoveAuthFactorUSSTimer,
+     "Cryptohome.TimeToAuthSessionRemoveAuthFactorUSS", 0, 6000, 60},
+    // Time for User Data Auth class to create a persistent user.
+    {kCreatePersistentUserTimer, "Cryptohome.TimeToCreatePersistentUser", 0,
+     6000, 60},
+    // Time for overall AuthSession lifetime, which
+    // has a default of 5 minutes but can be optionally extended.
+    {kAuthSessionTotalLifetimeTimer, "Cryptohome.AuthSessionTotalLifetime", 0,
+     3 * 5 * 60 * 1000, 60},
+    // Time AuthSession is alive after it is authenticated, does not
+    // include time AuthSession is initialized but unauthenticated.
+    {kAuthSessionAuthenticatedLifetimeTimer,
+     "Cryptohome.AuthSessionAuthenticatedLifetime", 0, 3 * 5 * 60 * 1000, 60},
+    // The time to Persist a User Secret Stash to system storage.
+    {kUSSPersistTimer, "Cryptohome.TimeToUSSPersist", 0, 5000, 50},
+    // The time to Load Persist a User Secret Stash from system storage.
+    {kUSSLoadPersistedTimer, "Cryptohome.TimeToUSSLoadPersisted", 0, 5000, 50},
+    // The time to migrate a VaultKeyset to UserSecretStash after authentication
+    // or update is completed.
+    {kUSSMigrationTimer, "Cryptohome.TimeToMigrateVaultKeysetToUss", 0, 6000,
+     60},
+    // The time take to set up the cryptohome vault for mounting.
+    {kVaultSetupTimer, "Cryptohome.TimeToSetupVault", 0, 10 * 1000, 50},
+    // The time taken to relabel the SELinux context of all files inside the
+    // user cryptohome.
+    {kSELinuxRelabelTimer, "Cryptohome.TimeToRelabelSELinuxContexts", 0,
+     60 * 1000, 60},
+    {kStoreUserPolicyTimer, "Cryptohome.TimeToStoreUserPolicyInFile", 0, 5000,
+     50},
+    {kLoadUserPolicyTimer, "Cryptohome.TimeToLoadUserPolicyFromFile", 0, 5000,
+     50},
+    // The time for AuthSession to replace an auth factor.
+    {kAuthSessionReplaceAuthFactorTimer,
+     "Cryptohome.TimeToAuthSessionReplaceAuthFactor", 0, 6000, 60},
+};
+
+static_assert(std::size(kTimerHistogramParams) == kNumTimerTypes,
+              "kTimerHistogramParams out of sync with enum TimerType");
+
+constexpr bool TestTimerHistogramParams() {
+  for (int i = 0; i < std::size(kTimerHistogramParams); i++) {
+    if (static_cast<int>(kTimerHistogramParams[i].timer_type) != i) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static_assert(TestTimerHistogramParams(), "TimerType value mapping mismatch");
+
+// List of strings for a patterned histogram for legacy locations.
+const char* kLegacyCodePathLocations[] = {".AddKeyResetSeedGeneration"};
+
+static_assert(
+    std::size(kLegacyCodePathLocations) ==
+        static_cast<int>(LegacyCodePathLocation::kMaxValue) + 1,
+    "kLegacyCodePathLocations out of sync with enum LegacyCodePathLocation");
+
+// Set to true to disable CryptohomeError related reporting, see
+// DisableErrorMetricsReporting().
+bool g_disable_error_metrics = false;
+
+MetricsLibraryInterface* g_metrics = nullptr;
+chromeos_metrics::TimerReporter* g_timers[kNumTimerTypes] = {nullptr};
+
+chromeos_metrics::TimerReporter* GetTimer(TimerType timer_type) {
+  if (!g_timers[timer_type]) {
+    g_timers[timer_type] = new chromeos_metrics::TimerReporter(
+        kTimerHistogramParams[timer_type].metric_name,
+        kTimerHistogramParams[timer_type].min_sample,
+        kTimerHistogramParams[timer_type].max_sample,
+        kTimerHistogramParams[timer_type].num_buckets);
+  }
+  return g_timers[timer_type];
+}
+
+// These values are persisted to logs.
+// Keep in sync with respective variant enum in
+// tools/metrics/histograms/metadata/cryptohome/histograms.xml
+char const* GetAuthBlockTypeStringVariant(AuthBlockType type) {
+  switch (type) {
+    case AuthBlockType::kPinWeaver:
+      return "PinWeaver";
+    case AuthBlockType::kChallengeCredential:
+      return "ChallengeCredential";
+    case AuthBlockType::kDoubleWrappedCompat:
+      return "DoubleWrappedCompat";
+    case AuthBlockType::kTpmBoundToPcr:
+      return "TpmBoundToPcr";
+    case AuthBlockType::kTpmNotBoundToPcr:
+      return "TpmNotBoundToPcr";
+    case AuthBlockType::kScrypt:
+      return "Scrypt";
+    case AuthBlockType::kCryptohomeRecovery:
+      return "CryptohomeRecovery";
+    case AuthBlockType::kTpmEcc:
+      return "TpmEcc";
+    case AuthBlockType::kFingerprint:
+      return "Fingerprint";
+  }
+}
+
+}  // namespace
+
+void InitializeMetrics() {
+  g_metrics = new MetricsLibrary();
+  chromeos_metrics::TimerReporter::set_metrics_lib(g_metrics);
+}
+
+void TearDownMetrics() {
+  if (g_metrics) {
+    chromeos_metrics::TimerReporter::set_metrics_lib(nullptr);
+    delete g_metrics;
+    g_metrics = nullptr;
+  }
+  for (auto& g_timer : g_timers) {
+    if (g_timer) {
+      delete g_timer;
+    }
+  }
+}
+
+MetricsLibraryInterface* GetMetrics() {
+  if (!g_metrics || g_disable_error_metrics) {
+    return nullptr;
+  }
+  return g_metrics;
+}
+
+void OverrideMetricsLibraryForTesting(MetricsLibraryInterface* lib) {
+  g_metrics = lib;
+}
+
+void ClearMetricsLibraryForTesting() {
+  g_metrics = nullptr;
+}
+
+void DisableErrorMetricsReporting() {
+  g_disable_error_metrics = true;
+}
+
+void ReportCryptohomeError(CryptohomeErrorMetric error) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kCryptohomeErrorHistogram, error,
+                           kCryptohomeErrorNumBuckets);
+}
+
+void ReportCrosEvent(const char* event) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendCrosEventToUMA(event);
+}
+
+void ReportTimerStart(TimerType timer_type) {
+  if (!g_metrics) {
+    return;
+  }
+  chromeos_metrics::TimerReporter* timer = GetTimer(timer_type);
+  if (!timer) {
+    return;
+  }
+  timer->Start();
+}
+
+void ReportTimerStop(TimerType timer_type) {
+  if (!g_metrics) {
+    return;
+  }
+  chromeos_metrics::TimerReporter* timer = GetTimer(timer_type);
+  bool success = (timer && timer->HasStarted() && timer->Stop() &&
+                  timer->ReportMilliseconds());
+  if (!success) {
+    LOG(WARNING) << "Timer " << kTimerHistogramParams[timer_type].metric_name
+                 << " failed to report.";
+  }
+}
+
+void ReportTimerDuration(
+    const AuthSessionPerformanceTimer* auth_session_performance_timer) {
+  if (!g_metrics) {
+    return;
+  }
+  // Check that timer_type is a valid timer.
+  TimerType timer_type = auth_session_performance_timer->type;
+  CHECK_LT(timer_type, kNumTimerTypes);
+
+  // Compute the name, parameterizing by AuthBlockType if needed.
+  std::string metric_name = kTimerHistogramParams[timer_type].metric_name;
+  if (auth_session_performance_timer->auth_block_type) {
+    base::StrAppend(
+        &metric_name,
+        {".", GetAuthBlockTypeStringVariant(
+                  *auth_session_performance_timer->auth_block_type)});
+  }
+
+  auto duration =
+      base::TimeTicks::Now() - auth_session_performance_timer->start_time;
+  g_metrics->SendToUMA(metric_name, duration.InMilliseconds(),
+                       kTimerHistogramParams[timer_type].min_sample,
+                       kTimerHistogramParams[timer_type].max_sample,
+                       kTimerHistogramParams[timer_type].num_buckets);
+}
+
+void ReportTimerDuration(const TimerType& timer_type,
+                         base::TimeTicks start_time,
+                         const std::string& parameter_string) {
+  if (!g_metrics) {
+    return;
+  }
+  // Check that timer_type is a valid timer.
+  CHECK_LT(timer_type, kNumTimerTypes);
+
+  std::string metric_name = kTimerHistogramParams[timer_type].metric_name;
+  metric_name.append(parameter_string);
+
+  auto duration = base::TimeTicks::Now() - start_time;
+  g_metrics->SendToUMA(metric_name, duration.InMilliseconds(),
+                       kTimerHistogramParams[timer_type].min_sample,
+                       kTimerHistogramParams[timer_type].max_sample,
+                       kTimerHistogramParams[timer_type].num_buckets);
+}
+
+void ReportRevokeCredentialResult(AuthBlockType auth_block_type,
+                                  hwsec::TPMRetryAction result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  g_metrics->SendEnumToUMA(
+      base::StringPrintf(kCryptohomeRevokeCredentialResultHistogram,
+                         GetAuthBlockTypeStringVariant(auth_block_type)),
+      result);
+}
+
+void ReportFreedGCacheDiskSpaceInMb(int mb) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(kCryptohomeGCacheFreedDiskSpaceInMbHistogram, mb,
+                       10 /* 10 MiB minimum */, 1024 * 10 /* 10 GiB maximum */,
+                       50 /* number of buckets */);
+}
+
+void ReportFreedDaemonStoreCacheDiskSpaceInMb(int mb) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(kCryptohomeDaemonStoreCacheFreedDiskSpaceInMbHistogram,
+                       mb, 10 /* 10 MiB minimum */,
+                       1024 * 10 /* 10 GiB maximum */,
+                       50 /* number of buckets */);
+}
+
+void ReportFreedDaemonStoreCacheMountedUsersDiskSpaceInMb(int mb) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(
+      kCryptohomeDaemonStoreCacheMountedUsersFreedDiskSpaceInMbHistogram, mb,
+      10 /* 10 MiB minimum */, 1024 * 10 /* 10 GiB maximum */,
+      50 /* number of buckets */);
+}
+
+void ReportFreedCacheVaultDiskSpaceInMb(int mb) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(kCryptohomeCacheVaultFreedDiskSpaceInMbHistogram, mb,
+                       10 /* 10 MiB minimum */, 1024 * 10 /* 10 GiB maximum */,
+                       50 /* number of buckets */);
+}
+
+void ReportDeletedUserProfiles(int user_profile_count) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(kCryptohomeDeletedUserProfilesHistogram,
+                       user_profile_count, 1 /* minimum */, 100 /* maximum */,
+                       20 /* number of buckets */);
+}
+
+void ReportFreeDiskSpaceTotalTime(int ms) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(kCryptohomeFreeDiskSpaceTotalTimeHistogram, ms, 1,
+                       60 * 1000, 50);
+}
+
+void ReportFreeDiskSpaceTotalFreedInMb(int mb) {
+  if (!g_metrics) {
+    return;
+  }
+  constexpr int kMin = 1, kMax = 1024 * 10, /* 10 GiB maximum */
+      kNumBuckets = 50;
+  g_metrics->SendToUMA(kCryptohomeFreeDiskSpaceTotalFreedInMbHistogram, mb,
+                       kMin, kMax, kNumBuckets);
+}
+
+void ReportTimeBetweenFreeDiskSpace(int s) {
+  if (!g_metrics) {
+    return;
+  }
+
+  constexpr int kMin = 1, kMax = 86400, /* seconds in a day */
+      kNumBuckets = 50;
+  g_metrics->SendToUMA(kCryptohomeTimeBetweenFreeDiskSpaceHistogram, s, kMin,
+                       kMax, kNumBuckets);
+}
+
+void ReportLoginDiskCleanupTotalTime(int ms) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendToUMA(kCryptohomeLoginDiskCleanupTotalTime, ms, 1, 60 * 1000,
+                       50);
+}
+
+void ReportFreeDiskSpaceDuringLoginTotalFreedInMb(int mb) {
+  if (!g_metrics) {
+    return;
+  }
+  constexpr int kMin = 1, kMax = 1024 * 10, /* 10 GiB maximum */
+      kNumBuckets = 50;
+  g_metrics->SendToUMA(
+      kCryptohomeFreeDiskSpaceDuringLoginTotalFreedInMbHistogram, mb, kMin,
+      kMax, kNumBuckets);
+}
+
+void ReportDiskCleanupProgress(DiskCleanupProgress progress) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kCryptohomeDiskCleanupProgressHistogram,
+                           static_cast<int>(progress),
+                           static_cast<int>(DiskCleanupProgress::kNumBuckets));
+}
+
+void ReportDiskCleanupResult(DiskCleanupResult result) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kCryptohomeDiskCleanupResultHistogram,
+                           static_cast<int>(result),
+                           static_cast<int>(DiskCleanupResult::kNumBuckets));
+}
+
+void ReportLoginDiskCleanupProgress(LoginDiskCleanupProgress progress) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(
+      kCryptohomeLoginDiskCleanupProgressHistogram, static_cast<int>(progress),
+      static_cast<int>(LoginDiskCleanupProgress::kNumBuckets));
+}
+
+void ReportLoginDiskCleanupResult(DiskCleanupResult result) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kCryptohomeLoginDiskCleanupResultHistogram,
+                           static_cast<int>(result),
+                           static_cast<int>(DiskCleanupResult::kNumBuckets));
+}
+
+void ReportLoginDiskCleanupAvailableSpace(int64_t space) {
+  if (!g_metrics) {
+    return;
+  }
+  constexpr int kMin = 0, kMax = 10000, kNumBuckets = 50;
+  g_metrics->SendToUMA(kCryptohomeLoginDiskCleanupAvailableSpaceHistogram,
+                       space, kMin, kMax, kNumBuckets);
+}
+
+void ReportNumUserHomeDirectories(int num_users) {
+  if (!g_metrics) {
+    return;
+  }
+  constexpr int kMin = 1, kMax = 50, kNumBuckets = 50;
+  g_metrics->SendToUMA(kNumUserHomeDirectories, num_users, kMin, kMax,
+                       kNumBuckets);
+}
+
+void ReportHomedirEncryptionType(HomedirEncryptionType type) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(
+      kHomedirEncryptionTypeHistogram, static_cast<int>(type),
+      static_cast<int>(
+          HomedirEncryptionType::kHomedirEncryptionTypeNumBuckets));
+}
+
+void ReportOOPMountOperationResult(OOPMountOperationResult result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  constexpr auto max_event =
+      static_cast<int>(OOPMountOperationResult::kMaxValue);
+  g_metrics->SendEnumToUMA(kOOPMountOperationResultHistogram,
+                           static_cast<int>(result),
+                           static_cast<int>(max_event));
+}
+
+void ReportOOPMountCleanupResult(OOPMountCleanupResult result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  constexpr auto max_event = static_cast<int>(OOPMountCleanupResult::kMaxValue);
+  g_metrics->SendEnumToUMA(kOOPMountCleanupResultHistogram,
+                           static_cast<int>(result),
+                           static_cast<int>(max_event));
+}
+
+void ReportPrepareForRemovalResult(AuthBlockType auth_block_type,
+                                   CryptoError result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  g_metrics->SendEnumToUMA(
+      base::StringPrintf(kRecoveryPrepareForRemovalResultHistogram,
+                         GetAuthBlockTypeStringVariant(auth_block_type)),
+      static_cast<int>(result), static_cast<int>(CryptoError::CE_MAX_VALUE));
+}
+
+void ReportCreateAuthBlock(AuthBlockType type) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kCreateAuthBlockTypeHistogram,
+                           static_cast<int>(type),
+                           static_cast<int>(kAuthBlockTypeMaxValue) + 1);
+}
+
+void ReportDeriveAuthBlock(AuthBlockType type) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kDeriveAuthBlockTypeHistogram,
+                           static_cast<int>(type),
+                           static_cast<int>(kAuthBlockTypeMaxValue) + 1);
+}
+
+void ReportSelectFactorAuthBlock(AuthBlockType type) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kSelectFactorAuthBlockTypeHistogram,
+                           static_cast<int>(type),
+                           static_cast<int>(kAuthBlockTypeMaxValue) + 1);
+}
+
+void ReportUsageOfLegacyCodePath(const LegacyCodePathLocation location,
+                                 bool result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  std::string hist_str =
+      std::string(kLegacyCodePathUsageHistogramPrefix)
+          .append(kLegacyCodePathLocations[static_cast<int>(location)]);
+
+  g_metrics->SendBoolToUMA(hist_str, result);
+}
+
+void ReportMaskedDownloadsItems(int num_items) {
+  if (!g_metrics) {
+    return;
+  }
+
+  constexpr int kMin = 1, kMax = 1000, kNumBuckets = 20;
+  g_metrics->SendToUMA(kMaskedDownloadsItems, num_items, kMin, kMax,
+                       kNumBuckets);
+}
+
+void ReportDownloadsMigrationStatus(const DownloadsMigrationStatus status) {
+  if (g_metrics) {
+    g_metrics->SendEnumToUMA(kDownloadsMigrationStatus, status);
+  }
+}
+
+void ReportDownloadsMigrationOperation(const std::string_view operation,
+                                       const bool success) {
+  if (g_metrics) {
+    const int error = errno;
+    g_metrics->SendSparseToUMA(
+        base::StrCat({"Cryptohome.DownloadsBindMountMigration.", operation}),
+        success ? 0 : error);
+    errno = error;
+  }
+}
+
+void ReportCryptohomeErrorHashedStack(std::string error_bucket_name,
+                                      const uint32_t hashed) {
+  if (!g_metrics || g_disable_error_metrics) {
+    return;
+  }
+
+  std::string name =
+      base::JoinString({kCryptohomeErrorPrefix, std::move(error_bucket_name),
+                        kCryptohomeErrorHashedStackSuffix},
+                       ".");
+  g_metrics->SendSparseToUMA(name, static_cast<int>(hashed));
+}
+
+void ReportCryptohomeErrorLeafWithTPM(std::string error_bucket_name,
+                                      const uint32_t mixed) {
+  if (!g_metrics || g_disable_error_metrics) {
+    return;
+  }
+
+  std::string name =
+      base::JoinString({kCryptohomeErrorPrefix, std::move(error_bucket_name),
+                        kCryptohomeErrorLeafWithTPMSuffix},
+                       ".");
+  g_metrics->SendSparseToUMA(name, static_cast<int>(mixed));
+}
+
+void ReportCryptohomeErrorDevCheckUnexpectedState(std::string error_bucket_name,
+                                                  const uint32_t loc) {
+  if (!g_metrics || g_disable_error_metrics) {
+    return;
+  }
+
+  std::string name =
+      base::JoinString({kCryptohomeErrorPrefix, std::move(error_bucket_name),
+                        kCryptohomeErrorDevCheckUnexpectedStateSuffix},
+                       ".");
+  g_metrics->SendSparseToUMA(name, static_cast<int>(loc));
+}
+
+void ReportCryptohomeErrorAllLocations(std::string error_bucket_name,
+                                       const uint32_t loc) {
+  if (!g_metrics || g_disable_error_metrics) {
+    return;
+  }
+
+  std::string name =
+      base::JoinString({kCryptohomeErrorPrefix, std::move(error_bucket_name),
+                        kCryptohomeErrorAllLocationsSuffix},
+                       ".");
+  g_metrics->SendSparseToUMA(name, static_cast<int>(loc));
+}
+
+void ReportAuthFactorBackingStoreConfig(AuthFactorBackingStoreConfig config) {
+  if (!g_metrics) {
+    return;
+  }
+
+  g_metrics->SendEnumToUMA(
+      kAuthFactorBackingStoreConfig, static_cast<int>(config),
+      static_cast<int>(AuthFactorBackingStoreConfig::kMaxValue) + 1);
+}
+
+void ReportFingerprintEnrollSignal(
+    user_data_auth::FingerprintScanResult scan_result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  g_metrics->SendEnumToUMA(kFingerprintEnrollSignal,
+                           static_cast<int>(scan_result),
+                           user_data_auth::FingerprintScanResult_ARRAYSIZE);
+}
+
+void ReportFingerprintAuthSignal(
+    user_data_auth::FingerprintScanResult scan_result) {
+  if (!g_metrics) {
+    return;
+  }
+
+  g_metrics->SendEnumToUMA(kFingerprintAuthSignal,
+                           static_cast<int>(scan_result),
+                           user_data_auth::FingerprintScanResult_ARRAYSIZE);
+}
+
+void ReportBackendCertProviderUpdateCertResult(
+    BackendCertProviderUpdateCertResult result) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kBackendCertProviderUpdateCertResult, result);
+}
+
+void ReportVerifyAndParseBackendCertResult(
+    VerifyAndParseBackendCertResult result) {
+  if (!g_metrics) {
+    return;
+  }
+  g_metrics->SendEnumToUMA(kVerifyAndParseBackendCertResult, result);
+}
+
+}  // namespace cryptohome

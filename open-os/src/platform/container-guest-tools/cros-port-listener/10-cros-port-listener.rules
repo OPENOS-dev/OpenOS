@@ -1,0 +1,10 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This udev rule is used by systemd to satisfy the `dev-vsock.device`
+# Wants/After fields in cros-port-listener.service. This ensures the service
+# isn't started until the kernel's vsock subsystem is running. Otherwise the
+# service can fail to start when it tries to create the vsock socket.
+
+KERNEL=="vsock", TAG+="systemd"

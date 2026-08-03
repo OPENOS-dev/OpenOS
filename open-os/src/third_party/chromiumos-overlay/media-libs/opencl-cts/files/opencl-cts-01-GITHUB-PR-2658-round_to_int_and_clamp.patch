@@ -1,0 +1,32 @@
+commit 3a8ff04ae086f776da9c4b747c71f7821bb03a75
+Author: Romaric Jodin <rjodin@google.com>
+Date:   Fri Apr 3 10:46:27 2026 +0200
+
+    Fix: Handle NaN inputs in round_to_int_and_clamp
+    
+    Check for NaN before casting to long long to prevent SIGILL crashes
+    due to undefined behavior.
+    
+    Returns 0 for NaN inputs as defined in the specification.
+
+diff --git a/test_conformance/conversions/conversions_data_info.h b/test_conformance/conversions/conversions_data_info.h
+index 46eb9c23..cce1979a 100644
+--- a/test_conformance/conversions/conversions_data_info.h
++++ b/test_conformance/conversions/conversions_data_info.h
+@@ -35,6 +35,7 @@ extern roundingMode qcom_rm;
+ #include "harness/rounding_mode.h"
+ #include "harness/typeWrappers.h"
+ 
++#include <cmath>
+ #include <vector>
+ 
+ #if defined(__linux__)
+@@ -367,6 +368,8 @@ DataInfoSpec<InType, OutType, InFP, OutFP>::round_to_int_and_clamp(double f)
+     static const double magic[2] = { MAKE_HEX_DOUBLE(0x1.0p52, 0x1LL, 52),
+                                      MAKE_HEX_DOUBLE(-0x1.0p52, -0x1LL, 52) };
+ 
++    if (std::isnan(f)) return 0;
++
+     if (f >= -(double)LLONG_MIN) return LLONG_MAX;
+ 
+     if (f <= (double)LLONG_MIN) return LLONG_MIN;

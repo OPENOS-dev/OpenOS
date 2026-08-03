@@ -1,0 +1,36 @@
+From f0874fc1a8252647557b728f2fd8b4ee7b4bbea1 Mon Sep 17 00:00:00 2001
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Tue, 9 Jan 2024 10:22:50 +0000
+Subject: [PATCH] meson: Remove FORTIFY_SOURCE definition
+
+The build systems alredy sets it to 3 for us.
+
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+---
+ meson.build | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index e07659d..4cf032a 100644
+--- a/meson.build
++++ b/meson.build
+@@ -18,16 +18,6 @@ cc_arguments = [
+     '-Wshadow',
+ ]
+ 
+-if cc.get_id() == 'clang'
+-    # Turn _FORTIFY_SOURCE by default on optimised builds (as it requires -O1
+-    # or higher). This is needed on clang only as gcc enables it by default.
+-    if get_option('optimization') != '0'
+-        cc_arguments += [
+-            '-D_FORTIFY_SOURCE=2',
+-        ]
+-    endif
+-endif
+-
+ add_project_arguments(cc_arguments, language : 'c')
+ 
+ #
+-- 
+2.43.0.472.g3155946c3a-goog
+

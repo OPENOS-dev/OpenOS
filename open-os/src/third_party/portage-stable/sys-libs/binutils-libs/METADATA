@@ -1,0 +1,35 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Metadata information for which CVEs have been patched in.
+#
+# For more information, see:
+#     http://go/third-party-package-remediation-playbook#special-case-back-ported-patches
+third_party {
+  version: "2.45"
+  security {
+    tag: "cpe:/a:gnu:binutils:2.45"
+    # ChromeOS > Infra > Toolchain
+    tag: "vuln_reporting:buganizer_component:1034879"
+
+    # Our 2.45 sources contain fixes for these CVEs.
+    mitigated_security_patch: "CVE-2025-7545"
+    mitigated_security_patch: "CVE-2025-7546"
+
+    # We have a patch locally for this CVE
+    # at files/binutils-libs_elf-eh-frame.patch
+    mitigated_security_patch: "CVE-2025-11082"
+
+    # We have a patch locally for this CVE
+    # at files/binutils-libs_elf-elfcode.patch
+    mitigated_security_patch: "CVE-2025-11083"
+
+    # These two CVEs are readelf-specific and only result in readelf crashes
+    # when trying to read a malformed object file. binutils-libs doesn't ship
+    # readelf, so ignore them. Advisory data indicates >= 2.47 is unimpacted,
+    # so it's safe to remove this when we're at that version.
+    mitigated_security_patch: "CVE-2025-69649"
+    mitigated_security_patch: "CVE-2025-69650"
+  }
+}

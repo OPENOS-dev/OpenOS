@@ -1,0 +1,15 @@
+BDEPEND=app-arch/unzip
+DEFINED_PHASES=configure install test
+DEPEND=ssl? ( >=dev-libs/libgcrypt-1.5.3:= >=net-libs/gnutls-3.6.14:= ) zeroconf? ( >=net-dns/avahi-0.8:= )
+DESCRIPTION=ippsample print testing utility
+EAPI=7
+HOMEPAGE=https://github.com/istopwg/ippsample/blob/master/README.md
+IUSE=+ssl +zeroconf asan cfi cfi_diag cfi_recover coverage fuzzer msan thinlto tsan ubsan
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=ssl? ( >=dev-libs/libgcrypt-1.5.3:= >=net-libs/gnutls-3.6.14:= ) zeroconf? ( >=net-dns/avahi-0.8:= )
+REQUIRED_USE=cfi? ( thinlto ) cfi_diag? ( cfi ) cfi_recover? ( cfi_diag )
+SLOT=0
+SRC_URI=https://github.com/istopwg/ippsample/archive/df83ad39d54f05aab39dab013464bea3514034d6.zip -> ippsample-1.1.0.zip
+_eclasses_=cros-sanitizers	2ab0d1f5bdf2c87c90e36b495d3a4c6e	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=539d0f550312ca7ffaf4fd384912ef56

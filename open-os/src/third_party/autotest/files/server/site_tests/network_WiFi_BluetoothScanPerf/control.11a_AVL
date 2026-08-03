@@ -1,0 +1,41 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from autotest_lib.server.cros.connectivity_common.connectivity_test_version_control\
+        import test_version_setup
+
+NAME = 'network_WiFi_BluetoothScanPerf.11a_AVL'
+METADATA = {
+    'contacts': ['chromeos-bt-team@google.com'],
+    # ChromeOS > Platform > Connectivity > Bluetooth
+    'bug_component': 'b:167317',
+    # netperf is used for measuring the throughput.
+    # Network: Open 802.11a, Channel 44.
+    'criteria': 'Measure the maximal receiving and transmitting throughput on a DUT while scanning bluetooth',
+    'hw_agnostic': False,
+    'variant_category': '{"name": "WifiBtChipset_Soc_Kernel"}',
+}
+ATTRIBUTES = ''
+TEST_TYPE = 'Server'
+DEPENDENCIES = 'wificell, peripheral_wifi_state:WORKING'
+
+from autotest_lib.server import utils
+from autotest_lib.server.cros.network import hostap_config
+
+args_dict = utils.args_to_dict(args)
+
+def run(machine):
+    if not test_version_setup('wifi'):
+        return
+
+    host = hosts.create_host(machine)
+    mode = hostap_config.HostapConfig.MODE_11A
+    configs = [hostap_config.HostapConfig(channel=channel, mode=mode)
+               for channel in (44,)]
+    job.run_test('network_WiFi_BluetoothScanPerf', tag=NAME.split('.')[1],
+                 host=host, raw_cmdline_args=args,
+                 additional_params=configs)
+
+
+parallel_simple(run, machines)

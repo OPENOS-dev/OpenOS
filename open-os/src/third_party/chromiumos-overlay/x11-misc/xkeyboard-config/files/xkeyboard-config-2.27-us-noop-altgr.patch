@@ -1,0 +1,22 @@
+diff --git a/symbols/us b/symbols/us
+index f8c24d0..31339fc 100644
+--- a/symbols/us
++++ b/symbols/us
+@@ -56,6 +56,17 @@ xkb_symbols "basic" {
+     key <BKSL> {	[ backslash,         bar	]	};
+ };
+ 
++
++partial modifier_keys
++xkb_symbols "noop-altgr" {
++
++    include "us(basic)"
++    name[Group1]= "English (US) with no-op AltGr";
++
++    include "level3(ralt_switch)"
++};
++
++
+ partial alphanumeric_keys
+ xkb_symbols "euro" {
+ 

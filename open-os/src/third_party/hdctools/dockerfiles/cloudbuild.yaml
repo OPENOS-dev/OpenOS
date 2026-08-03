@@ -1,0 +1,303 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+steps:
+
+- name: 'gcr.io/cloud-builders/git'
+  id: 'src-prep'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    set -x
+    rm -rf /workspace
+    mkdir /workspace
+    cd /workspace
+    git clone $_REPO_URL .
+    git fetch $_REPO_URL $COMMIT_SHA
+    git checkout -b buildbranch FETCH_HEAD
+    git branch --set-upstream-to=origin/$BRANCH_NAME buildbranch
+    git config --global user.email "someone@example.com"
+    git rebase
+
+    git fetch origin main || true
+    BASE_COMMIT=$$(git merge-base origin/main HEAD || echo "HEAD~1")
+    if git diff --name-only $$BASE_COMMIT HEAD | grep -q "dockerfiles/"; then
+      echo "Files in dockerfiles/ changed, creating flag file."
+      touch /workspace/base_changed
+    fi
+
+- name: 'gcr.io/kaniko-project/executor:debug'
+  id: 'build-builder-base'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    if [ -f /workspace/base_changed ]; then
+      /kaniko/executor \
+        --destination=us-docker.pkg.dev/$PROJECT_ID/servod/servod-builder-base:$COMMIT_SHA \
+        --target=hdctools-builder-base \
+        --cache=true \
+        --cache-ttl=24h \
+        --reproducible=true \
+        -f=/workspace/dockerfiles/Dockerfile.base
+    else
+      echo "Base unchanged, skipping builder base build."
+    fi
+  waitFor: ['src-prep']
+
+- name: 'gcr.io/kaniko-project/executor:debug'
+  id: 'build-base'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    if [ -f /workspace/base_changed ]; then
+      /kaniko/executor \
+        --destination=us-docker.pkg.dev/$PROJECT_ID/servod/servod-base:$COMMIT_SHA \
+        --target=base \
+        --cache=true \
+        --cache-ttl=24h \
+        --reproducible=true \
+        -f=/workspace/dockerfiles/Dockerfile.base
+    else
+      echo "Base unchanged, skipping base build."
+    fi
+  waitFor: ['build-builder-base']
+
+- name: 'gcr.io/kaniko-project/executor:debug'
+  id: 'build'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    BUILDER_IMG="us-docker.pkg.dev/$PROJECT_ID/servod/servod-builder-base:latest"
+    BASE_IMG="us-docker.pkg.dev/$PROJECT_ID/servod/servod-base:latest"
+    if [ -f /workspace/base_changed ]; then
+      BUILDER_IMG="us-docker.pkg.dev/$PROJECT_ID/servod/servod-builder-base:$COMMIT_SHA"
+      BASE_IMG="us-docker.pkg.dev/$PROJECT_ID/servod/servod-base:$COMMIT_SHA"
+    fi
+    /kaniko/executor \
+      --destination=us-docker.pkg.dev/$PROJECT_ID/servod/servod:$COMMIT_SHA \
+      --cache=true \
+      --cache-ttl=24h \
+      --reproducible=true \
+      --build-arg=BUILDER_BASE_IMG=$$BUILDER_IMG \
+      --build-arg=BASE_IMG=$$BASE_IMG \
+      -f=/workspace/dockerfiles/Dockerfile
+  waitFor: ['build-base']
+
+- name: 'gcr.io/kaniko-project/executor:latest'
+  id: 'test-build'
+  args:
+  - --destination=us-docker.pkg.dev/$PROJECT_ID/servod/servodtest:$COMMIT_SHA
+  - --cache=true
+  - --cache-ttl=24h
+  - --reproducible=true
+  - --build-arg=BASE_IMG=us-docker.pkg.dev/$PROJECT_ID/servod/servod:$COMMIT_SHA
+  - -f=/workspace/dockerfiles/Dockerfile.test
+  waitFor: ['build']
+
+- name: 'us-docker.pkg.dev/$PROJECT_ID/servod/servodtest:$COMMIT_SHA'
+  id: 'test-python'
+  entrypoint: pytest
+  env:
+    - PYTHONPATH=/workspace/
+    - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+  args:
+    - -n=logical
+    - --cov-report=lcov
+    - --cov-report=xml
+    - --forked
+    - --cov=/usr/local/lib/python3.13/dist-packages/servo
+    - --cov=/usr/local/lib/python3.13/dist-packages/usbkm232
+    - --cov=/usr/local/lib/python3.13/dist-packages/ec3po
+    - /workspace/
+  waitFor: ['test-build']
+
+
+- name: 'pyfound/black:25.9.0'
+  id: 'test-black-formatting'
+  entrypoint: 'black'
+  args:
+    - --check
+    - --config=/workspace/pyproject.toml
+    - /workspace
+  waitFor: ['src-prep']
+
+- name: 'xcgd/isort'
+  id: 'test-isort-formatting'
+  entrypoint: 'isort'
+  args:
+    - --check
+    - /workspace
+  waitFor: ['src-prep']
+
+- name: 'registry.gitlab.com/pipeline-components/pylint:latest'
+  id: 'test-pylint'
+  entrypoint: 'pylint'
+  args:
+    - --rcfile=/workspace/pylintrc
+    - /workspace
+  waitFor: ['src-prep']
+
+- name: 'koalaman/shellcheck-alpine'
+  id: 'test-shellcheck'
+  waitFor: ['src-prep']
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - find /workspace -type f  -name *.sh -print | xargs shellcheck
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  id: 'test-api-version'
+  args:
+    - -c
+    - |
+      set -e
+      git config --global --add safe.directory /workspace
+      python3 /workspace/development_environment/hooks/check_api_version.py
+  waitFor: ['src-prep']
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  id: 'test-scripts'
+  args:
+    - -c
+    - |
+      set -e
+      for script in $(ls /workspace/tests/shell/*); do
+         bash ${script}
+      done
+  waitFor: ['src-prep']
+
+- name: gcr.io/cloud-builders/gcloud
+  id: 'upload-ota-payload'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      set -e
+      # Ensure python3, pip3, and venv are available for the build script
+      if ! command -v python3 >/dev/null 2>&1 || ! command -v pip3 >/dev/null 2>&1 || ! python3 -m venv -h >/dev/null 2>&1; then
+          apt-get update && apt-get install -y python3 python3-pip python3-venv
+      fi
+      # ONLY uploads on non-Gerrit "main" branch builds
+      if [ -n "${_GERRIT_CHANGE_NUMBER:-}" ]; then
+          echo "Presubmit build detected (Gerrit $_GERRIT_CHANGE_NUMBER). Skipping OTA upload."
+          ./scripts/build-data-tarball.sh
+      elif [ "$BRANCH_NAME" = "main" ]; then
+          ./scripts/build-data-tarball.sh --upload
+      else
+          echo "Skipping OTA upload for non-main branch: $BRANCH_NAME"
+          ./scripts/build-data-tarball.sh
+      fi
+  waitFor: ['src-prep']
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  id: 'coverage-upload-python'
+  args:
+    - -c
+    - |
+      set -ex
+
+      cd /workspace
+      gcloud config set project chromeos-hw-tools-dev
+      # Copy to ng3 metrics
+      # The parser is picky, so drop lines that are of no use to it
+      sed -e "/^BRDA:0,/ d" coverage.lcov > coverage.edited.lcov
+      gsutil cp coverage.edited.lcov gs://ng3-metrics/ng3-hw-tools-coverage/absolute/hdctools/$COMMIT_SHA/coverage.out
+      cat > metadata.json << EOF
+      {
+        "host": "chromium",
+        "project": "chromiumos/codesearch",
+        "trace_type": "LCOV",
+        "trim_prefix": "/usr/local/lib/python3.13/dist-packages/",
+        "add_prefix": "src/third_party/hdctools/",
+        "commit_id": "${COMMIT_SHA}",
+        "ref": "refs/heads/main",
+        "source": "zoss-uploader-hw-tools:main",
+        "owner": "1192509288844",
+        "bug_component": "983411"
+      }
+      EOF
+      gsutil cp metadata.json gs://ng3-metrics/ng3-hw-tools-coverage/absolute/hdctools/$COMMIT_SHA/metadata.json
+  waitFor: ['test-python']
+
+- name: gcr.io/cloud-builders/gcloud
+  id: 'xml-impact-analysis'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      set -ex
+      cd /workspace
+
+      # Prefer Cloud Build built-in variables for Gerrit triggers to get the numeric ID
+      # We use $$ to escape from Cloud Build substitution
+      GERRIT_NUM="${_GERRIT_CHANGE_NUMBER:-}"
+      if [ -z "$$GERRIT_NUM" ]; then
+          # Fallback: extract Change-Id hex and we could potentially query Gerrit for numeric ID,
+          # but for now let's just try to find the numeric ID in the git log if it's there
+          # or stick to the hex if we must.
+          # Actually, let's use the hex ID as GERRIT_NUM if the numeric one is missing.
+          GERRIT_NUM=$$(git log -1 --format=%B | grep "Change-Id:" | awk '{print $$2}')
+      fi
+
+      git config --global --add safe.directory /workspace
+
+      if [ -n "$$GERRIT_NUM" ]; then
+          mkdir -p /workspace/html_diffs
+
+          BUCKET_PATH="gs://servo-processed-xml/ci-diffs/$$GERRIT_NUM"
+          URL_PREFIX="https://storage.mtls.cloud.google.com/servo-processed-xml/ci-diffs/$$GERRIT_NUM"
+
+          # Use merge-base with main as the base commit for the impact analysis
+          git fetch origin main || true
+          BASE_COMMIT=$$(git merge-base origin/main HEAD || echo "HEAD~1")
+
+          export PYTHONPATH="$$PYTHONPATH:/workspace"
+          python3 dockerfiles/scripts/analyze_xml_impact.py \
+            --base-commit "$$BASE_COMMIT" \
+            --target-commit "HEAD" \
+            --output-report /workspace/impact_report.md \
+            --output-diff /workspace/main.diff \
+            --html-diff-dir /workspace/html_diffs \
+            --diff-url-prefix "$$URL_PREFIX" \
+            --full-html-report /workspace/html_diffs/full_report.html
+
+          if [ -f /workspace/impact_report.md ]; then
+              cat /workspace/impact_report.md
+
+              if [ -s /workspace/impact_report.md ] && grep -q "configurations functionally" /workspace/impact_report.md; then
+                 # Upload HTML diffs to GCS.
+                 gsutil -m -h "Content-Type:text/html" cp -r /workspace/html_diffs/* "$$BUCKET_PATH/" || echo "Warning: Failed to upload diffs to GCS"
+
+                 # Install auth libraries
+                 (python3 -m pip install --user google-auth requests || \
+                  (apt-get update && apt-get install -y python3-pip && \
+                   python3 -m pip install --user google-auth requests)) || \
+                 echo "Warning: Failed to install auth libs"
+
+                 # Post to Gerrit
+                 python3 dockerfiles/scripts/post_to_gerrit.py \
+                   --change-id "$$GERRIT_NUM" \
+                   --service-account "hdctools-ci-bot@chromeos-hw-tools-dev.iam.gserviceaccount.com" \
+                   /workspace/impact_report.md || echo "Warning: Failed to post to Gerrit"
+              fi
+          else
+              echo "No XML changes detected. Skipping report generation and upload."
+          fi
+      else
+          echo "Skipping CL impact analysis. Could not determine GERRIT_NUM."
+      fi
+  waitFor: ['src-prep']
+
+options:
+  pool:
+    name: 'projects/chromeos-hw-tools-dev/locations/us-central1/workerPools/proto-servo-pool'
+
+timeout: 5400s

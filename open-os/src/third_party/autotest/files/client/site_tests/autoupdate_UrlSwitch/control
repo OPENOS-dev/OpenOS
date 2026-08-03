@@ -1,0 +1,26 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, The ChromiumOS Authors"
+NAME = "autoupdate_UrlSwitch"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Start a forced autoupdate at OOBE."
+}
+TEST_TYPE = "client"
+TIME = "SHORT"
+PY_VERSION = 3
+
+DOC = """
+Omaha returns a response with two URLs. We want to test that when we disable
+the internet connection during the first update, the update fails. We want to
+then ensure the next update check moves to the next URL and continues where the
+update left off.
+"""
+
+job.run_test('autoupdate_UrlSwitch', disable_sysinfo=True)

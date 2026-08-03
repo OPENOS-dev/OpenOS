@@ -1,0 +1,10 @@
+<ie>
+  <plugins>
+    <plugin name="NPU" location="libopenvino_intel_npu_plugin.so">
+    </plugin>
+
+    <!-- CPU plugin is used for testing only, not used on production. -->
+    <plugin name="CPU" location="libopenvino_intel_cpu_plugin.so">
+    </plugin>
+  </plugins>
+</ie>

@@ -1,0 +1,38 @@
+diff --git a/devices/gdevupd.c b/devices/gdevupd.c
+index 3118e3d..2712661 100644
+--- a/devices/gdevupd.c
++++ b/devices/gdevupd.c
+@@ -7008,7 +7008,6 @@ upd_wrtrtl(upd_p upd, gp_file *out)
+    if(0 <= xend) { /* Some data to write */
+ 
+       ioutbuf = 0;
+-      xend   += 1;
+ /*
+  *    Adjust the Printers Y-Position
+  */
+@@ -7041,7 +7040,7 @@ upd_wrtrtl(upd_p upd, gp_file *out)
+          data = scan[icomp].bytes;
+          for(x = 0; x <= xend; ++x) if(data[x]) break;
+          if(x <= xend) {
+-           ioutbuf = upd_rle(upd->outbuf,scan[icomp].bytes,xend);
++           ioutbuf = upd_rle(upd->outbuf,scan[icomp].bytes,xend+1);
+            gp_fprintf(out,
+             (const char *)upd->string_a[SA_WRITECOMP].data[icomp].data,ioutbuf);
+            gp_fwrite(upd->outbuf,1,ioutbuf,out);
+@@ -7110,7 +7109,6 @@ upd_wrtcanon(upd_p upd, gp_file *out)
+   /* If some date to print */
+   if(0 <= xend) { /* Some data to write */
+     ioutbuf = 0;
+-    xend   += 1;
+ 
+     /* Perform vertical tab */
+     if(upd->yscan != upd->yprinter) {
+@@ -7135,7 +7133,7 @@ upd_wrtcanon(upd_p upd, gp_file *out)
+ 
+       /* Compressing of the scan line */
+       if(x <= xend) {
+-        ioutbuf = upd_rle(upd->outbuf, scan[icomp].bytes, xend);
++        ioutbuf = upd_rle(upd->outbuf, scan[icomp].bytes, xend+1);
+       } else {
+         ioutbuf = 0;
+       }

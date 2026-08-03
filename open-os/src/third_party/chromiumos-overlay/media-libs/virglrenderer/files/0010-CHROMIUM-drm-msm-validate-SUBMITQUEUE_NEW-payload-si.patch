@@ -1,0 +1,35 @@
+From 9a461bfb2c84552bbf18063ff5e70a1d7f8e74c5 Mon Sep 17 00:00:00 2001
+From: Yiwei Zhang <zzyiwei@google.com>
+Date: Tue, 30 Jun 2026 09:40:03 -0700
+Subject: [PATCH] CHROMIUM: drm/msm: validate SUBMITQUEUE_NEW payload size
+
+Note: from Project Fortify
+
+Change-Id: I4cb2c78fcee8ea620495389aef830c497d9949ca
+---
+ src/drm/msm/msm_renderer.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/drm/msm/msm_renderer.c b/src/drm/msm/msm_renderer.c
+index eb10081e..a7f5227c 100644
+--- a/src/drm/msm/msm_renderer.c
++++ b/src/drm/msm/msm_renderer.c
+@@ -497,9 +497,14 @@ msm_ccmd_ioctl_simple(struct drm_context *dctx, struct vdrm_ccmd_req *hdr)
+    unsigned iocnr = _IOC_NR(req->cmd) - DRM_COMMAND_BASE;
+    switch (iocnr) {
+    case DRM_MSM_GET_PARAM:
+-   case DRM_MSM_SUBMITQUEUE_NEW:
+    case DRM_MSM_SUBMITQUEUE_CLOSE:
+       break;
++   case DRM_MSM_SUBMITQUEUE_NEW:
++      if (payload_len < sizeof(struct drm_msm_submitqueue)) {
++         drm_err("invalid ioctl(%u) payload length: %u", iocnr, payload_len);
++         return -EINVAL;
++      }
++      break;
+    default:
+       drm_err("invalid ioctl: %08x (%u)", req->cmd, iocnr);
+       return -EINVAL;
+-- 
+2.55.0.rc0.799.gd6f94ed593-goog
+

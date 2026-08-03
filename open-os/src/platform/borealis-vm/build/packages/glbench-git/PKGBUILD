@@ -1,0 +1,53 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Maintainer: David Riley <davidriley@chromium.org>
+# Maintainer: Po-Hsien Wang <pwang@chromium.org>
+# Maintainer: Ilja Friedel <ihf@chromium.org>
+
+pkgname=glbench-git
+pkgver=VERSION
+pkgrel=1
+pkgdesc="OpenGL benchmark tool"
+arch=('x86_64')
+url=""
+license=('BSD')
+groups=()
+depends=('gflags' 'libgl' 'libpng' 'waffle')
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+replaces=()
+backup=()
+options=()
+install=
+_borealis_branch_tracked=('main')
+_borealis_current_ref=('commit=22724a417afd93d554f6156b2958a08c556286ce')
+source=("glbench::git+https://chromium.googlesource.com/chromiumos/platform/glbench#${_borealis_current_ref}"
+        'LICENSE')
+noextract=()
+sha512sums=('SKIP'
+        '00e7239987e00b95fdabaad4a0cbd009194bb695f742891295ef57339d09f6a26e260d5e60a1b43cf56f928f3b542862b43503c03231d42d98ac04e2a613e8a4')
+
+pkgver() {
+        cd "$srcdir/${pkgname%-git}"
+
+        printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+        cd "$srcdir/${pkgname%-git}"
+}
+
+build() {
+        cd "$srcdir/${pkgname%-git}"
+        make -j
+}
+
+package() {
+        cd "$srcdir/${pkgname%-git}"
+        make prefix=/usr DESTDIR="$pkgdir/" install
+
+        install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "${srcdir}/LICENSE"
+}

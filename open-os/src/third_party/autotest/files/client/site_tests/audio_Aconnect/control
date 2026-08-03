@@ -1,0 +1,18 @@
+# Copyright 2017 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+NAME = 'audio_Aconnect'
+METADATA = {
+    "contacts": ["chromeos-audio-bugs@google.com"],
+    "bug_component": "b:875558",
+    "criteria": "Fails if /dev/snd/seq is inaccessible."
+}
+ATTRIBUTES = 'suite:infra_qual'
+TEST_TYPE = 'client'
+
+'''
+Check that aconnect can open and read information from /dev/snd/seq.
+'''
+
+job.run_test('audio_Aconnect')

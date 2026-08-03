@@ -1,0 +1,16 @@
+/*
+ * Copyright 2020 Fresco Logic
+ * Copyright 2020 Richard Hughes <richard@hughsie.com>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#pragma once
+
+#include <fwupdplugin.h>
+
+#define FU_TYPE_FRESCO_PD_FIRMWARE (fu_fresco_pd_firmware_get_type())
+G_DECLARE_FINAL_TYPE(FuFrescoPdFirmware, fu_fresco_pd_firmware, FU, FRESCO_PD_FIRMWARE, FuFirmware)
+
+guint8
+fu_fresco_pd_firmware_get_customer_id(FuFrescoPdFirmware *self);

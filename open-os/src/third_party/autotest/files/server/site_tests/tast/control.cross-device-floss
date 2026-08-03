@@ -1,0 +1,39 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = 'ChromeOS SW Engprod Team (chromeos-sw-engprod@google.com)'
+NAME = 'tast.cross-device-floss'
+METADATA = {
+        "contacts": ["chromeos-sw-engprod@google.com"],
+        "bug_component": "b:167317", # ChromeOS > Platform > Connectivity > Bluetooth
+        "criteria": "Run Cross-Device tests with Floss enabled"
+}
+TIME = 'MEDIUM'
+TEST_TYPE = 'Server'
+ATTRIBUTES = 'suite:cross-device-floss'
+MAX_RESULT_SIZE_KB = 1024 * 1024
+PY_VERSION = 3
+
+# tast.py uses binaries installed from autotest_server_package.tar.bz2.
+REQUIRE_SSP = True
+
+DOC = '''Run the Tast Cross Device test suite.'''
+
+from autotest_lib.server.cros.crossdevice import cross_device_util
+
+def run(machine):
+    # Get host objects for each device.
+    host = hosts.create_host(machine)
+    companions = hosts.create_companion_hosts(companion_hosts)
+    phone = companions[0]
+
+    androidcomp = "android.companions=%s:%s:model" % (phone.associated_hostname, phone.serial_number)
+
+    job.run_test('tast',
+                 host=host,
+                 test_exprs=['("group:cross-device" && ("cross-device_crossdevice" || "cross-device_phonehub" || "cross-device_smartlock") && "cross-device_floss")'],
+                 ignore_test_failures=True, max_run_sec=10800,
+                 command_args=args,
+                 varslist=[androidcomp])
+parallel_simple(run, machines)

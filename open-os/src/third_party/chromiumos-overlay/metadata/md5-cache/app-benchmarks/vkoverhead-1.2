@@ -1,0 +1,13 @@
+BDEPEND=!cros_host? ( dev-python/psutil sys-apps/iproute2 sys-apps/proot sys-libs/libcap-ng !amd64? ( !x86? ( app-emulation/qemu ) ) ) >=dev-build/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array
+DEFINED_PHASES=compile configure install test
+DEPEND=!cros_host? ( dev-lang/python )
+DESCRIPTION=Microbenchmark for evaluating CPU overhead of Vulkan drivers
+EAPI=7
+HOMEPAGE=https://github.com/zmike/vkoverhead
+IUSE=cros_host test
+KEYWORDS=*
+LICENSE=MIT
+SLOT=0
+SRC_URI=https://github.com/zmike/vkoverhead/archive/refs/tags/v1.2.tar.gz -> vkoverhead-1.2.tar.gz
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	meson	0b48ece927e974cd82202dc49f391f82	multiprocessing	e5d48c933105327e0f826ce5108afc55	ninja-utils	2453739f250643fb6f84ecea4342fd5d	platform2-test	4fa59301b430c37fb33ee24042ca7ebe	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=4546528cda3e1cc18dfb0f142589bd72

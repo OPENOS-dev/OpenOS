@@ -1,0 +1,45 @@
+[package]
+name = "sound_card_init"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+description = "Sound Card Initializer"
+
+[workspace]
+members = [
+    "amp",
+    "dsm"
+]
+
+[dependencies]
+argh = "*"
+amp = { path = "amp" }
+audio_streams = "*"
+cras-sys = "*"
+cros_alsa = "*"
+libchromeos = "*"
+dsm = { path = "dsm" }
+getopts = "0.2"
+log = "0.4"
+remain = "0.2.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.96"
+serde_yaml = "0.8.11"
+thiserror = "*"
+
+
+# To get rust-analyzer and cargo build working out of the chroot,
+# Run inside the chroot: emerge-amd64-generic  -j --onlydeps sound_card_init
+# TODO: fix "/usr/bin/ld: cannot find -lmetrics" link error when cargo build out of the chroot.
+[patch.crates-io]
+data_model = { path = "../../../../out/build/amd64-generic/usr/lib/cros_rust_registry/registry/data_model-0.1.50/" } # ignored by ebuild
+
+# first party deps
+audio_streams = { path = "../../../platform/crosvm/common/audio_streams" } # ignored by ebuild
+libchromeos = { path = "../../../platform2/libchromeos-rs" }  # ignored by ebuild
+metrics_rs = { path = "../../../platform2/metrics/rust-client" }  # ignored by ebuild
+cras-sys = { path = "../cras/client/cras-sys" }  # ignored by ebuild
+cras_common = { path = "../cras/common" }  # ignored by ebuild
+cros_alsa = { path = "../cros_alsa" }  # ignored by ebuild
+libcras = { path = "../cras/client/libcras" } # ignored by ebuild
+sof_sys = { path = "../sof_sys" } # ignored by ebuild

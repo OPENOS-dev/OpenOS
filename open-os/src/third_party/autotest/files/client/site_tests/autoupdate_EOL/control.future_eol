@@ -1,0 +1,31 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+AUTHOR = "dhaddock, The ChromiumOS Authors"
+NAME = "autoupdate_EOL.future_eol"
+METADATA = {
+  "contacts": [
+    "chromeos-core-services@google.com",
+    "chromeos-sw-engprod@google.com"
+  ],
+  "bug_component": "b:908319",
+  "criteria": "Tests End of Life (EOL) / Autoupdate Expiration (AUE)"
+}
+TEST_TYPE = "client"
+ATTRIBUTES = "suite:au-perbuild-chrome"
+TIME = "SHORT"
+PY_VERSION = 3
+
+DOC = """
+This test will check that the DUT behaves correctly in a future end of life
+scenario.
+The EOL date is the number of days since Unix Epoch.
+Value for the EOL date should be at least 180 days in advance of EOL date.
+
+"""
+
+import datetime
+job.run_test('autoupdate_EOL',
+             eol_date=(datetime.datetime.utcnow()
+                       - datetime.datetime(1970,1,1)).days + 181)

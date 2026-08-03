@@ -1,0 +1,44 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//common-mk/pkg_config.gni")
+
+group("all") {
+  deps = [ ":libpinweaver" ]
+  if (use.fuzzer) {
+    deps += [ ":pinweaver_fuzzer" ]
+  }
+}
+
+config("target_defaults") {
+  include_dirs = [
+    ".",
+    "eal/tpm_storage",
+  ]
+}
+
+static_library("libpinweaver") {
+  sources = [ "pinweaver.c" ]
+  configs -= [ "//common-mk:use_thin_archive" ]
+  configs += [
+    "//common-mk:nouse_thin_archive",
+    ":target_defaults",
+  ]
+}
+
+if (use.fuzzer) {
+  executable("pinweaver_fuzzer") {
+    sources = [
+      "fuzzer/pinweaver_eal_fuzzed.cc",
+      "fuzzer/pinweaver_fuzzer.cc",
+      "fuzzer/tpm_storage_fuzzed.cc",
+    ]
+    configs += [
+      "//common-mk/common_fuzzer",
+      ":target_defaults",
+    ]
+    pkg_deps = [ "openssl" ]
+    deps = [ ":libpinweaver" ]
+  }
+}

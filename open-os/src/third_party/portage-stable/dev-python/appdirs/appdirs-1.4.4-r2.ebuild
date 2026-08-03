@@ -1,0 +1,37 @@
+# Copyright 1999-2022 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+# please keep this ebuild at EAPI 7 -- sys-apps/portage dep
+EAPI=7
+
+DISTUTILS_USE_PEP517=flit
+PYTHON_COMPAT=( python3_{8..12} )
+
+inherit distutils-r1
+
+DESCRIPTION="Module for determining appropriate platform-specific dirs"
+HOMEPAGE="https://github.com/ActiveState/appdirs"
+SRC_URI="https://github.com/ActiveState/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
+
+LICENSE="MIT"
+SLOT="0"
+KEYWORDS="*"
+
+src_configure() {
+	[[ -e pyproject.toml ]] &&
+		die "Upstream added pyproject.toml, recheck"
+	# write a custom pyproject.toml to ease setuptools bootstrap
+	cat > pyproject.toml <<-EOF || die
+		[build-system]
+		requires = ["flit_core >=3.2,<4"]
+		build-backend = "flit_core.buildapi"
+
+		[project]
+		name = "appdirs"
+		dynamic = ["version", "description"]
+	EOF
+}
+
+python_test() {
+	"${EPYTHON}" test/test_api.py -v || die "Tests fail with ${EPYTHON}"
+}

@@ -1,0 +1,15 @@
+BDEPEND=virtual/perl-Carp virtual/perl-Exporter dev-perl/HTTP-Date virtual/perl-Time-Local virtual/perl-ExtUtils-MakeMaker dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Parse directory listings
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/File-Listing
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=virtual/perl-Carp virtual/perl-Exporter dev-perl/HTTP-Date virtual/perl-Time-Local dev-lang/perl:=
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/P/PL/PLICEASE/File-Listing-6.15.tar.gz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=14ff79678e255d2111033955df83e967

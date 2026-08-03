@@ -1,0 +1,45 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+rust_library(
+    name = "version",
+    srcs = glob(["src/*.rs"]),
+    crate_name = "version",
+    proc_macro_deps = [
+        "@alchemy_crates//:strum_macros",
+    ],
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = [
+        "//bazel/cros_pkg:__subpackages__",
+        "//bazel/portage:__subpackages__",
+    ],
+    deps = [
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:nom",
+        "@alchemy_crates//:once_cell",
+        "@alchemy_crates//:regex",
+        "@alchemy_crates//:strum",
+    ],
+)
+
+rust_test(
+    name = "version_test",
+    size = "small",
+    crate = ":version",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "@alchemy_crates//:proptest",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":version",
+    enabled = False,
+    tests = [":version_test"],
+)

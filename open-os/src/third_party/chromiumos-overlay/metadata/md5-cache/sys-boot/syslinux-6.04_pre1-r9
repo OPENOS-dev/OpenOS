@@ -1,0 +1,14 @@
+BDEPEND=dev-lang/nasm dev-lang/perl sys-apps/which cros_host? ( sys-devel/gcc ) !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/gcc ) arm64? ( cross-aarch64-cros-linux-gnu/gcc ) amd64? ( cross-x86_64-cros-linux-gnu/gcc ) )
+DEFINED_PHASES=compile configure install prepare
+DEPEND=sys-fs/mtools dev-perl/Crypt-PasswdMD5 dev-perl/Digest-SHA1 sys-apps/util-linux:= >=sys-boot/gnu-efi-3.0u virtual/os-headers
+DESCRIPTION=SYSLINUX, PXELINUX, ISOLINUX, EXTLINUX and MEMDISK bootloaders
+EAPI=7
+HOMEPAGE=https://www.syslinux.org/
+IUSE=custom-cflags cros_host
+KEYWORDS=-* amd64 x86
+LICENSE=GPL-2
+RDEPEND=sys-fs/mtools dev-perl/Crypt-PasswdMD5 dev-perl/Digest-SHA1
+SLOT=0
+SRC_URI=https://www.kernel.org/pub/linux/utils/boot/syslinux/Testing/6.04/syslinux-6.04-pre1.tar.xz
+_eclasses_=cros-gcc	a9d2fe0ca7726abadc92dfdb3a178553	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	eutils	fcb2aa98e1948b835b5ae66ca52868c5	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=617023f4d2423619d1066fe571983c29

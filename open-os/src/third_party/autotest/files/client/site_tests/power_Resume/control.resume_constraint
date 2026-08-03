@@ -1,0 +1,24 @@
+# Copyright 2012 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# This test will search /var/log/messages for pertinent strings to determine if
+# the cpu is sleeping. It will wait for a number of seconds before suspending to
+# ram. It will then calculate how many seconds the system was suspended, and
+# how many seconds it took to resume. As a precaution it will ensure your
+# network interface is UP after it has resumed.
+
+NAME = "power_Resume.resume_constraint"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "ChromeOS Team",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+}
+TEST_TYPE = "client"
+
+job.add_sysinfo_command('cbmem -c', logfile='bios_log', on_every_test=True)
+job.add_sysinfo_command('cbmem -t', logfile='bios_times', on_every_test=True)
+job.run_test('power_Resume', constraints=['seconds_system_resume <= 1.0'])

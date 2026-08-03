@@ -1,0 +1,15 @@
+BDEPEND=dev-lang/go !cros_host? ( arm? ( cross-armv7a-cros-linux-gnueabihf/go ) arm64? ( cross-aarch64-cros-linux-gnu/go ) amd64? ( cross-x86_64-cros-linux-gnu/go ) )
+DEFINED_PHASES=compile install nofetch postinst test unpack
+DEPEND=dev-go/text
+DESCRIPTION=Go packages for image libraries
+EAPI=7
+HOMEPAGE=https://go.googlesource.com/image
+IUSE=coverage cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-go/text
+RESTRICT=binchecks strip
+SLOT=0
+SRC_URI=https://go.googlesource.com/image/+archive/a66eb6448b8d7557efb0c974c8d4d72085371c58.tar.gz -> go.googlesource.com-image-a66eb6448b8d7557efb0c974c8d4d72085371c58.tar.gz
+_eclasses_=cros-go	21f5881558f6bad5972821d14ceb5955	cros-toolchain-funcs	b2d3330ad9306677adfb4c44490e46f0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multilib	2477ebe553d3e4d2c606191fe6c33602	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=a0f2901cad212d1ab193261471f73e4e

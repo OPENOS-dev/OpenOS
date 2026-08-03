@@ -1,0 +1,41 @@
+From f4e1ecb4e9cad731d6ae28e1573b71b23372c9b4 Mon Sep 17 00:00:00 2001
+From: Archie Pusaka <apusaka@google.com>
+Date: Thu, 29 Jan 2026 08:24:54 +0000
+Subject: [PATCH] UPSTREAM: More aggresively connect profiles on outgoing ACL
+ connection
+
+The |connect_to_new_profiles| bool is set whenever we initiate an
+outgoing ACL connection and reset whenever the link is down. This
+mostly works but it's possible for dual devices to have a brief period
+during LE -> BREDR switching where none of the links are up, so we
+receive "link is down" event and prematurely reset the bool.
+
+Therefore, in this CL we set the value again if we receive a link up
+event, and direction indicates "outgoing", and the device is already
+bonded.
+
+Bug: 478264879
+Test: m -j
+Flag: NONE floss only
+Change-Id: Ice4bc6d04f038c5425c17848f4eca03512f425bd
+---
+ floss/rust/linux/stack/src/bluetooth.rs | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/floss/rust/linux/stack/src/bluetooth.rs b/floss/rust/linux/stack/src/bluetooth.rs
+index addd06ccecb..8cbc9674297 100644
+--- a/floss/rust/linux/stack/src/bluetooth.rs
++++ b/floss/rust/linux/stack/src/bluetooth.rs
+@@ -2145,3 +2145,3 @@ impl BtifBluetoothCallbacks for Bluetooth {
+             state.clone(),
+-            conn_direction,
++            conn_direction.clone(),
+             hci_reason,
+@@ -2155,2 +2155,7 @@ impl BtifBluetoothCallbacks for Bluetooth {
+                 });
++                if conn_direction == BtConnectionDirection::Outgoing
++                    && device.bond_state == BtBondState::Bonded
++                {
++                    device.connect_to_new_profiles = true;
++                }
+             }

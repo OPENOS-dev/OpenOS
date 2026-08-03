@@ -1,0 +1,20 @@
+# Copyright 2013 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Description
+# Runs eight minutes of suspend/resume cycles in the background of an audio tone.
+
+NAME = "power_SuspendStress.audio"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "jwerner, chromeos-power, truty",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a functional test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("suite:jailed_build")
+TEST_TYPE = "client"
+
+job.parallel([lambda: job.run_test('power_SuspendStress', tag='audio',
+                                   duration=480, init_delay=10, min_suspend=7)])

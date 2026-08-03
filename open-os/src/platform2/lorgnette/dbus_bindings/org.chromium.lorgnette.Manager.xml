@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/org/chromium/lorgnette/Manager" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+  <interface name="org.chromium.lorgnette.Manager">
+    <method name="ListScanners">
+      <tp:docstring>
+      </tp:docstring>
+      <arg name="scanner_list" type="ay" direction="out">
+        <tp:docstring>
+          The list of connected scanners. Returns a protobuf representing a list
+          of SaneDevice structs as provided by SANE.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::ListScannersResponse" />
+      </arg>
+    </method>
+    <method name="GetScannerCapabilities">
+      <tp:docstring>
+        Returns the supported capabilities for scanner |device_name|.
+      </tp:docstring>
+      <arg name="device_name" type="s" direction="in">
+        <tp:docstring>
+          Device name (gained from "ListScanners").
+        </tp:docstring>
+      </arg>
+      <arg name="capabilities" type="ay" direction="out">
+        <tp:docstring>
+          Serialized ScannerCapabilities proto.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::ScannerCapabilities" />
+      </arg>
+    </method>
+    <method name="OpenScanner">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Starts a session with the scanner specified in |request| and returns the
+        current scanner configuration.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <tp:docstring>
+          Serialized OpenScannerRequest proto specifying the scanner to open.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::OpenScannerRequest" />
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <tp:docstring>
+          Serialized OpenScannerResponse proto.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::OpenScannerResponse" />
+      </arg>
+    </method>
+    <method name="CloseScanner">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Close a previously opened scanner handle identified by |request|.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <tp:docstring>
+          Serialized CloseScannerRequest proto specifying the scanner to close.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::CloseScannerRequest" />
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <tp:docstring>
+          Serialized CloseScannerResponse proto.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::CloseScannerResponse" />
+      </arg>
+    </method>
+    <method name="SetOptions">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Sets SANE options for the specified scanner.  The scanner must have been
+        previously opened with OpenScanner.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::SetOptionsRequest" />
+        <tp:docstring>
+          Serialized SetOptionsRequest proto specifying the scanner handle and
+          options to set.
+        </tp:docstring>
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::SetOptionsResponse" />
+        <tp:docstring>
+          Serialized SetOptionsResponse proto.
+        </tp:docstring>
+      </arg>
+    </method>
+    <method name="GetCurrentConfig">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Get the current config for the specified scanner.  The scanner must have
+        been previously opened with OpenScanner.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::GetCurrentConfigRequest" />
+        <tp:docstring>
+          Serialized GetCurrentConfigRequest proto specifying the scanner handle.
+        </tp:docstring>
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::GetCurrentConfigResponse" />
+        <tp:docstring>
+          Serialized GetCurrentConfigResponse proto.
+        </tp:docstring>
+      </arg>
+    </method>
+    <method name="StartPreparedScan">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Starts a scan using the currently configured options.  Options should
+        be set with SetOptions first if needed.  If the result is successful,
+        the caller can read scanned data with ReadScanData.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StartPreparedScanRequest" />
+        <tp:docstring>
+          Serialized StartPreparedScanRequest proto specifying the scanner
+          handle and desired image format.
+        </tp:docstring>
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StartPreparedScanResponse" />
+        <tp:docstring>
+          Serialized StartPreparedScanResponse proto.
+        </tp:docstring>
+      </arg>
+    </method>
+    <method name="StartScan">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Sets up a multi-page scan job.
+        Initiates a connection to the scanner and prepares for scanning. Once
+        called, the client can call GetNextImage to fetch image data.
+      </tp:docstring>
+      <arg name="start_scan_request" type="ay" direction="in">
+        <tp:docstring>
+          Serialized StartScanRequest proto specifying the scanner to use and
+          the settings for the scan.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StartScanRequest" />
+      </arg>
+      <arg name="start_scan_response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StartScanResponse" />
+      </arg>
+    </method>
+    <method name="ReadScanData">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Reads the next chunk of data from an in-progress scan job.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::ReadScanDataRequest" />
+        <tp:docstring>
+          Serialized ReadScanDataRequest proto specifying the scan job to read.
+        </tp:docstring>
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::ReadScanDataResponse" />
+        <tp:docstring>
+          Serialized ReadScanDataResponse proto.
+        </tp:docstring>
+      </arg>
+    </method>
+    <method name="GetNextImage">
+      <annotation name="org.chromium.DBus.Method.Kind" value="async"/>
+      <tp:docstring>
+        Reads the next image for the given scan job and outputs image data to
+        out_fd.
+
+        A response will be sent once image acquisition has started successfully
+        or if acquiring the image failed.
+      </tp:docstring>
+      <arg name="get_next_image_request" type="ay" direction="in">
+        <tp:docstring>
+          Serialized GetNextImageRequest proto specifying the scan job uuid.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::GetNextImageRequest" />
+      </arg>
+      <arg name="out_fd" type="h" direction="in">
+        <tp:docstring>
+          Output file descriptor. PNG image data will be written to this fd.
+        </tp:docstring>
+      </arg>
+      <arg name="get_next_image_response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::GetNextImageResponse" />
+      </arg>
+    </method>
+    <method name="CancelScan">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Attempts to cancel the scan job specified by the given UUID.
+      </tp:docstring>
+      <arg name="cancel_scan_request" type="ay" direction="in">
+        <tp:docstring>
+          Serialized CancelScanRequest proto specifying the scan job to cancel.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::CancelScanRequest" />
+      </arg>
+      <arg name="cancel_scan_response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::CancelScanResponse" />
+      </arg>
+    </method>
+    <method name="SetDebugConfig">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Configure lorgnette debugging.  Lorgnette will exit automatically
+        after returning from this call if the requested config can't be
+        implemented without restarting the process.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::SetDebugConfigRequest" />
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::SetDebugConfigResponse" />
+      </arg>
+    </method>
+    <method name="StartScannerDiscovery">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Start monitoring for scanners and send ScannerListChanged signals
+        when devices that match the request are found.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StartScannerDiscoveryRequest" />
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StartScannerDiscoveryResponse" />
+      </arg>
+    </method>
+    <method name="StopScannerDiscovery">
+      <annotation name="org.chromium.DBus.Method.Kind" value="simple"/>
+      <tp:docstring>
+        Stop a previously started discovery session. Note that
+        ScannerListChanged signals may continue to be sent if other
+        discovery sessions are still active.
+      </tp:docstring>
+      <arg name="request" type="ay" direction="in">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StopScannerDiscoveryRequest" />
+      </arg>
+      <arg name="response" type="ay" direction="out">
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::StopScannerDiscoveryResponse" />
+      </arg>
+    </method>
+    <signal name="ScannerListChanged">
+      <arg name="signal" type="ay" direction="out">
+        <tp:docstring>
+          A serialized ScannerListChangedSignal proto, containing an event
+          type and information about the affected scanner.  Listeners should
+          check for a matching `session_id` to avoid responding to events
+          requested by other sessions.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::ScannerListChangedSignal" />
+      </arg>
+    </signal>
+    <signal name="ScanStatusChanged">
+      <arg name="scan_status_changed_signal" type="ay" direction="out">
+        <tp:docstring>
+          A serialized ScanStatusChangedSignal proto, containing a scan id, scan
+          state, and potentially a failure reason or progress percentage.
+        </tp:docstring>
+        <annotation name="org.chromium.DBus.Argument.ProtobufClass"
+                    value="lorgnette/proto_bindings/lorgnette_service.pb.h;::lorgnette::ScanStatusChangedSignal" />
+      </arg>
+    </signal>
+  </interface>
+</node>

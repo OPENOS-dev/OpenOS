@@ -1,0 +1,60 @@
+<root>
+  <include>
+    <name>servoflex_v2_r0_p50.xml</name>
+  </include>
+  <include>
+    <name>arm_ec_common.xml</name>
+  </include>
+  <include>
+    <name>cr50.xml</name>
+  </include>
+  <include>
+    <!-- This specific board is incompatible with servo + USB3 so we need
+      to overwrite init value of this control and keep USB3 disabled.
+      Please refer to b/254857085.
+
+      TODO(b/254857085,b/268737644) - delete this control if proper
+      fixes are upreved on all models from this family, including Fleet
+      recovery OS/FW version. -->
+    <name>dut_usb3_disabled.xml</name>
+  </include>
+
+  <!-- ******** Controls ******** -->
+  <control>
+    <name>fw_wp_state</name>
+    <doc>Used to turn fw wp off and on</doc>
+    <params clobber_ok="full" interface="GSC_CONSOLE" drv="fw_wp_ccd" input_type="str"
+    init="force_off"/>
+  </control>
+  <!--
+    Simple property indicating what model of EC we have.  We use a Nuvoton EC
+    and the UART programmer, hence "npcx_uut".
+  -->
+  <control>
+    <name>ec_chip</name>
+    <doc>EC chip name (read-only)</doc>
+    <params clobber_ok="" cmd="get" subtype="chip" interface="servo"
+    drv="cros_chip" chip="npcx_uut"/>
+  </control>
+
+  <!--
+    The 'reset_recovery="0.5"' seems redundant since it's already in
+    ec_common.xml (which is included by arm_ec_common.xml), but for some reason
+    everyone else likes to put it here so I guess we should too?
+  -->
+  <control>
+    <name>power_state</name>
+    <doc>Used to turn the DUT off and on</doc>
+    <params clobber_ok="" shutdown_ec_commands="hibdelay 3600;apshutdown"
+      shutdown_delay="4.5" reset_recovery="0.5"/>
+  </control>
+  <control>
+    <name>cpu_fw_spi</name>
+    <params clobber_ok="full" interface="servo" drv="macro" map="onoff"
+      set_value_1="warm_reset:on spi2_buf_en:on spi2_buf_on_flex_en:on
+                   spi2_vref:pp1800"
+      set_value_0="spi2_buf_en:off spi2_buf_on_flex_en:off spi2_vref:off
+                   warm_reset:off"
+      />
+  </control>
+</root>

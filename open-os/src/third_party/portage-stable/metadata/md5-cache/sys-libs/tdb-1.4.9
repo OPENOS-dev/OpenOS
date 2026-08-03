@@ -1,0 +1,16 @@
+BDEPEND=python_single_target_python3_12? ( dev-lang/python:3.12[threads(+)] ) python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11[threads(+)] ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10[threads(+)] ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9[threads(+)] ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8[threads(+)] ) app-text/docbook-xml-dtd:4.2
+DEFINED_PHASES=compile configure install prepare setup test
+DEPEND=dev-libs/libbsd[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] python? ( python_single_target_python3_12? ( dev-lang/python:3.12[threads(+)] ) python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11[threads(+)] ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10[threads(+)] ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9[threads(+)] ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8[threads(+)] ) ) virtual/libcrypt
+DESCRIPTION=Simple database API
+EAPI=7
+HOMEPAGE=https://tdb.samba.org/
+IUSE=python test abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64 abi_arm_32 abi_arm_64 python_single_target_python3_12 python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=dev-libs/libbsd[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?,abi_arm_32(-)?,abi_arm_64(-)?] python? ( python_single_target_python3_12? ( dev-lang/python:3.12[threads(+)] ) python_single_target_python3_11? ( >=dev-lang/python-3.11.0_p2:3.11[threads(+)] ) python_single_target_python3_10? ( >=dev-lang/python-3.10.8_p3:3.10[threads(+)] ) python_single_target_python3_9? ( >=dev-lang/python-3.9.15_p3:3.9[threads(+)] ) python_single_target_python3_8? ( >=dev-lang/python-3.8.15_p3:3.8[threads(+)] ) )
+REQUIRED_USE=^^ ( python_single_target_python3_12 python_single_target_python3_11 python_single_target_python3_10 python_single_target_python3_9 python_single_target_python3_8 )
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=https://samba.org/ftp/tdb/tdb-1.4.9.tar.gz
+_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multibuild	40fe59465edacd730c644ec2bc197809	multilib	2477ebe553d3e4d2c606191fe6c33602	multilib-build	1979aa0ff4d356d32507ca4650d9f37d	multilib-minimal	8bddda43703ba94d8341f4e247f97566	multiprocessing	e5d48c933105327e0f826ce5108afc55	python-single-r1	a5747fe6dc0651d95cb78eddd5e160a8	python-utils-r1	b471b2f540e984d2b7ef320db3cb42d9	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	waf-utils	b339462e3ff724f101dcab3ea5a7a341
+_md5_=1b85d5a60f09a1f21025e692a568f1fb

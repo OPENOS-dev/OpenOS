@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Install the update_engine policy for chromeos
+EAPI=7
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!<chromeos-base/update_engine-0.0.2 !chromeos-base/update-policy-embedded
+SLOT=0
+_md5_=30afdf0ccbadfc1f9f01a963b0b48212

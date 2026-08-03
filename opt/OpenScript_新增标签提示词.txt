@@ -1,0 +1,235 @@
+请为 OpenScript（一种基于 XML 标签语法的编程语言）设计并新增以下缺失的内置标签和语法能力。以下每个类别都列出需要新增的标签、用途、属性签名。请用 OpenScript 标准标签语法输出。
+
+语法规则回顾：
+- 格式: <标签名 属性="值">内容</标签名>，或自闭合 <标签名 属性="值"></标签名>
+- into="var" 表示结果存入变量，into-result="var" 表示可能失败的结果
+- 类型标注: str, int, float, bool, list[T], map[K]V, 枚举名直接用
+
+==================== 1. 数学与数值标签 ====================
+
+<func name="math_sin" params="x: float" return="float">
+<func name="math_cos" params="x: float" return="float">
+<func name="math_tan" params="x: float" return="float">
+<func name="math_sqrt" params="x: float" return="float">
+<func name="math_pow" params="base: float, exp: float" return="float">
+<func name="math_log" params="x: float, base: float" return="float">
+<func name="math_round" params="x: float, decimals: int" return="float">
+<func name="math_floor" params="x: float" return="int">
+<func name="math_ceil" params="x: float" return="int">
+<func name="math_abs" params="x: float" return="float">
+<func name="math_min" params="a: float, b: float" return="float">
+<func name="math_max" params="a: float, b: float" return="float">
+<func name="math_pi" return="float">  // 常量 π
+
+以及一个随机数标签：
+<random-int min="1" max="100" into="rand-val"></random-int>
+<random-float min="0.0" max="1.0" into="rand-val"></random-float>
+<random-seed value="42"></random-seed>  // 设随机种子(可重现)
+
+==================== 2. 日期与时间标签 ====================
+
+<time-now into="current-time"></time-now>                     // 当前 Unix 时间戳(int64)
+<time-now-ms into="current-time-ms"></time-now-ms>           // 当前毫秒时间戳
+<time-format timestamp="1700000000" format="%Y-%m-%d %H:%M:%S" into="formatted"></time-format>
+<time-parse str="2024-01-01" format="%Y-%m-%d" into="timestamp"></time-parse>
+<time-add timestamp="ts" days="7" hours="2" into="new-ts"></time-add>
+<time-diff a="ts1" b="ts2" into="diff-seconds"></time-diff>
+<time-sleep ms="1000"></time-sleep>                          // 阻塞等待(毫秒)
+
+==================== 3. JSON 数据标签 ====================
+
+<json-parse str="{...}" into="parsed"></json-parse>           // JSON 字符串 → map/list
+<json-stringify value="data" into="json-str"></json-stringify>  // map/list → JSON 字符串
+<json-read-file path="config.json" into="data"></json-read-file>
+<json-write-file path="output.json" value="data"></json-write-file>
+
+类似地，需要 TOML 和 YAML：
+<toml-parse str="..." into="parsed"></toml-parse>
+<toml-read-file path="config.toml" into="data"></toml-read-file>
+<yaml-parse str="..." into="parsed"></yaml-parse>
+
+==================== 4. 压缩与归档标签 ====================
+
+需要 .zip 操作：
+<zip-pack dir="source-dir" to="output.zip" into-result="result"></zip-pack>     // 目录打包为 zip
+<zip-unpack path="archive.zip" to="output-dir" into-result="result"></zip-unpack>  // 解压 zip
+<zip-list path="archive.zip" into="entries"></zip-list>                           // 列出 zip 内容
+
+需要 tar + 压缩组合：
+<tar-pack dir="source-dir" to="archive.tar.gz" compression="gzip" into-result="result"></tar-pack>
+<tar-unpack path="archive.tar.xz" to="output-dir" into-result="result"></tar-unpack>
+<tar-list path="archive.tar.bz2" into="entries"></tar-list>
+
+需要 gzip / xz / zstd 原始压缩：
+<gzip-compress data="bytes" into="compressed"></gzip-compress>
+<gzip-decompress data="bytes" into="decompressed"></gzip-decompress>
+<xz-compress data="bytes" into="compressed"></xz-compress>
+<xz-decompress data="bytes" into="decompressed"></xz-decompress>
+
+==================== 5. 哈希与加密标签 ====================
+
+哈希：
+<hash-md5 data="bytes" into="hash-hex"></hash-md5>
+<hash-sha1 data="bytes" into="hash-hex"></hash-sha1>
+<hash-sha256 data="bytes" into="hash-hex"></hash-sha256>
+<hash-sha512 data="bytes" into="hash-hex"></hash-sha512>
+<hash-file algorithm="sha256" path="file.bin" into="hash-hex"></hash-file>   // 计算文件的哈希
+
+HMAC：
+<hmac-sign algorithm="sha256" key="secret-key" data="payload" into="signature"></hmac-sign>
+<hmac-verify algorithm="sha256" key="secret-key" data="payload" signature="sig" into="valid"></hmac-verify>
+
+Base64：
+<base64-encode data="bytes" into="encoded"></base64-encode>
+<base64-decode str="SGVsbG8=" into="decoded"></base64-decode>
+
+==================== 6. 列表排序与查找标签 ====================
+
+<sort list="my-list" into="sorted-list"></sort>                              // 自然升序
+<sort list="my-list" by="field-name" desc="true" into="sorted-list"></sort>  // 按结构体字段排序
+<sort-custom list="my-list" func="compare-fn" into="sorted-list"></sort-custom>
+<reverse list="my-list" into="reversed-list"></reverse>
+<find list="my-list" value="target" into="index"></find>                    // 找元素位置
+<find-by list="my-list" field="name" value="target" into="index"></find-by>
+<bsearch list="sorted-list" value="target" into="index"></bsearch>          // 二分查找
+<unique list="my-list" into="unique-list"></unique>                         // 去重
+<shuffle list="my-list" into="shuffled-list"></shuffle>
+
+==================== 7. 位运算标签 ====================
+
+<bit-and a="0xFF" b="0x0F" into="result"></bit-and>
+<bit-or a="0xF0" b="0x0F" into="result"></bit-or>
+<bit-xor a="0xFF" b="0x0F" into="result"></bit-xor>
+<bit-not x="0xFF" into="result"></bit-not>
+<bit-shl x="1" n="3" into="result"></bit-shl>          // 左移: 1 << 3 = 8
+<bit-shr x="8" n="3" into="result"></bit-shr>          // 右移: 8 >> 3 = 1
+
+==================== 8. 系统信息标签 ====================
+
+<sys-cpu-count into="n"></sys-cpu-count>                 // CPU 核心数
+<sys-memory-total into="bytes"></sys-memory-total>       // 总内存(字节)
+<sys-memory-free into="bytes"></sys-memory-free>         // 可用内存
+<sys-disk-total path="/" into="bytes"></sys-disk-total>
+<sys-disk-free path="/" into="bytes"></sys-disk-free>
+<sys-hostname into="name"></sys-hostname>
+<sys-os-type into="os"></sys-os-type>                    // "linux" / "macos" / "windows"
+<sys-arch into="arch"></sys-arch>                        // "x86_64" / "aarch64"
+<sys-env-var name="PATH" into="path-val"></sys-env-var>  // 或直接用 env-get
+<sys-username into="user"></sys-username>
+
+==================== 9. 终端交互标签（交互式控制台） ====================
+
+<term-width into="cols"></term-width>                    // 终端宽度(列)
+<term-height into="rows"></term-height>                  // 终端高度(行)
+<term-color-support into="has-color"></term-color-support>  // 是否支持颜色
+<term-print str="hello" color="red" bold="true"></term-print>  // 彩色输出
+<term-clear></term-clear>                                // 清屏
+<term-read-line prompt="> " into="input"></term-read-line>    // 读一行用户输入
+<term-read-password prompt="Password: " into="pw"></term-read-password>  // 隐藏回显读密码
+<term-read-key into="key"></term-read-key>              // 读单个按键(不等待回车)
+<term-cursor-to row="10" col="5"></term-cursor-to>      // 光标定位
+<term-cursor-hide></term-cursor-hide>                    // 隐藏光标
+<term-cursor-show></term-cursor-show>                    // 显示光标
+
+==================== 10. 剪贴板标签 ====================
+
+<clipboard-read into="text"></clipboard-read>
+<clipboard-write text="content"></clipboard-write>
+
+==================== 11. 通知标签 ====================
+
+<notify title="Title" body="message body" icon="info" timeout="3000"></notify>
+
+==================== 12. 管道与流标签 ====================
+
+用于将进程的 stdout 管道连接：
+
+<pipe>
+    <pipe-source command="ls" args="-la"></pipe-source>
+    <pipe-through command="grep" args=".os"></pipe-through>
+    <pipe-through command="sort"></pipe-through>
+    <pipe-collect into="result"></pipe-collect>
+</pipe>
+
+或者更简单的：
+
+<pipeline chain="ls -la | grep .os | sort" into="output"></pipeline>
+
+==================== 13. 泛型结构体与接口/契约标签 ====================
+
+泛型结构体支持：
+<struct name="Optional">
+    <type-param name="T"></type-param>
+    <field name="has-value" type="bool"></field>
+    <field name="value" type="T"></field>
+</struct>
+
+接口/契约定义：
+<interface name="Readable">
+    <method name="read" params="buf: list[int]" return="int"></method>
+    <method name="close" return="Result"></method>
+</interface>
+
+实现接口：
+<impl interface="Readable" for="MyStruct">
+    <func name="read" params="self: MyStruct, buf: list[int]" return="int">
+        ...
+    </func>
+    <func name="close" params="self: MyStruct" return="Result">
+        ...
+    </func>
+</impl>
+
+==================== 14. 安全与沙箱标签 ====================
+
+<permission-request name="network"></permission-request>   // 请求权限
+<permission-check name="filesystem" into="granted"></permission-check>
+<capability-restrict name="filesystem" paths="/tmp,/opt"></capability-restrict>
+
+==================== 15. 调试与日志标签 ====================
+
+<log level="info" module="opt.builder">building package...</log>
+日志级别: trace, debug, info, warn, error
+<log-set-level level="debug"></log-set-level>
+<log-to-file path="/var/log/app.log"></log-to-file>
+
+<assert condition="x > 0" message="x must be positive"></assert>
+<debug-print value="complex-var"></debug-print>           // 变量调试打印
+
+==================== 16. 类型转换标签 ====================
+
+<cast value="3.14" to="int" into="result"></cast>         // float → int (截断)
+<cast value="42" to="str" into="result"></cast>           // int → str
+<cast value="true" to="int" into="result"></cast>         // bool → int (0/1)
+<parse-int str="1234" into="result"></parse-int>          // str → int (解析)
+<parse-float str="3.14" into="result"></parse-float>
+<parse-bool str="true" into="result"></parse-bool>
+<type-of value="x" into="type-name"></type-of>            // 获取运行时类型名
+<is-type value="x" type="int" into="result"></is-type>    // 类型检查
+
+==================== 17. 序列化标签 ====================
+
+<serialize value="my-struct" format="msgpack" into="bytes"></serialize>   // 结构体 → 字节
+<deserialize data="bytes" format="msgpack" into="my-struct"></deserialize>  // 字节 → 结构体
+支持的 format: json, msgpack, cbor, bincode
+
+==================== 18. 并发/异步标签 ====================
+
+<spawn-func name="heavy-task" args="arg1, arg2" into="handle"></spawn-func>   // 异步启动函数
+<await handle="handle" timeout="5000" into-result="result"></await>           // 等待结果
+<await-all handles="list-of-handles" into="results"></await-all>              // 等待全部
+<await-any handles="list-of-handles" into="result"></await-any>               // 任意一个完成
+<channel-create into="tx"></channel-create>                                   // 创建通道
+<channel-send channel="tx" value="data"></channel-send>
+<channel-recv channel="rx" into="data"></channel-recv>
+
+==================== 实现要求 ====================
+
+1. 每个标签都要给出完整的属性签名和返回值说明
+2. 给出典型使用示例（用 OpenScript 标签语法写）
+3. 优先实现前 8 个类别（数学、时间、JSON、压缩、哈希、列表排序查找、位运算、系统信息）
+4. 类型转换和序列化也很重要，建议一起实现
+5. 管道标签在 shell 脚本场景非常有用
+6. 并发标签放在最后，因为涉及底层运行时改造
+
+请直接输出 OpenScript 标签语法定义的函数签名和使用示例。

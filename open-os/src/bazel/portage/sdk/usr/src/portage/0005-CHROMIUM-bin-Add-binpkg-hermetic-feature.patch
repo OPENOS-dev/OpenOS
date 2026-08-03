@@ -1,0 +1,96 @@
+From 22df1595a94f2ee9bdb9c85a500e6216b5e360a0 Mon Sep 17 00:00:00 2001
+From: Raul E Rangel <rrangel@chromium.org>
+Date: Wed, 9 Nov 2022 14:44:32 -0700
+Subject: [PATCH 5/8] CHROMIUM: bin: Add binpkg-hermetic feature
+
+This feature will strip all timestamps from the binpkg resulting in
+a hermetic build.
+
+BUG=none
+TEST=emerge libftdi twice and compare the binpkgs
+
+Change-Id: Ie88deacdbfc006705c973a9c1cdf726cb5bba514
+---
+ bin/misc-functions.sh                  | 13 ++++++++++++-
+ lib/portage/const.py                   |  1 +
+ lib/portage/dbapi/vartree.py           |  4 ++++
+ lib/portage/package/ebuild/doebuild.py |  5 ++++-
+ 4 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/usr/lib/portage/PYTHON_VERSION/misc-functions.sh b/usr/lib/portage/PYTHON_VERSION/misc-functions.sh
+index d0b317c63c..c89ac12896 100755
+--- a/usr/lib/portage/PYTHON_VERSION/misc-functions.sh
++++ b/usr/lib/portage/PYTHON_VERSION/misc-functions.sh
+@@ -462,6 +462,17 @@ __dyn_package() {
+ 	local tar_options=""
+ 	[[ $PORTAGE_VERBOSE = 1 ]] && tar_options+=" -v"
+ 	has xattr ${FEATURES} && [[ $(tar --help 2> /dev/null) == *--xattrs* ]] && tar_options+=" --xattrs"
++
++	# See https://reproducible-builds.org/docs/archives/
++	local -a hermetic_args=()
++	if has binpkg-hermetic ${FEATURES}; then
++		hermetic_args+=(
++			"--format=pax"
++			"--sort=name"
++			"--mtime=1970-01-01 00:00:00"
++			"--pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
++		)
++	fi
+ 	# Sandbox is disabled in case the user wants to use a symlink
+ 	# for $PKGDIR and/or $PKGDIR/All.
+ 	export SANDBOX_ON="0"
+@@ -481,7 +492,7 @@ __dyn_package() {
+ 
+ 	[ -z "${PORTAGE_COMPRESSION_COMMAND}" ] && \
+         die "PORTAGE_COMPRESSION_COMMAND is unset"
+-	tar $tar_options -cf - $PORTAGE_BINPKG_TAR_OPTS -C "${D}" . | \
++	tar $tar_options "${hermetic_args[@]}" -cf - $PORTAGE_BINPKG_TAR_OPTS -C "${D}" . | \
+ 		$PORTAGE_COMPRESSION_COMMAND > "$PORTAGE_BINPKG_TMPFILE"
+ 	assert "failed to pack binary package: '$PORTAGE_BINPKG_TMPFILE'"
+ 	PYTHONPATH=${PORTAGE_PYTHONPATH:-${PORTAGE_PYM_PATH}} \
+diff --git a/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/const.py b/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/const.py
+index ac5a3c646c..eca9836687 100644
+--- a/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/const.py
++++ b/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/const.py
+@@ -127,6 +127,7 @@ SUPPORTED_FEATURES       = frozenset([
+ 	"binpkg-dostrip",
+ 	"binpkg-logs",
+ 	"binpkg-multi-instance",
++	"binpkg-hermetic",
+ 	"buildpkg",
+ 	"buildsyspkg",
+ 	"candy",
+diff --git a/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/dbapi/vartree.py b/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/dbapi/vartree.py
+index 1d9e004969..da26ce5fda 100644
+--- a/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/dbapi/vartree.py
++++ b/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/dbapi/vartree.py
+@@ -4812,6 +4812,10 @@ class dblink(object):
+ 		else:
+ 			mergelist = stufftomerge[:]
+ 
++		# TODO(b/308661552): Remove this once we switch to fast package installation.
++		if "binpkg-hermetic" in self.settings.features:
++			mergelist.sort()
++
+ 		while mergelist:
+ 
+ 			relative_path = mergelist.pop()
+diff --git a/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/package/ebuild/doebuild.py b/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/package/ebuild/doebuild.py
+index 2a73d8c265..4c3637e3ea 100644
+--- a/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/package/ebuild/doebuild.py
++++ b/usr/PYTHON_LIBDIR/PYTHON_VERSION/site-packages/portage/package/ebuild/doebuild.py
+@@ -2010,7 +2010,10 @@ def _post_src_install_write_metadata(settings):
+ 		'BUILD_TIME'), encoding=_encodings['fs'], errors='strict'),
+ 		mode='w', encoding=_encodings['repo.content'],
+ 		errors='strict') as f:
+-		f.write("%.0f\n" % (time.time(),))
++		if 'binpkg-hermetic' in settings.features:
++			f.write("0\n")
++		else:
++			f.write("%.0f\n" % (time.time(),))
+ 
+ 	use = frozenset(settings['PORTAGE_USE'].split())
+ 	for k in _vdb_use_conditional_keys:
+-- 
+2.44.0.769.g3c40516874-goog
+

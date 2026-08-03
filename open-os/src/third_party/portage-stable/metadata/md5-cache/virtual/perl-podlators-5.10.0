@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for podlators
+EAPI=7
+KEYWORDS=*
+RDEPEND=|| ( =dev-lang/perl-5.42* =dev-lang/perl-5.38* ~perl-core/podlators-5.10.0 ) !<perl-core/podlators-5.10.0 !>perl-core/podlators-5.10.0-r999 !dev-perl/podlators
+SLOT=0
+_md5_=8951e0ad7efedeca670e4c411c931918

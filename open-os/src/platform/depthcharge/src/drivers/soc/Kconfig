@@ -1,0 +1,197 @@
+##
+## Copyright 2016 Google LLC
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config DRIVER_SOC_SKYLAKE
+	bool "Skylake SoC driver"
+	default n
+	select DRIVER_GPIO_SKYLAKE
+
+config DRIVER_SOC_APOLLOLAKE
+	bool "Apollolake SoC driver"
+	default n
+	select DRIVER_GPIO_APOLLOLAKE
+	select INTEL_COMMON_I2S_CAVS_1_5
+
+config DRIVER_SOC_CANNONLAKE
+	bool "Cannonlake SoC driver"
+	default n
+	select INTEL_COMMON_I2S_CAVS_1_8
+
+config DRIVER_SOC_STONEYRIDGE
+	bool "Stoney Ridge SoC driver"
+	default n
+	select DRIVER_GPIO_KERN
+
+config DRIVER_SOC_PICASSO
+	bool "Picasso & Pollock SoC driver"
+	default n
+	select DRIVER_GPIO_KERN
+
+config DRIVER_SOC_GLK
+	bool "Glk SoC driver"
+	default n
+	select DRIVER_GPIO_APOLLOLAKE
+	select INTEL_COMMON_I2S_CAVS_1_5
+
+config DRIVER_SOC_ICELAKE
+	bool "Icelake SoC driver"
+	default n
+	select DRIVER_GPIO_ICELAKE
+
+config DRIVER_SOC_QCOM_QUP_SE
+	bool "Qcom QUPV3 common driver"
+	default n
+
+config DRIVER_SOC_QCOM_SPMI
+	bool "Qualcomm SPMI arbitrator driver"
+	default n
+
+config QCOM_SPMI_PMIC_ARB_CHANNEL_SIZE
+	hex "Qualcomm SPMI arbitrator Channel Size"
+	default 0x1000 if DRIVER_SOC_X1P42100
+	default 0x10000
+
+config DRIVER_SOC_QCOM_SDTRAY
+	bool "Qualcomm SD TRAY arbitrator driver"
+	default n
+	depends on DRIVER_SOC_QCOM_SPMI
+	help
+	  You ordinarily shouldn't need this unless you need to hack voltage
+	  regulators in depthcharge to work around hardware issues.
+
+config DRIVER_SOC_QCOM_SMEM
+	bool "Qualcomm SMEM driver"
+	default n
+	help
+	  Generic driver to read Qualcomm Shared Memory (SMEM).
+	  Supports reading any SMEM item by ID.
+
+config DRIVER_SOC_QCOM_TSENS
+	bool "Qualcomm TSENS driver"
+	default n
+
+config DRIVER_SOC_X1P42100
+	bool "Qualcomm SOC X1P42100 driver"
+	default n
+	select DRIVER_GPIO_QCOM
+	select DRIVER_SOC_QCOM_QUP_SE
+	select DRIVER_BUS_I2C_QCOM_QUP
+	select DRIVER_BUS_SPI_QUP_QCOM
+	select DRIVER_BUS_QSPI_QUP_QCOM
+
+config DRIVER_SOC_CALYPSO
+	bool "Qualcomm SOC CALYPSO driver"
+	default n
+	select DRIVER_GPIO_QCOM
+	select DRIVER_SOC_QCOM_QUP_SE
+	select DRIVER_BUS_I2C_QCOM_QUP
+	select DRIVER_BUS_SPI_QUP_QCOM
+	select DRIVER_BUS_QSPI_QUP_QCOM
+
+config DRIVER_SOC_JASPERLAKE
+	bool "Jasperlake SoC driver"
+	default n
+	select DRIVER_GPIO_JASPERLAKE
+	select INTEL_COMMON_I2S_CAVS_2_0
+
+config DRIVER_SOC_INTEL_PMC
+	bool
+	default n
+	help
+	  A driver for Intel's PMC IPC API.
+
+config DRIVER_SOC_INTEL_PMC_DEBUG
+	bool "Enable Intel PMC driver debugging"
+	default n
+	depends on DRIVER_SOC_INTEL_PMC
+
+config DRIVER_SOC_INTEL_PCH_EMMC
+	bool "Enable Intel PCH EMMC device"
+	default n
+
+config DRIVER_SOC_TIGERLAKE
+	bool "Tigerlake SoC driver"
+	default n
+	select DRIVER_GPIO_TIGERLAKE
+	select INTEL_COMMON_I2S_CAVS_2_5
+	select DRIVER_USB_INTEL_TCSS if DRIVER_EC_CROS && !DRIVER_NO_INTEL_TCSS
+	select DRIVER_USB_INTEL_TCSS_DEBUG if DRIVER_EC_CROS && !DRIVER_NO_INTEL_TCSS
+
+config DRIVER_SOC_ALDERLAKE
+	bool "Alderlake SoC driver"
+	default n
+	select DRIVER_GPIO_ALDERLAKE
+	select INTEL_COMMON_I2S_CAVS_2_5
+	select INTEL_COMMON_SNDW_CAVS_2_5
+	select DRIVER_USB_INTEL_TCSS if DRIVER_EC_CROS && !INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG && !DRIVER_NO_INTEL_TCSS
+	select DRIVER_USB_INTEL_TCSS_DEBUG if DRIVER_EC_CROS && !INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG && !DRIVER_NO_INTEL_TCSS
+
+config DRIVER_SOC_ALDERLAKE_N
+	bool "Alderlake-N specific option"
+	default n
+	depends on DRIVER_SOC_ALDERLAKE
+
+config DRIVER_SOC_METEORLAKE
+	bool "Meteorlake SoC driver"
+	default n
+	select DRIVER_USB_INTEL_TCSS if DRIVER_EC_CROS && !DRIVER_NO_INTEL_TCSS
+	select DRIVER_USB_INTEL_TCSS_DEBUG if DRIVER_EC_CROS && !DRIVER_NO_INTEL_TCSS
+	select INTEL_COMMON_I2S_ACE_1_x
+	select INTEL_COMMON_SOUNDWIRE_ACE_1_x
+
+config DRIVER_SOC_PANTHERLAKE
+	bool "Pantherlake SoC driver"
+	default n
+	select DRIVER_USB_INTEL_TCSS if DRIVER_EC_CROS && !INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG && !DRIVER_NO_INTEL_TCSS
+	select DRIVER_USB_INTEL_TCSS_DEBUG if DRIVER_EC_CROS && !INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG && !DRIVER_NO_INTEL_TCSS
+	select INTEL_COMMON_I2S_ACE_3_x
+	select INTEL_COMMON_SOUNDWIRE_ACE_3_x
+
+config DRIVER_SOC_NOVALAKE
+	bool "Novalake SoC driver"
+	default n
+	select DRIVER_USB_INTEL_TCSS if DRIVER_EC_CROS && !INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG && !DRIVER_NO_INTEL_TCSS
+	select DRIVER_USB_INTEL_TCSS_DEBUG if DRIVER_EC_CROS && !INTEL_TCSS_USE_PDC_PMC_MUX_CONFIG && !DRIVER_NO_INTEL_TCSS
+	select INTEL_COMMON_I2S_ACE_3_x
+	select INTEL_COMMON_SOUNDWIRE_ACE_3_x
+
+config DRIVER_SOC_WILDCATLAKE
+	bool "Wildcatlake SoC driver"
+	default n
+	select DRIVER_SOC_PANTHERLAKE
+
+config DRIVER_SOC_CEZANNE
+	bool "Cezanne SoC driver"
+	default n
+	select DRIVER_GPIO_KERN
+
+config DRIVER_SOC_MENDOCINO
+	bool "Mendocino SoC driver"
+	default n
+	select DRIVER_GPIO_KERN
+
+config DRIVER_SOC_PHOENIX
+	bool "Phoenix SoC driver"
+	default n
+	select DRIVER_GPIO_KERN
+
+source "src/drivers/soc/cse/Kconfig"
+source "src/drivers/soc/pmic/Kconfig"
+
+config DRIVER_CMOS_BASE_PORT_BANK_0
+	hex
+	default 0x70
+
+config DRIVER_CMOS_BASE_PORT_BANK_1
+	hex
+	default 0x72

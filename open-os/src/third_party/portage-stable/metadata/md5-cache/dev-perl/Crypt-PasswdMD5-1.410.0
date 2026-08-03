@@ -1,0 +1,15 @@
+BDEPEND=>=virtual/perl-Digest-MD5-2.530.0 virtual/perl-ExtUtils-MakeMaker test? ( >=virtual/perl-Test-Simple-1.1.2 ) dev-lang/perl
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=dev-lang/perl
+DESCRIPTION=Provides interoperable MD5-based crypt() functions
+EAPI=7
+HOMEPAGE=https://metacpan.org/release/Crypt-PasswdMD5
+IUSE=test
+KEYWORDS=*
+LICENSE=|| ( Artistic GPL-1+ )
+RDEPEND=>=virtual/perl-Digest-MD5-2.530.0 dev-lang/perl:=
+RESTRICT=!test? ( test )
+SLOT=0
+SRC_URI=mirror://cpan/authors/id/R/RS/RSAVAGE/Crypt-PasswdMD5-1.41.tgz
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	perl-functions	8a974980cea5fea31cb69fdf9d466e6b	perl-module	97206c028d9bdc9f248e022ac5c9fc83
+_md5_=1ae446f205b949ac47c593ea01f3afa6

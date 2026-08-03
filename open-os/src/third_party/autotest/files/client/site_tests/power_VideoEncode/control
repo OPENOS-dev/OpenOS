@@ -1,0 +1,18 @@
+# Description
+# This test records power related statistics while encode video file in various
+# formats.
+
+NAME = "power_VideoEncode"
+METADATA = {
+    "contacts": ["cros-power-notifications@google.com"],
+    "author": "puthik",
+    "bug_component": "b:1361410",
+    "criteria": "This test is a benchmark test",
+    "hw_agnostic": False,
+}
+ATTRIBUTES = ("")
+TEST_TYPE = "client"
+
+args_dict = utils.args_to_dict(args)
+pdash_note = args_dict.get('pdash_note', '')
+job.run_test('power_VideoEncode', pdash_note=pdash_note, seconds_period=5)
