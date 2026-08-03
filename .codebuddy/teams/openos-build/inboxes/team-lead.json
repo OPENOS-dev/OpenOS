@@ -1,0 +1,11 @@
+[
+  {
+    "id": "msg-1782800341958-rntpdy",
+    "from": "openbrowser-builder",
+    "to": "team-lead",
+    "type": "message",
+    "content": "OpenBrowser 组件所有 11 个文件已创建完毕，位于 `/Users/cangcang/code/OpenOS/components/openbrowser/`。\n\n## 文件清单\n\n### 构建编排\n- **Makefile** - 顶层构建编排，支持 `all`/`fetch`/`degoogle`/`patch`/`build`/`clean`/`distclean` 目标\n\n### 脚本 (scripts/)\n- **scripts/fetch-source.sh** - 使用 depot_tools 获取 Chromium 源码，执行 `fetch --nohooks chromium` + `gclient sync` + `gclient runhooks`，含磁盘空间检查和前置依赖验证\n- **scripts/degoogle.sh** - 移除 14 类 Google 服务集成：API keys、Google Accounts/OAuth2、GCM/FCM、Google Cloud Messaging、Safe Browsing 服务端查询、RLZ 追踪、Metrics/UMA、Field Trials、Google 拼写检查、Google 翻译、Google DNS（改用系统 DNS）、默认搜索引擎改为 DuckDuckGo、Google URL tracker、组件更新器 Google URLs\n- **scripts/apply-patches.sh** - 按顺序应用 4 个 patch，支持 `git apply` 和 `patch` 两种方式，含失败容错处理\n- **scripts/build.sh** - GN + Ninja 构建，含品牌设置、GN 文件生成、Ninja 编译、后处理步骤（复制并重命名二进制文件）\n\n### 补丁 (patches/)\n- **patches/remove-google-services.patch** - 移除 Google 服务集成（API keys、OAuth2、GCM/FCM、拼写检查、翻译、DNS-over-HTTPS、组件更新器 URL、默认搜索引擎替换为 DuckDuckGo），含 `google_api_keys.cc` 重写\n- **patches/remove-sync.patch** - 移除 Chrome Sync 依赖，SyncServiceFactory 返回 nullptr，禁用所有同步数据类型（书签/密码/历史/设置）\n- **patches/remove-safe-browsing.patch** - Safe Browsing 替换为仅本地模式，V4 数据库更新协议设为 no-op，禁用下载保护和 URL 检查\n- **patches/privacy-enhancements.patch** - 隐私增强：禁用 Metrics/UMA/UKM/Variations 服务、设置隐私默认偏好、禁用崩溃报告、网络预测、搜索建议\n\n### 构建配置\n- **gn/args.gn** - GN 构建参数：目标 Linux x86_64，使用系统库（freetype/harfbuzz/libjpeg/libpng/zlib/webp 等），禁用所有 Google 服务（Safe Browsing/RLZ/Metrics/UKM/Field Trials），禁用 NaCl/Remoting/Speech Input/Widevine，启用 H.264/AAC/MP3 编解码器，thin LTO 优化\n- **config/branding.gn** - OpenBrowser 品牌配置：产品名 \"OpenBrowser\"，公司名 \"OpenOS\"，用户数据目录 \"openbrowser\"，主页 DuckDuckGo，桌面文件 \"openbrowser\"\n\n所有脚本包含 shebang、`set -euo pipefail` 错误处理、详细的注释文档。文件尚未执行 `chmod +x`（用户拒绝了该操作），需要用户手动执行：\n```bash\nchmod +x /Users/cangcang/code/OpenOS/components/openbrowser/scripts/*.sh\n```",
+    "timestamp": "2026-06-30T06:19:01.958Z",
+    "read": true
+  }
+]

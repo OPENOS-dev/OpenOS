@@ -1,0 +1,11 @@
+[
+  {
+    "id": "msg-1782799994843-uaa3au",
+    "from": "team-lead",
+    "to": "openbrowser-builder",
+    "type": "message",
+    "content": "请为 OpenOS 项目创建 OpenBrowser 组件——ChromiumOS 的去 Google 化基础系统。所有文件放在 `/Users/cangcang/code/OpenOS/components/openbrowser/` 目录下。\n\n## 1. 源码获取脚本 `fetch_chromiumos_source.sh`\n- 下载 ChromiumOS 源码（通过 repo + manifest）\n- 设置正确的构建依赖\n- 安装 Gentoo chroot 构建环境\n- 从 Google 的官方仓库获取代码，默认选择 stable 分支\n\n## 2. 去 Google 化补丁集 `patches/` 目录，创建以下 patch 文件：\n- `patches/0001-remove-google-accounts.patch` - 移除 Google 账户同步、OAuth 认证、Chrome Sync\n- `patches/0002-remove-google-telemetry.patch` - 移除分析/遥测/崩溃报告/Google Update\n- `patches/0003-remove-google-services.patch` - 移除 Safe Browsing、Google DNS、Google Translate、Google Cast\n- `patches/0004-remove-google-apps.patch` - 移除预装的 Google Drive、Gmail、YouTube 等\n- `patches/0005-replace-default-search.patch` - 替换默认搜索引擎为 DuckDuckGo\n- `patches/0006-openos-branding.patch` - OpenOS 品牌\n\n每个 patch 应该是有效的 unified diff 格式。\n\n## 3. 构建配置 `build_openbrowser.sh`\n- 设置构建环境变量\n- 使用自定义 USE flags 编译去 Google 化的系统\n- 生成 disk image（支持 x86_64 和 ARM64）\n\n## 4. 配置文件 `openos_overlay/`\nChromiumOS Portage overlay 配置文件：\n- `profiles/base/make.defaults`\n- `metadata/layout.conf`  \n- `chromeos-base/openos-base/openos-9999.ebuild`\n\n请确保所有脚本都是可执行的 bash 脚本，带有正确的 shebang 和错误处理（set -e）。请在完成后发送消息回复我报告进度和文件列表。",
+    "timestamp": "2026-06-30T06:13:14.843Z",
+    "read": true
+  }
+]
