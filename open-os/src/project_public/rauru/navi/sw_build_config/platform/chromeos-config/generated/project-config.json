@@ -1,0 +1,695 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 2147483647
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 2147480063
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 2147480575
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 0
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 1
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 2
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 3
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 4
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 5
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 6
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 7
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 8
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "rauru_cheets",
+            "marketing-name": "",
+            "metrics-tag": "navi",
+            "product": "rauru"
+          },
+          "hardware-features": {
+            "build-path": "navi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-rauru-private",
+          "build-targets": {
+            "bmpblk": "rauru",
+            "coreboot": "navi",
+            "depthcharge": "rauru_keymatrixv30",
+            "libpayload": "rauru",
+            "zephyr-ec": "navi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Navi",
+          "platform-name": "Rauru",
+          "sku-id": 9
+        },
+        "name": "navi",
+        "pvs": {
+          "program": "rauru",
+          "project": "navi"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'rauru_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

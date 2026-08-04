@@ -1,0 +1,318 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gaelin",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "gaelin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "gaelin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/HiFi.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/sof-nau8825.gaelin.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "gaelin"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "gaelin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gaelin4ADL",
+          "platform-name": "Brask",
+          "sku-id": 2147483647
+        },
+        "name": "gaelin",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "gaelin"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gaelin",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "gaelin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "gaelin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/HiFi.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/sof-nau8825.gaelin.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "gaelin"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "gaelin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gaelin4ADL",
+          "platform-name": "Brask",
+          "sku-id": 262145
+        },
+        "name": "gaelin",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "gaelin"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gaelin",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "gaelin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "gaelin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/HiFi.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/sof-nau8825.gaelin.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "gaelin"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "gaelin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gaelin",
+          "platform-name": "Brask",
+          "sku-id": 262146
+        },
+        "name": "gaelin",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "gaelin"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gaelin",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "gaelin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "gaelin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/HiFi.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.gaelin/sof-nau8825.gaelin.conf",
+                "source": "gaelin/audio/ucm-config/sof-nau8825.gaelin/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "gaelin"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "gaelin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gaelin",
+          "platform-name": "Brask",
+          "sku-id": 262147
+        },
+        "name": "gaelin",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "gaelin"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

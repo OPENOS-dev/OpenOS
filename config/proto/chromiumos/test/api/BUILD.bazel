@@ -1,0 +1,48 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+proto_library(
+    name = "api_proto",
+    srcs = glob(["*.proto"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//chromiumos:_go_proto",
+        "//chromiumos/build/api:api_proto",
+        "//chromiumos/config/api:api_proto",
+        "//chromiumos/config/api/test/xmlrpc:xmlrpc_proto",
+        "//chromiumos/longrunning:longrunning_proto",
+        "//chromiumos/test/lab/api:api_proto",
+        "@com_google_protobuf//:any_proto",
+        "@com_google_protobuf//:duration_proto",
+        "@com_google_protobuf//:timestamp_proto",
+        "@com_google_protobuf//:wrappers_proto",
+    ],
+)
+
+go_proto_library(
+    name = "api_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "go.chromium.org/chromiumos/config/go/test/api",
+    proto = ":api_proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//chromiumos:go",
+        "//chromiumos/build/api",
+        "//chromiumos/config/api",
+        "//chromiumos/config/api/test/xmlrpc",
+        "//chromiumos/longrunning",
+        "//chromiumos/test/lab/api",
+    ],
+)
+
+go_library(
+    name = "api",
+    embed = [":api_go_proto"],
+    importpath = "go.chromium.org/chromiumos/config/go/test/api",
+    visibility = ["//visibility:public"],
+)

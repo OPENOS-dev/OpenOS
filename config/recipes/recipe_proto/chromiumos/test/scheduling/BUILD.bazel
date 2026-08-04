@@ -1,0 +1,32 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+proto_library(
+    name = "proto_proto",
+    srcs = [
+        "device_event.proto",
+        "swarming_dimensions.proto",
+        "task_request_event.proto",
+        "task_state.proto",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+go_proto_library(
+    name = "proto_go_proto",
+    importpath = "./proto",
+    proto = ":proto_proto",
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "proto",
+    embed = [":proto_go_proto"],
+    importpath = "./proto",
+    visibility = ["//visibility:public"],
+)

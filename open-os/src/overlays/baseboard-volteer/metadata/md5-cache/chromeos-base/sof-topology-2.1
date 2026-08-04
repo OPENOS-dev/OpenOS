@@ -1,0 +1,9 @@
+DEFINED_PHASES=install prepare
+DESCRIPTION=Topology file needed to run SOF.
+EAPI=7
+IUSE=kernel-5_4
+KEYWORDS=*
+LICENSE=SOF
+SLOT=0
+SRC_URI=kernel-5_4? ( gs://chromeos-localmirror/distfiles/sof-topology-volteer-1.15.tar.bz2 ) !kernel-5_4? ( gs://chromeos-localmirror/distfiles/sof-topology-volteer-2.1.tar.bz2 )
+_md5_=13bd817279e1ee74af82afb1fb73484c

@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND==build-test/base-pkg-1 =build-test/base-pkg-2
+DESCRIPTION=Forces a slot conflict.
+EAPI=7
+HOMEPAGE=http://www.chromium.org
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND==build-test/base-pkg-1 =build-test/base-pkg-2
+SLOT=0
+_md5_=c1620c83e605dae5e26af0834aec5000

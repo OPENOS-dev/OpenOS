@@ -1,0 +1,1 @@
+autotest-capability-baseboard-fizz-1.0.3.ebuild

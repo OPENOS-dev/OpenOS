@@ -1,0 +1,39 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
+
+pkg_files(
+    name = "bin",
+    srcs = [
+        "//bazel/portage/bin/drive_binary_package:drive_binary_package.sh",
+        "//bazel/portage/bin/fakefs",
+        # Intentionally depend on the .py file instead of the library to avoid
+        # including stuff like the python runtime.
+        "container-bailout.sh",
+        "fake_sudo.py",
+    ],
+    attributes = pkg_attributes(
+        mode = "0755",
+    ),
+    prefix = "usr/bin",
+    renames = {
+        "//bazel/portage/bin/fakefs": "fakeroot",
+        "container-bailout.sh": "container-bailout",
+        "fake_sudo.py": "sudo",
+    },
+    visibility = ["//bazel/portage/sdk:__pkg__"],
+)
+
+py_library(
+    name = "fake_sudo",
+    srcs = ["fake_sudo.py"],
+)
+
+py_test(
+    name = "fake_sudo_test",
+    size = "small",
+    srcs = ["fake_sudo_test.py"],
+    deps = [":fake_sudo"],
+)

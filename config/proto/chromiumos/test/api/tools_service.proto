@@ -1,0 +1,67 @@
+// Copyright 2026 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.test.api;
+
+option go_package = "go.chromium.org/chromiumos/config/go/test/api";
+
+service ToolsService {
+  // ADBRun runs a command on ADB.
+  rpc ADBRun(ADBRunRequest) returns (ADBRunResponse) {}
+  // FastbootRun runs a fastboot command.
+  rpc FastbootRun(FastbootRunRequest) returns (FastbootRunResponse) {}
+  // DownloadFile downloads a file from the given URL to the container host.
+  rpc DownloadFile(DownloadFileRequest) returns (DownloadFileResponse) {}
+}
+
+message ADBRunRequest {
+  // command is the command of ADB to run.
+  string command = 1;
+  // args are the arguments to pass to the command. The arguments
+  // are not quoted in any way, so passing shell variables and
+  // arguments containing spaces could fail.
+  repeated string params = 2;
+}
+
+message ADBRunResponse {
+  // stdout contains the shell command's stdout output.
+  bytes stdout = 1;
+  // stderr contains the shell command's stderr output.
+  bytes stderr = 2;
+  // Exit code from shell command.
+  int32 exit_code = 3;
+}
+
+message FastbootRunRequest {
+  // command is the command of Fastboot to run.
+  string command = 1;
+  // args are the arguments to pass to the command.
+  repeated string params = 2;
+}
+
+message FastbootRunResponse {
+  // stdout contains the shell command's stdout output.
+  bytes stdout = 1;
+  // stderr contains the shell command's stderr output.
+  bytes stderr = 2;
+  // Exit code from shell command.
+  int32 exit_code = 3;
+}
+
+message DownloadFileRequest {
+  // url is the URL of the file to download.
+  string url = 1;
+  // destination_path is the optional absolute path on the host to save the file.
+  // If empty, the server will save it to a default temporary directory.
+  string destination_path = 2;
+  // headers are optional HTTP headers to include in the request.
+  map<string, string> headers = 3;
+}
+
+message DownloadFileResponse {
+  // destination_path is the absolute path where the file was saved.
+  string destination_path = 1;
+}

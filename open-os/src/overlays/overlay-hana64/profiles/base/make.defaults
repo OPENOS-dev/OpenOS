@@ -1,0 +1,20 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+USE="${USE} hana64"
+
+BOARD_COMPILER_FLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard"
+USE="${USE} march_armv8-a"
+USE="${USE} -mosys_platform_generic mosys_platform_oak"
+
+VIDEO_CARDS="mediatek powervr"
+
+# Declare set of enabled consoles
+#TTY_CONSOLE="ttyS0"
+INPUT_DEVICES="synaptics pixart"
+
+# Include the g2touch touchscreen firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} g2touch"

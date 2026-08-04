@@ -1,0 +1,11 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install
+DEPEND=chromeos-base/chromeos-scp-firmware-cherry
+DESCRIPTION=Ebuild which pulls in any necessary ebuilds as dependencies or portage actions.
+EAPI=7
+KEYWORDS=-* arm64 arm
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-scp-firmware-cherry
+SLOT=0
+_eclasses_=toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=63d4fc9e5aafc16870e734524145eaba

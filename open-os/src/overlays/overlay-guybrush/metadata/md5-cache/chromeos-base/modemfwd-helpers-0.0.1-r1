@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install preinst
+DEPEND=chromeos-base/fibocom-firmware chromeos-base/modem-fw-dlc-guybrush-fm350 chromeos-base/modem-fw-dlc-guybrush360-l850 chromeos-base/modem-fw-dlc-nipperkin sys-apps/baselayout
+DESCRIPTION=Chrome OS Modem Update Helpers (guybrush)
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/fibocom-firmware chromeos-base/modem-fw-dlc-guybrush-fm350 chromeos-base/modem-fw-dlc-guybrush360-l850 chromeos-base/modem-fw-dlc-nipperkin sys-apps/baselayout
+RESTRICT=mirror
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm350-sample.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.05.27.12_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.05.27.16_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-OEM_cust.6001.04.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-guybrush-carriers_OEM_6001-r7.tar.xz
+_eclasses_=cros-binary	8d92a34eb534ad68084cd638fc329d74	cros-cellular	0592aa121e4f337f6ff1d3a082ada228	estack	686eaab303305a908fd57b2fd7617800	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=ba564b53b8c6d5efbe50fb94cfcf3218

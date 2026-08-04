@@ -1,0 +1,1302 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131072
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131073
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131088
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/kano/131088/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/kano/131088/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/kano/131088/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131089
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/kano/131089/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/kano/131089/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/kano/131089/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131090
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/kano/131090/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/kano/131090/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/kano/131090/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131104
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131105
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131106
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/kano/131106/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/kano/131106/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/kano/131106/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 131107
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/kano/131107/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/kano/131107/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/kano/131107/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135168
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135169
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135170
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135171
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135172
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135173
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135174
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "kano",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "kano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "kano"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Kano",
+          "platform-name": "Brya",
+          "sku-id": 135175
+        },
+        "name": "kano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "kano"
+        },
+        "thermal": {
+          "dptf-dv": "kano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/kano/dptf.dv",
+              "source": "kano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

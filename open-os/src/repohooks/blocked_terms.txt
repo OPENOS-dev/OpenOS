@@ -1,0 +1,68 @@
+# This is the global list of words to be blocked. unblocked_terms.txt has
+# terms that are too commonly used still and are in the process of being
+# cleaned from the codebase. Copy unblocked_terms.txt to your project and
+# start commenting out terms to enable the repo hook to block the words.
+
+# Black Hat
+black.?hat
+# Black List
+black.?list
+# Build Cop, but not build copy
+\bbuild.?cop\b
+# Crazy
+crazy
+# Cripple
+cripple
+# Dummy
+dummy
+# Frist Class Citizen
+first.?class.?citizen
+# Grandfathered
+grandfathered
+# Gray Hat
+gr[ae]y.?hat
+# Gray List
+gr[ae]y.?list
+# Gendered pronouns are not recommended for general use, but have legitimate
+# uses when referring to a specific individual, and thus do not need to be
+# blocked globally.
+# He
+# \bhe\b
+# She
+# \bshe\b
+# Him
+# \bhim\b
+# Her
+# \bher\b
+# His
+# \bhis\b
+# Hers
+# \bhers\b
+# Man in the middle
+man.?in.?the.?middle
+# Master
+master
+# MITM
+\bmitm(\b|\d)
+# Natives (formerly singular 'native')
+\bnatives
+# Red Line
+\bred.?line
+# RTFM
+rtfm
+# Sane, Insane
+\b(in)?sane(\b|\d)
+# Sanity
+sanity
+# Slave
+slave
+# White Glove
+white.?glove
+# White Hat
+white.?hat
+# White Label
+white.?label
+# White List
+white.?list
+# WTF
+\bwtf

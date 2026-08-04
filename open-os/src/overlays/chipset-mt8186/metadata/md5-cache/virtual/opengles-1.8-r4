@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=video_cards_panfrost? ( media-libs/mesa-panfrost ) !video_cards_panfrost? ( !internal? ( media-libs/mali-drivers-bifrost-bin ) internal? ( media-libs/mali-drivers-bifrost ) x11-drivers/opengles-headers )
+DESCRIPTION=Virtual for OpenGLES implementations
+EAPI=7
+IUSE=internal video_cards_panfrost
+KEYWORDS=-* arm arm64
+LICENSE=metapackage
+RDEPEND=video_cards_panfrost? ( media-libs/mesa-panfrost ) !video_cards_panfrost? ( !internal? ( media-libs/mali-drivers-bifrost-bin ) internal? ( media-libs/mali-drivers-bifrost ) x11-drivers/opengles-headers )
+SLOT=0
+_md5_=e7fbd96ff2d6755412c2881aa543f291

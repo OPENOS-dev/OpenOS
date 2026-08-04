@@ -1,0 +1,167 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+
+# This flag is useful when you are comparing packages built using alchemist's
+# compiled profiles and packages built using portage profiles. When enabled
+# an additional target with the suffix `_portage_profile_test_package` will be
+# built and compared for each ebuild target. This happens as a validator
+# so it will also check all transitive dependencies as well.
+bool_flag(
+    name = "enable_portage_config_validator",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "portage_config_validator_enabled",
+    flag_values = {
+        ":enable_portage_config_validator": "True",
+    },
+)
+
+config_setting(
+    name = "portage_config_validator_disabled",
+    flag_values = {
+        ":enable_portage_config_validator": "False",
+    },
+)
+
+# This flag is useful if you want to verify that all packages are hermetic.
+# When enabled an additional target with the suffix `_hermetic_test_package`
+# will be built and compared for each ebuild target.
+#
+# The advantage of setting this flag vs invoking the `<ebuild>_hermetic_test`
+# targets is that this happens as a validator so it will check all transitive
+# dependencies as well.
+bool_flag(
+    name = "enable_hermetic_validator",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "hermetic_validator_enabled",
+    flag_values = {
+        ":enable_hermetic_validator": "True",
+    },
+)
+
+config_setting(
+    name = "hermetic_validator_disabled",
+    flag_values = {
+        ":enable_hermetic_validator": "False",
+    },
+)
+
+string_flag(
+    name = "prebuilt_disk_cache",
+    build_setting_default = "",
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "use_cros_bazel_sdk",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "use_cros_bazel_sdk_enabled",
+    flag_values = {
+        ":use_cros_bazel_sdk": "True",
+    },
+)
+
+config_setting(
+    name = "use_cros_bazel_sdk_disabled",
+    flag_values = {
+        ":use_cros_bazel_sdk": "False",
+    },
+)
+
+# When enabled, it will omit the srcs and distfiles for the ebuild targets.
+# This is useful when running a `bazel cquery` command because it won't force
+# bazel to download all the distfiles, or generate the @chrome_src repository
+# rule.
+bool_flag(
+    name = "omit_ebuild_src",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "omit_ebuild_src_enabled",
+    flag_values = {
+        ":omit_ebuild_src": "True",
+    },
+)
+
+config_setting(
+    name = "omit_ebuild_src_disabled",
+    flag_values = {
+        ":omit_ebuild_src": "False",
+    },
+)
+
+bool_flag(
+    name = "ccache",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "ccache_enabled_global",
+    flag_values = {
+        ":ccache": "True",
+    },
+    visibility = ["//visibility:public"],
+)
+
+string_flag(
+    name = "ccache_dir",
+    build_setting_default = "",
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "enable_interface_libraries",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "interface_libraries_enabled",
+    flag_values = {
+        ":enable_interface_libraries": "True",
+    },
+)
+
+config_setting(
+    name = "interface_libraries_disabled",
+    flag_values = {
+        ":enable_interface_libraries": "False",
+    },
+)
+
+# This flag is useful if you want to verify packages built using interface
+# libraries are identical to those built without using interface libraries.
+#
+# When enabled an additional target with the suffix `_non_interface_test_package`
+# will be built and compared for each ebuild target.
+#
+# Ensure you also set --//bazel/portage:enable_interface_libraries.
+bool_flag(
+    name = "enable_interface_libraries_validator",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "interface_libraries_validator_enabled",
+    flag_values = {
+        ":enable_interface_libraries_validator": "True",
+    },
+)
+
+config_setting(
+    name = "interface_libraries_validator_disabled",
+    flag_values = {
+        ":enable_interface_libraries_validator": "False",
+    },
+)

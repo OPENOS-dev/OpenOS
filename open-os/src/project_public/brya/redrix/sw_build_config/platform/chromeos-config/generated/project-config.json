@@ -1,0 +1,538 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 262400
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 262401
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "299",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 262402
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-regulatory-domain-mapping": "ISED 2\nCE 4\nMIC 4",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-cellular-transmit-power-level-mapping": "HIGH 1\nLOW 2",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1",
+          "use-modemmanager-for-dynamic-sar": "1",
+          "use-regulatory-domain-for-dynamic-sar": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 262403
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 262404
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "299",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "redrix",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "redrix/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "redrix"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Redrix",
+          "platform-name": "Brya",
+          "sku-id": 262405
+        },
+        "name": "redrix",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "1",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "22.20 -1 50\n36.40 40 80\n44.80 65 130\n47.70 110 210\n64.23 180 350\n75.27 250 500\n87.10 400 1700\n95.00 1100 6500\n100 5000 -1\n",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-regulatory-domain-mapping": "ISED 2\nCE 4\nMIC 4",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-cellular-transmit-power-level-mapping": "HIGH 1\nLOW 2",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1",
+          "use-modemmanager-for-dynamic-sar": "1",
+          "use-regulatory-domain-for-dynamic-sar": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "redrix"
+        },
+        "thermal": {
+          "dptf-dv": "redrix/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/redrix/dptf.dv",
+              "source": "redrix/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

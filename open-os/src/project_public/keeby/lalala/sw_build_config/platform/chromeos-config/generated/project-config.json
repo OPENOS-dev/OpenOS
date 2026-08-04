@@ -1,0 +1,398 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "keeby_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lalala",
+            "product": "keeby"
+          },
+          "hardware-features": {
+            "build-path": "lalala/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lalala",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/HiFi.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/sof-rt5682.lalala.2mic.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/sof-rt5682",
+                "source": "lalala/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lalala/dsp.ini",
+                "source": "lalala/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-keeby.conf",
+                "source": "common/audio/alsa-module-config/alsa-keeby.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/board.ini",
+                "source": "lalala/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lalala.2mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-keeby-private",
+          "build-targets": {
+            "ec": "lalala"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lalala",
+          "platform-name": "Keeby",
+          "sku-id": 2147483647
+        },
+        "name": "lalala",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "keeby",
+          "project": "lalala"
+        },
+        "thermal": {
+          "dptf-dv": "lalala/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lalala/dptf.dv",
+              "source": "lalala/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'keeby_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "keeby_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lalala",
+            "product": "keeby"
+          },
+          "hardware-features": {
+            "build-path": "lalala/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lalala",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/HiFi.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/sof-rt5682.lalala.2mic.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/sof-rt5682",
+                "source": "lalala/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lalala/dsp.ini",
+                "source": "lalala/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-keeby.conf",
+                "source": "common/audio/alsa-module-config/alsa-keeby.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/board.ini",
+                "source": "lalala/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lalala.2mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-keeby-private",
+          "build-targets": {
+            "ec": "lalala"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lalala",
+          "platform-name": "Keeby",
+          "sku-id": 131072
+        },
+        "name": "lalala",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "keeby",
+          "project": "lalala"
+        },
+        "thermal": {
+          "dptf-dv": "lalala/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lalala/dptf.dv",
+              "source": "lalala/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'keeby_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "keeby_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lalala",
+            "product": "keeby"
+          },
+          "hardware-features": {
+            "build-path": "lalala/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lalala",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/HiFi.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/sof-rt5682.lalala.2mic.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/sof-rt5682",
+                "source": "lalala/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lalala/dsp.ini",
+                "source": "lalala/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-keeby.conf",
+                "source": "common/audio/alsa-module-config/alsa-keeby.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/board.ini",
+                "source": "lalala/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lalala.2mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-keeby-private",
+          "build-targets": {
+            "ec": "lalala"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lalala",
+          "platform-name": "Keeby",
+          "sku-id": 131073
+        },
+        "name": "lalala",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "keeby",
+          "project": "lalala"
+        },
+        "thermal": {
+          "dptf-dv": "lalala/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lalala/dptf.dv",
+              "source": "lalala/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'keeby_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "keeby_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lalala",
+            "product": "keeby"
+          },
+          "hardware-features": {
+            "build-path": "lalala/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lalala",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/HiFi.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lalala.2mic/sof-rt5682.lalala.2mic.conf",
+                "source": "lalala/audio/ucm-config/sof-rt5682.lalala.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/sof-rt5682",
+                "source": "lalala/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lalala/dsp.ini",
+                "source": "lalala/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-keeby.conf",
+                "source": "common/audio/alsa-module-config/alsa-keeby.conf"
+              },
+              {
+                "destination": "/etc/cras/lalala/board.ini",
+                "source": "lalala/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lalala.2mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-keeby-private",
+          "build-targets": {
+            "ec": "lalala"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lalala",
+          "platform-name": "Keeby",
+          "sku-id": 131074
+        },
+        "name": "lalala",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "keeby",
+          "project": "lalala"
+        },
+        "thermal": {
+          "dptf-dv": "lalala/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lalala/dptf.dv",
+              "source": "lalala/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'keeby_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

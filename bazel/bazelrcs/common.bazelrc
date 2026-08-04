@@ -1,0 +1,198 @@
+# DO NOT MODIFY THIS FILE IF YOU WANT CHANGES TO YOUR PERSONAL CONFIGURATION.
+# INSTEAD, MODIFY ONE OF THE FOLLOWING CONFIGURATION FILES DEPENDING ON WHICH
+# CHECKOUTS YOU WANT TO AFFECT:
+# If you're not sure what you want, you probably want option 2. See bazel/bazelrcs/example_chromiumos.bazelrc for an example
+# Option 1) All bazel projects: $HOME/.bazelrc
+# Option 2) All bazel chromiumos projects: $HOME/.chromiumos.bazelrc
+# Option 3) This specific chromiumos checkoput: src/workspace.bazelrc
+
+import %workspace%/bazel/bazelrcs/aspect/bazel7.bazelrc
+import %workspace%/bazel/bazelrcs/aspect/correctness.bazelrc
+# Adds support for "--config=debug"
+import %workspace%/bazel/bazelrcs/aspect/debug.bazelrc
+import %workspace%/bazel/bazelrcs/aspect/javascript.bazelrc
+import %workspace%/bazel/bazelrcs/aspect/performance.bazelrc
+
+# Enable the use of RBE remote caching behind --config=rbe.
+import %workspace%/bazel/bazelrcs/include/remote_build_artifacts.bazelrc
+
+# Bzlmod is the new dependency management system in bazel.
+common --experimental_enable_bzlmod
+common --registry=file:%workspace%/../bazel_deps/bazel-central-registry
+
+# Undo some flags that were set by aspect that don't work for us.
+# We disable this for ChromeOS because it throws errors along the lines of
+# "Infinite symlink chain detected".
+startup --host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=0
+common --noincompatible_disallow_empty_glob
+# Until we can distinguish between CI and non-CI builds, this should be set for all builds.
+build --remote_upload_local_results
+
+# Show timestamps for easier performance analysis.
+common --show_timestamps
+# Always show output from actions.
+common --experimental_ui_max_stdouterr_bytes=-1
+
+# Publish the individual action traces and logs
+build --output_groups=+logs,+traces
+
+# TODO(b/309692900): Re-enable this once the bug is resolved.
+build --noincompatible_disallow_unsound_directory_outputs
+
+# Prevent writing to the remote cache if source files change during the build.
+# **DISABLED** Only useful when uploading artifacts from local builds, which we
+# won't do once we have Bazel running in CI builds, and it prevents uploading
+# artifacts to the remote cache due to actions Bazel takes (see
+# https://github.com/bazelbuild/bazel/issues/17162). So we don't need it, and
+# it gets in the way, so we've decided not to use it after all. In 6.x, we could
+# just comment it out, but it's going to become the default in a later version
+# so we use the inverse version to protect us against that future change.
+#build --experimental_guard_against_concurrent_changes
+#query --experimental_guard_against_concurrent_changes
+build --noexperimental_guard_against_concurrent_changes
+query --noexperimental_guard_against_concurrent_changes
+
+# Enable 2 retries (3 attempts) when downloads fail, to work around the case
+# where GS returns incomplete content while downloading.
+build --experimental_repository_downloader_retries=2
+
+# Aspect-Recommended bazel flags for all projects
+# Docs for these flags: https://bazel.build/reference/command-line-reference
+# Accompanies this blog post: https://blog.aspect.dev/bazelrc-flags
+
+###
+# Performance fixes
+###
+# Consider --experimental_remote_merkle_tree_cache_size as well
+build --experimental_remote_merkle_tree_cache
+query --experimental_remote_merkle_tree_cache
+# Improve remote cache hit rate
+build --nostamp
+# Minimize remote cache downloads
+build --remote_download_toplevel
+# Allow Bazel to cache hashes of more files, to avoid re-scanning files
+build --cache_computed_file_digests=500000
+
+# Collect system-wide network metrics in JSON profiles and BEP
+# (build_metrics.network_metrics)
+build --experimental_collect_system_network_usage
+
+# Don't pull ebuild sources (e.g. chromium) and stage1 SDK tarball when querying
+cquery --//bazel/portage:omit_ebuild_src --//bazel/portage/sdk:omit_stage1_tarball
+
+###
+# Correctness guarantees
+###
+
+# We're not yet ready to enable the lockfile.
+common --lockfile_mode=off
+
+# See github.com/bazelbuild/rules_python/issues/1059
+# Without this, packages installed to $HOME/.local/lib/python3.10/site-packages
+# can be imported from bazel's python.
+build --action_env=PYTHONNOUSERSITE=1
+build --action_env=RUST_BACKTRACE=1
+# Allows actions to detect that they're running as a bazel action rather than as
+# a binary directly (eg. bazel run / test).
+build --action_env=IS_BAZEL_ACTION=1
+common --check_direct_dependencies=error
+
+# These are symlinked elsewhere.
+build --deleted_packages=bazel/workspace_root
+query --deleted_packages=bazel/workspace_root
+
+### Toolchain resolution.
+build --host_platform=//bazel/platforms:host
+build --extra_execution_platforms=//bazel/platforms:rbe_2_core_platform,//bazel/platforms:rbe_4_core_platform,//bazel/platforms:rbe_8_core_platform,//bazel/platforms:rbe_16_core_platform,//bazel/platforms:rbe_32_core_platform
+# Use platforms instead of crostool_top to resolve C++ toolchains.
+build --incompatible_enable_cc_toolchain_resolution
+
+###
+# Convenience
+###
+build --remote_local_fallback
+build --heap_dump_on_oom
+
+# Run linters at build time.
+build:lint --config=clippy
+build:clippy --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect --output_groups=+clippy_checks
+
+# Add a config to run formatter validation at build time.
+# It’s recommended to only enable this config in CI so formatting issues do not
+# impact user’s ability to rapidly iterate on changes.
+# Because aspects can't modify source files, we may want to investigate having
+# them output some kind of diff, so we can then just apply the diff after.
+# It's also recommended to run this config in combination with --keep_going,
+# otherwise it can only give you formatting errors for a single file.
+build:format --config=rustfmt
+
+# Bzlmod doesn't yet have a way of defining a rustfmt toolchain.
+# Once it does, swap out this line for the one below.
+build:rustfmt --
+# build:rustfmt --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect --output_groups=+rustfmt_checks
+
+# When building rust, ensure that the generated sources are materialized to disk.
+# This allows rust-analyzer to see the generated sources, giving us proper IDE support.
+build --output_groups=+rust_generated_srcs
+
+# This will be removed when it becomes the default.
+build:hermetic_toolchains --config=hermetic_cc --config=hermetic_rust
+build:hermetic_cc --//bazel/module_extensions/toolchains/cc:hermetic
+build:hermetic_rust --//bazel/module_extensions/toolchains/rust:hermetic
+
+build:nohermetic_toolchains --config=nohermetic_cc --config=nohermetic_rust
+build:nohermetic_cc --no//bazel/module_extensions/toolchains/cc:hermetic
+build:nohermetic_rust --no//bazel/module_extensions/toolchains/rust:hermetic
+
+build --config=nohermetic_toolchains
+
+# Enable printing artifact hashes
+build:hash_tracer --aspects //bazel/portage/build_defs:hash_tracer.bzl%hash_tracer,//bazel/portage/build_defs:hash_tracer.bzl%hash_tracer_validator
+
+# Collect all logs produced by all transitive dependencies of the targets
+# specified in the command line. This ensures that Bazel downloads log files
+# from the remote cache even if their corresponding actions are fully cached.
+build:collect_logs --aspects //bazel/portage/build_defs:collect_logs.bzl%collect_logs_aspect
+build:collect_logs --output_groups=+transitive_logs
+
+# Collect all ebuild metadata produced by all transitive dependencies of the
+# targets specified in the command line. This ensures that Bazel downloads the
+# metadata files from the remote cache even if their corresponding actions are
+# fully cached.
+build:collect_ebuild_metadata --aspects //bazel/portage/build_defs:collect_ebuild_metadata.bzl%collect_ebuild_metadata_aspect
+build:collect_ebuild_metadata --output_groups=+ebuild_metadata
+
+# Enable build event upload to a backend.
+#
+# Use --config=bes to opt-in results upload.
+build:bes --bes_results_url=http://sponge2/
+build:bes --bes_backend=buildeventservice-pa.googleapis.com
+# Upload every file referenced by the BEP message, on top of crucial ones
+# like test logs. This is necessary to upload the package-local ebuild logs.
+build:bes --remote_build_event_upload=all
+# Enable BEP uploads to complete asynchronously.
+build:bes --bes_upload_mode=fully_async
+# Set a label for this invocation so it's easy to filter on the backend.
+build:bes --bes_keywords=cros-rbe-nonrelease
+# Publish `important_outputs` field in BEP for the artifacts tab to work with
+# sponge2. This will be disabled in an upcoming Bazel release by default. All
+# consumers should be reading NamedSetOfFiles instead. b/212691656
+build:bes --legacy_important_outputs=true
+
+# Unconditionally import configurations for Googlers.
+# TODO(b/312234436): Enable conditional configs based on the user+build environment.
+import %workspace%/bazel/bazelrcs/googlers.bazelrc
+
+# Use prebuilts if the user has executed update_prebuilts.
+build --flag_alias=prebuilt_disk_cache=//bazel/portage:prebuilt_disk_cache
+build:update_prebuilts --aspects=//bazel/portage/build_defs:update_prebuilts.bzl%update_prebuilts --output_groups=+prebuilt_materialized
+try-import %workspace%/prebuilts.bazelrc
+
+common --experimental_downloader_config=bazel/content_mirror/config/developer.cfg
+common:strict_mirror --experimental_downloader_config=bazel/content_mirror/config/strict.cfg
+
+common --@rules_cc//cc/toolchains:experimental_enable_rule_based_toolchains
+
+# Allow user-specific overrides for this repository.
+# Should be at the end of this file so that users can override anything above.
+try-import %workspace%/workspace.bazelrc

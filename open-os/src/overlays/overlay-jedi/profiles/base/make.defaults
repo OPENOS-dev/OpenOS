@@ -1,0 +1,53 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} jedi"
+
+# Enable AP firmware
+USE="${USE} bootimage"
+
+# Enable EC firmware
+USE="${USE} zephyr_ec"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+# Uncomment these lines to activate the serial port.
+# Enable kernel serial drivers
+USE="${USE} pcserial"
+# Declare set of enabled consoles
+TTY_CONSOLE="ttyS0"
+
+# Enable Mediatek 7920 WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7920"
+
+# Enable Mediatek 7920 BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7920-bt"
+
+# Enable Mediatek 7922 WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7922"
+
+# Enable Mediatek 7922 BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7922-bt"
+
+# Enable Mediatek 7925 WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7925"
+
+# Enable Mediatek 7925 BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7925-bt"
+
+# Enable eSIM support.
+USE="${USE} esim"
+
+# Enable modemfwd
+USE="${USE} modemfwd"
+
+# Let CrOS IIO service owns sar sensors
+USE="${USE} iioservice_proximity"
+
+# Enable hammerd for updating base firmware
+USE="${USE} hammerd"

@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DEPEND=chromeos-base/chromeos-disk-firmware-baseboard-krabbylake
+DESCRIPTION=Krabbylake baseboard-specific ebuild that pulls in necessary ebuilds as dependencies or portage actions.
+EAPI=7
+KEYWORDS=-* amd64 x86
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-disk-firmware-baseboard-krabbylake
+SLOT=0
+_md5_=b98ace419737c4fba5fca7c9200a774e

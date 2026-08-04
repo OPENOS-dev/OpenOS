@@ -1,0 +1,1 @@
+chromeos-bsp-baseboard-skywalker-0.0.1.ebuild

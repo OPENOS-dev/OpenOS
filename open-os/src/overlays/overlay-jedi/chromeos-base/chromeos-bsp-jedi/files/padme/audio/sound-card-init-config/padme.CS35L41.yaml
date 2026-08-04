@@ -1,0 +1,34 @@
+amp_calibrations:
+  boot_time_calibration_enabled: false
+  controls:
+    -
+      firmware_file: "/lib/firmware/cirrus/cs35l41-dsp1-spk-prot-104315ee.wmfw"
+      tuning_file: "/lib/firmware/cirrus/cs35l41-dsp1-spk-prot-104315ee-left.bin"
+      preload_switch: "Left DSP1 Preload Switch"
+      firmware_type: "Left DSP1 Firmware"
+      pcm_source: "Left PCM Source"
+      cal_ambient: "Left DSP1 Protection cd CAL_AMBIENT"
+      cal_r: "Left DSP1 Protection cd CAL_R"
+      cal_r_selected: "Left DSP1 Protection cd CAL_R_SELECTED"
+      cal_status: "Left DSP1 Protection cd CAL_STATUS"
+      cal_checksum: "Left DSP1 Protection cd CAL_CHECKSUM"
+      cal_set_status: "Left DSP1 Protection cd CAL_SET_STATUS"
+    -
+      firmware_file: "/lib/firmware/cirrus/cs35l41-dsp1-spk-prot-104315ee.wmfw"
+      tuning_file: "/lib/firmware/cirrus/cs35l41-dsp1-spk-prot-104315ee-right.bin"
+      preload_switch: "Right DSP1 Preload Switch"
+      firmware_type: "Right DSP1 Firmware"
+      pcm_source: "Right PCM Source"
+      cal_ambient: "Right DSP1 Protection cd CAL_AMBIENT"
+      cal_r: "Right DSP1 Protection cd CAL_R"
+      cal_r_selected: "Right DSP1 Protection cd CAL_R_SELECTED"
+      cal_status: "Right DSP1 Protection cd CAL_STATUS"
+      cal_checksum: "Right DSP1 Protection cd CAL_CHECKSUM"
+      cal_set_status: "Right DSP1 Protection cd CAL_SET_STATUS"
+  rdc_ranges:
+    -
+      lower: 3.2
+      upper: 4.0
+    -
+      lower: 3.2
+      upper: 4.0

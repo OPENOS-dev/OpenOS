@@ -1,0 +1,8 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# M.2 modem card reset on net WWAN_RTS_L is connected to SPI1_CSB
+# and is at offset 72.
+ ACTION=="add", DEVPATH=="*/INT344B:00/gpiochip*/gpio/*", \
+   RUN+="/lib/udev/chown-usb-modem-gpio.sh \"$sys/$devpath\" \"INT344B:00\" 72"

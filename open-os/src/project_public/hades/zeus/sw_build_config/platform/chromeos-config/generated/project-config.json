@@ -1,0 +1,59 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "hades_cheets",
+            "marketing-name": "",
+            "metrics-tag": "zeus",
+            "product": "hades"
+          },
+          "hardware-features": {
+            "build-path": "zeus/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_zeus.xml",
+            "system-path": "/etc/hardware_features_zeus.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Zeus",
+          "platform-name": "Hades",
+          "sku-id": 2147483647
+        },
+        "name": "zeus",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "hades",
+          "project": "zeus"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'hades_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,488 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "blipper",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "blipper/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "blipper",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.rt1015.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic/sof-rt5682.rt1015.2mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.rt1015.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/blipper/sof-rt5682",
+                "source": "blipper/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/blipper/dsp.ini",
+                "source": "blipper/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/blipper/board.ini",
+                "source": "blipper/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "blipper"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Blipper",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "blipper",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "blipper"
+        },
+        "thermal": {
+          "dptf-dv": "blipper/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/blipper/dptf.dv",
+              "source": "blipper/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "blipper",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "blipper/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "blipper",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic/HiFi.conf",
+                "source": "blipper/audio/ucm-config/sof-rt5682.rt1015p.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic/sof-rt5682.rt1015p.2mic.conf",
+                "source": "blipper/audio/ucm-config/sof-rt5682.rt1015p.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/blipper/sof-rt5682",
+                "source": "blipper/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/blipper/dsp.ini",
+                "source": "blipper/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/blipper/board.ini",
+                "source": "blipper/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "blipper"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Blipper",
+          "platform-name": "Dedede",
+          "sku-id": 1703936
+        },
+        "name": "blipper",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "blipper"
+        },
+        "thermal": {
+          "dptf-dv": "blipper/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/blipper/dptf.dv",
+              "source": "blipper/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "blipper",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "blipper/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "blipper",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic/HiFi.conf",
+                "source": "blipper/audio/ucm-config/sof-rt5682.rt1015p.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic/sof-rt5682.rt1015p.2mic.conf",
+                "source": "blipper/audio/ucm-config/sof-rt5682.rt1015p.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/blipper/sof-rt5682",
+                "source": "blipper/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/blipper/dsp.ini",
+                "source": "blipper/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/blipper/board.ini",
+                "source": "blipper/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "blipper"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Blipper",
+          "platform-name": "Dedede",
+          "sku-id": 1703937
+        },
+        "name": "blipper",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "blipper"
+        },
+        "thermal": {
+          "dptf-dv": "blipper/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/blipper/dptf.dv",
+              "source": "blipper/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "beetley",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "blipper/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "beetley",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.beetley/HiFi.conf",
+                "source": "beetley/audio/ucm-config/sof-rt5682.rt1015p.1mic.beetley/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.beetley/sof-rt5682.rt1015p.1mic.beetley.conf",
+                "source": "beetley/audio/ucm-config/sof-rt5682.rt1015p.1mic.beetley/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/beetley/sof-rt5682",
+                "source": "beetley/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/beetley/dsp.ini",
+                "source": "beetley/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/beetley/board.ini",
+                "source": "beetley/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.beetley"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "blipper"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Blipper",
+          "platform-name": "Dedede",
+          "sku-id": 2424832
+        },
+        "name": "beetley",
+        "power": {
+          "disable-dark-resume": "0",
+          "internal-backlight-no-als-battery-brightness": "63",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "beetley"
+        },
+        "thermal": {
+          "dptf-dv": "blipper/beetley/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/blipper/beetley/dptf.dv",
+              "source": "blipper/sw_build_config/platform/chromeos-config/thermal/beetley/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "beetley",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "blipper/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "beetley",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.beetleyvs/HiFi.conf",
+                "source": "beetley/audio/ucm-config/sof-rt5682.rt1015p.1mic.beetleyvs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.beetleyvs/sof-rt5682.rt1015p.1mic.beetleyvs.conf",
+                "source": "beetley/audio/ucm-config/sof-rt5682.rt1015p.1mic.beetleyvs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/beetley/sof-rt5682",
+                "source": "beetley/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/beetley/dsp.ini",
+                "source": "beetley/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/beetley/board.ini",
+                "source": "beetley/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.beetleyvs"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "blipper"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Blipper",
+          "platform-name": "Dedede",
+          "sku-id": 2424833
+        },
+        "name": "beetley",
+        "power": {
+          "disable-dark-resume": "0",
+          "internal-backlight-no-als-battery-brightness": "63",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "beetley"
+        },
+        "thermal": {
+          "dptf-dv": "blipper/beetley/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/blipper/beetley/dptf.dv",
+              "source": "blipper/sw_build_config/platform/chromeos-config/thermal/beetley/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

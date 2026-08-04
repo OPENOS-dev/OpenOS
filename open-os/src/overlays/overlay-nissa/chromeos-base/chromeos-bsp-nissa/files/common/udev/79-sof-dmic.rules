@@ -1,0 +1,2 @@
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x54c8", ATTR{class}=="0x040100", PROGRAM=="/usr/bin/cros_config / name", RESULT=="craaskov", RUN+="/sbin/modprobe snd_sof_pci tplg_path=intel/sof-tplg/craaskov"
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x54c8", ATTR{class}=="0x040100", PROGRAM=="/usr/bin/cros_config / name", RESULT=="riven", RUN+="/sbin/modprobe snd_sof_pci tplg_path=intel/sof-tplg/riven"

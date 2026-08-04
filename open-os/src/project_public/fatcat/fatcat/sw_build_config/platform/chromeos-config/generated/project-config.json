@@ -1,0 +1,1462 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 1
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 2
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 4
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 5
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 6
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcat",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat",
+          "platform-name": "Fatcat",
+          "sku-id": 7
+        },
+        "name": "fatcat",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcat"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatish",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ptl-ish",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat_Ish",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "fatcatish",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatish"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatish",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ptl-ish",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat_Ish",
+          "platform-name": "Fatcat",
+          "sku-id": 1
+        },
+        "name": "fatcatish",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatish"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatish",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ptl-ish",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcat_Ish",
+          "platform-name": "Fatcat",
+          "sku-id": 2
+        },
+        "name": "fatcatish",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatish"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 1
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 2
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 4
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 5
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 6
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatnuvo",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-npcx"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatnuvo",
+          "platform-name": "Fatcat",
+          "sku-id": 7
+        },
+        "name": "fatcatnuvo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatnuvo"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 1
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 2
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 4
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 5
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 6
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "fatcatite",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "fatcatrvp-ite"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Fatcatite",
+          "platform-name": "Fatcat",
+          "sku-id": 7
+        },
+        "name": "fatcatite",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "fatcatite"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ptlrvp",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "ptlrvp",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "ptlrvp",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ptlrvp"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ptlrvp_chromeec",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "fatcat/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "fatcat-ish-idle",
+            "zephyr-ec": "ptlrvp_mchp"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "ptlrvp_chromeec",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "ptlrvp_chromeec",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ptlrvp_chromeec"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

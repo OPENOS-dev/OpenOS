@@ -1,0 +1,65 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "first-api-level": "28",
+            "marketing-name": "",
+            "metrics-tag": "trondo",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "trondo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_trondo.xml",
+            "system-path": "/etc/hardware_features_trondo.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "trondo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373/HiFi.conf",
+                "source": "ucm-config/sof-rt5682.max98373/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373/sof-rt5682.max98373.conf",
+                "source": "ucm-config/sof-rt5682.max98373/sof-rt5682.max98373.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              }
+            ],
+            "ucm-suffix": "max98373"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "identity": {
+          "platform-name": "Volteer",
+          "sku-id": 2147483647,
+          "smbios-name-match": "Trondo"
+        },
+        "name": "trondo",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

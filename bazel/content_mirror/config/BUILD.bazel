@@ -1,0 +1,71 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("//bazel/build_defs/jinja_template:jinja_template.bzl", "jinja_template")
+load("//bazel/build_defs/jinja_template:render_template.bzl", "render_template")
+
+jinja_template(
+    name = "cfg",
+    src = "cfg.jinja2",
+)
+
+render_template(
+    name = "developer",
+    regen_name = "update",
+    template = ":cfg",
+    vars = {
+        "unmirrored": "ALLOW",
+    },
+)
+
+render_template(
+    name = "ci",
+    regen_name = "update",
+    template = ":cfg",
+    vars = {
+        # TODO: Update to MIRROR once the content mirror is complete.
+        "unmirrored": "ALLOW",
+    },
+)
+
+render_template(
+    name = "release",
+    regen_name = "update",
+    template = ":cfg",
+    vars = {
+        # TODO: Update to BLOCK once the content mirror is complete.
+        "unmirrored": "ALLOW",
+    },
+)
+
+render_template(
+    name = "local_server_dev",
+    regen_name = "update",
+    template = ":cfg",
+    vars = {
+        "local_server": "localhost:8443",
+        "unmirrored": "MIRROR",
+    },
+)
+
+render_template(
+    name = "strict",
+    regen_name = "update",
+    template = ":cfg",
+    vars = {
+        "unmirrored": "BLOCK",
+    },
+)
+
+write_source_files(
+    name = "update",
+    files = {
+        "ci.cfg": ":ci",
+        "developer.cfg": ":developer",
+        "local_server_dev.cfg": ":local_server_dev",
+        "release.cfg": ":release",
+        "strict.cfg": ":strict",
+    },
+)

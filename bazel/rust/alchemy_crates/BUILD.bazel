@@ -1,0 +1,15 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+exports_files([
+    "Cargo.toml",
+    "Cargo.lock",
+])
+
+# rules_rust is unable to build their rustix because they don't have our annotations.
+alias(
+    name = "is_terminal",
+    actual = "@alchemy_crates//:is-terminal",
+    visibility = ["//visibility:public"],
+)

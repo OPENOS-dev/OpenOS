@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/intel-openvino:= chromeos-base/intel-npu-umd:=
+DESCRIPTION=List of packages that are needed by TFLite Stable Delegate
+EAPI=7
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/tflite/
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=chromeos-base/intel-openvino:= chromeos-base/intel-npu-umd:=
+SLOT=0
+_md5_=9ec9d1ea973c6102e1fc2a5150557d7e

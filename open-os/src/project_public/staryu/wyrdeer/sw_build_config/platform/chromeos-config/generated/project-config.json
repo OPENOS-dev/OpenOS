@@ -1,0 +1,378 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "staryu_cheets",
+            "marketing-name": "",
+            "metrics-tag": "wyrdeer",
+            "product": "staryu"
+          },
+          "hardware-features": {
+            "build-path": "wyrdeer/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "wyrdeer",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-staryu-private",
+          "build-targets": {
+            "bmpblk": "staryu",
+            "coreboot": "wyrdeer",
+            "depthcharge": "corsola",
+            "ec_extras": [
+              "whitebeard"
+            ],
+            "libpayload": "corsola",
+            "zephyr-ec": "wyrdeer"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Wyrdeer",
+          "platform-name": "Staryu",
+          "sku-id": 2147483638
+        },
+        "name": "wyrdeer",
+        "pvs": {
+          "program": "staryu",
+          "project": "wyrdeer"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'staryu_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "staryu_cheets",
+            "marketing-name": "",
+            "metrics-tag": "wyrdeer",
+            "product": "staryu"
+          },
+          "hardware-features": {
+            "build-path": "wyrdeer/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "wyrdeer",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-staryu-private",
+          "build-targets": {
+            "bmpblk": "staryu",
+            "coreboot": "wyrdeer",
+            "depthcharge": "corsola",
+            "ec_extras": [
+              "whitebeard"
+            ],
+            "libpayload": "corsola",
+            "zephyr-ec": "wyrdeer"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Wyrdeer",
+          "platform-name": "Staryu",
+          "sku-id": 2147483641
+        },
+        "name": "wyrdeer",
+        "pvs": {
+          "program": "staryu",
+          "project": "wyrdeer"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'staryu_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "staryu_cheets",
+            "marketing-name": "",
+            "metrics-tag": "wyrdeer",
+            "product": "staryu"
+          },
+          "hardware-features": {
+            "build-path": "wyrdeer/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "wyrdeer",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-staryu-private",
+          "build-targets": {
+            "bmpblk": "staryu",
+            "coreboot": "wyrdeer",
+            "depthcharge": "corsola",
+            "ec_extras": [
+              "whitebeard"
+            ],
+            "libpayload": "corsola",
+            "zephyr-ec": "wyrdeer"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Wyrdeer",
+          "platform-name": "Staryu",
+          "sku-id": 65542
+        },
+        "name": "wyrdeer",
+        "pvs": {
+          "program": "staryu",
+          "project": "wyrdeer"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'staryu_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "staryu_cheets",
+            "marketing-name": "",
+            "metrics-tag": "wyrdeer",
+            "product": "staryu"
+          },
+          "hardware-features": {
+            "build-path": "wyrdeer/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "wyrdeer",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-staryu-private",
+          "build-targets": {
+            "bmpblk": "staryu",
+            "coreboot": "wyrdeer",
+            "depthcharge": "corsola",
+            "ec_extras": [
+              "whitebeard"
+            ],
+            "libpayload": "corsola",
+            "zephyr-ec": "wyrdeer"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Wyrdeer",
+          "platform-name": "Staryu",
+          "sku-id": 65545
+        },
+        "name": "wyrdeer",
+        "pvs": {
+          "program": "staryu",
+          "project": "wyrdeer"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'staryu_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "staryu_cheets",
+            "marketing-name": "",
+            "metrics-tag": "wyrdeer",
+            "product": "staryu"
+          },
+          "hardware-features": {
+            "build-path": "wyrdeer/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "wyrdeer",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-staryu-private",
+          "build-targets": {
+            "bmpblk": "staryu",
+            "coreboot": "wyrdeer",
+            "depthcharge": "corsola",
+            "ec_extras": [
+              "whitebeard"
+            ],
+            "libpayload": "corsola",
+            "zephyr-ec": "wyrdeer"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Wyrdeer",
+          "platform-name": "Staryu",
+          "sku-id": 131078
+        },
+        "name": "wyrdeer",
+        "pvs": {
+          "program": "staryu",
+          "project": "wyrdeer"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'staryu_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "staryu_cheets",
+            "marketing-name": "",
+            "metrics-tag": "wyrdeer",
+            "product": "staryu"
+          },
+          "hardware-features": {
+            "build-path": "wyrdeer/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "wyrdeer",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-staryu-private",
+          "build-targets": {
+            "bmpblk": "staryu",
+            "coreboot": "wyrdeer",
+            "depthcharge": "corsola",
+            "ec_extras": [
+              "whitebeard"
+            ],
+            "libpayload": "corsola",
+            "zephyr-ec": "wyrdeer"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Wyrdeer",
+          "platform-name": "Staryu",
+          "sku-id": 131081
+        },
+        "name": "wyrdeer",
+        "pvs": {
+          "program": "staryu",
+          "project": "wyrdeer"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'staryu_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

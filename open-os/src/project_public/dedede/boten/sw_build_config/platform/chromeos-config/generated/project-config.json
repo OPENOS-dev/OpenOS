@@ -1,0 +1,2138 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393216
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393217
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten/sof-rt5682.rt1015p.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393218
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten/sof-rt5682.rt1015p.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393219
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.1mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.1mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.1mic.boten/sof-rt5682.rt1015.1mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.1mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.1mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393220
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.1mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.1mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.1mic.boten/sof-rt5682.rt1015.1mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.1mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.1mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393221
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten/sof-rt5682.rt1015p.1mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393222
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten/sof-rt5682.rt1015p.1mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393223
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393224
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393225
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten.rt5682vs/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten.rt5682vs/sof-rt5682.rt1015p.2mic.boten.rt5682vs.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.boten.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393226
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten.rt5682vs/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.boten.rt5682vs/sof-rt5682.rt1015p.2mic.boten.rt5682vs.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.2mic.boten.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.boten.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393227
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393228
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.boten/sof-rt5682.rt1015.2mic.boten.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015.2mic.boten/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.boten"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393229
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten.rt5682vs/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten.rt5682vs/sof-rt5682.rt1015p.1mic.boten.rt5682vs.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.boten.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393230
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-cellular-transmit-power-dpr-gpio": "211",
+          "set-cellular-transmit-power-for-proximity": "1",
+          "set-cellular-transmit-power-for-tablet-mode": "1",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "boten",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "boten",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten.rt5682vs/HiFi.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.boten.rt5682vs/sof-rt5682.rt1015p.1mic.boten.rt5682vs.conf",
+                "source": "boten/audio/ucm-config/sof-rt5682.rt1015p.1mic.boten.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/sof-rt5682",
+                "source": "boten/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/boten/dsp.ini",
+                "source": "boten/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/boten/board.ini",
+                "source": "boten/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.boten.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 393231
+        },
+        "name": "boten",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "boten"
+        },
+        "thermal": {
+          "dptf-dv": "boten/boten/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/boten/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/boten/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "botenflex",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "botenflex",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.1mic.botenflex/HiFi.conf",
+                "source": "botenflex/audio/ucm-config/sof-rt5682.rt1015.1mic.botenflex/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.1mic.botenflex/sof-rt5682.rt1015.1mic.botenflex.conf",
+                "source": "botenflex/audio/ucm-config/sof-rt5682.rt1015.1mic.botenflex/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/botenflex/sof-rt5682",
+                "source": "botenflex/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/botenflex/dsp.ini",
+                "source": "botenflex/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/botenflex/board.ini",
+                "source": "botenflex/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.1mic.botenflex"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 589824
+        },
+        "name": "botenflex",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "botenflex"
+        },
+        "thermal": {
+          "dptf-dv": "boten/botenflex/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/botenflex/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/botenflex/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "botenflex",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "botenflex",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.botenflex/HiFi.conf",
+                "source": "botenflex/audio/ucm-config/sof-rt5682.rt1015p.1mic.botenflex/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.botenflex/sof-rt5682.rt1015p.1mic.botenflex.conf",
+                "source": "botenflex/audio/ucm-config/sof-rt5682.rt1015p.1mic.botenflex/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/botenflex/sof-rt5682",
+                "source": "botenflex/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/botenflex/dsp.ini",
+                "source": "botenflex/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/botenflex/board.ini",
+                "source": "botenflex/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.botenflex"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 589825
+        },
+        "name": "botenflex",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "botenflex"
+        },
+        "thermal": {
+          "dptf-dv": "boten/botenflex/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/botenflex/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/botenflex/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "bookem",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "bookem",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.bookem/HiFi.conf",
+                "source": "bookem/audio/ucm-config/sof-rt5682.rt1015.bookem/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.bookem/sof-rt5682.rt1015.bookem.conf",
+                "source": "bookem/audio/ucm-config/sof-rt5682.rt1015.bookem/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/bookem/sof-rt5682",
+                "source": "bookem/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/bookem/dsp.ini",
+                "source": "bookem/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/bookem/board.ini",
+                "source": "bookem/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.bookem"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 2686976
+        },
+        "name": "bookem",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "bookem"
+        },
+        "thermal": {
+          "dptf-dv": "boten/bookem/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/bookem/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/bookem/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "bookem",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "boten/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "bookem",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.bookem/HiFi.conf",
+                "source": "bookem/audio/ucm-config/sof-rt5682.rt1015p.bookem/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.bookem/sof-rt5682.rt1015p.bookem.conf",
+                "source": "bookem/audio/ucm-config/sof-rt5682.rt1015p.bookem/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/bookem/sof-rt5682",
+                "source": "bookem/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/bookem/dsp.ini",
+                "source": "bookem/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/bookem/board.ini",
+                "source": "bookem/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.bookem"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "boten"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Boten",
+          "platform-name": "Dedede",
+          "sku-id": 2686977
+        },
+        "name": "bookem",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "bookem"
+        },
+        "thermal": {
+          "dptf-dv": "boten/bookem/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/boten/bookem/dptf.dv",
+              "source": "boten/sw_build_config/platform/chromeos-config/thermal/bookem/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

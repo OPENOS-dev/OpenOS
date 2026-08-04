@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Proprietary binaries for IPU6EPMTL on Intel MTL platforms
+EAPI=7
+KEYWORDS=-* amd64
+LICENSE=BSD-Intel+patent-grant
+SLOT=0
+SRC_URI=https://github.com/intel/ipu6-camera-bins/archive/Chrome_mtl_20240709.tar.gz -> intel-ipu6epmtl-camera-bins-20240709.tar.gz
+_md5_=5e1d99d421c97182de09960f7f9d3f7b

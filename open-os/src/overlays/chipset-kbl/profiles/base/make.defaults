@@ -1,0 +1,51 @@
+# Copyright 2017 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+# Initial value just for style purposes.
+LINUX_FIRMWARE=""
+USE=""
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromeos-intel-pineview"
+CHROMEOS_KERNEL_ARCH="x86_64"
+
+# Kabylake-y cpus, but do not have avx support.
+# b/320666624: move this to `-march=skylake -mno-avx` when that no longer
+# results in build errors.
+BOARD_COMPILER_FLAGS="-march=goldmont -mno-sha"
+BOARD_RUSTFLAGS="-Ctarget-cpu=goldmont -Ctarget-feature=-sha"
+USE="${USE} march_goldmont"
+
+LINUX_FIRMWARE="${LINUX_FIRMWARE} adsp_kbl"
+
+# Make KBL i915 firmwares (GuC,HuC,DMC) builtin
+USE="${USE} builtin_fw_intel_kbl_i915"
+
+USE="${USE} kernel-5_4"
+USE="${USE} dptf"
+USE="${USE} intel_lpe kbl_lpe"
+USE="${USE} drm_atomic"
+
+# Identify the vendor
+USE="${USE} intel_cpu"
+
+# Enable GpuMemoryBuffers backed by dma-bufs.
+USE="${USE} native_gpu_memory_buffers"
+
+USE="${USE} vulkan"
+
+USE="${USE} android_aep"
+
+# Use legacy pre-Groot UI for initramfs and init script screens.
+USE="${USE} legacy_firmware_ui"
+
+# Enable iHD media driver for KBL
+USE="${USE} -video_cards_i965 video_cards_iHD video_cards_iHD_g9"
+
+# Allows Chrome to start in the presence of multiple threads.
+USE="${USE} gpu_sandbox_start_early"
+
+# Enable ARCVM direct VAAPI decoding
+USE="${USE} crosvm-video-vaapi"
+
+# Change the default ARCVM decoder to libvda-vd instead of libvda.
+USE="${USE} crosvm-virtio-video-vd"

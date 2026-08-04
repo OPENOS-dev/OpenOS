@@ -1,0 +1,5 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+SUBSYSTEM=="pci", DRIVERS=="r8169", ACTION=="bind", RUN+="/usr/sbin/r8169_aspm_quirk.sh '%E{DEVPATH}'"

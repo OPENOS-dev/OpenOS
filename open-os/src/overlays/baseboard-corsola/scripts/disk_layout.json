@@ -1,0 +1,36 @@
+# Disk layout for baseboard-corsola. Adds space to rootfs filesystem without
+# resizing the partitions.
+{
+  "_comment": "See http://www.chromium.org/chromium-os/developer-guide/disk-layout-format",
+  "metadata":{
+    "rootdev_base": "/sys/devices/platform/soc/11230000.mmc/mmc_host/mmc*/mmc*:*/block/mmcblk*"
+  },
+  "parent": "disk_layout_v3.json",
+  "layouts": {
+    "factory_install": [
+      {
+        "num": 3,
+        "size": "700 MiB",
+        "fs_size": "680 MiB"
+      },
+      {
+        # Kernel for Slot B. Identical to kernel A except for signing.
+        "num": 4,
+        "size": "32 MiB"
+      }
+    ],
+    "recovery": [
+      {
+        # Kernel for Slot C. Identical to kernel A except for signing.
+        "num": 6,
+        "size": "200 MiB"
+      },
+      {
+        # Kernel for Slot A. Reduced to 200M (from the default of 512M) so that
+        # recovery images will still be under 4G after adding KERN-C.
+        "num": 2,
+        "size": "200 MiB"
+      }
+    ]
+  }
+}

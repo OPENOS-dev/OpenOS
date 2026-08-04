@@ -1,0 +1,1 @@
+autotest-capability-chipset-mt8189-1.0.1.ebuild

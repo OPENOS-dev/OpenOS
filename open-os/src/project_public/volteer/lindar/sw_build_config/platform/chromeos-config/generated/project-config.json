@@ -1,0 +1,1166 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lindar",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lindar",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/HiFi.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/sof-rt5682.lindar.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/sof-rt5682.lindar.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/sof-rt5682",
+                "source": "lindar/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lindar/dsp.ini",
+                "source": "lindar/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/board.ini",
+                "source": "lindar/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lindar"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 458753
+        },
+        "name": "lindar",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lindar"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lindar/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lindar/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lindar/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lindar",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lindar",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/HiFi.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/sof-rt5682.lindar.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/sof-rt5682.lindar.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/sof-rt5682",
+                "source": "lindar/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lindar/dsp.ini",
+                "source": "lindar/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/board.ini",
+                "source": "lindar/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lindar"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 458754
+        },
+        "name": "lindar",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lindar"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lindar/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lindar/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lindar/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lindar",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lindar",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/HiFi.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/sof-rt5682.lindar.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/sof-rt5682.lindar.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/sof-rt5682",
+                "source": "lindar/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lindar/dsp.ini",
+                "source": "lindar/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/board.ini",
+                "source": "lindar/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lindar"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 458755
+        },
+        "name": "lindar",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lindar"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lindar/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lindar/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lindar/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lindar",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lindar",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/HiFi.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/sof-rt5682.lindar.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/sof-rt5682.lindar.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/sof-rt5682",
+                "source": "lindar/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lindar/dsp.ini",
+                "source": "lindar/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/board.ini",
+                "source": "lindar/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lindar"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 458756
+        },
+        "name": "lindar",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lindar"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lindar/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lindar/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lindar/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lindar",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lindar",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/HiFi.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lindar/sof-rt5682.lindar.conf",
+                "source": "lindar/audio/ucm-config/sof-rt5682.lindar/sof-rt5682.lindar.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/sof-rt5682",
+                "source": "lindar/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lindar/dsp.ini",
+                "source": "lindar/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lindar/board.ini",
+                "source": "lindar/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lindar"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 2147483647
+        },
+        "name": "lindar",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lindar"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lindar/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lindar/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lindar/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524289
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524290
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524291
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524292
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524293
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524294
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1",
+          "turn-off-screen-timeout-ms": "0"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "lillipup",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "lindar/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "lillipup",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/HiFi.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.lillipup/sof-rt5682.lillipup.conf",
+                "source": "lillipup/audio/ucm-config/sof-rt5682.lillipup/sof-rt5682.lillipup.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/sof-rt5682",
+                "source": "lillipup/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/lillipup/dsp.ini",
+                "source": "lillipup/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/lillipup/board.ini",
+                "source": "lillipup/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "lillipup"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "lindar"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Lindar",
+          "platform-name": "Volteer",
+          "sku-id": 524295
+        },
+        "name": "lillipup",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1",
+          "turn-off-screen-timeout-ms": "0"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "lillipup"
+        },
+        "thermal": {
+          "dptf-dv": "lindar/lillipup/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/lindar/lillipup/dptf.dv",
+              "source": "lindar/sw_build_config/platform/chromeos-config/thermal/lillipup/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

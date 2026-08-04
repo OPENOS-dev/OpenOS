@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=MT8188 SOF firmware binary
+EAPI=7
+KEYWORDS=*
+LICENSE=SOF
+RDEPEND=media-libs/mt8188g-max98390-dsm-param-geralt media-libs/mt8188g-tas2563-dsm-param-ciri
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/sof-binary-mt8188-0.2.0.tar.gz
+_md5_=576e4a8b07b04fe081c8c1d915fdb22c

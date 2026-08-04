@@ -1,0 +1,58 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHROMEOS_DTB_CONFIG="mediatek/mt8189-skywalker.yaml"
+
+# Initial values just for style purposes.
+USE=""
+LINUX_FIRMWARE=""
+
+# Add EC logging
+USE="${USE} eclog"
+
+# Tell powerd to use elogtool to log system events.
+USE="${USE} powerd_manual_eventlog_add"
+
+# Enable Chrome's tablet mode
+USE="${USE} touchview"
+
+# Enable for daisydog
+USE="${USE} watchdog"
+
+# Enable coreboot-files-board ebuild
+USE="${USE} coreboot-files-board"
+
+# Google USBPD peripheral firmwares
+LINUX_FIRMWARE="${LINUX_FIRMWARE} cros-pd"
+
+# MT7922 WiFi firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7922"
+
+# MT7922 USB BT firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7922-bt"
+
+# Enable miniOS support
+USE="${USE} minios"
+
+# Set mosys_platform
+USE="${USE} mosys_platform_arm"
+
+# Enable eMMC/UFS utility
+USE="${USE} mmc ufs"
+
+# Enable Type-C daemon
+USE="${USE} typecd"
+
+# Use Vulkan for raster/composite in Chrome
+USE="${USE} vulkan_chrome"
+
+# Declare TPM model.
+USE="${USE} -tpm tpm2"
+USE="${USE} ti50_onboard"
+
+# Enable default-key-stateful layout.
+USE="${USE} default_key_stateful"
+
+# Enable device tree overlay.
+USE="${USE} device_tree_overlay"

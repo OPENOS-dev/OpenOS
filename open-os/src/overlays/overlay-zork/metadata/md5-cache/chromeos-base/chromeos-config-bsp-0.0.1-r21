@@ -1,0 +1,13 @@
+BDEPEND=chromeos-base/chromeos-config-host:= app-arch/zip dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install setup unpack
+DESCRIPTION=Chrome OS Model configuration package for zork
+EAPI=7
+HOMEPAGE=https://www.chromium.org/chromium-os
+IUSE=cros_host cros_workon_tree_80c6bd27db69fabf21234cd1b520ff651ed47d52_c3f03c2e4b1bfa19b920711209b062bb584293d7_3a97f66c0d64d7037efac6a95d6e8fbf8898e71a_d3edb0c64451da5ec6c5ea47c6d8bd824be1272d_46a8f64189a187c68865a83855b0c20dee47dfcc_20b6cfb670b75dd3e75965613512127dfb6a2362_58d99c20a1e5b4a16717b8cf5587ccf28285f1f1_54ff3c23f3a88f9a6c07ea96f7519026d82885e6
+KEYWORDS=* amd64 x86
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=!chromeos-base/chromeos-config-bsp-zork
+SLOT=0/0.0.1-r21
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-unibuild	20e99cb053588c1793c4de8687bfba83	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=3bf4cf80caa6098ea781452685b3af1c

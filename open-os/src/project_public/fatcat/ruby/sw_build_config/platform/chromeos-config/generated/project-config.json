@@ -1,0 +1,1014 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 2147483647
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4096
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4097
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4098
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4099
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4100
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4101
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4102
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4103
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4104
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4105
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4106
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4107
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4108
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4109
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4110
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4111
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "fatcat_cheets",
+            "marketing-name": "",
+            "metrics-tag": "ruby",
+            "product": "fatcat"
+          },
+          "hardware-features": {
+            "build-path": "ruby/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-fatcat-private",
+          "build-targets": {
+            "ish": "ruby-ish",
+            "zephyr-ec": "ruby"
+          },
+          "firmware-config": 0,
+          "has-alt-firmware": true,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Ruby",
+          "platform-name": "Fatcat",
+          "sku-id": 4112
+        },
+        "name": "ruby",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "fatcat",
+          "project": "ruby"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'fatcat_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

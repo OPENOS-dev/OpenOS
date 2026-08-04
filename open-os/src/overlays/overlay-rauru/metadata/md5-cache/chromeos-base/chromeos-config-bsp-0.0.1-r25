@@ -1,0 +1,13 @@
+BDEPEND=chromeos-base/chromeos-config-host:= app-arch/zip dev-vcs/git app-misc/jq
+DEFINED_PHASES=compile info install setup unpack
+DESCRIPTION=Chrome OS Model configuration package for rauru
+EAPI=7
+HOMEPAGE=https://www.chromium.org/chromium-os
+IUSE=cros_host cros_workon_tree_b7f7e9b0796b97555e7c36f5c1f2fa894eaebd97_445f505d8418320ffe9704867cc84c0cad2a8a6b_44c582ac855d949b0a123de0cd6273dc54ec9734
+KEYWORDS=*
+LICENSE=BSD-Google
+PROPERTIES=live
+RDEPEND=!chromeos-base/chromeos-config-bsp-rauru
+SLOT=0/0.0.1-r25
+_eclasses_=cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-unibuild	20e99cb053588c1793c4de8687bfba83	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	git-2	d6a1d7d3b4c4fff2fba86e3f53beeb0f	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=218039ec1e8ad6a05129175f3d14d4f6

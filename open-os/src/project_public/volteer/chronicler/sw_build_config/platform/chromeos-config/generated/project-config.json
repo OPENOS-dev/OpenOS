@@ -1,0 +1,506 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "chronicler",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "chronicler/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "chronicler",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/HiFi.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/sof-rt5682.chronicler.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/sof-rt5682.chronicler.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/sof-rt5682",
+                "source": "chronicler/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/chronicler/dsp.ini",
+                "source": "chronicler/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/board.ini",
+                "source": "chronicler/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "chronicler"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "chronicler"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Chronicler",
+          "platform-name": "Volteer",
+          "sku-id": 2147483647
+        },
+        "name": "chronicler",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "55.0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "chronicler"
+        },
+        "thermal": {
+          "dptf-dv": "chronicler/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/chronicler/dptf.dv",
+              "source": "chronicler/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "chronicler",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "chronicler/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "chronicler",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/HiFi.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/sof-rt5682.chronicler.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/sof-rt5682.chronicler.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/sof-rt5682",
+                "source": "chronicler/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/chronicler/dsp.ini",
+                "source": "chronicler/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/board.ini",
+                "source": "chronicler/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "chronicler"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "chronicler"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Chronicler",
+          "platform-name": "Volteer",
+          "sku-id": 1114113
+        },
+        "name": "chronicler",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "55.0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "chronicler"
+        },
+        "thermal": {
+          "dptf-dv": "chronicler/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/chronicler/dptf.dv",
+              "source": "chronicler/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "chronicler",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "chronicler/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "chronicler",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/HiFi.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/sof-rt5682.chronicler.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/sof-rt5682.chronicler.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/sof-rt5682",
+                "source": "chronicler/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/chronicler/dsp.ini",
+                "source": "chronicler/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/board.ini",
+                "source": "chronicler/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "chronicler"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "chronicler"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Chronicler",
+          "platform-name": "Volteer",
+          "sku-id": 1114114
+        },
+        "name": "chronicler",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "55.0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "chronicler"
+        },
+        "thermal": {
+          "dptf-dv": "chronicler/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/chronicler/dptf.dv",
+              "source": "chronicler/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "chronicler",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "chronicler/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "chronicler",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/HiFi.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/sof-rt5682.chronicler.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/sof-rt5682.chronicler.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/sof-rt5682",
+                "source": "chronicler/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/chronicler/dsp.ini",
+                "source": "chronicler/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/board.ini",
+                "source": "chronicler/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "chronicler"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "chronicler"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Chronicler",
+          "platform-name": "Volteer",
+          "sku-id": 1114115
+        },
+        "name": "chronicler",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "55.0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "chronicler"
+        },
+        "thermal": {
+          "dptf-dv": "chronicler/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/chronicler/dptf.dv",
+              "source": "chronicler/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "chronicler",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "chronicler/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "chronicler",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/HiFi.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.chronicler/sof-rt5682.chronicler.conf",
+                "source": "chronicler/audio/ucm-config/sof-rt5682.chronicler/sof-rt5682.chronicler.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/sof-rt5682",
+                "source": "chronicler/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/chronicler/dsp.ini",
+                "source": "chronicler/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/chronicler/board.ini",
+                "source": "chronicler/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "chronicler"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "chronicler"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Chronicler",
+          "platform-name": "Volteer",
+          "sku-id": 1114116
+        },
+        "name": "chronicler",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "55.0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "chronicler"
+        },
+        "thermal": {
+          "dptf-dv": "chronicler/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/chronicler/dptf.dv",
+              "source": "chronicler/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

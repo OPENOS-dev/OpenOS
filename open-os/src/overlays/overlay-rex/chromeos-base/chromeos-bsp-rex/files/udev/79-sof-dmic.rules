@@ -1,0 +1,1 @@
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x7e28", ATTR{class}=="0x040100", PROGRAM=="/usr/bin/cros_config /audio/main ucm-suffix", RESULT=="rex.2ch", RUN+="/sbin/modprobe snd_sof_pci tplg_path=intel/sof-ace-tplg/pdm1"

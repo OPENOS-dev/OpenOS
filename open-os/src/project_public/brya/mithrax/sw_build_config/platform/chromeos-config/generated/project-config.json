@@ -1,0 +1,489 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 1114112
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 1114113
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 1114114
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 1114115
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 1114116
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "mithrax",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "mithrax/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "mithrax"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Mithrax",
+          "platform-name": "Brya",
+          "sku-id": 1114117
+        },
+        "name": "mithrax",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "42.5 400\n33.95 500\n50.5\n",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "5760",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "mithrax"
+        },
+        "thermal": {
+          "dptf-dv": "mithrax/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/mithrax/dptf.dv",
+              "source": "mithrax/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

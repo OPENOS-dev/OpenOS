@@ -1,0 +1,5 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# Don't enable runtime PM for FM350 (b/266047267)
+SUBSYSTEM=="pci", DRIVER=="mtk_t7xx", ATTR{power/control}="on"

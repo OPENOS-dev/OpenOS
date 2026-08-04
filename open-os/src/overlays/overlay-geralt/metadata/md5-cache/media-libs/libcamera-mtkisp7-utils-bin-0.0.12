@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Libcamera mtkcam shared libraries for mtkisp7
+EAPI=7
+KEYWORDS=-* arm64
+LICENSE=LICENCE.mediatek
+RDEPEND=!media-libs/libcamera-mtkcam !media-libs/mtk-isp7-utils
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/libcamera-mtkisp7-utils-bin-0.0.12.tar.bz2
+_md5_=17c79a40a88d556685006ef158f6eb31

@@ -1,0 +1,53 @@
+{
+  "_comment": "See http://www.chromium.org/chromium-os/building-chromium-os/disk-layout-format",
+  "metadata":{
+    "rootdev_base": "/sys/devices/pci0000:00/0000:00:17.0/ata*/host*/target*/*/block/sd* /sys/devices/pci0000:00/0000:00:1c.*/0000:*:00.0/nvme/nvme*/nvme*n1 /sys/devices/pci0000:00/0000:00:1a.0/mmc_host/mmc*/mmc*:000*/block/mmcblk*"
+  },
+  "parent": "disk_layout_v2.json",
+  "layouts": {
+    # base is the fixed device layout template.
+    "base": [
+      {
+        # User data, fills all remaining space on drive.
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ],
+    "usb": [
+      {
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ],
+    "usb-updatable": [
+      {
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ],
+    "recovery": [
+      {
+        # Kernel for Slot C. Identical to kernel A except for signing.
+        "num": 6,
+        "size": "200 MiB"
+      },
+      {
+        # Kernel for Slot A. Reduced to 200M (from the default of 512M) so that
+        # recovery images will still be under 4G after adding KERN-C.
+        "num": 2,
+        "size": "200 MiB"
+      }
+    ],
+    "factory_install": [
+      {
+        # Kernel for Slot B. Identical to kernel A except for signing.
+        "num": 4,
+        "size": "32 MiB"
+      },
+      {
+        "num": 1,
+        "size": "256 MiB"
+      }
+    ]
+  }
+}

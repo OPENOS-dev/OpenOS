@@ -1,0 +1,20 @@
+Name: symbols module from Chromium
+URL: This is the canonical public repository
+Version: N/A
+Date: 2014-02-24
+Update Mechanism: Static (https://crbug.com/422924074)
+License: BSD-3-Clause
+License File: //LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+    https://chromium.googlesource.com/chromium/src.git
+    Add fast ELF Symbolizer to memory_inspector.
+
+    This CL introduces a multiprocess, pipelined and asynchronous ELF
+    symbolizer (based on addr2line) which gives honor to a bulkly workstation
+    when symbolizing large batches of symbols.
+
+Local Modifications:
+None

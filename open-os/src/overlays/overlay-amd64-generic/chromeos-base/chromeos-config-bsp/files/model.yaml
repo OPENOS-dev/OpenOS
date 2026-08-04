@@ -1,0 +1,17 @@
+# Copyright 2021 The ChromiumOS Authors
+# Modified by Open-OS Project (2026-07-04)
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+base-config: &base_config
+  # Open-OS brand code
+  brand-code: OOOS
+  identity:
+    platform-name: OpenOS-Generic
+    oem-name: Open-OS
+  name: openos-amd64
+
+chromeos:
+  devices:
+    - skus:
+        - config: *base_config

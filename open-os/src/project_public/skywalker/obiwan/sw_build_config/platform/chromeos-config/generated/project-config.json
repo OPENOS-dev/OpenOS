@@ -1,0 +1,2391 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 2147483647
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131072
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131073
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131074
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131075
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131076
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131077
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131078
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131079
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "obiwan",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 131080
+        },
+        "name": "obiwan",
+        "pvs": {
+          "program": "skywalker",
+          "project": "obiwan"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196608
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196609
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196610
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196611
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196612
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196613
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196614
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196615
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196616
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196617
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196618
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196619
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196620
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196621
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196622
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196623
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196624
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196625
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196626
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196627
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196628
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196629
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196630
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196631
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196632
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196633
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196634
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196635
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196636
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196637
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196638
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196639
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196640
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196641
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "quigon",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "obiwan/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "obiwan",
+            "depthcharge": "obiwan",
+            "libpayload": "skywalker",
+            "zephyr-ec": "obiwan"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Obiwan",
+          "platform-name": "Skywalker",
+          "sku-id": 196642
+        },
+        "name": "quigon",
+        "pvs": {
+          "program": "skywalker",
+          "project": "quigon"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

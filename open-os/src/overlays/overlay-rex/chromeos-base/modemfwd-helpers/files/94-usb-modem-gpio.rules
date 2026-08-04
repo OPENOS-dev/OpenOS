@@ -1,0 +1,10 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# M.2 modem card GPIO pins:
+# 1. RESET# through signal labeled WWAN_RTS_L has GPIO offset 111
+# 2. FCPO# through signal labeled WWAN_FCPO_L has GPIO offset 135
+ACTION=="add", DEVPATH=="*/INTC1083:00/gpiochip*/gpio/*", \
+    RUN+="/lib/udev/chown-usb-modem-gpio.sh \"$sys/$devpath\" \
+    \"INTC1083:00\" 111 135"

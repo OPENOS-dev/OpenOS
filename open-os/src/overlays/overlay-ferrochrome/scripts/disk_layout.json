@@ -1,0 +1,19 @@
+{
+  "_comment": "See http://www.chromium.org/chromium-os/developer-guide/disk-layout-format",
+  "parent": "../../overlay-arm64-generic/scripts/disk_layout.json",
+  "layouts": {
+    "common": [
+      {
+        # Decrease rootfs (/dev/vda3, a.k.a. ROOT-A) partition size from 2GB to 1.5GB
+        "num": 3,
+        "size": "1536 MiB",
+        "fs_size": "1300 MiB"
+      },
+      {
+        # Increase stateful partition (/dev/vda1) from 4GB to 6GB
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ]
+  }
+}

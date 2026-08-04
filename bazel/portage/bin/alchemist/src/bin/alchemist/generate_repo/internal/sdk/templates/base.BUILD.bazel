@@ -1,0 +1,53 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@//bazel/portage/build_defs:build_sdk.bzl", "build_sdk")
+load("@//bazel/portage/build_defs:sdk_to_archive.bzl", "sdk_to_archive")
+load("@//bazel/portage/build_defs:sdk.bzl", "sdk_install_deps", "sdk_update")
+
+sdk_install_deps(
+    name = "packages",
+    out = "packages",
+    base = "{{ sdk }}",
+    board = "amd64-host", # TODO: Pass in as a parameter.
+    overlays = "{{ overlay_set }}",
+    portage_config = [
+        "//internal/portage-config/host:lite",
+        "//internal/portage-config/target/host",
+    ],
+    target_deps = [
+        {%- for target in targets %}
+        "{{ target }}",
+        {%- endfor %}
+    ],
+    visibility = ["//visibility:private"],
+)
+
+build_sdk(
+    name = "base",
+    board = "amd64-host", # TODO: Pass in as a parameter.
+    overlays = "{{ overlay_set }}",
+    portage_config = [
+        "//internal/portage-config/host:lite",
+        "//internal/portage-config/target/host",
+    ],
+    sdk = ":packages",
+    visibility = ["//visibility:private"],
+)
+
+sdk_to_archive(
+    name = "tarball",
+    sdk = ":base",
+)
+
+# This is required so we can monkey patch portage.
+sdk_update(
+    name = "{{ name }}",
+    base = ":base",
+    extra_tarballs = [
+        "@//bazel/portage/sdk:extra_tarball",
+    ],
+    progress_message = "Patching %{label}",
+    visibility = ["//:__subpackages__"],
+)

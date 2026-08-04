@@ -1,0 +1,1 @@
+Jedi is a reference board for MT8189. This is an overlay for Jedi boards.

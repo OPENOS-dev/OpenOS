@@ -1,0 +1,82 @@
+{
+  "DefaultSearchProviderEnabled": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": true
+  },
+  "DefaultSearchProviderName": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "Bing"
+  },
+  "DefaultSearchProviderKeyword": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "bing.com"
+  },
+  "DefaultSearchProviderSearchURL": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "https://www.bing.com/search?q={searchTerms}"
+  },
+  "DefaultSearchProviderSuggestURL": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "https://www.bing.com/osjson.aspx?query={searchTerms}"
+  },
+  "DefaultSearchProviderNewTabURL": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "https://www.bing.com/chrome/newtab"
+  },
+  "DefaultSearchProviderImageURL": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "https://www.bing.com/images/search?q={searchTerms}"
+  },
+  "DefaultSearchProviderFaviconURL": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "https://www.bing.com/favicon.ico"
+  },
+  "DefaultSearchProviderEncodings": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": ["UTF-8"]
+  },
+  "HomepageLocation": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": "https://openos.org"
+  },
+  "HomepageIsNewTabPage": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": false
+  },
+  "RestoreOnStartup": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": 4
+  },
+  "RestoreOnStartupURLs": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": ["https://openos.org/welcome"]
+  },
+  "MetricsReportingEnabled": {
+    "level": "mandatory",
+    "scope": "machine",
+    "value": false
+  },
+  "SafeBrowsingEnabled": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": false
+  },
+  "PasswordManagerEnabled": {
+    "level": "recommended",
+    "scope": "machine",
+    "value": true
+  }
+}

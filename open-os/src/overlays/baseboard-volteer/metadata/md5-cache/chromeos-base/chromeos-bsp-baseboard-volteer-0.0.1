@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=nnapi? ( vendor-nnhal? ( chromeos-base/intel-nnhal:= ) )
+DESCRIPTION=Ebuild which pulls in any necessary ebuilds as dependencies or portage actions.
+EAPI=7
+IUSE=cheets nnapi vendor-nnhal
+KEYWORDS=-* amd64 x86
+LICENSE=BSD-Google
+RDEPEND=nnapi? ( vendor-nnhal? ( chromeos-base/intel-nnhal:= ) )
+SLOT=0
+_md5_=aa590ba8ef200a041980172400c752d9

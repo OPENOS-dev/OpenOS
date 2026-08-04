@@ -1,0 +1,1 @@
+DEVPATH=="/devices/pci0000:00/0000:00:1c.0/0000:01:00.0" ACTION=="bind", RUN+="/usr/sbin/puff_aspm.sh"

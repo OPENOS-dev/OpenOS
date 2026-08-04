@@ -1,0 +1,13 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install preinst
+DEPEND=sys-apps/baselayout
+DESCRIPTION=Chrome OS Modem Update Helpers (zork)
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=sys-apps/baselayout
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.05.27.12_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.05.27.16_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-OEM_cust.6003.02.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-zork-carriers_OEM_6003-r10.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-nl668-19006.1000.00.02.79.62-1.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-nl668-A04.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-nl668-OEM_cust.6002.01.tar.xz
+_eclasses_=cros-cellular	0592aa121e4f337f6ff1d3a082ada228	estack	686eaab303305a908fd57b2fd7617800	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=309f69bcf36b5fe1df2127f29be440f4

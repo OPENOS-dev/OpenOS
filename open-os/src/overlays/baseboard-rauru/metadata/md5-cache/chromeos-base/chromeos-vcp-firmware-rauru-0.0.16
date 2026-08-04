@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=ChromeOS VCP firmware payload for Rauru.
+EAPI=7
+KEYWORDS=-* arm arm64
+LICENSE=BSD-Google
+RESTRICT=strip
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/chromeos-vcp-firmware-rauru-0.0.16.tbz2
+_md5_=94c6858d11fce741ece69f3759a31b8e

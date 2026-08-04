@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install preinst
+DEPEND=internal? ( chromeos-base/fibocom-firmware ) sys-apps/baselayout
+DESCRIPTION=Chrome OS Modem Update Helpers (octopus)
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+IUSE=internal
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=internal? ( chromeos-base/fibocom-firmware ) sys-apps/baselayout
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.02.24.09_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.03.25.18_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.04.26.06_6000.05_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.04.26.06_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.05.27.12_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-18500.5001.00.07.29.08_Secureboot.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-OEM_cust.6000.03.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-OEM_cust.6000.05.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-OEM_cust.6005.13.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-octopus-carriers_OEM_6000-r24.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-l850-octopus-carriers_OEM_6005-r16.tar.xz
+_eclasses_=cros-cellular	0592aa121e4f337f6ff1d3a082ada228	estack	686eaab303305a908fd57b2fd7617800	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=7d899584b4dd03d26233df611020db22

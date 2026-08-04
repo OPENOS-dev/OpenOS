@@ -1,0 +1,508 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "delbin",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "delbin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "delbin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373/HiFi.conf",
+                "source": "ucm-config/sof-rt5682.max98373/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373/sof-rt5682.max98373.conf",
+                "source": "ucm-config/sof-rt5682.max98373/sof-rt5682.max98373.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              }
+            ],
+            "ucm-suffix": "max98373"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "delbin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Delbin",
+          "platform-name": "Volteer",
+          "sku-id": 2147483647
+        },
+        "name": "delbin",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "delbin"
+        },
+        "thermal": {
+          "dptf-dv": "delbin/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/delbin/dptf.dv",
+              "source": "delbin/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "delbin",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "delbin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "delbin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.delbin/HiFi.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.delbin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.delbin/sof-rt5682.max98373.delbin.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.delbin/sof-rt5682.max98373.delbin.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/sof-rt5682",
+                "source": "delbin/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/delbin/dsp.ini",
+                "source": "delbin/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/board.ini",
+                "source": "delbin/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/delbin.yaml",
+                "source": "delbin/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "delbin.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.delbin"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "delbin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Delbin",
+          "platform-name": "Volteer",
+          "sku-id": 65540
+        },
+        "name": "delbin",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "delbin"
+        },
+        "thermal": {
+          "dptf-dv": "delbin/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/delbin/dptf.dv",
+              "source": "delbin/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "delbin",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "delbin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "delbin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.rt5682vs.delbin/HiFi.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.rt5682vs.delbin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.rt5682vs.delbin/sof-rt5682.max98373.rt5682vs.delbin.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.rt5682vs.delbin/sof-rt5682.max98373.rt5682vs.delbin.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/sof-rt5682",
+                "source": "delbin/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/delbin/dsp.ini",
+                "source": "delbin/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/board.ini",
+                "source": "delbin/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/delbin.yaml",
+                "source": "delbin/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "delbin.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.rt5682vs.delbin"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "delbin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Delbin",
+          "platform-name": "Volteer",
+          "sku-id": 65541
+        },
+        "name": "delbin",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "delbin"
+        },
+        "thermal": {
+          "dptf-dv": "delbin/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/delbin/dptf.dv",
+              "source": "delbin/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "delbin",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "delbin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "delbin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.delbin/HiFi.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.delbin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.delbin/sof-rt5682.max98373.delbin.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.delbin/sof-rt5682.max98373.delbin.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/sof-rt5682",
+                "source": "delbin/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/delbin/dsp.ini",
+                "source": "delbin/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/board.ini",
+                "source": "delbin/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/delbin.yaml",
+                "source": "delbin/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "delbin.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.delbin"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "delbin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Delbin",
+          "platform-name": "Volteer",
+          "sku-id": 65542
+        },
+        "name": "delbin",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "delbin"
+        },
+        "thermal": {
+          "dptf-dv": "delbin/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/delbin/dptf.dv",
+              "source": "delbin/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "delbin",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "delbin/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "delbin",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.delbin/HiFi.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.delbin/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.delbin/sof-rt5682.max98373.delbin.conf",
+                "source": "delbin/audio/ucm-config/sof-rt5682.max98373.delbin/sof-rt5682.max98373.delbin.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/sof-rt5682",
+                "source": "delbin/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/delbin/dsp.ini",
+                "source": "delbin/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/delbin/board.ini",
+                "source": "delbin/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/delbin.yaml",
+                "source": "delbin/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "delbin.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.delbin"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "delbin"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Delbin",
+          "platform-name": "Volteer",
+          "sku-id": 65543
+        },
+        "name": "delbin",
+        "power": {
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "54.50",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "delbin"
+        },
+        "thermal": {
+          "dptf-dv": "delbin/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/delbin/dptf.dv",
+              "source": "delbin/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

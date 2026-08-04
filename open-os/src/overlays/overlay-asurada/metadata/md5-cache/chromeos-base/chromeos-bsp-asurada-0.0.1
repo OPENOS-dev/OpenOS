@@ -1,0 +1,12 @@
+BDEPEND=chromeos-base/chromeos-config-host:= app-arch/zip virtual/pkgconfig
+DEFINED_PHASES=install
+DEPEND=chromeos-base/chromeos-config chromeos-base/chromeos-bsp-baseboard-asurada has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+DESCRIPTION=Ebuild which pulls in any necessary ebuilds as dependencies or portage actions.
+EAPI=7
+IUSE=zephyr_ec asurada-connectivitynext asurada-kernelnext asurada64 kernel-5_4 has_chromeos_config_bsp has_chromeos_config_bsp_private has_chromeos_config_bsp_baseboard has_chromeos_config_bsp_baseboard_private unibuild
+KEYWORDS=-* arm64 arm
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-config chromeos-base/chromeos-bsp-baseboard-asurada has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+SLOT=0
+_eclasses_=appid	7246d2a9f30b76802a858973725910c7	cros-unibuild	20e99cb053588c1793c4de8687bfba83	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=fbed48fdd674c961881317932ad3918d

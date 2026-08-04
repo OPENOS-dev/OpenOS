@@ -1,0 +1,545 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 65569
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 65570
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 65585
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 65586
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 65601
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 65602
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "gimble",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "gimble/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "gimble"
+          },
+          "firmware-config": 0,
+          "has-splash-screen": true
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Gimble",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "gimble",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "internal-backlight-no-als-battery-brightness": "59",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-proximity": "0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "gimble"
+        },
+        "thermal": {
+          "dptf-dv": "gimble/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/gimble/dptf.dv",
+              "source": "gimble/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

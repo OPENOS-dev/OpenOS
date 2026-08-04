@@ -1,0 +1,45 @@
+# Initial value just for style purposes.
+USE=""
+LINUX_FIRMWARE=""
+
+LINUX_FIRMWARE="${LINUX_FIRMWARE} -iwlwifi-all -keyspan_usb -rt2870 -rtl8153"
+
+# Bluetooth Floss BT stack
+USE="${USE} -floss"
+
+# Remove Crostini client, vm host tools & termina DLCs
+USE="${USE} -kvm_host"
+
+# USE flag to trigger Ferrochome related tweaks
+USE="${USE} ferrochrome"
+
+# Remove ondevice_handwriting
+USE="${USE} -ondevice_handwriting"
+
+# Remove unnecessary n/w stuff
+USE="${USE} -vpn"
+
+# Disable modem interface switching tool
+USE="${USE} -mist"
+
+# Disable Private Computing daemon.
+USE="${USE} -private_computing"
+
+# Disable rootfs Lacros.
+USE="${USE} -lacros_rootfs"
+
+# Disable non-essential networking services.
+USE="${USE} -attestation -cellular"
+
+# Disable filesystem extensions.
+USE="${USE} -drivefs -fusebox -samba -smbprovider"
+
+# Disable RGB Keyboard daemon.
+USE="${USE} -rgbkbd"
+
+# Disable ARC++ -- Android exists outside of Ferrochrome.
+USE="${USE} -arc"
+
+TTY_CONSOLE="hvc0 ttyS0 -ttyAMA0"
+
+EXTRA_GN_ARGS="arm_control_flow_integrity=\"none\""

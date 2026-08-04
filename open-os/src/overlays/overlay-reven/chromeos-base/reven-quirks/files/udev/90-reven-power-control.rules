@@ -1,0 +1,21 @@
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# These SD card readers create interrupts during the driver "suspend" phase
+# after sleep is triggered. This increases wake count, which prevents
+# ChromeOS devices from sleeping. Turn off runtime power management to
+# prevent these interrupts from occurring. b/456516813
+ACTION=="change", \
+    SUBSYSTEMS=="pci", \
+    ATTR{vendor}=="0x10ec", \
+    ATTR{device}=="0x522a", \
+    TEST=="power/control", \
+    ATTR{power/control}="on"
+
+ACTION=="change", \
+    SUBSYSTEMS=="pci", \
+    ATTR{vendor}=="0x10ec", \
+    ATTR{device}=="0x525a", \
+    TEST=="power/control", \
+    ATTR{power/control}="on"

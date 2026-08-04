@@ -1,0 +1,1293 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.rt1015.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.rt1015.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655360
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.rt1015.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655361
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.rt1015.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655362
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.rt1015.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655363
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.rt1015p.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655364
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.rt1015p.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655365
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.rt1015p.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655366
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.rt1015p.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655367
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.rt5682vs.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655368
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.rt5682vs.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655369
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.rt5682vs.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655370
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "metaknight",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "metaknight/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "metaknight",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight.conf",
+                "source": "metaknight/audio/ucm-config/sof-rt5682.rt1015p.rt5682vs.2mic.metaknight/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/sof-rt5682",
+                "source": "metaknight/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/metaknight/dsp.ini",
+                "source": "metaknight/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/metaknight/board.ini",
+                "source": "metaknight/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.rt5682vs.2mic.metaknight"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "metaknight"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Metaknight",
+          "platform-name": "Dedede",
+          "sku-id": 655371
+        },
+        "name": "metaknight",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-no-als-battery-brightness": "52.5",
+          "low-battery-shutdown-percent": "4.0",
+          "min-visible-backlight-level": "4800",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "metaknight"
+        },
+        "thermal": {
+          "dptf-dv": "metaknight/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/metaknight/dptf.dv",
+              "source": "metaknight/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

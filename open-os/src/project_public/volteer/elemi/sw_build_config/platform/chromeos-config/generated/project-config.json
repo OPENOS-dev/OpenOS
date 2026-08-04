@@ -1,0 +1,4122 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 2147483647
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720897
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720898
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720899
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720900
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720901
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720902
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720912
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720913
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720914
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720915
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720916
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720917
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720918
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720919
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720928
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720929
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720930
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720931
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720932
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720933
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720934
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720935
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720944
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720945
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720946
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720947
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720948
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720949
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720950
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720951
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720952
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720953
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720960
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720961
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720962
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720963
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720964
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720965
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720966
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720967
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "elemi",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "elemi/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "elemi",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/HiFi.conf",
+                "source": "ucm-config/sof-rt5682/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682/sof-rt5682.conf",
+                "source": "ucm-config/sof-rt5682/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/sof-rt5682",
+                "source": "elemi/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/elemi/dsp.ini",
+                "source": "elemi/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/elemi/board.ini",
+                "source": "elemi/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "elemi"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Elemi",
+          "platform-name": "Volteer",
+          "sku-id": 720968
+        },
+        "name": "elemi",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "disable-dark-resume": "0",
+          "has-ambient-light-sensor": "0",
+          "has-keyboard-backlight": "0",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "elemi"
+        },
+        "thermal": {
+          "dptf-dv": "elemi/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/elemi/dptf.dv",
+              "source": "elemi/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

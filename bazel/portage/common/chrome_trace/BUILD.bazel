@@ -1,0 +1,36 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+rust_library(
+    name = "chrome_trace",
+    srcs = glob(["src/*.rs"]),
+    crate_name = "chrome_trace",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["//bazel/portage:__subpackages__"],
+    deps = [
+        "@alchemy_crates//:serde",
+        "@alchemy_crates//:serde_json",
+    ],
+)
+
+rust_test(
+    name = "chrome_trace_test",
+    size = "small",
+    crate = ":chrome_trace",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "@alchemy_crates//:lazy_static",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":chrome_trace",
+    enabled = False,
+    tests = [":chrome_trace_test"],
+)

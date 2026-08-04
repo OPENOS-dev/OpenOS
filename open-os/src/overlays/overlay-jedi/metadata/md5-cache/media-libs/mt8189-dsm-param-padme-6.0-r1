@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=MT8189 CS35L51G DSM firmware and tuning files
+EAPI=7
+KEYWORDS=-* arm64 arm
+LICENSE=LICENSE.dsm
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/dsm-param-padme-6.0.tar.xz
+_md5_=1f5338f20b7c66bed20d0ac4b833850a

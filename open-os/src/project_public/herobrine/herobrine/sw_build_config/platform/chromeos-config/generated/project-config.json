@@ -1,0 +1,130 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "herobrine_cheets",
+            "marketing-name": "",
+            "metrics-tag": "herobrine",
+            "product": "herobrine"
+          },
+          "hardware-features": {
+            "build-path": "herobrine/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_herobrine.xml",
+            "system-path": "/etc/hardware_features_herobrine.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "herobrine",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-herobrine-private",
+          "build-targets": {
+            "bmpblk": "herobrine",
+            "coreboot": "herobrine",
+            "depthcharge": "herobrine",
+            "ec_extras": [
+              "dartmonkey"
+            ],
+            "libpayload": "herobrine",
+            "zephyr-ec": "herobrine"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Herobrine",
+          "platform-name": "Herobrine",
+          "sku-id": 0
+        },
+        "name": "herobrine",
+        "pvs": {
+          "program": "herobrine",
+          "project": "herobrine"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'herobrine_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "herobrine_cheets",
+            "marketing-name": "",
+            "metrics-tag": "herobrine",
+            "product": "herobrine"
+          },
+          "hardware-features": {
+            "build-path": "herobrine/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_herobrine.xml",
+            "system-path": "/etc/hardware_features_herobrine.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "herobrine",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-herobrine-private",
+          "build-targets": {
+            "bmpblk": "herobrine",
+            "coreboot": "herobrine",
+            "depthcharge": "herobrine",
+            "ec_extras": [
+              "dartmonkey"
+            ],
+            "libpayload": "herobrine",
+            "zephyr-ec": "herobrine"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Herobrine",
+          "platform-name": "Herobrine",
+          "sku-id": 512
+        },
+        "name": "herobrine",
+        "pvs": {
+          "program": "herobrine",
+          "project": "herobrine"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'herobrine_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

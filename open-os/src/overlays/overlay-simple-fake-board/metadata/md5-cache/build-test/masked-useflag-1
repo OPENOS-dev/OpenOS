@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=Masked Package
+EAPI=7
+HOMEPAGE=http://www.chromium.org
+IUSE=masked_useflag
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND==build-test/base-pkg-1[masked_useflag]
+SLOT=masked-useflag/0
+_md5_=e843fa5711aec9a6465131db7e5cc56e

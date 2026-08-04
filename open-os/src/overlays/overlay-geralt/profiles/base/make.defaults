@@ -1,0 +1,53 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} geralt"
+
+# Enable the AP firmware build
+USE="${USE} bootimage"
+
+# Enable EC firmware
+USE="${USE} zephyr_ec"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+# Enable TFLite Neuron Delegate to accelerate ML workloads on APU.
+USE="${USE} mtk_neuron_delegate"
+
+# Select libcamera and libcamera-mtkisp7
+USE="${USE} libcamera libcamera-mtkisp7"
+
+# Enable single frame super resolution.
+USE="${USE} camera_feature_super_res"
+
+# Uncomment these lines to activate the serial port.
+# Enable kernel serial drivers
+USE="${USE} pcserial"
+# Declare set of enabled consoles
+TTY_CONSOLE="ttyS0"
+
+# Enable cross-domain context in crosvm rutabaga_gfx for cross domain
+# allocation/resource sharing. For ARCVM, it switches the guest gralloc to use
+# virtgpu_cross_domain backend in minigbm, so that allocations no longer have
+# to go through host virglrenderer (avoid creating vrend context).
+USE="${USE} cross_domain_context"
+
+# Include the himax firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} himax"
+
+# Enable hammerd for updating base firmware
+USE="${USE} hammerd"
+
+# Enable spi heatmap.
+INPUT_DEVICES="${INPUT_DEVICES} spi_heatmap"
+
+# Use cros-camera-algo service
+USE="${USE} cros_camera_algo"
+
+# Enable Chrome OS RMA daemon
+USE="${USE} rmad"

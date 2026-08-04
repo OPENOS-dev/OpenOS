@@ -1,0 +1,2877 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 2147483647
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131073
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131074
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131075
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131076
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131077
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131078
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131088
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131089
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131090
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131091
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131092
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131093
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131094
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131095
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131096
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131104
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131105
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131106
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131107
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131108
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131109
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131110
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131111
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131112
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131120
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131121
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131122
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131123
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131124
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131125
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131126
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brask_cheets",
+            "marketing-name": "",
+            "metrics-tag": "moli",
+            "product": "brask"
+          },
+          "hardware-features": {
+            "build-path": "moli/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "moli",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/HiFi.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-nau8825.moli/sof-nau8825.moli.conf",
+                "source": "moli/audio/ucm-config/sof-nau8825.moli/sof-nau8825.conf"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-brask.conf",
+                "source": "alsa-module-config/alsa-brask.conf"
+              }
+            ],
+            "ucm-suffix": "moli"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brask-private",
+          "build-targets": {
+            "ec": "moli"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Moli",
+          "platform-name": "Brask",
+          "sku-id": 131127
+        },
+        "name": "moli",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brask",
+          "project": "moli"
+        },
+        "thermal": {
+          "dptf-dv": "moli/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/moli/dptf.dv",
+              "source": "moli/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brask_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

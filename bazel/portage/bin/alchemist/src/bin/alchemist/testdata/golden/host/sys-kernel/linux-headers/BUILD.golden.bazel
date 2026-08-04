@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "4.14",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "4.14_debug",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "4.14_package_set",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "4.14_install",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "4.14_installed",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "4.14_install_list",
+    actual = "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "linux-headers",
+    actual = ":4.14",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":4.14_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "linux-headers_debug",
+    actual = ":4.14_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":4.14_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "linux-headers_package_set",
+    actual = ":4.14_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":4.14_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "linux-headers_install",
+    actual = ":4.14_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":4.14_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "linux-headers_installed",
+    actual = ":4.14_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":4.14_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "linux-headers_install_list",
+    actual = ":4.14_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "4.14_test",
+    tests = [ "//internal/packages/stage2/host/chromiumos/sys-kernel/linux-headers:4.14_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":4.14_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "linux-headers_test",
+    tests = [ ":4.14_test" ],
+    visibility = ["@//bazel:internal"],
+)

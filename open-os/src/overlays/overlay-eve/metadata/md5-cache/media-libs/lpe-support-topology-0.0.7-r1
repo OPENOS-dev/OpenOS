@@ -1,0 +1,10 @@
+DEFINED_PHASES=install
+DESCRIPTION=Topology binary files used to support/configure LPE Audio
+EAPI=7
+IUSE=kernel-6_6
+KEYWORDS=-* x86 amd64
+LICENSE=LICENCE.adsp_sst
+RDEPEND=media-libs/kbl-tuning-support media-libs/kbl-dsm-param
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/lpe-support-topology-eve-0.0.7.tbz2
+_md5_=c8f60935738772954297df34bb28f1f4

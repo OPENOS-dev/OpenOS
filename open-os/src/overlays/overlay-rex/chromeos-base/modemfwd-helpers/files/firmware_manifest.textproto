@@ -1,0 +1,84 @@
+#-------------------------------------------------------------------------------
+# rex
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Initial configuration for testing
+#-------------------------------------------------------------------------------
+
+#FM350 modem
+device {
+  device_id: "pci:14c3:4d75 (External)"
+  variant: "rex_fm350"
+  default_main_firmware_version: "81600.0000.00.29.23.06"
+  dlc {
+    dlc_id: "modem-fw-dlc-rex-fm350"
+  }
+  main_firmware {
+    filename: "fm350/81600.0000.00.29.23.06"
+    version: "81600.0000.00.29.23.06"
+    compression: NONE
+    assoc_firmware {
+      tag: "ap"
+      filename: "fm350/FM350.F09"
+      version: "FM350.F09"
+      compression: NONE
+    }
+    assoc_firmware {
+      tag: "dev"
+      filename: "fm350/DEV_OTA_6003.0000.0000_Default_001.000.000.000.img"
+      version: "6003.0000.0000_Default_001.000.000.000"
+      compression: NONE
+    }
+  }
+  carrier_firmware {
+    filename: "fm350/OP_OTA_302.005.img"
+    carrier_id: "generic"
+    version: "302.005"
+    compression: NONE
+  }
+  oem_firmware {
+    filename: "fm350/OEM_OTA_6003.0002.015.img"
+    version: "6003.0002.015"
+    main_firmware_version: "81600.0000.00.29.23.06"
+    compression: NONE
+  }
+}
+
+#FM101 modem
+device {
+  device_id: "usb:2cb7:01a2"
+  variant: "rex_fm101"
+  default_main_firmware_version: "19500.0000.00.01.02.80"
+  dlc {
+    dlc_id: "modem-fw-dlc-rex-fm101"
+  }
+  main_firmware {
+    filename: "fm101/19500.0000.00.01.02.80"
+    version: "19500.0000.00.01.02.80"
+    compression: NONE
+    assoc_firmware {
+      tag: "ap"
+      filename: "fm101/A96"
+      version: "A96"
+      compression: NONE
+    }
+    assoc_firmware {
+      tag: "dev"
+      filename: "fm101/DEV_OTA_6000.0001.0002.0000_00.01"
+      version: "6000.0001.0002.0000_00.01"
+      compression: NONE
+    }
+  }
+  oem_firmware {
+    filename: "fm101/OEM_OTA_6000.0000.004"
+    version: "6000.0000.004"
+    main_firmware_version: "19500.0000.00.01.02.80"
+    compression: NONE
+  }
+  carrier_firmware {
+    filename: "fm101/OP_OTA_002.077"
+    carrier_id: "generic"
+    version: "002.077"
+    compression: NONE
+  }
+}

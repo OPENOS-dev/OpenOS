@@ -1,0 +1,81 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+common-identity: &common_identity
+  platform-name: "Poppy"
+  frid: "Google_Nautilus"
+
+camera-config-ufc-wfc: &camera_config_ufc_wfc
+  count: 2
+  devices:
+    - interface: "usb"
+      facing: "front"
+      orientation: 0
+      flags:
+        support-autofocus : False
+        support-1080p: False
+    - interface: "mipi"
+      facing: "back"
+      orientation: 0
+      flags:
+        support-autofocus : True
+        support-1080p: True
+
+common-config: &common_config
+  brand-code: "{{$brand-code}}"
+  name: "{{$device-name}}"
+  firmware:
+    build-targets:
+      bmpblk: "nautilus"
+      coreboot: "nautilus"
+      ec: "nautilus"
+      depthcharge: "nautilus"
+      libpayload: "nautilus"
+    image-name: "{{$device-name}}"
+  hardware-properties:
+    form-factor: CONVERTIBLE
+    has-side-volume-button: true
+  identity:
+    <<: *common_identity
+    sku-id: "{{$sku-id}}"
+  camera:
+    <<: *camera_config_ufc_wfc
+  wallpaper: "nautilus"
+  ui:
+    side-volume-button:
+      region: "keyboard"
+      side: "right"
+
+modem-device-config: &modem_device_config
+  <<: *common_config
+  modem:
+    firmware-variant: "{{$device-name}}"
+    modem-type: 1
+
+chromeos:
+  devices:
+    - $device-name: "nautilus"
+      products:
+        - $marketing-name: "nautilus"
+          $brand-code: "ZSKM"
+      skus:
+        - $sku-id: 0
+          config: *common_config
+    - $device-name: "nautiluslte"
+      products:
+        - $marketing-name: "nautiluslte"
+          $brand-code: "SMAL"
+      skus:
+        - $sku-id: 1
+          config: *modem_device_config
+    # Older RO firmware may not expose a SKU ID in SMBIOS.  Explicitly
+    # declare a config which allows for this condition.
+    - $device-name: "nautilus"
+      products:
+        - $marketing-name: "nautilus"
+          $brand-code: "ZSKM"
+      skus:
+        - config:
+            <<: *common_config
+            identity: *common_identity

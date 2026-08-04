@@ -1,0 +1,32 @@
+# python depends on util-linux. If we set the python use flag we end
+# up with a circular dependency. This use flag only controls the
+# pylibmount which we don't need.
+sys-apps/util-linux -python
+
+# We want to use systemd-tmpfiles instead of systemd-utils[tmpfiles].
+# Removing the -tmpfiles USE flag will cause the virtual/tmpfiles
+# to pick systemd-tmpfiles.
+sys-apps/systemd-utils -tmpfiles
+
+# Causes a circular dependency
+sys-apps/acl -nls
+
+# Use the python version to avoid pulling in cython.
+dev-python/pyyaml -libyaml
+
+# We don't need any interactive components.
+sys-devel/llvm -libedit
+
+# b/316588646: lldb pulls in a lot of extra components.
+# At some point we can provide an lldb ebuild.
+sys-devel/llvm -lldb
+
+# b/308616226: ThinLTO takes a long time. Since we sometimes build
+# llvm in the bazel CQ we want to build it as fast as possible.
+sys-devel/llvm -thinlto
+
+# b/308560968 - We need to disable http2 from curl since:
+# * `cmake` DEPENDs on `curl`.
+# * `curl[http2]` DEPENDs on `nghttp2`.
+# * `nghttp2` BDEPEND on `cmake`.
+net-misc/curl -http2

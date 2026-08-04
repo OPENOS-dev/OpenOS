@@ -1,0 +1,10 @@
+DEFINED_PHASES=install unpack
+DESCRIPTION=PowerVR Rogue GLES2 hardware driver, binary only install
+EAPI=7
+KEYWORDS=-* arm64 arm
+LICENSE=Google-TOS
+RDEPEND=!media-libs/img-ddk x11-libs/libdrm
+SLOT=0
+SRC_URI=arm? ( http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/img-ddk-oak-1.17.6210866_p141.run ) arm64? ( http://commondatastorage.googleapis.com/chromeos-localmirror/disfiles/img-ddk-oak64-1.17.6210866_p141.run )
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	unpacker	aa6a4e924009232d8b78b31e932c30b5
+_md5_=edf79381ef95556c5a571b0fd8ea35f5

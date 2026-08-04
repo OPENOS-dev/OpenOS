@@ -1,0 +1,38 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+rust_library(
+    name = "fileutil",
+    srcs = glob(["src/*.rs"]),
+    crate_name = "fileutil",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["//bazel/portage:__subpackages__"],
+    deps = [
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:lazy_static",
+        "@alchemy_crates//:libc",
+        "@alchemy_crates//:tempfile",
+        "@alchemy_crates//:tracing",
+        "@alchemy_crates//:walkdir",
+        "@alchemy_crates//:xattr",
+    ],
+)
+
+rust_test(
+    name = "fileutil_test",
+    size = "small",
+    crate = ":fileutil",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":fileutil",
+    enabled = False,
+    tests = [":fileutil_test"],
+)

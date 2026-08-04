@@ -1,0 +1,52 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+# Note that the go and rust run_in_container are *not* CLI-compatible.
+# rust serializes and deserializes its arguments to a file, while go takes all
+# arguments on the command-line.
+rust_binary(
+    name = "run_in_container",
+    srcs = glob(["src/*.rs"]),
+    data = [
+        "@files//:dumb_init_symlink",
+    ],
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["//bazel/portage:__subpackages__"],
+    deps = [
+        "//bazel/portage/common/cliutil",
+        "//bazel/portage/common/fileutil",
+        "//bazel/portage/common/processes",
+        "//bazel/portage/common/run_in_container_lib",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:clap",
+        "@alchemy_crates//:itertools",
+        "@alchemy_crates//:libc",
+        "@alchemy_crates//:nix",
+        "@alchemy_crates//:path-absolutize",
+        "@alchemy_crates//:serde",
+        "@alchemy_crates//:serde_json",
+        "@alchemy_crates//:shell-escape",
+        "@alchemy_crates//:tracing",
+        "@alchemy_crates//:tracing-subscriber",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+rust_test(
+    name = "run_in_container_test",
+    size = "small",
+    crate = ":run_in_container",
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":run_in_container",
+    enabled = False,
+    tests = [":run_in_container_test"],
+)

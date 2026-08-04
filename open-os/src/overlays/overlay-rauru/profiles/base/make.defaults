@@ -1,0 +1,55 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} rauru"
+
+# Enable the AP firmware build and enable AVB
+USE="${USE} avb bootimage"
+
+USE="${USE} zephyr_ec"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+# Enable biometrics support
+USE="${USE} biod"
+
+# Include ilitek firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} ilitek_its"
+
+# Include the goodix firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} goodix"
+
+# Include focaltech firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} focaltech"
+
+# Include pixart firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} pixart"
+
+# Include synaptics firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} synaptics"
+
+# Uncomment these lines to activate the serial port.
+# Enable kernel serial drivers
+USE="${USE} pcserial"
+# Declare set of enabled consoles
+TTY_CONSOLE="ttyS0"
+
+# Enable Mediatek 7925 WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7925"
+
+# Enable Mediatek 7925 BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7925-bt"
+
+# Use ANGLE as the GL backend for cros_camera_service
+USE="${USE} camera_angle_backend"
+
+# Enable single frame super resolution.
+USE="${USE} camera_feature_super_res"
+
+# Enable TFLite Neuron Delegate to accelerate ML workloads on NPU.
+USE="${USE} mtk_neuron_delegate"

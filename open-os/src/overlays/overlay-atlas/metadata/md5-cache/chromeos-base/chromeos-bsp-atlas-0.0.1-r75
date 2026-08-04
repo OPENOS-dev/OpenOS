@@ -1,0 +1,12 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install
+DEPEND=chromeos-base/chromeos-bsp-baseboard-krabbylake
+DESCRIPTION=Atlas board-specific ebuild that pulls in necessary ebuilds as dependencies or portage actions.
+EAPI=7
+IUSE=atlas-kvm atlas-connectivitynext atlas-kernelnext atlas-signingnext has_private_audio_topology kernel-4_4
+KEYWORDS=-* amd64 x86
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-bsp-baseboard-krabbylake !<chromeos-base/gestures-conf-0.0.2 chromeos-base/chromeos-tcon-updater-atlas
+SLOT=0
+_eclasses_=appid	7246d2a9f30b76802a858973725910c7	cros-audio-configs	3019de51dffbb1b14f1f5d01141fb95e	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=f149bc8cacfe6f6a5fab43fe34f8d5fa

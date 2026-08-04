@@ -1,0 +1,126 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.test.api;
+
+option go_package = "go.chromium.org/chromiumos/config/go/test/api";
+
+import "chromiumos/storage_path.proto";
+
+// Defines the properties needed for archiving XTS suite results to be ingested
+// by the XTS pipeline for release qualification and monitoring.
+// NEXT TAG: 10
+message XtsArchiverMetadata {
+  // Whether the run is for AL project.
+  bool al_run = 1;
+
+  // The full product/device information.
+  // For ChromeOS the format is:
+  // <board_name>.<model_name>-<board_variant>
+  // e.g.: brya.brya-arcnext
+  string product = 2;
+
+  // A full build name.
+  // For ChromeOS the format is:
+  // <board_name>_<board_variant>-<channel>/<build_version>
+  // e.g. hatch-release/R108-15183.0.0
+  //
+  // For AL the format is:
+  // <build_target>/<build_id>
+  // e.g. brya-trunk_staging-userdebug/brya-ota-12644700
+  string build = 3;
+
+  // ID of the parent swarming task for the build. Can be empty if job
+  // is not scheduled through swarming.
+  string parent_swarming_task_id = 4;
+
+  // The GCS path prefix to upload XTS result file to be ingested by
+  // the XTS pipeline.
+  string results_gcs_prefix = 5;
+
+  // The GCS path prefix to upload XTS result file for APFE approval.
+  string apfe_gcs_prefix = 6;
+
+  // Whether to archive xTS results to results GCS bucket for the given AL run.
+  bool enable_al_results_archiver = 7;
+
+  // Whether to archive xTS results to APFE GCS bucket for the given AL run.
+  bool enable_al_apfe_archiver = 8;
+
+  // The test suite name. For AL, it is the ATP config name.
+  string suite = 9;
+}
+
+// NEXT TAG: 7
+// TestIdentifier proto from
+// https://source.corp.google.com/h/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/resultdb/proto/v1/common.proto;l=108-280
+message TestIdentifier {
+  // The name of the test module.
+  string module_name = 1;
+
+  // The scheme of the test module.
+  string module_scheme = 2;
+
+  // Variants of the module.
+  map<string, string> module_variant = 3;
+
+  // Coarse-grained test name.
+  string coarse_name = 4;
+
+  // Fine-grained test name.
+  string fine_name = 5;
+
+  // The test case name.
+  string case_name = 6;
+}
+
+// NEXT TAG: 9
+// RdbArtifact proto is a subset of
+// https://source.corp.google.com/h/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/resultdb/proto/v1/artifact.proto;l=35
+message RdbArtifact {
+  // The path of the artifact.
+  string path = 1;
+
+  // The size of the artifact in bytes.
+  int64 size = 2;
+
+  // The parent workunit for the artifact.
+  string parent_workunit = 3;
+
+  // The ID for the artifact.
+  string artifact_id = 4;
+
+  // The update token for the artifact.
+  string update_token = 5;
+
+  // The identifier for the test associated with this artifact.
+  TestIdentifier test_identifier = 6;
+
+  // The content type of the artifact.
+  string content_type = 7;
+
+  // The type of the artifact.
+  string artifact_type = 8;
+}
+
+// NEXT TAG: 6
+message PublishGcsMetadata {
+  // GCS location where artifacts will be uploaded.
+  StoragePath gcs_path = 1;
+  // Local file path to GCS creds that should be used for GCS upload.
+  StoragePath service_account_creds_file_path = 2;
+
+  // Metadata for the XTS archiving process.
+  XtsArchiverMetadata xts_archiver_metadata = 3;
+
+  // Whether to include the step to archive XTS results.
+  bool enable_xts_archiver = 4;
+
+  // Artifacts skipped by RDB publish since they are larger than 640MB to be
+  // uploaded to GCS and then registered in RDB.
+  // TODO: b/483142100 - Upload large artifacts directly to RDB.
+  repeated RdbArtifact skipped_artifacts = 5;
+}

@@ -1,0 +1,54 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+
+rust_binary(
+    name = "xpaktool",
+    srcs = glob(["src/*.rs"]),
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    visibility = ["@portage//:__subpackages__"],
+    deps = [
+        "//bazel/portage/common/cliutil",
+        "//bazel/portage/common/portage/binarypackage",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:bzip2",
+        "@alchemy_crates//:clap",
+        "@alchemy_crates//:infer",
+        "@alchemy_crates//:itertools",
+        "@alchemy_crates//:lazy_static",
+        "@alchemy_crates//:rayon",
+        "@alchemy_crates//:regex",
+        "@alchemy_crates//:tempfile",
+        "@alchemy_crates//:walkdir",
+    ],
+)
+
+rust_test(
+    name = "xpaktool_test",
+    size = "small",
+    crate = ":xpaktool",
+    data = [
+        "//bazel/portage/common/testdata:nano.tbz2",
+        "//bazel/portage/common/testdata:nano-clean-env.tbz2",
+        "//bazel/portage/common/testdata:nano-diff-tar.tbz2",
+        "//bazel/portage/common/testdata:nano-diff-xpak.tbz2",
+    ] + glob([
+        "testdata/**",
+    ]),
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "@alchemy_crates//:tempfile",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":xpaktool",
+    enabled = False,
+    tests = [":xpaktool_test"],
+)

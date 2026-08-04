@@ -1,0 +1,1 @@
+chromeos-disk-firmware-baseboard-octopus-1.1.ebuild

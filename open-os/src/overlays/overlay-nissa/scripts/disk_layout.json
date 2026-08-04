@@ -1,0 +1,78 @@
+{
+  "_comment": "See http://www.chromium.org/chromium-os/building-chromium-os/disk-layout-format",
+  "metadata": {
+    "rootdev_base": "/sys/devices/pci0000:00/0000:00:12.7/host*/target*/*/block/sd* /sys/devices/pci0000:00/0000:00:1d.*/0000:*:00.0/nvme/nvme*/nvme*n1 /sys/devices/pci0000:00/0000:00:1a.0/mmc_host/mmc*/mmc*:000*/block/mmcblk*"
+  },
+  "parent": "disk_layout_v3.json",
+  "layouts": {
+    "base": [
+      {
+        "num": 3,
+        "fs_size": "3880 MiB"
+      },
+      {
+        # Stateful partition to store temporary files during updates
+        "num": 1,
+        "size": "9984 MiB"
+      }
+    ],
+    "usb": [
+      {
+        "num": 3,
+        "fs_size": "3880 MiB",
+        "size": "4 GiB"
+      },
+      {
+        # Stateful partition to store temporary files during updates
+        "num": 1,
+        "size": "9984 MiB"
+      }
+    ],
+    "usb-updatable": [
+      {
+        "num": 3,
+        "fs_size": "3880 MiB",
+        "size": "4 GiB"
+      },
+      {
+        # Stateful partition to store temporary files during updates
+        "num": 1,
+        "size": "9984 MiB"
+      }
+    ],
+    "recovery": [
+      {
+        # Kernel for Slot C. Identical to kernel A except for signing.
+        "num": 6,
+        "size": "200 MiB"
+      },
+      {
+        # Kernel for Slot A. Reduced to 200M (from the default of 512M) so that
+        # recovery images will still be under 4G after adding KERN-C.
+        "num": 2,
+        "size": "200 MiB"
+      },
+      {
+        "num": 3,
+        "fs_size": "3880 MiB",
+        "size": "4 GiB"
+      }
+    ],
+    "factory_install": [
+      {
+        "num": 3,
+        "size": "1280 MiB",
+        "fs_size": "1200 MiB"
+      },
+      {
+        # Kernel for Slot B. Identical to kernel A except for signing.
+        "num": 4,
+        "size": "32 MiB"
+      },
+      {
+        "num": 1,
+        "size": "512 MiB"
+      }
+    ]
+  }
+}

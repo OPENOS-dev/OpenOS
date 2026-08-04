@@ -1,0 +1,3051 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 2147483647
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393217
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393218
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393219
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393220
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393221
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393222
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393223
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393224
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393225
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393226
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393227
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "voxel",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "voxel",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/HiFi.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf",
+                "source": "voxel/audio/ucm-config/sof-rt5682.max98373.voxel/sof-rt5682.max98373.voxel.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/sof-rt5682",
+                "source": "voxel/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/voxel/dsp.ini",
+                "source": "voxel/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/voxel/board.ini",
+                "source": "voxel/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/voxel.yaml",
+                "source": "voxel/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "voxel.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.voxel"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393228
+        },
+        "name": "voxel",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "voxel"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393233
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393234
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393235
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393236
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393237
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393238
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393239
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393240
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393241
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393242
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393243
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393244
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393245
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393246
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393247
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "volta",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "voxel/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "volta",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/HiFi.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf",
+                "source": "volta/audio/ucm-config/sof-rt5682.max98373.volta/sof-rt5682.max98373.volta.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/sof-rt5682",
+                "source": "volta/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/volta/dsp.ini",
+                "source": "volta/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/volta/board.ini",
+                "source": "volta/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/volta.yaml",
+                "source": "volta/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "volta.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.volta"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "voxel"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Voxel",
+          "platform-name": "Volteer",
+          "sku-id": 393248
+        },
+        "name": "volta",
+        "power": {
+          "battery-poll-interval-initial-ms": "1000",
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-als-steps": "63.34 47.62 -1 400\n100.0 93.9 100 -1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "volta"
+        },
+        "thermal": {
+          "dptf-dv": "voxel/volta/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/voxel/volta/dptf.dv",
+              "source": "voxel/sw_build_config/platform/chromeos-config/thermal/volta/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

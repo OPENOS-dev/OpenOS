@@ -1,0 +1,254 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "herobrine_cheets",
+            "marketing-name": "",
+            "metrics-tag": "evoker",
+            "product": "herobrine"
+          },
+          "hardware-features": {
+            "build-path": "evoker/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_evoker.xml",
+            "system-path": "/etc/hardware_features_evoker.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "evoker",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-herobrine-private",
+          "build-targets": {
+            "bmpblk": "herobrine",
+            "coreboot": "evoker",
+            "depthcharge": "herobrine",
+            "ec_extras": [
+              "dartmonkey"
+            ],
+            "libpayload": "herobrine",
+            "zephyr-ec": "evoker"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Evoker",
+          "platform-name": "Herobrine",
+          "sku-id": 0
+        },
+        "name": "evoker",
+        "pvs": {
+          "program": "herobrine",
+          "project": "evoker"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'herobrine_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "herobrine_cheets",
+            "marketing-name": "",
+            "metrics-tag": "evoker",
+            "product": "herobrine"
+          },
+          "hardware-features": {
+            "build-path": "evoker/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_evoker.xml",
+            "system-path": "/etc/hardware_features_evoker.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "evoker",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-herobrine-private",
+          "build-targets": {
+            "bmpblk": "herobrine",
+            "coreboot": "evoker",
+            "depthcharge": "herobrine",
+            "ec_extras": [
+              "dartmonkey"
+            ],
+            "libpayload": "herobrine",
+            "zephyr-ec": "evoker"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Evoker",
+          "platform-name": "Herobrine",
+          "sku-id": 512
+        },
+        "name": "evoker",
+        "pvs": {
+          "program": "herobrine",
+          "project": "evoker"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'herobrine_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "herobrine_cheets",
+            "marketing-name": "",
+            "metrics-tag": "evoker",
+            "product": "herobrine"
+          },
+          "hardware-features": {
+            "build-path": "evoker/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_evoker.xml",
+            "system-path": "/etc/hardware_features_evoker.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "evoker",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-herobrine-private",
+          "build-targets": {
+            "bmpblk": "herobrine",
+            "coreboot": "evoker",
+            "depthcharge": "herobrine",
+            "ec_extras": [
+              "dartmonkey"
+            ],
+            "libpayload": "herobrine",
+            "zephyr-ec": "evoker"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Evoker",
+          "platform-name": "Herobrine",
+          "sku-id": 513
+        },
+        "name": "evoker",
+        "pvs": {
+          "program": "herobrine",
+          "project": "evoker"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'herobrine_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "herobrine_cheets",
+            "marketing-name": "",
+            "metrics-tag": "evoker",
+            "product": "herobrine"
+          },
+          "hardware-features": {
+            "build-path": "evoker/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_evoker.xml",
+            "system-path": "/etc/hardware_features_evoker.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "evoker",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-herobrine-private",
+          "build-targets": {
+            "bmpblk": "herobrine",
+            "coreboot": "evoker",
+            "depthcharge": "herobrine",
+            "ec_extras": [
+              "dartmonkey"
+            ],
+            "libpayload": "herobrine",
+            "zephyr-ec": "evoker"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Evoker",
+          "platform-name": "Herobrine",
+          "sku-id": 1
+        },
+        "name": "evoker",
+        "pvs": {
+          "program": "herobrine",
+          "project": "evoker"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'herobrine_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

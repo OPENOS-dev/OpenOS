@@ -1,0 +1,69 @@
+# Copyright 2019 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+LINUX_FIRMWARE=""
+USE=""
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromeos-intel-pineview"
+CHROMEOS_KERNEL_ARCH="x86_64"
+
+USE="${USE} kernel-5_4"
+
+# NOTE(b/406205536): gfni is currently disabled by default due to a mix of:
+# - LLVM's strong tendencies to use it when it's enabled
+# - Instructions being new enough that many of our builders SIGILL on them
+# These have consistently been popping up in paths covered by unittests,
+# especially in `.a` and `.so` files, so the traditional practice of
+# `use test && append-cppflags -march=x86-64-v2` isn't very effective.
+#
+# These can always be overridden per-build by adding `-mgfni` or
+# `-Ctarget-feature=+gfni`, provided your code is guarded by runtime checks.
+BOARD_COMPILER_FLAGS="-march=tremont -mno-gfni"
+BOARD_RUSTFLAGS="-Ctarget-cpu=tremont -Ctarget-feature=-gfni"
+USE="${USE} march_tremont"
+
+# Enable DPTF
+USE="${USE} dptf"
+
+# Identify the vendor
+USE="${USE} intel_cpu"
+
+# make JSL i915 firmwares (GuC,HuC,DMC) builtin
+USE="${USE} builtin_fw_intel_jsl_i915"
+
+# Enable iHD media driver for JSL
+USE="${USE} -video_cards_i965 video_cards_iHD video_cards_iHD_g11"
+
+USE="${USE} drm_atomic"
+
+# Enable Vulkan
+USE="${USE} vulkan"
+
+# Enable Android aep
+USE="${USE} android_aep"
+
+# Enable GpuMemoryBuffers backed by dma-bufs.
+USE="${USE} native_gpu_memory_buffers"
+
+# Build IPU6SE variant in cros-camera-hal-intel-ipu6.
+USE="${USE} ipu6se"
+
+# Build CMRT lib in libva-intel-media-driver for camera TNR.
+USE="${USE} ihd_cmrtlib"
+
+# Enable fscrypt v2 usage on 5.4+
+USE="${USE} direncription_allow_v2"
+
+# Workaround for b/188008861
+USE="${USE} kvm_invept_global"
+
+# Allows Chrome to start in the presence of multiple threads.
+USE="${USE} gpu_sandbox_start_early"
+
+# Enable ARCVM direct VAAPI decoding
+USE="${USE} crosvm-video-vaapi"
+
+# Change the default ARCVM decoder to libvda-vd instead of libvda.
+USE="${USE} crosvm-virtio-video-vd"

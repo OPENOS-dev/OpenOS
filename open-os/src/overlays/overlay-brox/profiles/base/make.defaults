@@ -1,0 +1,62 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+INPUT_DEVICE=""
+LINUX_FIRMWARE=""
+
+USE="${USE} brox"
+USE="${USE} zephyr_ec"
+USE="${USE} ti50_onboard"
+
+# Enable unibuild
+USE="${USE} unibuild"
+USE="${USE} has_chromeos_config_bsp"
+
+# Include the elan firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} elan_i2chid"
+
+# Include the focal firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} focaltech"
+
+# Include the G2touch firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} g2touch"
+
+# Include the goodix firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} goodix"
+
+# Include the melfas firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} melfas"
+
+# Enable biometrics support
+USE="${USE} biod"
+
+# Enable DSP hotword detection
+USE="${USE} enable_dsp_hotword"
+
+# Build ufs tools
+USE="${USE} ufs"
+
+# Use neural net palm rejection. Only impacts devices with
+# "touch_compatible = True" in the config.star.
+USE="${USE} enable_neural_palm_detection_filter"
+
+# Enable Shimless RMA
+USE="${USE} rmad"
+
+# Enable Firmware Splash Screen
+USE="${USE} firmware-bootsplash"
+
+# Use ANGLE as the GL backend for cros_camera_service
+USE="${USE} camera_angle_backend"
+
+# Make it possible to collect firmware dumps in feedback reports
+USE="${USE} fbpreprocessord"
+
+# Include the pixart firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} pixart"
+
+# Include Realtek Ethernet firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtl8168h-2"

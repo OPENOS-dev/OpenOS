@@ -1,0 +1,4 @@
+include chromiumos/owners:v1:/audio/OWNERS.files_last_resort
+
+per-file files/*/audio/...=set noparent
+per-file files/*/audio/...=file:chromiumos/owners:v1:/audio/OWNERS.files

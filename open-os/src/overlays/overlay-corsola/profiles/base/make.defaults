@@ -1,0 +1,50 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} corsola"
+
+# Enable AP firmware
+USE="${USE} bootimage"
+
+# Enable EC firmware
+USE="${USE} zephyr_ec"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+# Turn on modemfwd
+USE="${USE} modemfwd"
+
+# Uncomment these lines to activate the serial port.
+# Enable kernel serial drivers
+USE="${USE} pcserial"
+# Declare set of enabled consoles
+TTY_CONSOLE="ttyS0"
+
+# Include the elan_i2chid firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} elan_i2chid"
+
+# Include the goodix firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} goodix"
+
+# Include g2touch firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} g2touch"
+
+# Include the pixart firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} pixart"
+
+# Include ilitek firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} ilitek_its"
+
+# Include synaptics firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} synaptics"
+
+# Enable Chrome OS RMA daemon
+USE="${USE} rmad"
+
+# Disable Vboot CBFS Integration
+USE="${USE} vboot_disable_cbfs_integration"

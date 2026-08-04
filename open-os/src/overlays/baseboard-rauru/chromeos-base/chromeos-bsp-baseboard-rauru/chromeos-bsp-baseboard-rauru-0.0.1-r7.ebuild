@@ -1,0 +1,1 @@
+chromeos-bsp-baseboard-rauru-0.0.1.ebuild

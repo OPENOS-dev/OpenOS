@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Chromeos SCP firmware payload for Geralt.
+EAPI=7
+KEYWORDS=-* arm arm64
+LICENSE=BSD-Google
+RESTRICT=strip
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/chromeos-scp-firmware-geralt-15842.102.0.tbz2
+_md5_=4a5c0079ff4f881a77cc2a4dd5a7ff59

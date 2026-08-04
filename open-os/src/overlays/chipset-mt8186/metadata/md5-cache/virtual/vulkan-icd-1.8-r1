@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for presence of a Vulkan ICD (Installable Client Driver)
+EAPI=7
+IUSE=internal video_cards_panfrost
+KEYWORDS=*
+LICENSE=metapackage
+RDEPEND=media-libs/vulkan-loader video_cards_panfrost? ( media-libs/mesa-panfrost[vulkan] ) !video_cards_panfrost? ( internal? ( media-libs/mali-drivers-bifrost[vulkan] ) !internal? ( media-libs/mali-drivers-bifrost-bin ) )
+SLOT=0
+_md5_=1afdf89946c9f40d06b71c0af584ad9c

@@ -1,0 +1,10 @@
+DEFINED_PHASES=install unpack
+DESCRIPTION=Mali Valhall user space prebuilt binaries for external builds
+EAPI=7
+KEYWORDS=-* arm64 arm
+LICENSE=Google-TOS
+RDEPEND=>=x11-libs/libdrm-2.4.97 !media-libs/mali-drivers-valhall !media-libs/mesa
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mali-drivers-valhall-skywalker-44.1_p25.run
+_eclasses_=multiprocessing	e5d48c933105327e0f826ce5108afc55	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	unpacker	aa6a4e924009232d8b78b31e932c30b5
+_md5_=122f835c73892920e83f4787d0508b58

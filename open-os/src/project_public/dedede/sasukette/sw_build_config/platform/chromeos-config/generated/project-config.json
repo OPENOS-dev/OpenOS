@@ -1,0 +1,671 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.rt5682vs/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.rt5682vs/sof-rt5682.rt1015p.1mic.rt5682vs.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.rt5682vs"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/sof-rt5682.rt1015p.1mic.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 1507329
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/sof-rt5682.rt1015p.1mic.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 1507328
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/sof-rt5682.rt1015p.1mic.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 1507330
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic/sof-rt5682.rt1015p.1mic.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 1507332
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.rt5682vs/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.rt5682vs/sof-rt5682.rt1015p.1mic.rt5682vs.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.rt5682vs"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 1507333
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "sasukette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "sasukette/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "sasukette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.rt5682vs/HiFi.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.1mic.rt5682vs/sof-rt5682.rt1015p.1mic.rt5682vs.conf",
+                "source": "sasukette/audio/ucm-config/sof-rt5682.rt1015p.1mic.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/sof-rt5682",
+                "source": "sasukette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/sasukette/dsp.ini",
+                "source": "sasukette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/sasukette/board.ini",
+                "source": "sasukette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.1mic.rt5682vs"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "sasukette"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Sasukette",
+          "platform-name": "Dedede",
+          "sku-id": 1507334
+        },
+        "name": "sasukette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "sasukette"
+        },
+        "thermal": {
+          "dptf-dv": "sasukette/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/sasukette/dptf.dv",
+              "source": "sasukette/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

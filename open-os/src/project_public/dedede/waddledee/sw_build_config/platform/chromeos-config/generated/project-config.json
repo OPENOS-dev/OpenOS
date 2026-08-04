@@ -1,0 +1,95 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "waddledee",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "waddledee/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "waddledee",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.rt1015.2mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic/sof-rt5682.rt1015.2mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.rt1015.2mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/waddledee/sof-rt5682",
+                "source": "waddledee/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/waddledee/dsp.ini",
+                "source": "waddledee/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/waddledee/board.ini",
+                "source": "waddledee/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "waddledee"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Waddledee",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "waddledee",
+        "power": {
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "waddledee"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

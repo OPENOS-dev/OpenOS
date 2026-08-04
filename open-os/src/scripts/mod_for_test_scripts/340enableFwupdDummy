@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# Copyright 2021 OCS (Open Code Studio)
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CONFIG_FILE="${ROOT_FS_DIR}/etc/fwupd/fwupd.conf"
+
+if [[ ! -f ${CONFIG_FILE} ]]; then
+  exit 0
+fi
+
+echo "Enabling verbose debug output for fwupd."
+
+sed -e 's/^\(VerboseDomains=\).*/\1*/' -i "${CONFIG_FILE}"
+
+echo "Enabling dummy fwupd remote for tests."
+
+echo "TestDevices=true" >> "${CONFIG_FILE}"
+
+cat > "${ROOT_FS_DIR}/usr/share/fwupd/remotes.d/vendor/fwupd-tests.xml" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Extracted from https://github.com/fwupd/fwupd/blob/HEAD/data/installed-tests/fwupd-tests.xml -->
+<components version="0.9" origin="lvfs">
+  <component type="firmware">
+    <id>org.fwupd.fakedevice.firmware</id>
+    <name>FakeDevice</name>
+    <summary>Firmware for the ACME Corp Integrated Webcam</summary>
+    <description>
+      <p>Updating the firmware on your webcam device improves performance and adds new features.</p>
+    </description>
+    <provides>
+      <firmware type="flashed">b585990a-003e-5270-89d5-3705a17f9a43</firmware>
+    </provides>
+    <url type="homepage">http://www.acme.com/</url>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-2.0+</project_license>
+    <developer_name>ACME Corp</developer_name>
+    <releases>
+      <!--
+           Fake firmware releases below.
+           DO NOT TRY TO UPDATE TO THESE VERSIONS
+
+           These values are fixed for test expectations
+           DO NOT UPDATE THESE VALUES without consulting chromeos-fwupd@
+      -->
+      <release version="1.2.2" timestamp="1497484800" urgency="medium">
+        <location>https://fwupd.org/downloads/3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f-fakedevice122.cab</location>
+        <description>
+          <p>Older than current test firmware with Signed Report tested by Google but not on Chromeos<br/>Trusted flag should NOT show</p>
+        </description>
+        <artifacts>
+          <artifact type="binary">
+            <location>https://fwupd.org/downloads/3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f-fakedevice122.cab</location>
+            <filename>fakedevice122.cab</filename>
+            <checksum type="sha1">d5ee72e34056e1d9269ab69b29f19f3cd586c617</checksum>
+            <checksum type="sha256">13af2ee71cdb2a0eab2ea826206e3a64d1b88d3d0c471a27d76649c45542d2be</checksum>
+            <testing>
+              <test_result date="2024-01-22">
+                <vendor_name id="16">Google</vendor_name>
+                <device>HP test device</device>
+                <os>Intel i5</os>
+                <previous_version>1.2.0</previous_version>
+              </test_result>
+            </testing>
+          </artifact>
+        </artifacts>
+      </release>
+      <release version="1.2.1" timestamp="1497484800" urgency="medium">
+        <location>https://fwupd.org/downloads/3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f-fakedevice121.cab</location>
+        <description>
+          <p>Test firmware with Signed Report tested by a Person/Vendor who is not Google/Allion or the OEM itself on Chromeos<br/>Trusted flag should NOT show</p>
+        </description>
+        <artifacts>
+          <artifact type="binary">
+            <location>https://fwupd.org/downloads/3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f-fakedevice121.cab</location>
+            <filename>fakedevice121.cab</filename>
+            <checksum type="sha1">56f92655407ac1abc4d2d432fcd4cfa656794757</checksum>
+            <checksum type="sha256">1929b267df83483ef22f8c12df6cf517740da42f09b0336752e04facb6e6f760</checksum>
+            <testing>
+              <test_result date="2024-01-22">
+                <vendor_name id="10">Random Intruder</vendor_name>
+                <device>Redrix device</device>
+                <os>chromeos</os>
+                <previous_version>1.0.0</previous_version>
+              </test_result>
+            </testing>
+          </artifact>
+        </artifacts>
+      </release>
+      <release version="1.2.0" timestamp="1497484800" urgency="medium">
+        <location>https://fwupd.org/downloads/3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f-fakedevice120.cab</location>
+        <description>
+          <p>Test firmware with Signed Report tested by Allion on Chromeos<br/>Trusted flag should show</p>
+        </description>
+        <artifacts>
+          <artifact type="binary">
+            <location>https://fwupd.org/downloads/3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f-fakedevice120.cab</location>
+            <filename>fakedevice120.cab</filename>
+            <checksum type="sha1">d5a91e0f15e60dbbfa33fbb6a4623decf205136d</checksum>
+            <checksum type="sha256">3acd408dfd2dab938fa70c679fa9a70c9ab3786c7464e3c44827fa69a87f6623</checksum>
+            <testing>
+              <test_result date="2024-01-22">
+                <vendor_name id="1923">Allion</vendor_name>
+                <device>Redrix device</device>
+                <os>chromeos</os>
+                <previous_version>0.0.9</previous_version>
+              </test_result>
+            </testing>
+          </artifact>
+        </artifacts>
+      </release>
+    </releases>
+  </component>
+</components>
+EOF
+
+cat > "${ROOT_FS_DIR}/etc/fwupd/remotes.d/fwupd-tests.conf" <<EOF
+# Copyright 2021 OCS (Open Code Studio)
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[fwupd Remote]
+Enabled=true
+Title=fwupd test
+Type=local
+Keyring=none
+MetadataURI=file:///usr/share/fwupd/remotes.d/vendor/fwupd-tests.xml
+FirmwareBaseURI=https://storage.googleapis.com/chromeos-localmirror/lvfs/test/
+ApprovalRequired=false
+EOF

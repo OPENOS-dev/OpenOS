@@ -1,0 +1,240 @@
+/*Copyright 2018-2023 Fibocom.inc Date:20230510 Version: FM101.00.01 Owner:liuqf@fibocom.com*/
+Index:					1
+Repo Path:				./sdx12-ap/kernel
+Component Name:			Linux Kernel
+Version Number:			5.4
+OSS License:			GNU General Public License v2.0 or later
+Link to homepage:		https://git.codelinaro.org/clo/la/kernel/msm-5.4.git
+Branch:					kernel.lnx.5.4.r6-rel
+Commit hash: 			2c7115a3f95ea02dd983d505d4e568869d734638
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					2
+Repo Path:				./sdx12-ap/poky/meta/recipes-core/base-files
+Component Name:			base-files
+Version Number:			3.0.14-r89
+OSS License:			GNU General Public License v2.0
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:					yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					3
+Repo Path:				./sdx12-ap/poky/meta/recipes-extended/bash
+Component Name:			bash
+Version Number:			4.4.18-r0
+OSS License:			GPLv3+
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:					yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	https://www.gnu.org/licenses/gpl-3.0.html
+
+Index:					4
+Repo Path:				./sdx12-ap/poky/meta/recipes-support/bash-completion
+Component Name:			bash-completion
+Version Number:			2.8-r0
+OSS License:			GPLv2
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:					yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					5
+Repo Path:				./sdx12-ap/poky/meta-selinux/recipes-security/refpolicy/
+Component Name:			refpolicy-mls
+Version Number:			2.20170204-r0
+OSS License:			GPLv2
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-selinux.git
+Branch:					e-sepolicy.lnx.3.0.r11-rel
+Commit hash: 			969f00b271db7315692747f9230498b9606d0679
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					6
+Repo Path:				./sdx12-ap/poky/meta/recipes-core/systemd
+Component Name:			systemd-conf
+Version Number:			1.0-r0
+OSS License:			GPLv2 & LGPLv2.1
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:					yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					7
+Repo Path:				./sdx12-ap/poky/meta/recipes-core/systemd/systemd-serialgetty
+Component Name:			systemd-serialgetty
+Version Number:			1.0-r5
+OSS License:			GPLv2+
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:					yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					8
+Repo Path:				./sdx12-ap/poky/meta/recipes-bsp/keymaps
+Component Name:			keymaps
+Version Number:			1.0-r31
+OSS License:			GPLv2
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:					yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Index:					9
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			gps-utils
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					10
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			loc-api-v02
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					11
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			location-api
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					12
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			location-api-iface
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					13
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			location-api-msg-proto
+Version Number:			git-r0
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					14
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			location-client-api
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					15
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			location-qapi
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					16
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			loc-core
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					17
+Repo Path:				./sdx12-ap/poky/meta-qti-location/recipes/location/
+Component Name:			loc-pla-hdr
+Version Number:			git-r1
+OSS License:			BSD-3-Clause
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-location.git
+Branch:     			location.lnx.6.0.r16-rel
+Commit hash: 			c4bf3aaaddcf163cea599441856a73befd5fe31b
+Link to License Terms:	https://spdx.org/licenses/BSD-3-Clause.html
+
+Index:					18
+Repo Path:				./sdx12-ap/poky/meta-qti-bsp/recipes-bsp/startup-scripts/
+Component Name:			start-scripts-find-recovery-partitions
+Version Number:			1.0-r5
+OSS License:			BSD
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-bsp.git
+Branch:     			yocto.lnx.3.0.r9-rel
+Commit hash: 			cfdcbe817dcff9135ba56addff3ad07dff440ea4
+Link to License Terms:	https://spdx.org/licenses/0BSD.html
+
+Index:					19
+Repo Path:				./sdx12-ap/poky/meta-qti-bsp/recipes-bsp/startup-scripts/
+Component Name:			start-scripts-firmware-links
+Version Number:			1.0-r1
+OSS License:			BSD
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-bsp.git
+Branch:     			yocto.lnx.3.0.r9-rel
+Commit hash: 			cfdcbe817dcff9135ba56addff3ad07dff440ea4
+Link to License Terms:	https://spdx.org/licenses/0BSD.html
+
+Index:					20
+Repo Path:				./sdx12-ap/poky/meta/recipes-devtools/opkg/
+Component Name:			opkg-arch-config
+Version Number:			1.0-r1
+OSS License:			MIT
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:     			yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	https://spdx.org/licenses/MIT.html
+
+Index:					21
+Repo Path:				./sdx12-ap/poky/meta/recipes-core/packagegroups/
+Component Name:			packagegroup-core-boot
+Version Number:			1.0-r17
+OSS License:			MIT
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:     			yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	https://spdx.org/licenses/MIT.html
+
+Index:					22
+Repo Path:				./sdx12-ap/poky/meta/recipes-extended/shadow/
+Component Name:			shadow-securetty
+Version Number:			4.6-r3
+OSS License:			MIT
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:     			yocto/thub
+Commit hash: 			51f6145f8f99a02df1dad937684f014b0172e72a
+Link to License Terms:	https://spdx.org/licenses/MIT.html
+
+Index:					23
+Repo Path:				./sdx12-ap/poky/meta/recipes-extended/shadow/
+Component Name:			systemd-machine-units-recovery
+Version Number:			1.0-r1
+OSS License:			MIT
+Link to homepage:		https://git.codelinaro.org/clo/le/meta-qti-bsp.git
+Branch:     			yocto.lnx.3.0.r9-rel
+Commit hash: 			cfdcbe817dcff9135ba56addff3ad07dff440ea4
+Link to License Terms:	https://spdx.org/licenses/MIT.html
+
+Index:					24
+Repo Path:				/sdx12-ap/bootable/bootloader/lk/
+Component Name:			lk
+Version Number:			git-r1signed
+OSS License:			MIT
+Link to homepage:		https://git.codelinaro.org/clo/ype/external/yoctoproject.org/poky.git
+Branch:     			master
+Commit hash: 			542168f2e976b5a33f26853b478695816a7ae8061
+Link to License Terms:	https://spdx.org/licenses/MIT.html

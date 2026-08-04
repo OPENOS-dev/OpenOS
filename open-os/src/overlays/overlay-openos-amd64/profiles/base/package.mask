@@ -1,0 +1,40 @@
+# Open-OS Package Mask - Google services to block
+# This file masks all Google-specific packages from building
+
+# === Google Chrome (use Chromium instead) ===
+chromeos-base/chromeos-chrome
+
+# === Google Account / OAuth / Gaia Login ===
+chromeos-base/chromeos-login
+
+# === Google Telemetry ===
+chromeos-base/metrics
+chromeos-base/metrics_daemon
+
+# === Crash Reporting to Google ===
+chromeos-base/crash-reporter
+chromeos-base/google-breakpad
+
+# === Google Update Engine (uses Google servers) ===
+chromeos-base/update_engine
+
+# === Google Services Integration ===
+chromeos-base/googleapps
+net-misc/glinux-shim
+chromeos-base/assistant
+
+# === Google Cast / Nearby Share ===
+chromeos-base/nearby
+chromeos-base/speaker_apk
+
+# === Google Drive integration ===
+chromeos-base/drive-fuse
+
+# === Google Cloud Print ===
+chromeos-base/daemon_for_cups_googlecloudprint
+
+# === RLZ Tracking ===
+chromeos-base/rlz
+
+# === Safe Browsing (Google server queries) ===
+# Note: local safe browsing database still works

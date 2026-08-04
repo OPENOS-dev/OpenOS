@@ -1,0 +1,21 @@
+amp_calibrations:
+  cal_data: "Speaker Calibrated Data"
+  force_firmware_load: "Speaker Force Firmware Load"
+  speaker_profile: "Speaker Profile Id"
+  speaker_config: "Speaker Config Id"
+  speaker_program: "Speaker Program Id"
+  playback_profile_id: 0
+  calibration_profile_id: 1
+  rdc_ranges:
+    -
+        lower: 3.3
+        upper: 4.9
+    -
+        lower: 3.3
+        upper: 4.9
+    -
+        lower: 3.5
+        upper: 5.3
+    -
+        lower: 3.5
+        upper: 5.3

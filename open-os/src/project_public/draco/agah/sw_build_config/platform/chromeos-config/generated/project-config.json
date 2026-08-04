@@ -1,0 +1,114 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "draco_cheets",
+            "marketing-name": "",
+            "metrics-tag": "agah",
+            "product": "draco"
+          },
+          "hardware-features": {
+            "build-path": "agah/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_agah.xml",
+            "system-path": "/etc/hardware_features_agah.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "agah",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.agah/HiFi.conf",
+                "source": "agah/audio/ucm-config/sof-rt5682.agah/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.agah/sof-rt5682.agah.conf",
+                "source": "agah/audio/ucm-config/sof-rt5682.agah/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/agah/sof-rt5682",
+                "source": "agah/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/agah/dsp.ini",
+                "source": "agah/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-draco.conf",
+                "source": "alsa-module-config/alsa-draco.conf"
+              },
+              {
+                "destination": "/etc/cras/agah/board.ini",
+                "source": "agah/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/agah.yaml",
+                "source": "agah/audio/sound-card-init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "agah.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "agah"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "enable-bluetooth-offload": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-draco-private",
+          "build-targets": {
+            "ec": "agah"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Agah",
+          "platform-name": "Draco",
+          "sku-id": 2147483647
+        },
+        "name": "agah",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "draco",
+          "project": "agah"
+        },
+        "thermal": {
+          "dptf-dv": "agah/agah/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/agah/agah/dptf.dv",
+              "source": "agah/sw_build_config/platform/chromeos-config/thermal/agah/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'draco_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

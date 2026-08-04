@@ -1,0 +1,426 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "copano",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "copano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "copano",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.copano/HiFi.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.copano/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.copano/sof-rt5682.max98373.copano.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.copano/sof-rt5682.max98373.copano.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/sof-rt5682",
+                "source": "copano/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/copano/dsp.ini",
+                "source": "copano/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/board.ini",
+                "source": "copano/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/copano.yaml",
+                "source": "copano/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "copano.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.copano"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "copano"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Copano",
+          "platform-name": "Volteer",
+          "sku-id": 2147483647
+        },
+        "name": "copano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "copano"
+        },
+        "thermal": {
+          "dptf-dv": "copano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/copano/dptf.dv",
+              "source": "copano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "copano",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "copano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "copano",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.copano/HiFi.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.copano/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.copano/sof-rt5682.max98373.copano.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.copano/sof-rt5682.max98373.copano.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/sof-rt5682",
+                "source": "copano/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/copano/dsp.ini",
+                "source": "copano/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/board.ini",
+                "source": "copano/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/copano.yaml",
+                "source": "copano/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "copano.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.copano"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "copano"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Copano",
+          "platform-name": "Volteer",
+          "sku-id": 917505
+        },
+        "name": "copano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "copano"
+        },
+        "thermal": {
+          "dptf-dv": "copano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/copano/dptf.dv",
+              "source": "copano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "copano",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "copano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "copano",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.copano/HiFi.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.copano/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.copano/sof-rt5682.max98373.copano.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.copano/sof-rt5682.max98373.copano.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/sof-rt5682",
+                "source": "copano/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/copano/dsp.ini",
+                "source": "copano/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/board.ini",
+                "source": "copano/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/copano.yaml",
+                "source": "copano/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "copano.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.copano"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "copano"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Copano",
+          "platform-name": "Volteer",
+          "sku-id": 917506
+        },
+        "name": "copano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "copano"
+        },
+        "thermal": {
+          "dptf-dv": "copano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/copano/dptf.dv",
+              "source": "copano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "marketing-name": "",
+            "metrics-tag": "copano",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "copano/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "copano",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.rt5682vs.copano/HiFi.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.rt5682vs.copano/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.max98373.rt5682vs.copano/sof-rt5682.max98373.rt5682vs.copano.conf",
+                "source": "copano/audio/ucm-config/sof-rt5682.max98373.rt5682vs.copano/sof-rt5682.max98373.rt5682vs.copano.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/sof-rt5682",
+                "source": "copano/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/copano/dsp.ini",
+                "source": "copano/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-volteer.conf",
+                "source": "alsa-module-config/alsa-volteer.conf"
+              },
+              {
+                "destination": "/etc/cras/copano/board.ini",
+                "source": "copano/audio/cras-config/board.ini"
+              },
+              {
+                "destination": "/etc/sound_card_init/copano.yaml",
+                "source": "copano/audio/sound_card_init-config/sofrt5682.yaml"
+              }
+            ],
+            "sound-card-init-conf": "copano.yaml",
+            "speaker-amp": "AMPLIFIER_UNKNOWN",
+            "ucm-suffix": "max98373.rt5682vs.copano"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-volteer-private",
+          "build-targets": {
+            "ec": "copano"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Copano",
+          "platform-name": "Volteer",
+          "sku-id": 917507
+        },
+        "name": "copano",
+        "power": {
+          "defer-external-display-timeout": "10",
+          "disable-dark-resume": "0",
+          "has-keyboard-backlight": "1",
+          "internal-backlight-no-als-battery-brightness": "59.00",
+          "low-battery-shutdown-percent": "4.0",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "volteer",
+          "project": "copano"
+        },
+        "thermal": {
+          "dptf-dv": "copano/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/copano/dptf.dv",
+              "source": "copano/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

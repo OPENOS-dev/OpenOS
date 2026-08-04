@@ -1,0 +1,7 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+ACTION=="add", SUBSYSTEM=="hid",  \
+  DEVPATH=="/devices/platform/soc/11c20000.i2c/i2c-0/0-*/*", \
+  RUN+="/sbin/initctl emit --no-wait hammer-device-added"

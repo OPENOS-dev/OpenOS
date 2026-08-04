@@ -1,0 +1,30 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_go//go:def.bzl", "go_test")
+
+cc_binary(
+    name = "testhelper",
+    srcs = ["testhelper.c"],
+    hermetic_launcher = False,
+    linkopts = select({
+        # Avoid linking libc++
+        "//bazel/module_extensions/toolchains/cc:use_hermetic_launcher_config": ["-nostdlib++"],
+        "//conditions:default": [],
+    }),
+    visibility = ["//bazel/portage:__subpackages__"],
+)
+
+go_test(
+    name = "testhelper_test",
+    size = "small",
+    srcs = ["testhelper_test.go"],
+    data = [
+        ":testhelper",
+    ],
+    deps = [
+        "@rules_go//go/runfiles:go_default_library",
+    ],
+)

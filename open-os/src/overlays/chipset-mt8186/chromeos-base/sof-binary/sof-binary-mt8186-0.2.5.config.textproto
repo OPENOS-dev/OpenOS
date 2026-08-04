@@ -1,0 +1,22 @@
+repo: "https://github.com/thesofproject/sof.git"
+branch: "mt8186/v0.2"
+commit: "475be1eea2a54d7022230379a2efe9be246fcb21"
+tarball: "sof-binary-mt8186"
+version: "0.2.5"
+firmware: {
+  docker: {
+    use: true
+    identifier: "gsoftools:latest"
+  }
+  build_arg: "mt8186"
+}
+artifact: {
+  name: "sof-mt8186.ri"
+  built_path: "build_mt8186_xcc/sof-mt8186.ri"
+  sha256: "bdd0059d684413e692570b03b9a3bc3a06db6c0730c3bd3f556c0ea59b997cb0"
+}
+artifact: {
+  name: "sof-mt8186.ldc"
+  built_path: "build_mt8186_xcc/sof-mt8186.ldc"
+  sha256: "6d99e30254f9abf6629deb6eed89ae1d80a32ce7879b429ec6989e6c1659c22b"
+}

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OPENOS TUI Animation Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Courier New', 'Monaco', monospace;
+  }
+  .terminal {
+    background: #0c0c1a;
+    border-radius: 10px;
+    box-shadow: 0 0 60px rgba(0,255,128,0.08), 0 20px 60px rgba(0,0,0,0.5);
+    width: 850px;
+    overflow: hidden;
+  }
+  .titlebar {
+    background: #16163a;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #1e1e44;
+  }
+  .titlebar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .titlebar .dot.r { background: #ff5f57; }
+  .titlebar .dot.y { background: #febc2e; }
+  .titlebar .dot.g { background: #28c840; }
+  .titlebar .title {
+    flex: 1; text-align: center;
+    color: #6070a0; font-size: 13px;
+  }
+  #screen {
+    padding: 20px 24px;
+    min-height: 560px;
+    white-space: pre;
+    line-height: 1.45;
+    font-size: 13px;
+    color: #20ff20;
+    position: relative;
+    overflow: hidden;
+  }
+  .controls {
+    padding: 12px 16px;
+    background: #0d0d22;
+    border-top: 1px solid #1e1e44;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  button {
+    background: #1e1e44;
+    color: #a0b0d0;
+    border: 1px solid #2a2a55;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  button:hover { background: #2a2a55; color: #d0e0ff; }
+  button.primary { background: #1a4a2a; border-color: #2a6a3a; color: #40ff80; }
+  button.primary:hover { background: #1e5a32; }
+  @keyframes blink { 0%,50% { opacity:1; } 51%,100% { opacity:0; } }
+  .blink { animation: blink 0.6s infinite; }
+</style>
+</head>
+<body>
+<div class="terminal">
+  <div class="titlebar">
+    <span class="dot r"></span>
+    <span class="dot y"></span>
+    <span class="dot g"></span>
+    <span class="title">OPENOS Terminal — Animation Preview</span>
+  </div>
+  <div id="screen"></div>
+  <div class="controls">
+    <button class="primary" onclick="replay()">▶ Replay</button>
+    <button onclick="toggleSpeed()">Speed: <span id="speedLabel">1x</span></button>
+  </div>
+</div>
+
+<script>
+const screen = document.getElementById('screen');
+let speedMultiplier = 1;
+let cancelFlag = false;
+
+const C = {
+  RESET: 'color:#c0d0e0',
+  BOLD: 'font-weight:bold;color:#c0d0e0',
+  DIM: 'color:#4a5570',
+  RED: 'color:#ff4060',
+  GREEN: 'color:#20ff40',
+  YELLOW: 'color:#ffff40',
+  BLUE: 'color:#4080ff',
+  MAGENTA: 'color:#d040ff',
+  CYAN: 'color:#20d0d0',
+  WHITE: 'color:#f0f0ff',
+  BRIGHT_GREEN: 'color:#40ff60',
+  BRIGHT_CYAN: 'color:#60ffff',
+  OPENOS_GREEN: 'color:#4AA26F',
+  WHITE: 'color:#F0F0FF',
+};
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms * speedMultiplier));
+}
+
+// Each letter's 7 rows, then concatenated into 7 single-line rows (O+P+E+N+O+S)
+const LETTER_LINES = {
+  O1: [" ██████╗ ","██╔═══██╗","██║   ██║","██║   ██║","██║   ██║","██╚═══██╝"," ╚█████╔╝ "],
+  P:  ["██████╗ ", "██╔══██╗", "██████╔╝", "██╔═══╝ ", "██║     ", "██║     ", "╚═╝     "],
+  E:  ["███████╗", "██╔════╝", "█████╗  ", "██╔══╝  ", "███████╗", "╚══════╝", "         "],
+  N:  ["███╗   ██╗","████╗  ██║","██╔██╗ ██║","██║╚██╗██║","██║ ╚████║","██║  ╚███║","╚═╝   ╚══╝"],
+  O2: [" █████╗ ", "██╔══██╗", "██║  ██║", "██║  ██║", "╚█████╔╝", " ╚════╝ ", "         "],
+  S:  ["███████╗", "██╔════╝", "███████╗", "╚════██║", "███████║", "╚══════╝", "         "],
+};
+const LETTER_COLORS = {
+  O1: ["OPENOS_GREEN","OPENOS_GREEN","OPENOS_GREEN","OPENOS_GREEN","OPENOS_GREEN","OPENOS_GREEN","OPENOS_GREEN"],
+  P:  ["WHITE","WHITE","WHITE","WHITE","WHITE","WHITE","WHITE"],
+  E:  ["WHITE","WHITE","WHITE","WHITE","WHITE","WHITE","WHITE"],
+  N:  ["WHITE","WHITE","WHITE","WHITE","WHITE","WHITE","WHITE"],
+  O2: ["WHITE","WHITE","WHITE","WHITE","WHITE","WHITE","WHITE"],
+  S:  ["WHITE","WHITE","WHITE","WHITE","WHITE","WHITE","WHITE"],
+};
+const LETTER_ORDER = ["O1","P","E","N","O2","S"];
+
+function buildAllRows() {
+  const rows = [];
+  for (let r = 0; r < 7; r++) {
+    let text = '', colors = [];
+    for (const key of LETTER_ORDER) {
+      const line = LETTER_LINES[key][r];
+      const col = LETTER_COLORS[key][r];
+      text += line;
+      for (let c = 0; c < line.length; c++) colors.push(col);
+    }
+    rows.push([text, colors]);
+  }
+  return rows;
+}
+
+function buildStyledSpans(text, colors) {
+  let html = '';
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const colorName = colors[i] || 'RESET';
+    const style = C[colorName] || C.RESET;
+    html += `<span style="${style}">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+  }
+  return html;
+}
+
+function appendHTML(html) {
+  screen.innerHTML += html;
+  screen.scrollTop = screen.scrollHeight;
+}
+
+function setHTML(html) {
+  screen.innerHTML = html;
+  screen.scrollTop = screen.scrollHeight;
+}
+
+async function drawBox(row, col, text, style) {
+  // Simple: just place text at position
+  const s = C[style] || C.DIM;
+  const div = document.createElement('div');
+  div.style.marginLeft = (col * 7.8) + 'px';
+  div.style.marginTop = row === 0 ? '0' : '0';
+  div.innerHTML = `<span style="${s}">${text}</span>`;
+  screen.appendChild(div);
+  screen.scrollTop = screen.scrollHeight;
+}
+
+async function typewriterLine(text, colorName, delayMs) {
+  const s = C[colorName] || C.GREEN;
+  let html = '';
+  for (let i = 0; i < text.length; i++) {
+    if (cancelFlag) return;
+    const ch = text[i];
+    html += `<span style="${s}">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+    screen.innerHTML = screen.innerHTML.replace(/<span class="tw-active">.*?<\/span>/, '') + '<span class="tw-active">' + html + '</span>';
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(delayMs);
+  }
+  // Finalize
+  screen.innerHTML = screen.innerHTML.replace(/<span class="tw-active">.*?<\/span>/, html);
+  screen.scrollTop = screen.scrollHeight;
+}
+
+async function typewriterChars(text, colors, delayMs, cursorStart) {
+  // text is the full line, colors maps each char to a color
+  let html = '';
+  for (let i = 0; i < text.length; i++) {
+    if (cancelFlag) return;
+    const ch = text[i];
+    const colorName = colors[i] || 'RESET';
+    const s = C[colorName] || C.RESET;
+    html += `<span style="${s}">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+    await sleep(delayMs);
+    // Find the last `.big-char-line` or similar
+    const lines = screen.querySelectorAll('.big-line');
+    if (lines.length > 0) {
+      // Append to a tracker
+    }
+  }
+  return html;
+}
+
+async function animation() {
+  cancelFlag = false;
+  setHTML('');
+
+  // ── Phase 1: Big ASCII "OPENOS" typewriter (6 letters on one line, 7 rows) ──
+  const bigRows = buildAllRows();
+  const bigContainer = document.createElement('div');
+  bigContainer.style.marginBottom = '4px';
+  bigContainer.style.marginTop = '30px';
+  screen.appendChild(bigContainer);
+
+  for (let row = 0; row < bigRows.length; row++) {
+    if (cancelFlag) return;
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'big-line';
+    rowDiv.style.lineHeight = '1.25';
+    bigContainer.appendChild(rowDiv);
+    
+    const [text, colors] = bigRows[row];
+    let html = '';
+    for (let i = 0; i < text.length; i++) {
+      if (cancelFlag) return;
+      const ch = text[i];
+      const colorName = colors[i] || 'RESET';
+      const s = C[colorName] || C.RESET;
+      html += `<span style="${s}">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+      rowDiv.innerHTML = html + '<span class="blink" style="color:#40ff60;font-weight:bold">█</span>';
+      screen.scrollTop = screen.scrollHeight;
+      await sleep(12);
+    }
+    rowDiv.innerHTML = html;
+  }
+
+  await sleep(300);
+
+  // ── Phase 2: Tagline typewriter ──
+  const tagDiv = document.createElement('div');
+  tagDiv.style.color = '#4a5570';
+  screen.appendChild(tagDiv);
+  const tagline = 'The open-source operating system.';
+  for (let i = 0; i < tagline.length; i++) {
+    if (cancelFlag) return;
+    tagDiv.textContent = tagline.substring(0, i + 1);
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(35);
+  }
+  await sleep(200);
+
+  // ── Phase 3: Version line ──
+  const verDiv = document.createElement('div');
+  verDiv.style.color = '#20d0d0';
+  verDiv.style.marginTop = '8px';
+  screen.appendChild(verDiv);
+  const verText = 'OPENOS 1.0.0  ·  6.6  ·  x86_64';
+  for (let i = 0; i < verText.length; i++) {
+    if (cancelFlag) return;
+    verDiv.textContent = verText.substring(0, i + 1);
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(20);
+  }
+
+  // ── Phase 4: Progress bar ──
+  const barContainer = document.createElement('div');
+  barContainer.style.color = '#4a5570';
+  barContainer.style.marginTop = '2px';
+  barContainer.innerHTML = '[<span id="bar-fill" style="color:#40ff60">></span>' + '&nbsp;'.repeat(55) + '] 0%';
+  screen.appendChild(barContainer);
+  
+  for (let pct = 2; pct <= 100; pct += 2) {
+    if (cancelFlag) return;
+    const filled = Math.floor(55 * pct / 100);
+    let barStr = '='.repeat(filled);
+    if (pct < 100) barStr += '>';
+    const empty = 55 - barStr.length;
+    barContainer.innerHTML = '[<span style="color:#40ff60">' + barStr + '</span><span style="color:#4a5570">' + '&nbsp;'.repeat(empty) + '</span>] ' + pct + '%';
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(20);
+  }
+
+  await sleep(400);
+
+  // ── Phase 5: Blinking prompt ──
+  const promptDiv = document.createElement('div');
+  promptDiv.style.marginTop = '10px';
+  screen.appendChild(promptDiv);
+  
+  for (let f = 0; f < 4; f++) {
+    if (cancelFlag) return;
+    promptDiv.innerHTML = '<span style="color:#20ff40">chronos@openos</span>:<span style="color:#4080ff">~</span>$ <span class="blink" style="color:#f0f0ff;font-weight:bold">█</span>';
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(300);
+    promptDiv.innerHTML = '<span style="color:#20ff40">chronos@openos</span>:<span style="color:#4080ff">~</span>$ &nbsp;';
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(300);
+  }
+
+  // Final prompt
+  promptDiv.innerHTML = '<span style="color:#20ff40">chronos@openos</span>:<span style="color:#4080ff">~</span>$ <span class="blink" style="color:#f0f0ff;font-weight:bold">█</span>';
+
+  await sleep(300);
+
+  // ── Phase 6: Welcome message ──
+  const welcomeDiv1 = document.createElement('div');
+  welcomeDiv1.style.marginTop = '12px';
+  welcomeDiv1.style.color = '#60ffff';
+  welcomeDiv1.style.fontWeight = 'bold';
+  welcomeDiv1.textContent = 'Welcome to OPENOS!';
+  screen.appendChild(welcomeDiv1);
+
+  const welcomeDiv2 = document.createElement('div');
+  welcomeDiv2.style.color = '#4a5570';
+  welcomeDiv2.textContent = "OPENOS — Your system, your rules.  Type 'help' for available commands.";
+  screen.appendChild(welcomeDiv2);
+
+  const welcomeDiv3 = document.createElement('div');
+  welcomeDiv3.style.color = '#4a5570';
+  welcomeDiv3.textContent = 'Press Ctrl+Alt+T to open Crosh  ·  Ctrl+Alt+F2 for VT2 console';
+  screen.appendChild(welcomeDiv3);
+
+  screen.scrollTop = screen.scrollHeight;
+
+  await sleep(2000);
+}
+// (animation stays visible — no cleanup wipe)
+
+function toggleSpeed() {
+  speedMultiplier = speedMultiplier === 1 ? 0.3 : speedMultiplier === 0.3 ? 0.1 : 1;
+  document.getElementById('speedLabel').textContent = speedMultiplier === 1 ? '1x' : speedMultiplier === 0.3 ? '3x' : '10x';
+}
+
+function replay() {
+  cancelFlag = true;
+  setTimeout(() => {
+    cancelFlag = false;
+    animation();
+  }, 50);
+}
+
+animation();
+</script>
+</body>
+</html>

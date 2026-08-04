@@ -1,0 +1,1 @@
+chromeos-disk-firmware-baseboard-krabbylake-1.1.ebuild

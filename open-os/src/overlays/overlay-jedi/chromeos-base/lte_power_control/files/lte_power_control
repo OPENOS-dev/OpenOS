@@ -1,0 +1,153 @@
+#!/bin/bash
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Init gpio for Rolling Wireless LTE module
+
+readonly GPIO_DIR="/sys/class/gpio"
+
+declare -A RW135
+
+# RW135 GPIO Device and offset values
+RW135["GPIO_DEVICE"]="10005000.pinctrl"
+RW135["LTE_W_DISABLE_OFFSET"]=148
+RW135["LTE_SAR_DETECT_OFFSET"]=124
+RW135["LTE_EN_OFFSET"]=121
+RW135["LTE_PWR_OFF_OFFSET"]=147
+RW135["LTE_RESET_OFFSET"]=10
+RW135["DISABLE_RESET_SLEEP"]=0.02
+RW135["DISABLE_PWR_SLEEP"]=0.1
+RW135["SLEEP_AFTER_ENABLE"]=0.002
+RW135["SLEEP_AFTER_ENABLE_PWR"]=0.014
+
+declare -A RW101
+
+# RW101 GPIO Device and offset values
+RW101["GPIO_DEVICE"]="10005000.pinctrl"
+RW101["LTE_W_DISABLE_OFFSET"]=148
+RW101["LTE_SAR_DETECT_OFFSET"]=124
+RW101["LTE_EN_OFFSET"]=121
+RW101["LTE_PWR_OFF_OFFSET"]=147
+RW101["LTE_RESET_OFFSET"]=10
+RW101["DISABLE_RESET_SLEEP"]=0.02
+RW101["DISABLE_PWR_SLEEP"]=0.1
+RW101["SLEEP_AFTER_ENABLE"]=0.002
+RW101["SLEEP_AFTER_ENABLE_PWR"]=0.014
+
+get_gpio_base() {
+  local GPIO_DEVICE="${1}"
+  dir_list=$(find /sys/class/gpio -type l -name "gpiochip*")
+  for d in ${dir_list}; do
+    DEVICE=$(basename "$(readlink "${d}/device")")
+    if [ "${DEVICE}" = "${GPIO_DEVICE}" ]; then
+      BASE=$(cat "${d}/base")
+      break
+    fi
+  done
+  if [ -z "${BASE}" ]; then
+    # Base not set, exiting.
+    exit 0
+  fi
+  echo "${BASE}"
+}
+
+disable_modem() {
+  local -n MODEM=${1}
+  local BASE
+  BASE=$(get_gpio_base "${MODEM[GPIO_DEVICE]}")
+  # lte-w-disable
+  disable_gpio $((BASE + MODEM["LTE_W_DISABLE_OFFSET"]))
+
+  # sar-detect
+  disable_gpio $((BASE + MODEM["LTE_SAR_DETECT_OFFSET"]))
+
+  # reset and sleep 20ms
+  disable_gpio $((BASE + MODEM["LTE_RESET_OFFSET"]))
+  sleep "${MODEM[DISABLE_RESET_SLEEP]}"
+
+  # poweroff and sleep 100ms
+  disable_gpio $((BASE + MODEM["LTE_PWR_OFF_OFFSET"]))
+  sleep "${MODEM[DISABLE_PWR_SLEEP]}"
+
+  # m2-power
+  disable_gpio $((BASE + MODEM["LTE_EN_OFFSET"]))
+}
+
+enable_modem() {
+  local -n MODEM=${1}
+  local BASE
+  BASE=$(get_gpio_base "${MODEM[GPIO_DEVICE]}")
+  # lte-w-disable
+  echo $((BASE + MODEM["LTE_W_DISABLE_OFFSET"]))
+  enable_gpio $((BASE + MODEM["LTE_W_DISABLE_OFFSET"]))
+
+  # sar-detect"
+  enable_gpio $((BASE + MODEM["LTE_SAR_DETECT_OFFSET"]))
+
+  # m2-power and sleep 2ms
+  enable_gpio $((BASE + MODEM["LTE_EN_OFFSET"]))
+  sleep "${MODEM[SLEEP_AFTER_ENABLE]}"
+
+  # poweroff and sleep 14ms
+  enable_gpio $((BASE + MODEM["LTE_PWR_OFF_OFFSET"]))
+  sleep "${MODEM[SLEEP_AFTER_ENABLE_PWR]}"
+
+  #reset
+  enable_gpio $((BASE + MODEM["LTE_RESET_OFFSET"]))
+}
+
+set_gpio() {
+  local gpio="$1"
+  local gpio_level="$2"
+  local gpio_path
+  gpio_path="${GPIO_DIR}/gpio${gpio}"
+  if [ ! -e "${gpio_path}" ]; then
+    echo "${gpio}" > "${GPIO_DIR}/export"
+    ret="$?"
+    if [ "${ret}" -ne 0 ]; then
+      exit 1
+    fi
+  fi
+  echo "${gpio_level}" > "${gpio_path}/direction"
+  echo "${gpio}" > "${GPIO_DIR}/unexport"
+}
+
+disable_gpio() {
+  local gpio="$1"
+  set_gpio "${gpio}" "low"
+}
+
+enable_gpio() {
+  local gpio="$1"
+  set_gpio "${gpio}" "high"
+}
+
+main() {
+  local fw
+  fw=$(cros_config /modem firmware-variant)
+  if [ -z "${fw}" ]; then
+    exit 0
+  fi
+
+  if [ "$1" = "on" ]; then
+    case ${fw#*_} in
+      "rw135")
+          enable_modem RW135
+          ;;
+      "rw101")
+          enable_modem RW101
+          ;;
+    esac
+  else
+    case ${fw#*_} in
+      "rw135")
+          disable_modem RW135
+          ;;
+      "rw101")
+          disable_modem RW101
+          ;;
+    esac
+  fi
+}
+main "$@"

@@ -1,0 +1,28 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("//bazel/build_defs:generate_cargo_toml.bzl", "generate_cargo_toml")
+
+rust_binary(
+    name = "build_sdk",
+    srcs = glob(["src/*.rs"]),
+    data = [":build_sdk.sh"],
+    visibility = ["@portage//:__subpackages__"],
+    deps = [
+        "//bazel/portage/common/cliutil",
+        "//bazel/portage/common/container",
+        "//bazel/portage/common/durabletree",
+        "//bazel/portage/common/fileutil",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:clap",
+        "@rules_rust//tools/runfiles",
+    ],
+)
+
+generate_cargo_toml(
+    name = "cargo_toml",
+    crate = ":build_sdk",
+    enabled = False,
+)

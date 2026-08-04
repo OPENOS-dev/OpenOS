@@ -1,0 +1,36 @@
+{
+  "_comment": "See http://www.chromium.org/chromium-os/developer-guide/disk-layout-format",
+  "metadata":{
+    "rootdev_base": "/sys/devices/pci0000:00/0000:00:1c.0/mmc_host/mmc*/mmc*:000*/block/mmcblk*"
+  },
+  "parent": "legacy_disk_layout.json",
+  "layouts": {
+    "base": [
+      {
+        # Bump of stateful partition from default 4GiB.
+        "num": 1,
+        "size": "5 GiB"
+      }
+    ],
+    "usb": [
+      {
+        # Bump of stateful partition from default 4GiB.
+        "num": 1,
+        "size": "5 GiB"
+      }
+    ],
+    "usb-updatable": [
+      {
+        # Bump of stateful partition from default 4GiB.
+        "num": 1,
+        "size": "5 GiB"
+      }
+    ],
+    "factory_install": [
+      {
+        "num": 1,
+        "size": "200 MiB"
+      }
+    ]
+  }
+}

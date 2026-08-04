@@ -1,0 +1,68 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+INPUT_DEVICE=""
+LINUX_FIRMWARE=""
+
+USE="${USE} rex"
+
+# Enable Zephyr-based EC.
+USE="${USE} zephyr_ec"
+
+# Enable unibuild
+USE="${USE} unibuild"
+USE="${USE} has_chromeos_config_bsp"
+
+# Disable AC ACPI driver
+USE="${USE} -acpi_ac"
+
+# Enable biometrics support
+USE="${USE} biod"
+
+# modemfwd is used for updating modem firmware.
+USE="${USE} modemfwd"
+
+# intel_psr tells if Intel PSR(platform service record) is supported or not.
+USE="${USE} intel_psr"
+
+# Enable HDRnet and tnr.
+USE="${USE} ipu6epmtl camera_feature_hdrnet camera_feature_intel_still_capture_tnr"
+
+# Enable single frame super resolution.
+USE="${USE} camera_feature_super_res"
+
+# Enable Auto Framing.
+USE="${USE} camera_feature_auto_framing"
+
+# Include the ilitek_its firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} ilitek_its"
+
+# Compress the rw payload with LZ4 instead of LZMA
+USE="${USE} rw-payload-compress-lz4 -rw-payload-compress-lzma"
+
+# Enable spi heatmap.
+INPUT_DEVICES="${INPUT_DEVICES} spi_heatmap"
+
+# Include the pixart firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} pixart"
+
+# Include the elan firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} elan_i2chid"
+
+# Make it possible to collect firmware dumps in feedback reports
+USE="${USE} fbpreprocessord"
+
+# Use ANGLE as the GL backend for cros_camera_service
+USE="${USE} camera_angle_backend"
+
+# Use cros-camera-algo service
+USE="${USE} cros_camera_algo"
+
+# Enable TFLite OpenVINO Delegate to accelerate ML workloads on NPU.
+USE="${USE} intel_openvino_delegate vpu_driver"
+
+# Include Realtek Ethernet firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtl8125b-2"

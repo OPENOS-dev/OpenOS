@@ -1,0 +1,109 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.test.lab.api;
+
+option go_package = "go.chromium.org/chromiumos/config/go/test/lab/api";
+
+import "chromiumos/test/lab/api/dut.proto";
+
+// Provides access to all of the lab device device wiring/setup information.
+//
+// Implementations of this service will vary on a lab-environment basis.
+// E.g. Local lab, Mobile lab, Managed lab, Partner lab
+//
+// This allows dependent services (e.g. test execution, device provisioning) to
+// run consistently based on this stable API, agnostic of the lab environment.
+service InventoryService {
+  // Returns the device wiring topology, including all peripherals attached to
+  // the device and peer devices that are used in the test setup.
+  rpc GetDutTopology(GetDutTopologyRequest)
+      returns (stream GetDutTopologyResponse);
+
+  // GetStableVersion fetches the stable version for a given device.
+  // It checks for a local stable version file first (e.g., on Satlab).
+  // If no local file exists, it queries the central stable version service (e.g., crosskylabadmin).
+  // Device details from the inventory are used to determine the correct version.
+  rpc GetStableVersion(GetStableVersionRequest) returns (GetStableVersionResponse);
+}
+
+message GetDutTopologyRequest {
+  // Unique ID of the DUT topology
+  // Provided by the client (e.g. local test environment) or by
+  // the automated scheduling layer (e.g. test setup that was assigned to
+  // service the requested testing).
+  DutTopology.Id id = 1;
+}
+
+message GetDutTopologyResponse {
+  message Success {
+    DutTopology dut_topology = 1;
+  }
+  message Failure {
+    // Human readable error to aid in debugging
+    string error_message = 1;
+  }
+
+  oneof result {
+    Success success = 1;
+    Failure failure = 2;
+  }
+}
+// Request message for GetStableVersion RPC.
+message GetStableVersionRequest {
+  // The target device for which to get the stable version.
+  StableVersionTarget target = 1;
+}
+
+// Response message for GetStableVersion RPC.
+message GetStableVersionResponse {
+  // The stable version information.
+  StableVersion version = 1;
+}
+
+// NOTE: The StableVersion and StableVersionTarget messages below are COPIED from
+// go.chromium.org/chromiumos/infra/proto/src/lab_platform/stable_version.proto
+// with local modifications. Please keep them in sync with the original source where applicable.
+
+// StableVersion describe a single version record to describe target device
+// and versions need to be used for that.
+message StableVersion {
+  // The version of the OS.
+  // e.g. "R80-14444.333.0"
+  string os_version = 1;
+  // The path of the OS image file.
+  // Examples:
+  // 1) "board-release/R80-14444.333.0"
+  // 2) "gs://bucket/board-release/R80-14444.333.0/file_name.tar.xz"
+  string os_image_path = 2;
+  // The version of the firmware RO.
+  // e.g. "Google_Board.14444.333.0"
+  string firmware_ro_version = 3;
+  // The path of the firmware RO image file.
+  // Examples:
+  // 1) "board-firmware/R80-14444.333.0"
+  // 2) "gs://bucket/board-firmware/R80-14444.333.0/file_name.tar.xz"
+  string firmware_ro_image_path = 4;
+  // The version of the firmware RW.
+  string firmware_rw_version = 5;
+  // The path of the firmware RW image file.
+  string firmware_rw_image_path = 6;
+}
+
+// StableVersionTarget describes details of target devices.
+message StableVersionTarget {
+  // Device type like cros/android/tablet/labstation.
+  string device_type = 1;
+  // The name of the device.
+  string device_name = 2;
+  // The board of the device.
+  // For CrOS it can be represented as build-target.
+  string board = 3;
+  // The model of the device.
+  string model = 4;
+  // The pools of the device.
+  repeated string pools = 5;
+}

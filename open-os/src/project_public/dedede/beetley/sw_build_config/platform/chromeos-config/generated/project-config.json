@@ -1,0 +1,41 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "first-api-level": "28",
+            "marketing-name": "",
+            "metrics-tag": "beetley",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "beetley/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_beetley.xml",
+            "system-path": "/etc/hardware_features_beetley.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "identity": {
+          "platform-name": "Dedede",
+          "sku-id": 2147483647,
+          "smbios-name-match": "Beetley"
+        },
+        "name": "beetley",
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

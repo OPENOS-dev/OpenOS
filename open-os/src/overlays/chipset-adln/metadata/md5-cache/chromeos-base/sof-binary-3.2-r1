@@ -1,0 +1,10 @@
+DEFINED_PHASES=install
+DEPEND=media-libs/adln-aec-param
+DESCRIPTION=Alder Lake SOF firmware binary
+EAPI=7
+KEYWORDS=*
+LICENSE=SOF
+RDEPEND=media-libs/adln-aec-param
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/sof-binary-adln-3.2.tar.bz2
+_md5_=a432201084747c740bf92b69993e50e6

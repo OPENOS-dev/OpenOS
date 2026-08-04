@@ -1,0 +1,55 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "volteer_cheets",
+            "first-api-level": "28",
+            "marketing-name": "",
+            "metrics-tag": "collis",
+            "product": "volteer"
+          },
+          "hardware-features": {
+            "build-path": "collis/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_collis.xml",
+            "system-path": "/etc/hardware_features_collis.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "collis",
+            "files": []
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "identity": {
+          "platform-name": "Volteer",
+          "sku-id": 0
+        },
+        "name": "collis",
+        "thermal": {
+          "dptf-dv": "collis/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/collis/dptf.dv",
+              "source": "collis/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'volteer_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

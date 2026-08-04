@@ -1,0 +1,80 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} skywalker"
+
+# Enable AP firmware
+USE="${USE} bootimage"
+
+# Enable EC firmware
+USE="${USE} zephyr_ec"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+# Uncomment these lines to activate the serial port.
+# Enable kernel serial drivers
+USE="${USE} pcserial"
+# Declare set of enabled consoles
+TTY_CONSOLE="ttyS0"
+
+# Include the elan_i2chid firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} elan_i2chid"
+
+# Include paradetech firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} paradetech"
+
+# Include the pixart firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} pixart"
+
+# Include ilitek firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} ilitek_its"
+
+# Include focaltech firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} focaltech"
+
+# Include the goodix firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} goodix"
+
+# Include the G2touch firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} g2touch"
+
+# Enable biometrics support
+USE="${USE} biod"
+
+# Let CrOS IIO service owns sar sensors
+USE="${USE} iioservice_proximity"
+
+# Enable Mediatek 7920 WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7920"
+
+# Enable Mediatek 7920 BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7920-bt"
+
+# Enable Mediatek 7925 WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7925"
+
+# Enable Mediatek 7925 BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7925-bt"
+
+# Enable RTL8852BE-VT WiFi firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtw8852b"
+
+# Enable RTL8852BE-VT BT firmware.
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtl_bt-8852be-vt-usb"
+
+# Include synaptics firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} synaptics"
+
+# Include elan i2chid touchpad firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} etphidiap"
+
+# Include the weida firmware updating tool.
+INPUT_DEVICES="${INPUT_DEVICES} weida"
+
+# Include the cirque firmware updating tool.
+INPUT_DEVICES="${INPUT_DEVICES} cirque"

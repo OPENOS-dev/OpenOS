@@ -1,0 +1,1 @@
+libcamera-mtkisp7-utils-bin-0.0.12.ebuild

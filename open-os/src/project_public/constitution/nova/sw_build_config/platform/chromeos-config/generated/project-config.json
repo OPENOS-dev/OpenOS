@@ -1,0 +1,178 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "constitution_cheets",
+            "marketing-name": "",
+            "metrics-tag": "nova",
+            "product": "constitution"
+          },
+          "hardware-features": {
+            "build-path": "nova/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "nova",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm//HiFi.conf",
+                "source": "common/audio/ucm-config/None/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm//.conf",
+                "source": "common/audio/ucm-config/None/None.conf"
+              },
+              {
+                "destination": "/etc/cras/nova/",
+                "source": "common/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/nova/dsp.ini",
+                "source": "common/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-constitution.conf",
+                "source": "common/audio/alsa-module-config/alsa-constitution.conf"
+              },
+              {
+                "destination": "/etc/cras/nova/board.ini",
+                "source": "common/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Nova",
+          "platform-name": "Constitution",
+          "sku-id": 2147483647
+        },
+        "name": "nova",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "constitution",
+          "project": "nova"
+        },
+        "thermal": {
+          "dptf-dv": "nova/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/nova/dptf.dv",
+              "source": "nova/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'constitution_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "constitution_cheets",
+            "marketing-name": "",
+            "metrics-tag": "nova",
+            "product": "constitution"
+          },
+          "hardware-features": {
+            "build-path": "nova/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "nova",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm//HiFi.conf",
+                "source": "common/audio/ucm-config/None/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm//.conf",
+                "source": "common/audio/ucm-config/None/None.conf"
+              },
+              {
+                "destination": "/etc/cras/nova/",
+                "source": "common/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/nova/dsp.ini",
+                "source": "common/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-constitution.conf",
+                "source": "common/audio/alsa-module-config/alsa-constitution.conf"
+              },
+              {
+                "destination": "/etc/cras/nova/board.ini",
+                "source": "common/audio/cras-config/board.ini"
+              }
+            ]
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Nova",
+          "platform-name": "Constitution",
+          "sku-id": 131072
+        },
+        "name": "nova",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "constitution",
+          "project": "nova"
+        },
+        "thermal": {
+          "dptf-dv": "nova/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/nova/dptf.dv",
+              "source": "nova/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'constitution_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

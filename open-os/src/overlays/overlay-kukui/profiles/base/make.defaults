@@ -1,0 +1,56 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHROMEOS_DTBS="mt8183-kukui-k*.dtb"
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} kukui"
+
+USE="${USE} bootimage"
+
+USE="${USE} detachable"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+USE="${USE} touch_centric_device"
+
+USE="${USE} shelf-hotseat"
+
+# Include the goodix firmware updating tool
+INPUT_DEVICES="goodix"
+
+# Include the elan_i2chid firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} elan_i2chid"
+
+# Uncomment these lines to activate the serial port.
+# Enable kernel serial drivers
+USE="${USE} pcserial"
+# Declare set of enabled consoles
+TTY_CONSOLE="ttyS0"
+
+# Enable Portrait Mode camera feature.
+USE="${USE} camera_feature_portrait_mode"
+
+# Enable ime add-ons
+USE="${USE} ime_addons"
+
+# Enable fs-verity support
+USE="${USE} fsverity"
+
+USE="${USE} uprev-4-to-5"
+
+# Enable tablet form factor
+USE="${USE} tablet_form_factor"
+
+# Enable on-device grammar check
+USE="${USE} ondevice_grammar"
+
+# Enable Crosier testing support.
+USE="${USE} crosier_binary"
+
+# Use cros-camera-algo service
+USE="${USE} cros_camera_algo"

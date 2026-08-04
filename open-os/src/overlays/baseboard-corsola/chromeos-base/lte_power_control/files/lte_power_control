@@ -1,0 +1,194 @@
+#!/bin/bash
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Init gpio for fibocom LTE module
+
+readonly GPIO_DIR="/sys/class/gpio"
+
+declare -A FM101
+
+# FM101 GPIO Device and offset values
+FM101["GPIO_DEVICE"]="10005000.pinctrl"
+FM101["LTE_W_DISABLE_OFFSET"]=178
+FM101["LTE_SAR_DETECT_OFFSET"]=179
+FM101["LTE_EN_OFFSET"]=180
+FM101["LTE_PWR_OFF_OFFSET"]=181
+FM101["LTE_RESET_OFFSET"]=182
+FM101["DISABLE_RESET_SLEEP"]=0.02
+FM101["DISABLE_PWR_SLEEP"]=0.1
+FM101["SLEEP_AFTER_ENABLE"]=0.002
+FM101["SLEEP_AFTER_ENABLE_PWR"]=0.014
+
+declare -A RW101
+# RW101 GPIO Device and offset values
+RW101["GPIO_DEVICE"]="10005000.pinctrl"
+RW101["LTE_W_DISABLE_OFFSET"]=178
+RW101["LTE_SAR_DETECT_OFFSET"]=179
+RW101["LTE_EN_OFFSET"]=180
+RW101["LTE_PWR_OFF_OFFSET"]=181
+RW101["LTE_RESET_OFFSET"]=182
+RW101["DISABLE_RESET_SLEEP"]=0.02
+RW101["DISABLE_PWR_SLEEP"]=0.1
+RW101["SLEEP_AFTER_ENABLE"]=0.002
+RW101["SLEEP_AFTER_ENABLE_PWR"]=0.014
+
+declare -A EM060
+# EM060 GPIO Device and offset values
+EM060["GPIO_DEVICE"]="10005000.pinctrl"
+EM060["LTE_W_DISABLE_OFFSET"]=178
+EM060["LTE_SAR_DETECT_OFFSET"]=179
+EM060["LTE_EN_OFFSET"]=180
+EM060["LTE_PWR_OFF_OFFSET"]=181
+EM060["LTE_RESET_OFFSET"]=182
+EM060["DISABLE_SAR_SLEEP"]=0.02
+EM060["DISABLE_PWR_SLEEP"]=1
+EM060["SLEEP_AFTER_ENABLE"]=0.002
+EM060["SLEEP_AFTER_ENABLE_PWR"]=0.014
+
+get_gpio_base() {
+  local GPIO_DEVICE="${1}"
+  dir_list=$(find /sys/class/gpio -type l -name "gpiochip*")
+  for d in ${dir_list}; do
+    DEVICE=$(basename "$(readlink "${d}/device")")
+    if [ "${DEVICE}" = "${GPIO_DEVICE}" ]; then
+      BASE=$(cat "${d}/base")
+      break
+    fi
+  done
+  if [ -z "${BASE}" ]; then
+    # Base not set, exiting.
+    exit 0
+  fi
+  echo "${BASE}"
+}
+
+disable_modem() {
+  local -n MODEM=${1}
+  local BASE
+  BASE=$(get_gpio_base "${MODEM[GPIO_DEVICE]}")
+  # lte-w-disable
+  disable_gpio $((BASE + MODEM["LTE_W_DISABLE_OFFSET"]))
+
+  # sar-detect
+  disable_gpio $((BASE + MODEM["LTE_SAR_DETECT_OFFSET"]))
+
+  # reset and sleep 20ms
+  disable_gpio $((BASE + MODEM["LTE_RESET_OFFSET"]))
+  sleep "${MODEM[DISABLE_RESET_SLEEP]}"
+
+  # poweroff and sleep 100ms
+  disable_gpio $((BASE + MODEM["LTE_PWR_OFF_OFFSET"]))
+  sleep "${MODEM[DISABLE_PWR_SLEEP]}"
+
+  # m2-power
+  disable_gpio $((BASE + MODEM["LTE_EN_OFFSET"]))
+}
+
+enable_modem() {
+  local -n MODEM=${1}
+  local BASE
+  BASE=$(get_gpio_base "${MODEM[GPIO_DEVICE]}")
+  # lte-w-disable
+  enable_gpio $((BASE + MODEM["LTE_W_DISABLE_OFFSET"]))
+
+  # sar-detect"
+  enable_gpio $((BASE + MODEM["LTE_SAR_DETECT_OFFSET"]))
+
+  # m2-power and sleep 2ms
+  enable_gpio $((BASE + MODEM["LTE_EN_OFFSET"]))
+  sleep "${MODEM[SLEEP_AFTER_ENABLE]}"
+
+  # poweroff and sleep 14ms
+  enable_gpio $((BASE + MODEM["LTE_PWR_OFF_OFFSET"]))
+  sleep "${MODEM[SLEEP_AFTER_ENABLE_PWR]}"
+
+  #reset
+  enable_gpio $((BASE + MODEM["LTE_RESET_OFFSET"]))
+}
+
+
+disable_modem_em060() {
+  local -n MODEM=EM060
+  local BASE
+  BASE=$(get_gpio_base "${MODEM[GPIO_DEVICE]}")
+  # lte-w-disable
+  disable_gpio $((BASE + MODEM["LTE_W_DISABLE_OFFSET"]))
+
+  # sar-detect
+  disable_gpio $((BASE + MODEM["LTE_SAR_DETECT_OFFSET"]))
+
+  sleep "${MODEM[DISABLE_SAR_SLEEP]}"
+
+  # poweroff and sleep 1s
+  disable_gpio $((BASE + MODEM["LTE_PWR_OFF_OFFSET"]))
+  sleep "${MODEM[DISABLE_PWR_SLEEP]}"
+
+  # reset
+  disable_gpio $((BASE + MODEM["LTE_RESET_OFFSET"]))
+
+  # m2-power
+  disable_gpio $((BASE + MODEM["LTE_EN_OFFSET"]))
+}
+
+set_gpio() {
+  local gpio="$1"
+  local gpio_level="$2"
+  local gpio_path
+  gpio_path="${GPIO_DIR}/gpio${gpio}"
+  if [ ! -e "${gpio_path}" ]; then
+    echo "${gpio}" > "${GPIO_DIR}/export"
+    ret="$?"
+    if [ "${ret}" -ne 0 ]; then
+      exit 1
+    fi
+  fi
+  echo "${gpio_level}" > "${gpio_path}/direction"
+  echo "${gpio}" > "${GPIO_DIR}/unexport"
+}
+
+disable_gpio() {
+  local gpio="$1"
+  set_gpio "${gpio}" "low"
+}
+
+enable_gpio() {
+  local gpio="$1"
+  set_gpio "${gpio}" "high"
+}
+
+main() {
+  local fw
+  fw=$(cros_config /modem firmware-variant)
+  if [ -z "${fw}" ]; then
+    exit 0
+  fi
+
+  if [ "$1" = "on" ]; then
+    case ${fw#*_} in
+      "fm101")
+          enable_modem FM101
+          ;;
+      "rw101")
+          enable_modem RW101
+          ;;
+      "em060")
+          enable_modem EM060
+          ;;
+    esac
+  else
+    case ${fw#*_} in
+      "fm101")
+          disable_modem FM101
+          ;;
+      "rw101")
+          disable_modem RW101
+          ;;
+      "em060")
+          disable_modem_em060
+          ;;
+    esac
+  fi
+}
+main "$@"

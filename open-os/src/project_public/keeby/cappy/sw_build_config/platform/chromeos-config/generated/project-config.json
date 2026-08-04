@@ -1,0 +1,40 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "keeby_cheets",
+            "first-api-level": "28",
+            "marketing-name": "",
+            "metrics-tag": "cappy",
+            "product": "keeby"
+          },
+          "hardware-features": {
+            "build-path": "cappy/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_cappy.xml",
+            "system-path": "/etc/hardware_features_cappy.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "identity": {
+          "platform-name": "Keeby",
+          "sku-id": 0
+        },
+        "name": "cappy",
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'keeby_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

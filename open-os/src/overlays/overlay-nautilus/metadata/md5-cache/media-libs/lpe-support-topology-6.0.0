@@ -1,0 +1,11 @@
+DEFINED_PHASES=install
+DEPEND=media-libs/kbl-hotword-support
+DESCRIPTION=Topology binary files used to support/configure LPE Audio
+EAPI=7
+IUSE=kernel-5_4
+KEYWORDS=-* x86 amd64
+LICENSE=LICENCE.adsp_sst
+RDEPEND=media-libs/kbl-hotword-support
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/lpe-support-topology-nautilus-6.0.0.tbz2
+_md5_=cf8fd186ec3b55b6786bf503f99757de

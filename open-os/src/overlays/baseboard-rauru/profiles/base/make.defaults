@@ -1,0 +1,66 @@
+# Copyright 2024 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHROMEOS_DTBS="mt8196-*.dtb"
+
+# Initial value just for style purposes.
+USE=""
+
+# Initial value just for style purposes.
+LINUX_FIRMWARE=""
+
+# Add EC logging
+USE="${USE} eclog"
+
+# Tell powerd to use elogtool to log system events.
+USE="${USE} powerd_manual_eventlog_add"
+
+# Use ext4 crypto
+USE="${USE} direncryption"
+
+# Enable for daisydog
+USE="${USE} watchdog"
+
+# Declare TPM model.
+USE="${USE} -tpm tpm2"
+USE="${USE} ti50_onboard"
+
+# Google USBPD peripheral firmwares
+LINUX_FIRMWARE="${LINUX_FIRMWARE} cros-pd"
+
+# MT7922 WiFi firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7922"
+
+# MT7922 USB BT firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} mt7922-bt"
+
+# Enable miniOS support
+USE="${USE} minios"
+
+# Set mosys_platform
+USE="${USE} mosys_platform_arm"
+
+# Enable eMMC/UFS utility
+USE="${USE} mmc ufs"
+
+# Enable Type-C daemon
+USE="${USE} typecd"
+
+# Enable NVMe utility
+USE="${USE} nvme"
+
+# Use Vulkan for raster/composite in Chrome
+USE="${USE} vulkan_chrome"
+
+# Enable LVM stateful partition
+USE="${USE} lvm_stateful_partition"
+
+# Enable LVM application containers.
+USE="${USE} lvm_application_containers"
+
+# Use duplicate begin frames avoidance for vblank judder
+USE="${USE} avoid_duplicate_begin_frames"
+
+# Enable default-key-stateful layout.
+USE="${USE} default_key_stateful"

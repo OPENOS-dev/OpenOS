@@ -1,0 +1,136 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+INPUT_DEVICES=""
+LINUX_FIRMWARE=""
+
+USE="${USE} nissa"
+USE="${USE} zephyr_ec"
+USE="${USE} zephyr_ish"
+USE="${USE} zephyr_ish_pinned"
+
+# Include the elan firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} elan_i2chid"
+
+# Include the G2touch firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} g2touch"
+
+# Include the pixart firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} pixart"
+
+# Include the weida firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} weida"
+
+# Include the cirque firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} cirque"
+
+# Include ilitek firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} ilitek_its"
+
+# Include focaltech firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} focaltech"
+
+# Include paradetech firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} paradetech"
+
+# Include the zinitix firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} zinitix"
+
+# Include the wacom firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} wacom"
+
+# Include the himax firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} himax"
+
+# Include melfas firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} melfas"
+
+# RTL8852B WiFi firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtw8852b"
+
+# RTL8852B USB BT firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtl_bt-8852be-usb"
+
+# RTL8852BE-VT BT USB firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtl_bt-8852be-vt-usb"
+
+# Add EC logging
+USE="${USE} eclog"
+
+# Enable unibuild
+USE="${USE} unibuild has_chromeos_config_bsp"
+
+# Build kernel with serial driver
+USE="${USE} pcserial"
+
+# Enable serial console
+TTY_CONSOLE="ttyS0"
+
+# modemfwd is used for updating modem firmware.
+USE="${USE} modemfwd"
+
+# Build ufs tools
+USE="${USE} ufs"
+
+# Enable eMMC tools
+USE="${USE} mmc"
+
+# Enable NVMe utility
+USE="${USE} nvme"
+
+# Enable miniOS support
+USE="${USE} minios"
+
+# Disable subpixel rendering because it causes visual artifacts for rotated
+# displays.
+USE="${USE} -subpixel_rendering"
+
+# Enable LVM stateful partition.
+USE="${USE} lvm_stateful_partition"
+
+# Include the goodix firmware updating tool
+INPUT_DEVICES="${INPUT_DEVICES} goodix"
+
+# Enable biometrics support
+USE="${USE} biod"
+
+# Enable LVM application containers.
+USE="${USE} lvm_application_containers"
+
+# Enable Chrome OS RMA daemon
+USE="${USE} rmad"
+
+# Let CrOS IIO service owns sar sensors
+USE="${USE} iioservice_proximity"
+
+# Disable Vboot CBFS Integration
+USE="${USE} vboot_disable_cbfs_integration"
+
+USE="${USE} firmware-bootsplash"
+
+# Enable single frame super resolution.
+USE="${USE} camera_feature_super_res"
+
+# Use Vulkan for raster/composite in Chrome
+USE="${USE} vulkan_chrome"
+
+# Use ANGLE as the GL backend for cros_camera_service
+USE="${USE} camera_angle_backend"
+
+# Use cros-camera-algo service
+USE="${USE} cros_camera_algo"
+
+# WiFi firmware for BE200
+LINUX_FIRMWARE="${LINUX_FIRMWARE} iwlwifi-gl"
+
+# BT firmware for BE200
+LINUX_FIRMWARE="${LINUX_FIRMWARE} ibt_be200"
+
+# Enable support for default-key-stateful.
+USE="${USE} default_key_stateful"
+
+# Include Realtek Ethernet firmware
+LINUX_FIRMWARE="${LINUX_FIRMWARE} rtl8168h-2"

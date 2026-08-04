@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="iio", ATTR{name}=="sx9324", \
+DEVPATH=="*/11d72000.i2c/i2c-5/5-0028/*", SYMLINK+="proximity-cellular"

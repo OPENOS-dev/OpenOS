@@ -1,0 +1,7 @@
+helper {
+  filename: "l850gl-helper"
+  device_id: "usb:2cb7:0007"
+  extra_argument: "--power_enable_gpio=INT34BB:00,111"
+  variant: "sarien"
+  variant: "arcada"
+}

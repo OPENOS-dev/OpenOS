@@ -1,0 +1,13 @@
+BDEPEND=chromeos-base/chromeos-config-host:= app-arch/zip
+DEFINED_PHASES=install
+DEPEND=has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+DESCRIPTION=Install codec configuration for ARCVM
+EAPI=7
+IUSE=arcpp arcvm arcvm_dlc cheets android-container-pi android-container-rvc android-vm-sc android-vm-tm android-vm-vic android-vm-master has_chromeos_config_bsp has_chromeos_config_bsp_private has_chromeos_config_bsp_baseboard has_chromeos_config_bsp_baseboard_private unibuild
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!chromeos-base/arcvm-codec-software has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+REQUIRED_USE=cheets? ( || ( arcpp arcvm ) arcpp? ( ^^ ( android-container-pi android-container-rvc ) ) arcvm? ( ^^ ( android-vm-sc android-vm-tm android-vm-vic android-vm-master ) ) ) !cheets? ( !arcpp !arcvm ) !arcpp? ( !android-container-pi !android-container-rvc ) !arcvm? ( !android-vm-sc !android-vm-tm !android-vm-vic !android-vm-master )
+SLOT=0
+_eclasses_=arc-build-constants	cfdd26e77dc6a96f05767adee359f72f	cros-unibuild	20e99cb053588c1793c4de8687bfba83
+_md5_=79fa75c1cb4dbbdcf36c1319a82eae3e

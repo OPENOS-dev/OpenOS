@@ -1,0 +1,695 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 2147483647
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 1
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 2
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 3
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 4
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 4097
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 4098
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 4099
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 4100
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 8193
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 8194
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 12289
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "skywalker_cheets",
+            "marketing-name": "",
+            "metrics-tag": "r2d2",
+            "product": "skywalker"
+          },
+          "hardware-features": {
+            "build-path": "r2d2/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-skywalker-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "r2d2",
+            "depthcharge": "r2d2",
+            "libpayload": "skywalker",
+            "zephyr-ec": "r2d2"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_R2d2",
+          "platform-name": "Skywalker",
+          "sku-id": 12290
+        },
+        "name": "r2d2",
+        "pvs": {
+          "program": "skywalker",
+          "project": "r2d2"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'skywalker_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

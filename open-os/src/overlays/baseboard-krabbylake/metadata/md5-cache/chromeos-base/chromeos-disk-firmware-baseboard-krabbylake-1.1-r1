@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Ebuild that installs the chromeos disk firmware payload.
+EAPI=7
+KEYWORDS=-* amd64 x86
+LICENSE=Google-Partners-Website
+RDEPEND=chromeos-base/disk_updater
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/chromeos-disk-firmware-baseboard-krabbylake-1.1.tbz2
+_md5_=7199346d0b66414075c00e4f142a2d92

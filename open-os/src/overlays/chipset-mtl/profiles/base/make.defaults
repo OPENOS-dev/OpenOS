@@ -1,0 +1,77 @@
+# Copyright 2021 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+LINUX_FIRMWARE=""
+USE=""
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromeos-intel-pineview"
+CHROMEOS_KERNEL_ARCH="x86_64"
+# NOTE(b/406205536): gfni is currently disabled by default due to a mix of:
+# - LLVM's strong tendencies to use it when it's enabled
+# - Instructions being new enough that many of our builders SIGILL on them
+# These have consistently been popping up in paths covered by unittests,
+# especially in `.a` and `.so` files, so the traditional practice of
+# `use test && append-cppflags -march=x86-64-v2` isn't very effective.
+#
+# These can always be overridden per-build by adding `-mgfni` or
+# `-Ctarget-feature=+gfni`, provided your code is guarded by runtime checks.
+BOARD_COMPILER_FLAGS="-march=meteorlake -mno-gfni"
+BOARD_RUSTFLAGS="-Ctarget-cpu=meteorlake -Ctarget-feature=-gfni"
+# TODO(timvp): Update to march_meteorlake when external libraries support it.
+USE="${USE} march_alderlake"
+
+# Specify default kernel
+USE="${USE} kernel-6_1"
+
+# Identify the vendor
+USE="${USE} intel_cpu"
+
+# Enable DPTF
+USE="${USE} dptf"
+
+# Enable GpuMemoryBuffers backed by dma-bufs.
+USE="${USE} native_gpu_memory_buffers"
+
+# Build IPU6EPMTL variant in cros-camera-hal-intel-ipu6.
+USE="${USE} ipu6epmtl"
+
+# Enable fscrypt v2 usage on 5.4+
+USE="${USE} direncription_allow_v2"
+
+# Enable Intel media-driver
+USE="${USE} -video_cards_i965 video_cards_iHD video_cards_iHD_g12"
+
+# Enable android_aep
+USE="${USE} android_aep"
+
+# Enable DRM/KMS atomic api
+USE="${USE} drm_atomic"
+
+# Enable VMs
+USE="${USE} kvm_host crosvm-gpu virtio_gpu"
+
+# Allows Chrome to start in the presence of multiple threads.
+USE="${USE} gpu_sandbox_start_early"
+
+# make i915 firmwares (GuC,HuC,DMC) builtin
+USE="${USE} builtin_fw_intel_mtl_i915"
+
+# Enable vulkan
+USE="${USE} vulkan"
+
+# Enable clvk
+USE="${USE} clvk"
+
+# Use Vulkan for raster/composite in Chrome
+USE="${USE} vulkan_chrome"
+
+# Enable ARCVM direct VAAPI decoding
+USE="${USE} crosvm-video-vaapi"
+
+# Enable non-coherent DMA mapping requests in crosvm
+USE="${USE} crosvm-noncoherent-dma"
+
+# Bigcore profiles are more appropriate than atom on mtl devices.
+AFDO_PROFILE_SOURCE="bigcore"

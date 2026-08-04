@@ -1,0 +1,17 @@
+helper {
+  filename: "l850gl-helper"
+  device_id: "usb:2cb7:0007"
+  extra_argument: "--power_enable_gpio=AMD0030:00,24"
+  variant: "guybrush360_l850"
+  variant: "nipperkin"
+}
+
+helper {
+  filename: "fibocom-helper"
+  device_id: "pci:14c3:4d75 (External)"
+  # TODO: replace with correct gpio when known
+  extra_argument: "--power_enable_gpio=488"
+  extra_argument: "--modem_type=fm350"
+  variant: "guybrush_fm350"
+  net_admin_required: true
+}

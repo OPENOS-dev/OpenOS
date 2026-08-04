@@ -1,0 +1,64 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromiumos-mediatek-mt8196"
+CHROMEOS_KERNEL_ARCH="arm64"
+
+# Initial value just for style purposes.
+SOF_TARGETS=""
+USE=""
+
+BOARD_COMPILER_FLAGS="-march=armv8-a+crc+crypto"
+# TODO(gbiv): Porting -mtune may be interesting, but clang seems to currently
+# entirely ignore this flag for ARM (notably: not aarch64) builds.
+BOARD_RUSTFLAGS="-Ctarget-feature=+armv8-a,+crc"
+USE="${USE} march_armv8-a"
+
+# Initial value just for style purposes.
+USE="${USE} mediatek_cpu"
+
+# Use hardware FPU instead of software
+USE="${USE} hardfp"
+# Support for neon-vfpv3
+USE="${USE} neon"
+
+# For the device tree installation
+USE="${USE} device_tree"
+
+# use kernel 6.6
+USE="${USE} kernel-6_6"
+
+# Enables WebGL rendering
+USE="${USE} drm_atomic"
+
+# Set raster thread number=2
+USE="${USE} big_little"
+
+# Turn on the video cards this board uses.
+VIDEO_CARDS="mediatek"
+
+# Enable fscrypt v2 usage on 5.4+
+USE="${USE} direncription_allow_v2"
+
+# Enable HW codecs using V4L2 API.
+USE="${USE} v4l2_codec"
+
+# Enable GpuMemoryBuffers backed by dma-bufs.
+USE="${USE} native_gpu_memory_buffers"
+
+# MT8196 minigbm
+USE="${USE} minigbm_platform_mt8196"
+
+# Allows Chrome to start in the presence of multiple threads.
+# We need this to boot to login screen with Mali GPU.
+USE="${USE} gpu_sandbox_start_early"
+
+# Define chipset for OP-TEE
+USE="${USE} optee_mt8196"
+
+# Need to limit PMU counter intialized in ARCVM for b/369260921.
+USE="${USE} crosvm_limit_armv8pmu_counters"
+
+# Enable building Sound Open Firmware
+SOF_TARGETS="mt8196"

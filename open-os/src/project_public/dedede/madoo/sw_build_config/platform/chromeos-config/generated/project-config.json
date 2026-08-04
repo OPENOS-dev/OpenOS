@@ -1,0 +1,915 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327680
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327681
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327682
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327683
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327684
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327685
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327686
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "madoo",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "madoo/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "madoo",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/sof-rt5682",
+                "source": "madoo/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/madoo/dsp.ini",
+                "source": "madoo/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/madoo/board.ini",
+                "source": "madoo/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "madoo"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Madoo",
+          "platform-name": "Dedede",
+          "sku-id": 327687
+        },
+        "name": "madoo",
+        "power": {
+          "disable-dark-resume": "0",
+          "min-visible-backlight-level": "2575",
+          "set-wifi-transmit-power-for-tablet-mode": "1",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "madoo"
+        },
+        "thermal": {
+          "dptf-dv": "madoo/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/madoo/dptf.dv",
+              "source": "madoo/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

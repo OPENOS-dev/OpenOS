@@ -1,0 +1,11 @@
+DEFINED_PHASES=install prepare
+DEPEND=media-libs/tgl-drceq-param media-libs/tgl-dsm-param media-libs/tgl-hotword-support
+DESCRIPTION=Tiger Lake SOF firmware binary
+EAPI=7
+IUSE=kernel-5_4
+KEYWORDS=*
+LICENSE=SOF
+RDEPEND=media-libs/tgl-drceq-param media-libs/tgl-dsm-param media-libs/tgl-hotword-support
+SLOT=0
+SRC_URI=kernel-5_4? ( gs://chromeos-localmirror/distfiles/sof-binary-tgl-1.24.tar.bz2 ) !kernel-5_4? ( gs://chromeos-localmirror/distfiles/sof-binary-tgl-2.1.tar.bz2 )
+_md5_=9c13adc0ed7cb5044f701a5381e61553

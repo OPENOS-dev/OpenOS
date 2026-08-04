@@ -1,0 +1,6 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# Disable runtime PM for the GENESYS MMC bridge.
+# It is known to cause latency spikes during runtime resume. (b/293263346)
+SUBSYSTEM=="pci", ATTR{vendor}=="0x17a0", ATTR{device}=="0xe763", ATTR{power/control}="on"

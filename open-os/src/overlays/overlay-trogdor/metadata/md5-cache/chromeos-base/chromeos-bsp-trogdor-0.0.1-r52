@@ -1,0 +1,12 @@
+BDEPEND=chromeos-base/chromeos-config-host:= app-arch/zip app-misc/jq
+DEFINED_PHASES=info install setup unpack
+DEPEND=chromeos-base/chromeos-bsp-baseboard-trogdor has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+DESCRIPTION=Ebuild which pulls in any necessary ebuilds as dependencies or portage actions.
+EAPI=7
+IUSE=trogdor64 trogdor-arc-r trogdor-kernelnext trogdor-userdebug zephyr_ec trogdor-connectivitynext has_chromeos_config_bsp has_chromeos_config_bsp_private has_chromeos_config_bsp_baseboard has_chromeos_config_bsp_baseboard_private unibuild cros_host cros_workon_tree_f365214c3256d3259d78a5f4516923c79940b702
+KEYWORDS=-* arm64 arm
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-bsp-baseboard-trogdor has_chromeos_config_bsp? ( chromeos-base/chromeos-config-bsp:= ) has_chromeos_config_bsp_private? ( chromeos-base/chromeos-config-bsp-private:= ) has_chromeos_config_bsp_baseboard? ( chromeos-base/chromeos-config-bsp-baseboard:= ) has_chromeos_config_bsp_baseboard_private? ( chromeos-base/chromeos-config-bsp-baseboard-private:= ) unibuild? ( chromeos-base/chromeos-config:= )
+SLOT=0
+_eclasses_=appid	7246d2a9f30b76802a858973725910c7	cros-constants	676fcfd1679a06bba553adf90e231454	cros-credentials	9f78e8c920510c87d08fd22f8c7fe327	cros-unibuild	20e99cb053588c1793c4de8687bfba83	cros-workon	092dd347bc0c0a4fe345d8e195a852e7	flag-o-matic	ad475baa777c9978fa035216c8264a10	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a
+_md5_=c8e7738a9d93ced4a35c3c1ebb01a064

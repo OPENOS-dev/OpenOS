@@ -1,0 +1,16 @@
+helper {
+  filename: "fibocom-helper"
+  device_id: "pci:14c3:4d75 (External)"
+  extra_argument: "--modem_type=fm350"
+  variant: "rex_fm350"
+  net_admin_required: true
+}
+
+helper {
+  filename: "fibocom-helper"
+  device_id: "usb:2cb7:01a2"
+  extra_argument: "--power_enable_gpio=INTC1083:00,111"
+  extra_argument: "--power_fcpo_gpio=INTC1083:00,135"
+  extra_argument: "--modem_type=fm101"
+  variant: "rex_fm101"
+}

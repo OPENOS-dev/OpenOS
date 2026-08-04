@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install preinst
+DEPEND=sys-apps/baselayout
+DESCRIPTION=Chrome OS Modem Update Helpers (rex)
+EAPI=7
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=GPL-2 LGPL-2.1 BSD-Fibocom Apache-2.0 openssl
+RDEPEND=chromeos-base/modem-fw-dlc-rex-fm350 chromeos-base/modem-fw-dlc-rex-fm101 net-misc/qdl sys-apps/baselayout
+RESTRICT=mirror
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm350-81600.0000.00.29.23.06.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm350-FM350.F09.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm350-DEV_OTA_6003.0000.0000_Default_001.000.000.000.img.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm350-OP_OTA_302.005.img.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm350-OEM_OTA_6003.0002.015.img.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm101-19500.0000.00.01.02.80.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm101-A96.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm101-DEV_OTA_6000.0001.0002.0000_00.01.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm101-download_agent_rex_fm101-19500.0000.00.01.02.80-A96-1.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm101-OEM_OTA_6000.0000.004.tar.xz gs://chromeos-localmirror/distfiles/cellular-firmware-fibocom-fm101-OP_OTA_002.077.tar.xz
+_eclasses_=cros-cellular	0592aa121e4f337f6ff1d3a082ada228	estack	686eaab303305a908fd57b2fd7617800	toolchain-funcs	5fa645791b8a0d71c1ef741c2fca187a	udev	eec0bbab06977f1cfc5597269c1fa152	user	bb36bb02334dae8c5fd9efa0d8d2ec70
+_md5_=6b175e3caccb7e5b9f202a377fa7aee1

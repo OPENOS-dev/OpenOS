@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=MediaTek config files required by the MediaTek camera HAL
+EAPI=7
+IUSE=kernel-5_10
+KEYWORDS=-* arm arm64
+LICENSE=LICENCE.mediatek
+RDEPEND=!media-libs/mtk-hal-config
+SLOT=0
+_md5_=2375ea8ca7e8b46a64537656db3949bd

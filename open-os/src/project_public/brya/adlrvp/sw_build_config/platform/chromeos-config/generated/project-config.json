@@ -1,0 +1,351 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "adlrvp",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "adlrvp/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "adlrvp",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/HiFi.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf"
+              }
+            ],
+            "ucm-suffix": "adlrvp"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "adlrvpp_ite"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Adlrvp",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "adlrvp",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "adlrvp"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "adlrvp_extec",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "adlrvp/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "adlrvp_extec",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/HiFi.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf"
+              }
+            ],
+            "ucm-suffix": "adlrvp"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "adlrvpp_ite"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_adlrvp_extec",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "adlrvp_extec",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "adlrvp_extec"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "adlrvp_m_extec",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "adlrvp/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "adlrvp_m_extec",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/HiFi.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf"
+              }
+            ],
+            "ucm-suffix": "adlrvp"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "adlrvpm_ite"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_adlrvp_m_extec",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "adlrvp_m_extec",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "adlrvp_m_extec"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "adlrvp_mchp",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "adlrvp/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "adlrvp_mchp",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/HiFi.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf"
+              }
+            ],
+            "ucm-suffix": "adlrvp"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "adlrvpp_mchp1727"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_adlrvp_mchp",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "adlrvp_mchp",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "adlrvp_mchp"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "brya_cheets",
+            "marketing-name": "",
+            "metrics-tag": "adlrvp_rpl_extec",
+            "product": "brya"
+          },
+          "hardware-features": {
+            "build-path": "adlrvp/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "adlrvp_rpl_extec",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/HiFi.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf",
+                "source": "adlrvp/audio/ucm-config/sof-soundwire.adlrvp/sof-soundwire.adlrvp.conf"
+              }
+            ],
+            "ucm-suffix": "adlrvp"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-brya-private",
+          "build-targets": {
+            "ec": "adlrvpp_ite"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_adlrvp_rpl_extec",
+          "platform-name": "Brya",
+          "sku-id": 2147483647
+        },
+        "name": "adlrvp_rpl_extec",
+        "power": {
+          "disable-dark-resume": "0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "brya",
+          "project": "adlrvp_rpl_extec"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'brya_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

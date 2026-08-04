@@ -1,0 +1,83 @@
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+load("//bazel/build_defs/jinja_template:jinja_template.bzl", "jinja_template")
+load("//bazel/build_defs/jinja_template:render_template.bzl", "render_template_to_source")
+load("//bazel/portage/build_defs:common.bzl", "RUSTC_DEBUG_FLAGS")
+load(":calculate_repo_rule_srcs.bzl", "calculate_repo_rule_srcs")
+
+rust_binary(
+    name = "alchemist",
+    srcs = glob(["**/*.rs"]),
+    compile_data = glob(["generate_repo/**/templates/*"]),
+    visibility = [
+        "//bazel/portage/bin/alchemist:__pkg__",
+    ],
+    deps = [
+        "//bazel/portage/bin/alchemist:alchemist_lib",
+        "//bazel/portage/common/cliutil",
+        "//bazel/portage/common/portage/version",
+        "@alchemy_crates//:anyhow",
+        "@alchemy_crates//:clap",
+        "@alchemy_crates//:colored",
+        "@alchemy_crates//:itertools",
+        "@alchemy_crates//:lazy_static",
+        "@alchemy_crates//:nom",
+        "@alchemy_crates//:rayon",
+        "@alchemy_crates//:serde",
+        "@alchemy_crates//:serde_json",
+        "@alchemy_crates//:tempfile",
+        "@alchemy_crates//:tera",
+        "@alchemy_crates//:tracing",
+        "@alchemy_crates//:walkdir",
+    ],
+)
+
+filegroup(
+    name = "testdata",
+    srcs = glob([
+        "**/testdata/**",
+    ]),
+    visibility = [
+        "//bazel/portage/bin/alchemist:__pkg__",
+    ],
+)
+
+rust_test(
+    name = "alchemist_test",
+    size = "small",
+    crate = ":alchemist",
+    data = [":testdata"],
+    rustc_flags = RUSTC_DEBUG_FLAGS,
+    deps = [
+        "//bazel/portage/common/testutil",
+        "@alchemy_crates//:pretty_assertions",
+        "@alchemy_crates//:proptest",
+        "@alchemy_crates//:url",
+    ],
+)
+
+jinja_template(
+    name = "repo_rule_srcs_template",
+    src = "repo_rule_srcs.jinja2",
+)
+
+calculate_repo_rule_srcs(
+    name = "repo_rule_srcs_json",
+    target = "@portage",
+    variable = "ALCHEMIST_REPO_RULE_SRCS",
+    deps = [
+        ":alchemist",
+        "@alchemy_crates//:BUILD.bazel",
+        "@cargo_bazel_bootstrap//:BUILD.bazel",
+    ],
+)
+
+render_template_to_source(
+    name = "generate_repo_rule_srcs",
+    out = "repo_rule_srcs.bzl",
+    template = ":repo_rule_srcs_template",
+    vars_file = ":repo_rule_srcs_json",
+)

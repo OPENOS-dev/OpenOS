@@ -1,0 +1,157 @@
+# AUTO-GENERATED FILE. DO NOT EDIT.
+
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+alias(
+    name = "0-r2",
+    actual = "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "0-r2_debug",
+    actual = "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "0-r2_package_set",
+    actual = "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "0-r2_install",
+    actual = "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "0-r2_installed",
+    actual = "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "0-r2_install_list",
+    actual = "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "os-headers",
+    actual = ":0-r2",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "debug",
+    actual = ":0-r2_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "os-headers_debug",
+    actual = ":0-r2_debug",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "package_set",
+    actual = ":0-r2_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "os-headers_package_set",
+    actual = ":0-r2_package_set",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install",
+    actual = ":0-r2_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "os-headers_install",
+    actual = ":0-r2_install",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "installed",
+    actual = ":0-r2_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "os-headers_installed",
+    actual = ":0-r2_installed",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "install_list",
+    actual = ":0-r2_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+alias(
+    name = "os-headers_install_list",
+    actual = ":0-r2_install_list",
+    visibility = [
+        "//images:__pkg__",
+        "@//bazel:internal",
+    ],
+)
+test_suite(
+    name = "0-r2_test",
+    tests = [ "//internal/packages/stage2/host/portage-stable/virtual/os-headers:0-r2_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "test",
+    tests = [ ":0-r2_test" ],
+    visibility = ["@//bazel:internal"],
+)
+test_suite(
+    name = "os-headers_test",
+    tests = [ ":0-r2_test" ],
+    visibility = ["@//bazel:internal"],
+)

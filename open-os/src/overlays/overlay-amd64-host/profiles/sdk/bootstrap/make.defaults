@@ -1,0 +1,24 @@
+# Initial value just for style purposes.
+USE=""
+
+# Disable unibuild on this legacy board. This is only for existing (as of Jan 2019)
+# boards as all new boards must be unibuild enabled moving forward. Do not copy this
+# to new boards as it will be rejected. See
+# https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config/README.md
+# for further details about chromeos-config, which is the required entry point for
+# unified builds.
+USE="${USE} -unibuild"
+
+# We don't want to pull in all the deps required to build docs
+USE="${USE} -doc"
+
+# We don't need any examples in the bootstrap SDK.
+USE="${USE} -examples"
+
+# gettext is a pretty large dependency. Since we have a fixed en_us
+# locale for our SDK we can skip the gettext dep.
+USE="${USE} -nls"
+
+# bazel builds all packages in an ephemeral chroot so ccache doesn't
+# help us since it gets wiped at the end of the build.
+USE="${USE} -wrapper_ccache"

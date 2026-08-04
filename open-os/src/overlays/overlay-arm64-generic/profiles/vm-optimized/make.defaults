@@ -1,0 +1,29 @@
+# Copyright 2023 The ChromiumOS Authors
+# Distributed under the terms of the GNU General Public License v2
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromiumos-arm64-vm"
+
+# Initial value just for style purposes.
+USE=""
+
+# Enable TTY on serial console.
+TTY_CONSOLE="ttyAMA0"
+
+# Enable virgl to speed up rendering with host GPU in QEMU.
+VIDEO_CARDS="-* llvmpipe virgl"
+
+# While building kernel it looks for arch/arm64/boot/dts folder when device_tree
+# is enabled. Since we don't have any device tree in VM image this flag needs to
+# be disabled. Additionally, the UEFI firmware on GCP ARM64 VM only supports
+# ACPI. Turning on device tree support won't do anything useful.
+USE="${USE} -device_tree"
+
+# Enable VM-specific packages.
+USE="${USE} arm64_vm"
+
+# Virtual machines don't have physical TPMs.
+# Enable TPM2.0 simulator on it.
+USE="${USE} tpm2_simulator tpm2_simulator_manufacturer"
+
+# Enable vTPM proxy on it for driver-level TPM simulator.
+USE="${USE} vtpm_proxy"

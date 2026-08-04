@@ -1,0 +1,3806 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirette/HiFi.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015.2mic.pirette/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirette/sof-rt5682.rt1015.2mic.pirette.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015.2mic.pirette/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/sof-rt5682",
+                "source": "pirette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirette/dsp.ini",
+                "source": "pirette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/board.ini",
+                "source": "pirette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.pirette"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1900544
+        },
+        "name": "pirette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirette"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette/HiFi.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette/sof-rt5682.rt1015p.2mic.pirette.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/sof-rt5682",
+                "source": "pirette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirette/dsp.ini",
+                "source": "pirette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/board.ini",
+                "source": "pirette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirette"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1900545
+        },
+        "name": "pirette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirette"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirette_vs",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/HiFi.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/sof-rt5682.rt1015p.2mic.pirette.rt5682vs.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette_vs/sof-rt5682",
+                "source": "pirette/audio/cras-config/pirette_vs/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirette_vs/dsp.ini",
+                "source": "pirette/audio/cras-config/pirette_vs/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette_vs/board.ini",
+                "source": "pirette/audio/cras-config/pirette_vs/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirette.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1900546
+        },
+        "name": "pirette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirette"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirette/HiFi.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015.2mic.pirette/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirette/sof-rt5682.rt1015.2mic.pirette.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015.2mic.pirette/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/sof-rt5682",
+                "source": "pirette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirette/dsp.ini",
+                "source": "pirette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/board.ini",
+                "source": "pirette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.pirette"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1900547
+        },
+        "name": "pirette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirette"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirette",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette/HiFi.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette/sof-rt5682.rt1015p.2mic.pirette.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/sof-rt5682",
+                "source": "pirette/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirette/dsp.ini",
+                "source": "pirette/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette/board.ini",
+                "source": "pirette/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirette"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1900548
+        },
+        "name": "pirette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirette"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirette",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirette_vs",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/HiFi.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/sof-rt5682.rt1015p.2mic.pirette.rt5682vs.conf",
+                "source": "pirette/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirette.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette_vs/sof-rt5682",
+                "source": "pirette/audio/cras-config/pirette_vs/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirette_vs/dsp.ini",
+                "source": "pirette/audio/cras-config/pirette_vs/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirette_vs/board.ini",
+                "source": "pirette/audio/cras-config/pirette_vs/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirette.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1900549
+        },
+        "name": "pirette",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirette"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirika",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirika",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/HiFi.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.1mic/sof-rt5682.1mic.conf",
+                "source": "common/audio/ucm-config/sof-rt5682.1mic/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/sof-rt5682",
+                "source": "pirika/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirika/dsp.ini",
+                "source": "pirika/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/board.ini",
+                "source": "pirika/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "1mic"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 2147483647
+        },
+        "name": "pirika",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirika"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirika",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirika",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirika/HiFi.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015.2mic.pirika/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirika/sof-rt5682.rt1015.2mic.pirika.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015.2mic.pirika/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/sof-rt5682",
+                "source": "pirika/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirika/dsp.ini",
+                "source": "pirika/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/board.ini",
+                "source": "pirika/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.pirika"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1966080
+        },
+        "name": "pirika",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirika"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirika",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirika",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirika/HiFi.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015.2mic.pirika/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pirika/sof-rt5682.rt1015.2mic.pirika.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015.2mic.pirika/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/sof-rt5682",
+                "source": "pirika/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirika/dsp.ini",
+                "source": "pirika/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/board.ini",
+                "source": "pirika/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.pirika"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1966082
+        },
+        "name": "pirika",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirika"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirika",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirika",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirika/HiFi.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirika/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirika/sof-rt5682.rt1015p.2mic.pirika.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirika/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/sof-rt5682",
+                "source": "pirika/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirika/dsp.ini",
+                "source": "pirika/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika/board.ini",
+                "source": "pirika/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirika"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1966081
+        },
+        "name": "pirika",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirika"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirika",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirika_vs",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/HiFi.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/sof-rt5682.rt1015p.2mic.pirika.rt5682vs.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika_vs/sof-rt5682",
+                "source": "pirika/audio/cras-config/pirika_vs/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirika_vs/dsp.ini",
+                "source": "pirika/audio/cras-config/pirika_vs/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika_vs/board.ini",
+                "source": "pirika/audio/cras-config/pirika_vs/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirika.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1966083
+        },
+        "name": "pirika",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirika"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pirika",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pirika_vs",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/HiFi.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/sof-rt5682.rt1015p.2mic.pirika.rt5682vs.conf",
+                "source": "pirika/audio/ucm-config/sof-rt5682.rt1015p.2mic.pirika.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika_vs/sof-rt5682",
+                "source": "pirika/audio/cras-config/pirika_vs/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pirika_vs/dsp.ini",
+                "source": "pirika/audio/cras-config/pirika_vs/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pirika_vs/board.ini",
+                "source": "pirika/audio/cras-config/pirika_vs/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pirika.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 1966084
+        },
+        "name": "pirika",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pirika"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pasara",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pasara",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pasara/HiFi.conf",
+                "source": "pasara/audio/ucm-config/sof-rt5682.rt1015.2mic.pasara/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015.2mic.pasara/sof-rt5682.rt1015.2mic.pasara.conf",
+                "source": "pasara/audio/ucm-config/sof-rt5682.rt1015.2mic.pasara/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pasara/sof-rt5682",
+                "source": "pasara/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pasara/dsp.ini",
+                "source": "pasara/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pasara/board.ini",
+                "source": "pasara/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015.2mic.pasara"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 2752512
+        },
+        "name": "pasara",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pasara"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "pasara",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "pasara_vs",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pasara.rt5682vs/HiFi.conf",
+                "source": "pasara/audio/ucm-config/sof-rt5682.rt1015p.2mic.pasara.rt5682vs/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5682.rt1015p.2mic.pasara.rt5682vs/sof-rt5682.rt1015p.2mic.pasara.rt5682vs.conf",
+                "source": "pasara/audio/ucm-config/sof-rt5682.rt1015p.2mic.pasara.rt5682vs/sof-rt5682.conf"
+              },
+              {
+                "destination": "/etc/cras/pasara_vs/sof-rt5682",
+                "source": "pasara/audio/cras-config/pasara_vs/card_settings"
+              },
+              {
+                "destination": "/etc/cras/pasara_vs/dsp.ini",
+                "source": "pasara/audio/cras-config/pasara_vs/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/pasara_vs/board.ini",
+                "source": "pasara/audio/cras-config/pasara_vs/board.ini"
+              }
+            ],
+            "ucm-suffix": "rt1015p.2mic.pasara.rt5682vs"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 2752513
+        },
+        "name": "pasara",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "pasara"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276800
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276801
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276802
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276803
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276804
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276805
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276806
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276807
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276808
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276809
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276810
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276811
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276812
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276813
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276814
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "peezer",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "peezer",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/HiFi.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.alc5650.2mic.peezer.conf",
+                "source": "peezer/audio/ucm-config/sof-rt5650.alc5650.2mic.peezer/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/sof-rt5650",
+                "source": "peezer/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/peezer/dsp.ini",
+                "source": "peezer/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/peezer/board.ini",
+                "source": "peezer/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.peezer"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3276815
+        },
+        "name": "peezer",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "peezer"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473408
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473409
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473410
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473411
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473412
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473413
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473414
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "dedede_cheets",
+            "marketing-name": "",
+            "metrics-tag": "palutena",
+            "product": "dedede"
+          },
+          "hardware-features": {
+            "build-path": "pirika/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "audio": {
+          "main": {
+            "cras-config-dir": "palutena",
+            "files": [
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/HiFi.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/HiFi.conf"
+              },
+              {
+                "destination": "/usr/share/alsa/ucm/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.alc5650.2mic.palutena.conf",
+                "source": "palutena/audio/ucm-config/sof-rt5650.alc5650.2mic.palutena/sof-rt5650.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/sof-rt5650",
+                "source": "palutena/audio/cras-config/card_settings"
+              },
+              {
+                "destination": "/etc/cras/palutena/dsp.ini",
+                "source": "palutena/audio/cras-config/dsp.ini"
+              },
+              {
+                "destination": "/etc/modprobe.d/alsa-dedede.conf",
+                "source": "common/audio/alsa-module-config/alsa-dedede.conf"
+              },
+              {
+                "destination": "/etc/cras/palutena/board.ini",
+                "source": "palutena/audio/cras-config/board.ini"
+              }
+            ],
+            "ucm-suffix": "alc5650.2mic.palutena"
+          }
+        },
+        "bluetooth": {
+          "flags": {
+            "block-floss-availability": true
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-dedede-private",
+          "build-targets": {
+            "ec": "pirika"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Pirika",
+          "platform-name": "Dedede",
+          "sku-id": 3473415
+        },
+        "name": "palutena",
+        "power": {
+          "disable-dark-resume": "0",
+          "low-battery-shutdown-percent": "4.0",
+          "suspend-to-idle": "1"
+        },
+        "pvs": {
+          "program": "dedede",
+          "project": "palutena"
+        },
+        "thermal": {
+          "dptf-dv": "pirika/dptf.dv",
+          "files": [
+            {
+              "destination": "/etc/dptf/pirika/dptf.dv",
+              "source": "pirika/sw_build_config/platform/chromeos-config/thermal/dptf.dv"
+            }
+          ]
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'dedede_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

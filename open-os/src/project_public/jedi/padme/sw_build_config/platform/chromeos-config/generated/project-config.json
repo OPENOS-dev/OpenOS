@@ -1,0 +1,1950 @@
+{
+  "chromeos": {
+    "configs": [
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 2147483426
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 290
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 546
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 802
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 1058
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 1314
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 1570
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 1826
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 2082
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 2338
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 2594
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 2850
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 3106
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 3362
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 3618
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 3874
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 4130
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 4386
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 4642
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 4898
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 5154
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 5410
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 5666
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 5922
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 6178
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 6434
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 6690
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 6946
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 7202
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 7458
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 7714
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 7970
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 8226
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 8482
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 8738
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      },
+      {
+        "arc": {
+          "build-properties": {
+            "device": "jedi_cheets",
+            "marketing-name": "",
+            "metrics-tag": "padme",
+            "product": "jedi"
+          },
+          "hardware-features": {
+            "build-path": "padme/public_sw_build_config/platform/chromeos-config/generated/arc/hardware_features_0709fa9e.xml",
+            "system-path": "/etc/hardware_features_0709fa9e.xml"
+          }
+        },
+        "camera": {
+          "count": 0
+        },
+        "firmware": {
+          "bcs-overlay": "overlay-jedi-private",
+          "build-targets": {
+            "bmpblk": "skywalker",
+            "coreboot": "padme",
+            "depthcharge": "padme",
+            "libpayload": "skywalker",
+            "zephyr-detachable-base": "eirtae",
+            "zephyr-ec": "padme"
+          },
+          "firmware-config": 0
+        },
+        "hardware-properties": {
+          "storage-type": "STORAGE_TYPE_UNKNOWN",
+          "stylus-category": "unknown"
+        },
+        "identity": {
+          "frid": "Google_Padme",
+          "platform-name": "Jedi",
+          "sku-id": 8994
+        },
+        "name": "padme",
+        "pvs": {
+          "program": "jedi",
+          "project": "padme"
+        },
+        "ui": {
+          "extra-ash-flags": [
+            "--arc-build-properties={'device': 'jedi_cheets', 'firstApiLevel': '28'}",
+            "--child-wallpaper-large=/usr/share/chromeos-assets/wallpaper/child_large.jpg",
+            "--child-wallpaper-small=/usr/share/chromeos-assets/wallpaper/child_small.jpg",
+            "--default-wallpaper-large=/usr/share/chromeos-assets/wallpaper/default_large.jpg",
+            "--default-wallpaper-small=/usr/share/chromeos-assets/wallpaper/default_small.jpg",
+            "--guest-wallpaper-large=/usr/share/chromeos-assets/wallpaper/guest_large.jpg",
+            "--guest-wallpaper-small=/usr/share/chromeos-assets/wallpaper/guest_small.jpg"
+          ]
+        }
+      }
+    ]
+  }
+}

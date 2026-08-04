@@ -1,0 +1,202 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.test.api;
+
+option go_package = "go.chromium.org/chromiumos/config/go/test/api";
+
+import "chromiumos/longrunning/operations.proto";
+import "chromiumos/storage_path.proto";
+import "chromiumos/test/lab/api/dut.proto";
+import "chromiumos/test/lab/api/ip_endpoint.proto";
+import "google/protobuf/any.proto";
+import "chromiumos/test/api/test_execution_metadata.proto";
+
+// Generic provisioning interface for CFT. Intended to be interchangeable across
+// services
+service GenericProvisionService {
+  // StartUp prepares the provision service by providing
+  // necessary input values for initialization prior to
+  // calling any other provision related service calls.
+  rpc StartUp(ProvisionStartupRequest) returns (ProvisionStartupResponse);
+
+  // Install installs a specified OS on the DUT.
+  // It is intended to be a generic installation grpc that may be used by all
+  // OS flavors.
+  rpc Install(InstallRequest) returns (longrunning.Operation) {
+    option (longrunning.operation_info) = {
+      response_type: "InstallResponse",
+      metadata_type: "InstallMetadata"
+    };
+  }
+}
+
+// ProvisionStartupRequest provides a generic form for initializing
+// the provision services. This provides an alternative route for
+// the initialization rather than using the CLI arguments that
+// are used for starting the gRPC server.
+message ProvisionStartupRequest {
+  chromiumos.test.lab.api.Dut dut = 1;
+  chromiumos.test.lab.api.IpEndpoint dut_server = 2;
+  // Specific metadata to the individual provision services.
+  google.protobuf.Any metadata = 3;
+  // Address where servoNexus cft service can be reached.
+  chromiumos.test.lab.api.IpEndpoint servo_nexus_addr = 4;
+  // Address where lsNexus cft service can be reached.
+  chromiumos.test.lab.api.IpEndpoint ls_nexus_addr = 5;
+  // K:Vs to be passed to the harness. Mostly will be used for args; but
+  // technically can go for others.
+  ExecutionMetadata execution_metadata = 6;
+}
+
+// ProvisionStartupResponse provides a status message to signal
+// what the result of the startup call was.
+message ProvisionStartupResponse {
+  enum Status {
+    // In proto3, zero value fields are indistinguishable from unset fields,
+    // by design. They are not sent on the wire either.
+    // SHOULD NOT BE USED.
+    STATUS_UNSPECIFIED = 0;
+    STATUS_SUCCESS = 1;
+    STATUS_INVALID_REQUEST = 2;
+    STATUS_STARTUP_FAILED = 3;
+  }
+  Status status = 1;
+  string version_info = 2;
+}
+
+message InstallResponse {
+  // When the status code is other than SUCCESS, details in Status message
+  // should be parsed for ErrorInfo message with the following Reasons as the
+  // reason.
+  enum Status {
+    // In proto3, zero value fields are indistinguishable from unset fields,
+    // by design. They are not sent on the wire either.
+    STATUS_UNSPECIFIED = 0;
+    // status code: INVALID_ARGUMENT
+    STATUS_INVALID_REQUEST = 1;
+    // status code: FAILED_PRECONDITION
+    STATUS_DUT_UNREACHABLE_PRE_PROVISION = 2;
+    // status code: FAILED_PRECONDITION
+    STATUS_DOWNLOADING_IMAGE_FAILED = 3;
+    // status code: DEADLINE_EXCEEDED
+    STATUS_PROVISIONING_TIMEDOUT = 4;
+    // status code: ABORTED
+    STATUS_PROVISIONING_FAILED = 5;
+    // status code: ABORTED
+    STATUS_DUT_UNREACHABLE_POST_PROVISION = 6;
+    // status code: ABORTED
+    STATUS_UPDATE_FIRMWARE_FAILED = 7;
+    // status code: ABORTED
+    STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE = 8;
+    // status code: ABORTED
+    STATUS_DUT_UNREACHABLE_POST_FIRMWARE_UPDATE = 9;
+    // status code: ABORTED
+    STATUS_UPDATE_MINIOS_FAILED = 10;
+    // status code: ABORTED
+    STATUS_POST_PROVISION_SETUP_FAILED = 11;
+    // status code: ABORTED
+    STATUS_CLEAR_TPM_FAILED = 12;
+    // status code: ABORTED
+    STATUS_STABLIZE_DUT_FAILED = 13;
+    // status code: ABORTED
+    STATUS_INSTALL_DLC_FAILED = 14;
+    // status code: ABORTED
+    STATUS_PRE_PROVISION_SETUP_FAILED = 15;
+    // status code: ABORTED
+    STATUS_CIPD_PACKAGE_LOOKUP_FAILED = 16;
+    // status code: ABORTED
+    STATUS_CIPD_PACKAGE_FETCH_FAILED = 17;
+    // status code: ABORTED
+    STATUS_GS_UPLOAD_FAILED = 18;
+    // status code: ABORTED
+    STATUS_GS_DOWNLOAD_FAILED = 19;
+    // status code: SUCCESS
+    STATUS_SUCCESS = 20;
+    // status code: ABORTED
+    STATUS_IMAGE_MISMATCH_POST_PROVISION_UPDATE = 21;
+    // status code: ABORTED
+    STATUS_PRE_PROVISION_USB_BOOT_FAILURE = 22;
+    // A firmware artifact could not be downloaded.
+    STATUS_DOWNLOADING_FIRMWARE_FAILED = 23;
+    // The CSME is locked and cannot be unlocked
+    STATUS_FIRMWARE_CSME_LOCKED = 24;
+    // The OEM lock is enabled on the device.
+    STATUS_PRE_PROVISION_OEM_LOCKED = 25;
+  }
+  Status status = 1;
+
+  // OS flavor specific metadata
+  google.protobuf.Any metadata = 2;
+
+  // Error/other messages to accompany the status
+  string message = 3;
+}
+
+// Metadata for long running operation
+message InstallMetadata {}
+
+message InstallRequest {
+  // Local or remote path to where the OS to be installed lives.
+  StoragePath image_path = 1;
+  // Prevents device reboot during system image provisioning.
+  bool prevent_reboot = 2;
+  // Provides a possible tar file to overwrite current install files.
+  StoragePath overwrite_payload = 3;
+  // Specific metadata to the install flavor. May be ignored if unneeded.
+  google.protobuf.Any metadata = 4;
+  // Provides partner specific metadata for install request.
+  PartnerMetadata partner_metadata = 5;
+  // Provides kernel prebuilts to replace the OS image's kernel.
+  KernelPrebuilts kernel_prebuilts = 6 [deprecated = true];
+  // K:Vs to be passed to the harness. Mostly will be used for args; but
+  // technically can go for others.
+  ExecutionMetadata execution_metadata = 7;
+  // Provides kernel provisioning metadata.
+  KernelProvisionRequest kernel_metadata = 8;
+}
+
+// PartnerMetadata determines any configuration around Partner settings.
+message PartnerMetadata {
+  // Account ID for the partner.
+  int64 account_id = 1;
+  // The bucket with the partner images and artifacts
+  string partner_gcs_bucket = 2;
+}
+
+// KernelProvisionRequest provides instructions for kernel-provisioning.
+message KernelProvisionRequest {
+  // Provides kernel prebuilts to replace the OS image's kernel.
+  KernelPrebuilts kernel_prebuilts = 1;
+
+  // If true, the kernel command line specified in the `vendor_boot` partition
+  // will have the following modifications performed on it:
+  // - console=<console_command_line_value>
+  // - printk.devkmsg=on
+  // - DEBUG=2
+  // - initcall_debug
+  bool enable_kernel_serial_logs = 2;
+
+  // The console= value to set when `enable_kernel_serial_logs` is true.
+  // Defaults to `ttyS0,115200` which should work on most x86 boards.
+  string console_command_line_value = 3;
+}
+
+// KernelPrebuilts contains paths to kernel artifacts to provision, replacing
+// the OS image's kernel.
+message KernelPrebuilts {
+  // PartitionImage defines an image to flash onto an OS partition.
+  message PartitionImage {
+    // The name of the OS partition to flash onto.
+    string partition_name = 1;
+    // Path to the new image file for that partition.
+    StoragePath image_path = 2;
+    // Optional: Name of the ramdisk on that partition that this image file
+    // should be installed to.
+    string ramdisk_name = 3;
+  }
+  repeated PartitionImage partition_images = 1;
+}

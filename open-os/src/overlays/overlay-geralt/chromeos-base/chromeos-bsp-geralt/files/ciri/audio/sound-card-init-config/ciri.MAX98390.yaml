@@ -1,0 +1,28 @@
+amp_calibrations:
+  boot_time_calibration_enabled: false
+  controls:
+    -
+        dsm_param: "/lib/firmware/dsm_param.bin"
+        adaptive_rdc_ctrl: "Front Left DSM Adaptive Rdc"
+        rdc_ctrl: "Front Left DSM Rdc"
+        temp_ctrl: "Front Left DSM Ambient Temp"
+        calib_ctrl: "Front Left DSM Calibration"
+        volume_ctrl: "Front Left Digital Volume"
+        safe_mode_volume: 138
+        normal_mode_volume: 160
+    -
+        dsm_param: "/lib/firmware/dsm_param.bin"
+        adaptive_rdc_ctrl: "Front Right DSM Adaptive Rdc"
+        rdc_ctrl: "Front Right DSM Rdc"
+        temp_ctrl: "Front Right DSM Ambient Temp"
+        calib_ctrl: "Front Right DSM Calibration"
+        volume_ctrl: "Front Right Digital Volume"
+        safe_mode_volume: 138
+        normal_mode_volume: 160
+  rdc_ranges:
+    -
+        lower: 5.95
+        upper: 8.05
+    -
+        lower: 5.95
+        upper: 8.05

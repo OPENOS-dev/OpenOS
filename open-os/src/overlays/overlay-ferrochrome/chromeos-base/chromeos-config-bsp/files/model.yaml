@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+ferrochrome-config: &ferrochrome_config
+  name: ferrochrome
+  brand-code: FERROCHROME
+  hwid-override: FERROCHROME-NEXTGEN A6A-A5J
+  firmware:
+    no-firmware: True
+
+# Required under for chromeos-config.
+chromeos:
+  devices:
+    - skus:
+        - config: *ferrochrome_config

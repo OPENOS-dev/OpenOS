@@ -1,0 +1,140 @@
+#!/bin/bash
+#
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Copies the existing binpkgs out of the bazel root and generates a
+# prebuilts.bazelrc that points to those packages. This allows us to avoid
+# having to rebuild all packages when something primordial changes.
+#
+# Usage:
+# $ generate-stage2-prebuilts [targets...]
+#
+# If `targets` is not specified a predefined list of targets will be used.
+
+set -eu -o pipefail
+
+join() {
+  local IFS="$1"
+  shift
+  echo "$*"
+}
+
+: "${BINPKG_CACHE:=${HOME}/.cache/binpkgs}"
+
+mkdir -p "${BINPKG_CACHE}"
+
+declare -A BAZEL
+while IFS=': ' read -r key value
+do
+    BAZEL["${key}"]="${value}"
+done < <(bazel info)
+
+WORKSPACE_ROOT="${BAZEL[workspace]}"
+
+BAZEL_BIN="${BAZEL[bazel-bin]}"
+PORTAGE_BIN="${BAZEL_BIN}/external/_main~portage~portage"
+
+BAZEL_OUTPUT_BASE="${BAZEL[output_base]}"
+BOARD_FILE="${BAZEL_OUTPUT_BASE}/external/_main~portage~portage_digest/board"
+
+
+if [[ ! -v BOARD ]]; then
+    if [[ ! -e "${BOARD_FILE}" ]]; then
+        echo "Cannot determine BOARD, please run your build again" >&2
+        exit 1
+    fi
+
+    BOARD="$(< "${BOARD_FILE}")"
+    export BOARD
+fi
+
+PREBUILTS="${WORKSPACE_ROOT}/prebuilts.bazelrc"
+exec 3> "${PREBUILTS}.tmp"
+
+if [[ $# -ge 1 ]]; then
+    IFS="+" declare -A TARGET_MAP=(
+        ["prebuilts"]="$(join "+" "$@")"
+    )
+else
+    declare -A TARGET_MAP=(
+        ["prebuilts/stage2-sdk"]="@portage//internal/sdk/stage2"
+        ["prebuilts/stage2-board-sdk"]="@portage//internal/sdk/stage2/target/board"
+        ["prebuilts/stage2-${BOARD}"]="
+            @portage//internal/packages/stage2/target/board/chromiumos/virtual/target-os-dev:1_package_set +
+            @portage//internal/packages/stage2/target/board/chromiumos/virtual/target-os-factory-shim:1_package_set +
+            @portage//internal/packages/stage2/target/board/chromiumos/virtual/target-os-factory:1_package_set +
+            @portage//internal/packages/stage2/target/board/chromiumos/virtual/target-os-test:1_package_set +
+            @portage//internal/packages/stage2/target/board/chromiumos/virtual/target-os:1_package_set
+        "
+    )
+fi
+
+echo "# Generated using BOARD='${BOARD}' $*" >&3
+
+declare -A SRC_DEST_MAP
+
+for KEY in "${!TARGET_MAP[@]}"
+do
+    TARGET="${TARGET_MAP["${KEY}"]}"
+
+    readarray -t EBUILD_TARGETS < <(
+        set -x
+        bazel cquery \
+            --//bazel/portage:omit_ebuild_src \
+            "kind(ebuild, deps(${TARGET}))" || kill "$$"
+    )
+
+    echo "common:${KEY} \\" >&3
+    for TARGET in "${EBUILD_TARGETS[@]}"; do
+        TARGET="${TARGET#@portage//}"
+        TARGET="${TARGET% (*)}"
+        TARGET_DIR="${TARGET%:*}"
+        TARGET_NAME="$(basename "${TARGET_DIR}")"
+        TARGET_VERSION="${TARGET#*:}"
+
+        BINPKG_NAME="${TARGET_NAME}-${TARGET_VERSION}.tbz2"
+        BINPKG_SRC="${PORTAGE_BIN}/${TARGET_DIR}/${BINPKG_NAME}"
+
+        if [[ ! -f "${BINPKG_SRC}" ]]; then
+            continue
+        fi
+
+        BINPKG_DEST_DIR="${BINPKG_CACHE}/${TARGET_DIR}"
+        # Keep the target packages separated
+        BINPKG_DEST_DIR="${BINPKG_DEST_DIR/target\/board/"target/${BOARD}"}"
+        mkdir -p "${BINPKG_DEST_DIR}"
+        BINPKG_DEST="${BINPKG_DEST_DIR}/${BINPKG_NAME}"
+
+        SRC_DEST_MAP["${BINPKG_SRC}"]="${BINPKG_DEST}"
+
+        echo "--@portage//${TARGET}_prebuilt=${BINPKG_DEST} \\" >&3
+    done
+
+    # Needed so we don't gobble up the next line
+    echo "" >&3
+done
+
+echo "Copying packages to ${BINPKG_CACHE}" >&2
+for SRC in "${!SRC_DEST_MAP[@]}"; do
+    DEST="${SRC_DEST_MAP["${SRC}"]}"
+    rsync --progress "${SRC}" "${DEST}" >&2
+done
+
+exec 3>&- #close fd 3.
+mv "${PREBUILTS}.tmp" "${PREBUILTS}"
+
+echo
+echo "${PREBUILTS} was generated" >&2
+
+if ! grep -q prebuilts.bazelrc "${WORKSPACE_ROOT}/workspace.bazelrc"; then
+    echo "Adding prebuilts.bazelrc to workspace.bazelrc" >&2
+    echo "try-import %workspace%/prebuilts.bazelrc" >>"${WORKSPACE_ROOT}/workspace.bazelrc"
+fi
+
+echo "You can now add any of the following to your \`bazel build\` command line:" >&2
+for KEY in "${!TARGET_MAP[@]}"
+do
+    echo "  --config=${KEY}" >&2
+done

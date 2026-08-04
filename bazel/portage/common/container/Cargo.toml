@@ -1,0 +1,32 @@
+[package]
+name = "container"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+durabletree = { path = "../durabletree" }
+fileutil = { path = "../fileutil" }
+binarypackage = { path = "../portage/binarypackage" }
+processes = { path = "../processes" }
+run_in_container_lib = { path = "../run_in_container_lib" }
+
+anyhow.workspace = true
+clap.workspace = true
+flate2.workspace = true
+itertools.workspace = true
+libc.workspace = true
+nix.workspace = true
+path_absolutize.workspace = true
+runfiles.workspace = true
+scopeguard.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+tar.workspace = true
+tracing.workspace = true
+walkdir.workspace = true
+zstd.workspace = true
+
+[dev-dependencies]
+testutil = { path = "../testutil" }

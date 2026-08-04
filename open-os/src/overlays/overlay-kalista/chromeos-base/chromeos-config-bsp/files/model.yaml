@@ -1,0 +1,50 @@
+#
+# Copyright 2018 The ChromiumOS Authors
+#
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+imports:
+  - "include/audio.yaml"
+
+camera_common: &camera_common
+  count: 1
+  devices:
+    - interface: "usb"
+      facing: "front"
+      orientation: 0
+      flags:
+        support-autofocus: False
+        support-1080p: True
+
+device_config: &device_config
+  name: "{{$device-name}}"
+  identity:
+    platform-name: "Kalista"
+    frid: "Google_{{$fw-name}}"
+    sku-id: "{{$sku-id}}"
+  hardware-properties:
+    form-factor: OPENBASE
+    psu-type: "AC_only"
+  firmware:
+    no-firmware: True
+  test-label: "{{$device-name}}"
+  audio:
+    <<: *audio_common
+    $ucm-source-suffix: ""
+  camera: *camera_common
+  power:
+    suspend-to-idle: "0"
+    # Max brightness is 7500, as reported by
+    # /sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/max_brightness
+    min-visible-backlight-level: "2250"
+    turn-off-screen-timeout-ms: "0"
+
+
+chromeos:
+  devices:
+    - $device-name: "karma"
+      $fw-name: "Karma"
+      skus:
+        - $sku-id: 0x7
+          config: *device_config

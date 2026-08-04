@@ -1,0 +1,1 @@
+autotest-capability-geralt-0.0.1.ebuild

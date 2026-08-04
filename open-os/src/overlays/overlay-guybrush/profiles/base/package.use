@@ -1,0 +1,9 @@
+media-libs/mesa egl gles2 shared-glapi
+media-libs/mesa-amd gallium-va
+sys-boot/chromeos-bootimage payload-align-64
+
+# Enable split debug to avoid relocation overflows, b/279487992.
+chromeos-base/chromeos-chrome debug_fission
+
+# Enable crosvm's virtio-gpu "cross domain" context type for the Borealis VM.
+chromeos-base/vm_host_tools cross_domain_context_borealis

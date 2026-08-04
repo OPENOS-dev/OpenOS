@@ -1,0 +1,34 @@
+{
+  "_comment": "See http://www.chromium.org/chromium-os/building-chromium-os/disk-layout-format",
+  "metadata":{
+    "rootdev_base": "/sys/devices/pci0000:00/0000:00:17.0/ata*/host*/target*/*/block/sd* /sys/devices/pci0000:00/0000:00:1d.*/0000:*:00.0/nvme/nvme*/nvme*n1 /sys/devices/pci0000:00/0000:00:1c.*/0000:*:00.0/mmc_host/mmc*/mmc*:000*/block/mmcblk* /sys/devices/pci0000:00/0000:00:1d.*/0000:*:00.0/mmc_host/mmc*/mmc*:000*/block/mmcblk*"
+  },
+  "parent": "disk_layout_v2.json",
+  "layouts": {
+    "base": [
+      {
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ],
+    "factory_install": [
+      {
+        "num": 3,
+        "size": "768 MiB",
+        "fs_size": "750 MiB"
+      }
+    ],
+    "usb": [
+      {
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ],
+    "usb-updatable": [
+      {
+        "num": 1,
+        "size": "6 GiB"
+      }
+    ]
+  }
+}

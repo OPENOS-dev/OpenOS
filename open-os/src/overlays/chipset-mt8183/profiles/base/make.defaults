@@ -1,0 +1,62 @@
+# Copyright 2018 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromiumos-mediatek"
+CHROMEOS_KERNEL_ARCH="arm64"
+
+# Initial value just for style purposes.
+USE=""
+
+# MT8183 has 4 Cortex-A53 and 4 Cortex-A73.
+# Note that the compiler may or may not support tuning for our big.LITTLE
+# combination, so for simplicity we tune the code against the little cores,
+# which is not perfect but should give us good enough tuning granularity.
+# TODO(b/244126739): Use cortex-a73.cortex-a53 when the compiler is upgraded
+# and supports that.
+BOARD_COMPILER_FLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a53 -ftree-vectorize"
+BOARD_RUSTFLAGS="-Ctarget-feature=+crc,+aes,+neon,+sha2"
+USE="${USE} march_armv8-a"
+
+USE="${USE} mt8183"
+USE="${USE} mediatek_cpu"
+
+# Use hardware FPU instead of software
+USE="${USE} hardfp"
+# Support for neon-vfpv3
+USE="${USE} neon"
+
+# For the device tree installation
+USE="${USE} device_tree"
+
+# use kernel 5.10
+USE="${USE} kernel-5_10"
+# Uncomment to use upstream kernel with upstream graphics stack
+#USE="${USE} kernel-upstream"
+
+# Enable Crostini VMs
+USE="${USE} kvm_host crosvm-gpu virtio_gpu"
+
+# Enables WebGL rendering
+USE="${USE} drm_atomic"
+
+# Set raster thread number=2
+USE="${USE} big_little"
+
+# Mali drivers require this
+USE="${USE} gpu_sandbox_start_early"
+
+# Turn on the video cards this board uses.
+VIDEO_CARDS="mediatek"
+
+# MT8183 minigbm
+USE="${USE} minigbm_platform_mt8183"
+
+# Enable HW codecs using V4L2 API.
+USE="${USE} v4l2_codec"
+
+# Enable GpuMemoryBuffers backed by dma-bufs.
+USE="${USE} native_gpu_memory_buffers"
+
+# Use legacy pre-Groot UI for initramfs and init script screens.
+USE="${USE} legacy_firmware_ui"
