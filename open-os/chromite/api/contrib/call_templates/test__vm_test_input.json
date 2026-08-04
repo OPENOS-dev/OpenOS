@@ -1,0 +1,15 @@
+{
+  "build_target": {
+    "name": "%(build_target)s"
+  },
+  "test_harness": 2,
+  "vm_path": {
+    "location": 2,
+    "path": "/tmp/vm.bin"
+  },
+  "vm_tests": [
+    {
+      "pattern": "suite:smoke"
+    }
+  ]
+}

@@ -1,0 +1,1902 @@
+# Copyright 2015 OCS (Open Code Studio)
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Utilities for setting up and cleaning up the chroot environment."""
+
+from __future__ import annotations
+
+import ast
+import collections
+import dataclasses
+import functools
+import grp
+import io
+import logging
+import os
+from pathlib import Path
+import pwd
+import re
+import resource
+import shutil
+import sys
+from typing import Any, List, Optional, Set, Union
+import urllib.parse
+import urllib.request
+
+from chromite.lib import build_target_lib
+from chromite.lib import chroot_lib
+from chromite.lib import compression_lib
+from chromite.lib import constants
+from chromite.lib import cros_build_lib
+from chromite.lib import locking
+from chromite.lib import metrics_lib
+from chromite.lib import osutils
+from chromite.lib import path_util
+from chromite.lib import platform_enter
+from chromite.lib import retry_util
+from chromite.lib import sysroot_lib
+from chromite.lib import timeout_util
+from chromite.utils import gs_urls_util
+from chromite.utils import key_value_store
+from chromite.utils import os_util
+
+
+# Version file location inside chroot.
+CHROOT_VERSION_FILE = "/etc/cros_chroot_version"
+# Version hooks directory.
+_CHROOT_VERSION_HOOKS_DIR = (
+    constants.CHROMITE_DIR / "sdk" / "chroot_version_hooks.d"
+)
+
+# Bash completion directory.
+_BASH_COMPLETION_DIR = (
+    f"{constants.CHROOT_SOURCE_ROOT}/chromite/sdk/etc/bash_completion.d"
+)
+
+
+class Error(Exception):
+    """Base cros sdk error class."""
+
+
+class ChrootDeprecatedError(Error):
+    """Raised when the chroot is too old to update."""
+
+    def __init__(self, version) -> None:
+        # Message defined here because it's long and gives specific
+        # instructions.
+        super().__init__(
+            f"Upgrade hook missing for your chroot version {version}.\n"
+            "Your chroot is so old that some updates have been deprecated and "
+            "it will need to be recreated. A fresh chroot can be built "
+            "with:\n"
+            "    cros_sdk --replace"
+        )
+
+
+class ChrootUpdateError(Error):
+    """Error encountered when updating the chroot."""
+
+
+class InvalidChrootVersionError(Error):
+    """Chroot version is not a valid version."""
+
+
+class UninitializedChrootError(Error):
+    """Chroot has not been initialized."""
+
+
+class VersionHasMultipleHooksError(Error):
+    """When it is found that a single version has multiple hooks."""
+
+
+def is_inside_chroot() -> bool:
+    """Returns True if we are inside chroot."""
+    return os.path.exists(CHROOT_VERSION_FILE)
+
+
+def is_outside_chroot() -> bool:
+    """Returns True if we are outside chroot."""
+    return not is_inside_chroot()
+
+
+def assert_inside_chroot(name: Optional[str] = None) -> None:
+    """Die if we are outside the chroot"""
+    name = name or Path(sys.argv[0]).name
+    assert is_inside_chroot(), f"{name}: please run inside the chroot"
+
+
+def assert_outside_chroot(name: Optional[str] = None) -> None:
+    """Die if we are inside the chroot"""
+    name = name or Path(sys.argv[0]).name
+    assert is_outside_chroot(), f"{name}: please run outside the chroot"
+
+
+def require_inside_chroot(_reason: str = ""):
+    """Decorator to assert a function must be called when inside the SDK."""
+
+    def outer(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            assert_inside_chroot(func.__name__)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return outer
+
+
+def require_outside_chroot(_reason: str = ""):
+    """Decorator to assert a function must be called when outside the SDK."""
+
+    def outer(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            assert_outside_chroot(func.__name__)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return outer
+
+
+def require_chroot(_reason: str = ""):
+    """Decorator to note the function requires the SDK.
+
+    The function can be called from inside or outside the SDK and the function
+    handles entering as needed, but a chroot must have been instantiated.
+    This is currently only for documentation purposes.
+    """
+
+    def outer(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return outer
+
+
+def chroot_not_required(func):
+    """Decorator to note the SDK has no effect on the function.
+
+    The function does not use SDK specific functionality, and behaves
+    identically inside and outside the SDK. This is currently only for
+    documentation purposes.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def GetChrootVersion(chroot):
+    """Extract the version of the chroot.
+
+    Args:
+        chroot: Full path to the chroot to examine.
+
+    Returns:
+        The version of the chroot dir, or None if the version is
+        missing/invalid.
+    """
+    if chroot:
+        ver_path = os.path.join(chroot, CHROOT_VERSION_FILE.lstrip(os.sep))
+    else:
+        ver_path = CHROOT_VERSION_FILE
+
+    updater = ChrootUpdater(version_file=ver_path)
+    try:
+        return updater.GetVersion()
+    except (IOError, Error) as e:
+        logging.debug(e)
+
+    return None
+
+
+def IsChrootVersionValid(chroot_path, hooks_dir=None):
+    """Check if the chroot version exists and is a valid version."""
+    version = GetChrootVersion(chroot_path)
+    return version and version <= LatestChrootVersion(hooks_dir)
+
+
+def LatestChrootVersion(hooks_dir=None):
+    """Get the most recent update hook version."""
+    hook_files = os.listdir(hooks_dir or _CHROOT_VERSION_HOOKS_DIR)
+
+    # Hook file names must follow the "version_short_description" convention.
+    # Pull out just the version number and find the max.
+    return max(int(hook.split("_", 1)[0]) for hook in hook_files)
+
+
+def EarliestChrootVersion(hooks_dir=None):
+    """Get the oldest update hook version."""
+    hook_files = os.listdir(hooks_dir or _CHROOT_VERSION_HOOKS_DIR)
+
+    # Hook file names must follow the "version_short_description" convention.
+    # Pull out just the version number and find the max.
+    return min(int(hook.split("_", 1)[0]) for hook in hook_files)
+
+
+def IsChrootDirValid(chroot_path):
+    """Check the permissions and owner on a chroot directory.
+
+    Args:
+        chroot_path: The path to a chroot.
+
+    Returns:
+        bool - False iff there are incorrect values on an existing directory.
+    """
+    if not os.path.exists(chroot_path):
+        # No directory == no incorrect values.
+        return True
+
+    return IsChrootOwnerValid(chroot_path) and IsChrootPermissionsValid(
+        chroot_path
+    )
+
+
+def IsChrootOwnerValid(chroot_path):
+    """Check if the chroot owner is root."""
+    chroot_stat = os.stat(chroot_path)
+    return not chroot_stat.st_uid and not chroot_stat.st_gid
+
+
+def IsChrootPermissionsValid(chroot_path):
+    """Check if the permissions on the directory are correct."""
+    chroot_stat = os.stat(chroot_path)
+    return chroot_stat.st_mode & 0o7777 == 0o755
+
+
+def IsChrootReady(chroot):
+    """Checks if the chroot is mounted and set up.
+
+    /etc/cros_chroot_version is set to the current version of the chroot at the
+    end of the setup process.  If this file exists and contains a non-zero
+    value, the chroot is ready for use.
+
+    Args:
+        chroot: Full path to the chroot to examine.
+
+    Returns:
+        True iff the chroot contains a valid version.
+    """
+    version = GetChrootVersion(chroot)
+    return version is not None and version > 0
+
+
+@dataclasses.dataclass(frozen=True)
+class SdkVersionConfig:
+    """Container for configs found in sdk_version.conf."""
+
+    latest_version: str
+    bootstrap_version: Optional[str] = None
+    bucket: Optional[str] = None
+
+    @classmethod
+    def from_file(
+        cls, file: Union[str, "os.PathLike[str]", io.TextIOWrapper]
+    ) -> SdkVersionConfig:
+        """Load a SdkVersionConfig from a sdk_version.conf file.
+
+        Args:
+            file: The file path or file-like object to load.
+
+        Returns:
+            A SdkVersionConfig.
+        """
+        conf = key_value_store.LoadFile(file)
+        return cls(
+            latest_version=conf["SDK_LATEST_VERSION"],
+            bootstrap_version=conf.get("BOOTSTRAP_FROZEN_VERSION"),
+            bucket=conf.get("SDK_BUCKET"),
+        )
+
+    @classmethod
+    def load(cls) -> SdkVersionConfig:
+        """Convenience method to call from_file() with default path.
+
+        Returns:
+            A SdkVersionConfig.
+        """
+        return cls.from_file(constants.SDK_VERSION_FILE_FULL_PATH)
+
+    def get_default_version(self, bootstrap: bool = False) -> str:
+        """Get the default version that should be used.
+
+        Args:
+            bootstrap: If true, provide the bootstrap version if defined.
+
+        Returns:
+            The SDK version to be used.
+        """
+        if bootstrap and self.bootstrap_version:
+            return self.bootstrap_version
+        return self.latest_version
+
+
+def get_prefetch_sdk_versions() -> Set[str]:
+    """Get a reasonable set of SDK versions to have cached locally.
+
+    This set includes:
+    1. The current version in sdk_version.conf.
+    2. If the user is tracking snapshot or main, the version from
+       cros-sdk-latest.conf.
+
+    Returns:
+        A set of SDK versions.
+    """
+    result = {SdkVersionConfig.load().latest_version}
+    checkout = path_util.DetermineCheckout()
+    if checkout.tracks_main:
+        url = get_sdk_latest_conf_file_url()
+        try:
+            with urllib.request.urlopen(url) as f:
+                data = key_value_store.LoadData(f.read().decode("utf-8"))
+        except urllib.error.URLError as e:
+            logging.warning(
+                "GET %s (error %s): ignoring for SDK prefetch version.",
+                url,
+                e,
+            )
+        else:
+            result.add(data["LATEST_SDK"])
+    return result
+
+
+def get_sdk_gs_url(
+    suburl: str = "",
+    for_gsutil: bool = False,
+    override_bucket: Optional[str] = None,
+) -> str:
+    """Construct a Google Storage URL for an arbitrary file in the SDK bucket.
+
+    Args:
+        suburl: The path to the file within the SDK bucket.
+        for_gsutil: Whether to return a URL for passing to `gsutil`.
+        override_bucket: If given and non-empty, use this URL instead of the
+            standard SDK bucket.
+
+    Returns:
+        The fully constructed URL.
+    """
+    return gs_urls_util.GetGsURL(
+        override_bucket or constants.SDK_GS_BUCKET,
+        for_gsutil=for_gsutil,
+        suburl=suburl,
+    )
+
+
+def get_sdk_tarball_url(
+    sdk_version: str,
+    file_extension: str = "tar.zst",
+    **kwargs: Any,
+) -> str:
+    """Return a Google Storage URL pointing to an SDK tarball.
+
+    Args:
+        sdk_version: The SDK version to fetch a manifest for.
+        file_extension: The tarball's file extension.
+        **kwargs: Additional keyword arguments for get_sdk_gs_url().
+    """
+    tarball_basename = f"cros-sdk-{sdk_version}.{file_extension}"
+    return get_sdk_gs_url(suburl=tarball_basename, **kwargs)
+
+
+def get_sdk_manifest_url(sdk_version: str, **kwargs: Any) -> str:
+    """Return a Google Storage URL pointing to an SDK manifest file.
+
+    Args:
+        sdk_version: The SDK version to fetch a manifest for.
+        **kwargs: Additional keyword arguments for get_sdk_gs_url().
+    """
+    manifest_basename = f"cros-sdk-{sdk_version}.tar.zst.Manifest"
+    return get_sdk_gs_url(suburl=manifest_basename, **kwargs)
+
+
+def get_sdk_latest_conf_file_url(**kwargs: Any) -> str:
+    """Return a Google Storage URL for the remote cros-sdk-latest.conf file.
+
+    Args:
+        **kwargs: Additional keyword arguments for get_sdk_gs_url().
+    """
+    return get_sdk_gs_url(suburl="cros-sdk-latest.conf", **kwargs)
+
+
+def fetch_remote_tarballs(
+    storage_dir: Path,
+    urls: List[str],
+    prefetch_versions: Optional[Set[str]] = None,
+) -> Path:
+    """Fetch a tarball given by url, and place it in |storage_dir|.
+
+    Args:
+        storage_dir: Path in which to save the tarball.
+        urls: List of URLs to try to download. Download will stop on first
+            success.
+        prefetch_versions: Set of SDK versions which should not be discarded.
+            If not specified, get_prefetch_sdk_versions() will be used.
+
+    Returns:
+        Full path to the downloaded file.
+
+    Raises:
+        ValueError: None of the URLs worked.
+    """
+    # Note we track content length ourselves since certain versions of curl
+    # fail if asked to resume a complete file.
+    # https://sourceforge.net/tracker/?func=detail&atid=100976&aid=3482927&group_id=976
+    status_re = re.compile(rb"^HTTP/[0-9]+(\.[0-9]+)? 200")
+    for url in urls:
+        parsed = urllib.parse.urlparse(url)
+        tarball_name = os.path.basename(parsed.path)
+        if parsed.scheme in ("", "file"):
+            if os.path.exists(parsed.path):
+                return parsed.path
+            continue
+        content_length = 0
+        logging.notice("Checking download of %s...", url)
+        result = retry_util.RunCurl(
+            ["-I", url],
+            print_cmd=False,
+            debug_level=logging.NOTICE,
+            capture_output=True,
+        )
+        successful = False
+        for header in result.stdout.splitlines():
+            # We must walk the output to find the 200 code for use cases where
+            # a proxy is involved and may have pushed down the actual header.
+            if status_re.match(header):
+                successful = True
+            elif header.lower().startswith(b"content-length:"):
+                content_length = int(header.split(b":", 1)[-1].strip())
+                if successful:
+                    break
+        if successful:
+            break
+    else:
+        raise ValueError("No valid URLs found!")
+
+    osutils.SafeMakedirsNonRoot(storage_dir)
+    tarball_dest = storage_dir / tarball_name
+    lock_file = tarball_dest.with_name(f".{tarball_dest.name}.lock")
+
+    with locking.FileLock(lock_file) as lock:
+        lock.write_lock(f"{tarball_dest} download lock")
+        current_size = 0
+        if os.path.exists(tarball_dest):
+            current_size = os.path.getsize(tarball_dest)
+            if current_size > content_length:
+                osutils.SafeUnlink(tarball_dest)
+                current_size = 0
+
+        if current_size < content_length:
+            logging.notice("Downloading tarball %s ...", tarball_dest.name)
+            retry_util.RunCurl(
+                [
+                    "--fail",
+                    "-L",
+                    "-y",
+                    "30",
+                    "-C",
+                    "-",
+                    "--output",
+                    tarball_dest,
+                    url,
+                ],
+                print_cmd=False,
+                debug_level=logging.NOTICE,
+            )
+
+    # Cleanup old tarballs now since we've successfully fetched; only cleanup
+    # the tarballs for our prefix, or unknown ones. This gets a bit tricky
+    # because we might have partial overlap between known prefixes.
+    prefetch_versions = prefetch_versions or get_prefetch_sdk_versions()
+    for p in Path(storage_dir).glob("cros-sdk-*"):
+        if p.name == tarball_name:
+            continue
+        if any(p.name.startswith(f"cros-sdk-{x}") for x in prefetch_versions):
+            continue
+        logging.info("Cleaning up old tarball: %s", p)
+        osutils.SafeUnlink(p)
+
+    return tarball_dest
+
+
+_SSH_CONFIG_HEADER = """\
+### DO NOT EDIT ###
+# File is imported & synced from the copy outside of the SDK.
+# Modifications to this version will be lost!
+#
+# If you want directives to change behavior between inside & outside of the SDK:
+#   Match Exec "test -f /etc/cros_chroot_version"
+
+"""
+
+
+def _setup_ssh_configs(
+    srcdir: Path,
+    dstdir: Path,
+    uid: Optional[int] = None,
+    gid: Optional[int] = None,
+) -> None:
+    """Copy .ssh/ settings from |srcdir| to |dstdir|.
+
+    Copy user ssh settings into the chroot filtering out strings not supported
+    by the chroot ssh.
+
+    Args:
+        srcdir: Path to ~/.ssh/ to copy settings from.
+        dstdir: Path to .ssh/ (inside the SDK) to copy settings to.
+        uid: The user id to use (e.g. for testing).
+        gid: The group id to use (e.g. for testing).
+    """
+    osutils.SafeMakedirsNonRoot(dstdir)
+
+    src_config = srcdir / "config"
+    dst_config = dstdir / "config"
+    try:
+        src_data = src_config.read_text(encoding="utf-8")
+    except OSError:
+        return
+
+    try:
+        dst_data = dst_config.read_text(encoding="utf-8")
+    except OSError:
+        dst_data = None
+
+    # ssh options to filter out.  The entire strings containing these substrings
+    # will be deleted before copying.
+    BAD_OPTIONS = (
+        "UseProxyIf",
+        "GSSAPIAuthentication",
+        "GSSAPIKeyExchange",
+        "ProxyUseFdpass",
+    )
+    lines = [
+        x for x in src_data.splitlines() if not any(o in x for o in BAD_OPTIONS)
+    ]
+    src_data = _SSH_CONFIG_HEADER + "\n".join(lines) + "\n"
+    if src_data != dst_data:
+        logging.debug(
+            "%s: Updating with new content from %s", dst_config, src_config
+        )
+        dst_config.write_text(src_data, encoding="utf-8")
+        if uid is None:
+            uid = -1
+        if gid is None:
+            gid = -1
+        os.chown(dst_config, uid, gid)
+
+
+def MountChrootPaths(
+    chroot: chroot_lib.Chroot,
+    uid: Optional[int] = None,
+    gid: Optional[int] = None,
+) -> None:
+    """Setup all the mounts for the |chroot|.
+
+    On macOS: No-op; QEMU user-mode handles virtual filesystem, no kernel
+    mount needed.
+
+    NB: This assumes running in a unique mount namespace.  If it is running in
+    the root mount namespace, then it will probably change settings for the
+    worse.
+
+    Args:
+        chroot: The chroot to update.
+        uid: The user id to use (e.g. for testing).
+        gid: The group id to use (e.g. for testing).
+    """
+    # On macOS, skip mount setup - QEMU handles virtual filesystem
+    if platform_enter.is_macos():
+        logging.debug("macOS: Skipping mount setup (QEMU user-mode handles "
+                      "virtual filesystem)")
+        return
+
+    KNOWN_FILESYSTEMS = set(
+        x.split()[-1]
+        for x in osutils.ReadFile("/proc/filesystems").splitlines()
+    )
+
+    path = Path(chroot.path).resolve()
+    out_dir = chroot.out_path
+    cache_dir = Path(chroot.cache_dir)
+
+    logging.debug("Mounting chroot paths at %s", path)
+
+    # Mark all existing mounts as slave mounts: that means changes made to
+    # mounts in the parent mount namespace will propagate down (like unmounts).
+    osutils.Mount(None, "/", None, osutils.MS_REC | osutils.MS_SLAVE)
+
+    # If the mount path is already mounted, make it private so we can make
+    # changes without it propagating back out.
+    for info in osutils.IterateMountPoints():
+        if info.destination == str(path):
+            osutils.Mount(None, path, None, osutils.MS_REC | osutils.MS_PRIVATE)
+            break
+
+    # The source checkout must be mounted first.  We'll be mounting paths into
+    # the chroot, and that chroot may live inside SOURCE_ROOT, so if we did
+    # the recursive bind at the end, we'd double bind things.
+    osutils.Mount(
+        constants.SOURCE_ROOT,
+        path / constants.CHROOT_SOURCE_ROOT.relative_to("/"),
+        "~/openos",
+        osutils.MS_BIND | osutils.MS_REC,
+    )
+
+    # Prepare for pivot_root(2). `man 2 pivot_root` says new_root must be a
+    # mount point.
+    osutils.Mount(
+        path,
+        path,
+        None,
+        osutils.MS_BIND | osutils.MS_REC,
+    )
+
+    osutils.SafeMakedirsNonRoot(out_dir)
+    osutils.SafeMakedirs(path / constants.CHROOT_OUT_ROOT.relative_to("/"))
+    osutils.Mount(
+        out_dir,
+        path / constants.CHROOT_OUT_ROOT.relative_to("/"),
+        None,
+        osutils.MS_BIND | osutils.MS_REC,
+    )
+
+    for source_dir, dest_dir, mode in (
+        ("tmp", "tmp", 0o1777),
+        ("home", "home", None),
+        ("build", "build", None),
+        ("sdk/bin", "usr/local/bin", None),
+        ("sdk/cache", "var/cache", None),
+        (cache_dir, "var/cache/openos-cache", None),
+        # We shouldn't need access to any /run state, so don't mount it.
+        ("sdk/run", "run", None),
+        ("sdk/logs", "var/log", None),
+        ("sdk/tmp", "var/tmp", 0o1777),
+    ):
+        kwargs = {}
+        if mode is not None:
+            kwargs["mode"] = mode
+
+        osutils.SafeMakedirsNonRoot(out_dir / source_dir, **kwargs)
+        osutils.SafeMakedirs(path / dest_dir)
+        osutils.Mount(
+            out_dir / source_dir,
+            path / dest_dir,
+            None,
+            osutils.MS_BIND | osutils.MS_REC,
+        )
+
+    for source_dir, mode, sudo in (
+        ("sdk/run/lock", 0o1777, True),
+        # Some distros (e.g. Ubuntu) might have /dev/shm symlinked to /run/shm.
+        ("sdk/run/shm", 0o1777, True),
+        # Create /var/log/asan directory as unittests write to it (b/222311476).
+        ("sdk/logs/asan", 0o1777, False),
+    ):
+        kwargs = {}
+        if mode is not None:
+            kwargs["mode"] = mode
+
+        osutils.SafeMakedirs(out_dir / source_dir, sudo=sudo, **kwargs)
+
+    # Bind mount a few /etc files, so sysroots can add their own users/groups.
+    for src, dst in (
+        ("sdk/passwd", "etc/passwd"),
+        ("sdk/group", "etc/group"),
+        ("sdk/shadow", "etc/shadow"),
+    ):
+        if not (out_dir / src).exists():
+            # Grab a unique lock here, as we only need fine-grained coverage
+            # over these passwd/group/shadow files, in the infrequent
+            # (first-time initialization) case that they haven't been copied
+            # over before.
+            with locking.FileLock(
+                out_dir / ".passwd_lock",
+                "passwd lock",
+                blocking_timeout=30,
+            ) as lock:
+                lock.write_lock()
+                # Check again now that we have the lock. If it exists now, we
+                # lost the race, but that's OK.
+                if (out_dir / src).exists():
+                    break
+                osutils.SafeMakedirsNonRoot((out_dir / src).parent)
+                shutil.copy2(path / dst, out_dir / src)
+        osutils.Mount(out_dir / src, path / dst, None, osutils.MS_BIND)
+
+    # Bind mount some read-only paths.
+    for src, dst in (
+        # Refresh network configs in the chroot.
+        ("/etc/resolv.conf", "etc/resolv.conf"),
+        ("/etc/hosts", "etc/hosts"),
+    ):
+        dst = path / dst
+        osutils.Mount(src, dst, None, osutils.MS_BIND)
+        osutils.Mount(
+            None,
+            dst,
+            None,
+            osutils.MS_REMOUNT | osutils.MS_BIND | osutils.MS_RDONLY,
+        )
+
+    # Bind mount the host kernel modules read-only so modprobe can be used
+    # inside the chroot for things like usbip-host.
+    subpath = "lib/modules"
+    src = Path("/") / subpath
+    dst = path / subpath
+    if src.is_dir():
+        dst.mkdir(exist_ok=True)
+        osutils.Mount(src, dst, None, osutils.MS_BIND)
+        osutils.Mount(
+            None,
+            dst,
+            None,
+            osutils.MS_REMOUNT | osutils.MS_BIND | osutils.MS_RDONLY,
+        )
+
+    # Setup ~/.
+    external_home = os_util.non_root_home()
+    internal_home = path / "home" / os_util.get_non_root_user()
+    osutils.SafeMakedirsNonRoot(internal_home)
+    for subpath in (
+        # go/keep-sorted start
+        ".config/chrome_infra",
+        ".config/chromite",
+        # Creds used to authenticate with GCP services (e.g. RBE).
+        ".config/gcloud/application_default_credentials.json",
+        ".googleapikeys",
+        ".inputrc",
+        ".ssh/known_hosts",
+        # go/keep-sorted end
+    ):
+        src = external_home / subpath
+        if not src.exists():
+            continue
+        dst = internal_home / subpath
+        if not dst.exists():
+            if src.is_dir():
+                osutils.SafeMakedirsNonRoot(dst)
+            else:
+                osutils.SafeMakedirsNonRoot(dst.parent)
+                osutils.Touch(dst)
+        osutils.Mount(src, dst, None, osutils.MS_BIND)
+
+    # gsutil uses boto config to store settings and credentials.  Symlink the
+    # common private overlay so devs can run gsutil directly to fetch files.
+    boto = (
+        constants.SOURCE_ROOT
+        / constants.CHROMEOS_OVERLAY_DIR
+        / "googlestorage_account.boto"
+    )
+    boto_home = internal_home / ".boto"
+    if boto.exists():
+        want_target = Path(path_util.ToChrootPath(boto))
+        try:
+            have_target = boto_home.readlink()
+        except FileNotFoundError:
+            have_target = None
+        except OSError:
+            # Handle plain files instead of symlinks.
+            boto_home.unlink()
+            have_target = None
+        # Recreate the symlink if it isn't pointing to the correct place.
+        if have_target != want_target:
+            if have_target:
+                boto_home.unlink()
+            # NB: This creates the symlink as root, but since the home dir is
+            # world readable & owned by the user, they can read & modify it.
+            boto_home.symlink_to(want_target)
+    else:
+        boto_home.unlink(missing_ok=True)
+
+    # Have found a few chroots where ~/.gsutil is owned by root:root, probably
+    # as a result of old gsutil or tools. This causes permission errors when
+    # gsutil cp tries to create its cache files, so ensure the user can
+    # actually write to their directory.
+    gsutil_dir = internal_home / ".gsutil"
+    if gsutil_dir.is_dir():
+        if uid is None:
+            uid = int(os.environ.pop("SUDO_UID"))
+        if gid is None:
+            gid = int(os.environ.pop("SUDO_GID"))
+        osutils.Chown(gsutil_dir, uid, gid, recursive=True)
+
+    _setup_ssh_configs(
+        external_home / ".ssh", internal_home / ".ssh", uid=uid, gid=gid
+    )
+
+    # Pass the current ssh auth socket into the SDK so we can ssh to e.g. DUTs.
+    ssh_auth_sock = Path(os.getenv("SSH_AUTH_SOCK", "/"))
+    try:
+        is_socket = ssh_auth_sock.is_socket()
+    except OSError:
+        is_socket = False
+    if is_socket:
+        ssh_auth_sock_mnt = path / "tmp" / "ssh-auth-sock"
+        if not ssh_auth_sock_mnt.exists():
+            osutils.Touch(ssh_auth_sock_mnt)
+        osutils.Mount(ssh_auth_sock, ssh_auth_sock_mnt, None, osutils.MS_BIND)
+
+    defflags = (
+        osutils.MS_NOSUID
+        | osutils.MS_NODEV
+        | osutils.MS_NOEXEC
+        | osutils.MS_RELATIME
+    )
+    osutils.Mount("proc", path / "proc", "proc", defflags)
+    osutils.Mount("sysfs", path / "sys", "sysfs", defflags)
+
+    if "binfmt_misc" in KNOWN_FILESYSTEMS:
+        try:
+            osutils.Mount(
+                "binfmt_misc",
+                path / "proc/sys/fs/binfmt_misc",
+                "binfmt_misc",
+                defflags,
+            )
+        except PermissionError:
+            # We're in an environment where we can't mount binfmt_misc (e.g. a
+            # container), so ignore it for now.  We need it for unittests via
+            # qemu, but nothing else currently.
+            pass
+
+    # We expose /dev so we can access loopback & USB drives for flashing.
+    osutils.Mount("/dev", path / "dev", None, osutils.MS_BIND | osutils.MS_REC)
+
+    # Fix permissions on shared memory to allow non-root users access to POSIX
+    # semaphores. Take special care to only change the permissions on the
+    # directory and not all of its contents.
+    dev_shm = path / "dev" / "shm"
+    try:
+        if (dev_shm.stat().st_mode & 0o7777) != 0o1777:
+            osutils.Chmod(dev_shm, 0o1777)
+    except FileNotFoundError:
+        pass
+
+
+FileSystemDebugInfo = collections.namedtuple(
+    "FileSystemDebugInfo", ("fuser", "lsof", "ps")
+)
+
+
+def GetFileSystemDebug(path: str, run_ps: bool = True) -> FileSystemDebugInfo:
+    """Collect filesystem debugging information.
+
+    Dump some information to help find processes that may still be sing
+    files. Running ps auxf can also be done to see what processes are
+    still running.
+
+    Args:
+        path: Full path for directory we want information on.
+        run_ps: When true, show processes running.
+
+    Returns:
+        FileSystemDebugInfo with debug info.
+    """
+    cmd_kwargs = {
+        "check": False,
+        "capture_output": True,
+        "encoding": "utf-8",
+        "errors": "replace",
+    }
+    fuser = cros_build_lib.sudo_run(["fuser", path], **cmd_kwargs)
+    lsof = cros_build_lib.sudo_run(["lsof", path], **cmd_kwargs)
+    if run_ps:
+        ps = cros_build_lib.run(["ps", "auxf"], **cmd_kwargs)
+        ps_stdout = ps.stdout
+    else:
+        ps_stdout = None
+    return FileSystemDebugInfo(fuser.stdout, lsof.stdout, ps_stdout)
+
+
+# Raise an exception if cleanup takes more than 10 minutes.
+@timeout_util.TimeoutDecorator(600)
+def CleanupChroot(
+    chroot: chroot_lib.Chroot,
+    delete_out: bool = True,
+) -> None:
+    """Deletes a chroot, and possibly its output directory.
+
+    Args:
+        chroot: The chroot to examine.
+        delete_out: Whether to also delete the chroot output directory.
+    """
+    with metrics_lib.timer("cros_sdk_lib.CleanupChroot.RmDir.Chroot"):
+        osutils.RmDir(chroot.path, ignore_missing=True, sudo=True)
+    if delete_out:
+        with metrics_lib.timer("cros_sdk_lib.CleanupChroot.RmDir.out"):
+            osutils.RmDir(chroot.out_path, ignore_missing=True, sudo=True)
+
+
+def RunChrootVersionHooks(version_file=None, hooks_dir=None) -> None:
+    """Run the chroot version hooks to bring the chroot up to date."""
+    if not cros_build_lib.IsInsideChroot():
+        command = ["run_chroot_version_hooks"]
+        cros_build_lib.run(command, enter_chroot=True)
+    else:
+        chroot = ChrootUpdater(version_file=version_file, hooks_dir=hooks_dir)
+        chroot.ApplyUpdates()
+
+
+def InitLatestVersion(version_file=None, hooks_dir=None) -> None:
+    """Initialize the chroot version to the latest version."""
+    if not cros_build_lib.IsInsideChroot():
+        # Run the command in the chroot.
+        command = ["run_chroot_version_hooks", "--init-latest"]
+        cros_build_lib.run(command, enter_chroot=True)
+    else:
+        # Initialize the version.
+        chroot = ChrootUpdater(version_file=version_file, hooks_dir=hooks_dir)
+        if chroot.IsInitialized():
+            logging.info(
+                "Chroot is already initialized to %s.", chroot.GetVersion()
+            )
+        else:
+            logging.info(
+                "Initializing chroot to version %s.", chroot.latest_version
+            )
+            chroot.SetVersion(chroot.latest_version)
+
+
+class ChrootUpdater:
+    """Chroot version and update related functionality."""
+
+    def __init__(self, version_file=None, hooks_dir=None) -> None:
+        if version_file:
+            # We have one. Just here to skip the logic below since we don't need
+            # it.
+            default_version_file = None
+        elif cros_build_lib.IsInsideChroot():
+            # Use the absolute path since we're inside the chroot.
+            default_version_file = CHROOT_VERSION_FILE
+        else:
+            # Otherwise convert to the path outside the chroot.
+            default_version_file = path_util.FromChrootPath(CHROOT_VERSION_FILE)
+
+        self._version_file = version_file or default_version_file
+        self._hooks_dir = hooks_dir or _CHROOT_VERSION_HOOKS_DIR
+
+        self._version = None
+        self._latest_version = None
+        self._hook_files = None
+
+    @property
+    def latest_version(self):
+        """Get the highest available version for the chroot."""
+        if self._latest_version is None:
+            self._latest_version = LatestChrootVersion(self._hooks_dir)
+        return self._latest_version
+
+    def GetVersion(self):
+        """Get the chroot version.
+
+        Returns:
+            int
+
+        Raises:
+            InvalidChrootVersionError: when the file contents are not a valid
+                version.
+            IOError: when the file cannot be read.
+            UninitializedChrootError: when the version file does not exist.
+        """
+        if self._version is None:
+            # Check for existence so IOErrors from osutils.ReadFile are limited
+            # to permissions problems.
+            if not os.path.exists(self._version_file):
+                raise UninitializedChrootError(
+                    "Version file does not exist: %s" % self._version_file
+                )
+
+            version = osutils.ReadFile(self._version_file)
+
+            try:
+                self._version = int(version)
+            except ValueError:
+                raise InvalidChrootVersionError(
+                    "Invalid chroot version in %s: %s"
+                    % (self._version_file, version)
+                )
+            else:
+                logging.debug("Found chroot version %s", self._version)
+
+        return self._version
+
+    def SetVersion(self, version) -> None:
+        """Set and store the chroot version."""
+        self._version = version
+        osutils.WriteFile(self._version_file, str(version), sudo=True)
+
+        # TODO(2023-11-01): Owner by default should be root, but older chroots
+        # used to set this to the user.  Force this to be root to keep all
+        # chroots in a consistent state.  We can drop this after we stop caring
+        # about chroots that are too old.
+        osutils.Chown(self._version_file, user="root")
+
+    def IsInitialized(self):
+        """Initialized Check."""
+        try:
+            return self.GetVersion() > 0
+        except (Error, IOError):
+            return False
+
+    def ApplyUpdates(self) -> None:
+        """Apply all necessary updates to the chroot."""
+        if self.GetVersion() > self.latest_version:
+            raise InvalidChrootVersionError(
+                "Missing upgrade hook for version %s.\n"
+                "Chroot is too new. Consider running:\n"
+                "    cros_sdk --replace\n"
+                "If the chroot is brand new, retrieve latest hooks with:\n"
+                "    repo sync" % self.GetVersion()
+            )
+
+        for hook, version in self.GetChrootUpdates():
+            result = cros_build_lib.run(
+                ["bash", hook], enter_chroot=True, check=False
+            )
+            if not result.returncode:
+                self.SetVersion(version)
+            else:
+                raise ChrootUpdateError(
+                    "Error running chroot version hook: %s" % hook
+                )
+
+    def GetChrootUpdates(self):
+        """Get all (update file, version) pairs that have not been run.
+
+        Returns:
+            list of (/path/to/hook/file, version) pairs in order.
+
+        Raises:
+            ChrootDeprecatedError when one or more required update files have
+            been deprecated.
+        """
+        hooks = self._GetHookFilesByVersion()
+
+        # Create the relevant ChrootUpdates.
+        updates = []
+        # Current version has already been run and we need to run the latest, so
+        # +1 for each end of the version range.
+        for version in range(self.GetVersion() + 1, self.latest_version + 1):
+            # Deprecation check: Deprecation is done by removing old scripts.
+            # Updates must form a continuous sequence. If the sequence is broken
+            # between the chroot's current version and the most recent, then the
+            # chroot must be recreated.
+            if version not in hooks:
+                raise ChrootDeprecatedError(self.GetVersion())
+
+            updates.append((hooks[version], version))
+
+        return updates
+
+    def _GetHookFilesByVersion(self):
+        """Find and store the hooks by their version number.
+
+        Returns:
+            dict - {version: /path/to/hook/file} mapping.
+
+        Raises:
+            VersionHasMultipleHooksError when multiple hooks exist for a
+            version.
+        """
+        if self._hook_files:
+            return self._hook_files
+
+        hook_files = {}
+        for hook in os.listdir(self._hooks_dir):
+            version = int(hook.split("_", 1)[0])
+
+            # Sanity check: Each version may only have a single script. Multiple
+            # CLs landed at the same time and no one noticed the version
+            # overlap.
+            if version in hook_files:
+                raise VersionHasMultipleHooksError(
+                    "Version %s has multiple hooks." % version
+                )
+
+            hook_files[version] = os.path.join(self._hooks_dir, hook)
+
+        self._hook_files = hook_files
+        return self._hook_files
+
+
+class ChrootCreator:
+    """Creates a new chroot from a given SDK.
+
+    Note: For the lifetime of this class, no paths are mounted in the chroot.
+    Thus, some standard path conversion functions like path_util.FromChrootPath
+    and chroot.full_path might return paths that don't exist.
+    """
+
+    # If the host timezone isn't set, we'll use this inside the SDK.
+    DEFAULT_TZ = "usr/share/zoneinfo/PST8PDT"
+
+    # Groups to add the user to inside the chroot.
+    # This group list is a bit dated and probably contains a number of items
+    # that no longer make sense.
+    # TODO(crbug.com/762445): Remove "adm".
+    # TODO(build): Remove cdrom & floppy.
+    # TODO(build): See if audio is still needed.  Host distros might use diff
+    #   "audio" group, so we wouldn't get access to /dev/snd/ nodes directly.
+    # TODO(build): See if video is still needed.  Host distros might use diff
+    #   "video" group, so we wouldn't get access to /dev/dri/ nodes directly.
+    DEFGROUPS = {"adm", "cdrom", "floppy", "audio", "video", "portage", "tty"}
+
+    def __init__(
+        self,
+        chroot: chroot_lib.Chroot,
+        sdk_tarball: Path,
+    ) -> None:
+        """Initialize.
+
+        Args:
+            chroot: Chroot object representing the parameters for the chroot to
+                create.
+            sdk_tarball: Path to a downloaded OPENOS SDK tarball.
+        """
+        self.chroot = chroot
+        self.sdk_tarball = sdk_tarball
+        self._sysroot = sysroot_lib.Sysroot(chroot.path)
+
+    @metrics_lib.timed("cros_sdk_lib.ChrootCreator._make_chroot")
+    def _make_chroot(self) -> None:
+        """Create the chroot."""
+        # TODO(zbehan): Configure stuff that is usually done in postinst's,
+        # but wasn't. Fix the postinst's.
+        # NB: We don't use self.chroot.run because that requires the SDK be
+        # initialized since it uses `cros_sdk` to enter.
+        cros_build_lib.dbg_run(
+            ["chroot", self.chroot.path, "env-update", "--no-ldconfig"],
+            extra_env={
+                # We need to use the PATH that makes sense inside the SDK,
+                # not whatever the host env is using.
+                "PATH": "/bin:/sbin:/usr/bin:/usr/sbin",
+            },
+        )
+
+    def init_timezone(self) -> None:
+        """Setup the timezone info inside the chroot."""
+        tz_path = Path("etc/localtime")
+        host_tz = "/" / tz_path
+        chroot_tz = Path(self.chroot.full_path(host_tz))
+        # Nuke it in case it's a broken symlink.
+        osutils.SafeUnlink(chroot_tz)
+        if host_tz.exists():
+            logging.debug("%s: copying from %s", chroot_tz, host_tz)
+            chroot_tz.write_bytes(host_tz.read_bytes())
+        else:
+            logging.debug("%s: symlinking to %s", chroot_tz, self.DEFAULT_TZ)
+            chroot_tz.symlink_to(self.DEFAULT_TZ)
+
+    def init_user(
+        self,
+        user: Optional[str] = None,
+        uid: Optional[int] = None,
+        gid: Optional[int] = None,
+    ) -> None:
+        """Setup the current user inside the chroot.
+
+        The user account name & id are synced with the active account outside of
+        the SDK.  This helps facilitate copying of files in & out of the SDK
+        without the need of sudo.
+
+        The user account must not already exist inside the SDK (as a
+        pre-existing reserved name) otherwise we can't create it with the right
+        uid.
+
+        Args:
+            user: The username to create.
+            uid: The new account's userid.
+            gid: The new account's groupid.
+        """
+        if not user:
+            user = os.getenv("SUDO_USER")
+            assert user is not None
+        if uid is None:
+            uid_str = os.getenv("SUDO_UID")
+            assert uid_str is not None
+            uid = int(uid_str)
+        if gid is None:
+            gid = pwd.getpwnam(user).pw_gid
+
+        path = Path(self.chroot.full_path("/etc/passwd"))
+        lines = path.read_text(encoding="utf-8").splitlines()
+
+        # Make sure the user isn't one the existing reserved ones.
+        for line in lines:
+            existing_user = line.split(":", 1)[0]
+            if existing_user == user:
+                cros_build_lib.die(
+                    f"{user}: this account cannot be used to build CrOS"
+                )
+
+        # Create the account.
+        home = f"/home/{user}"
+        line = f"{user}:x:{uid}:{gid}:OPENOS Developer:{home}:/bin/bash"
+        logging.debug("%s: adding user: %s", path, line)
+        lines.insert(0, line)
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        home_path = Path(self.chroot.full_path(home))
+        # If |home_path| exists, a chroot has already been established for this
+        # tree. Skip reestablishing.
+        if not home_path.exists():
+            self.init_user_home(home_path, uid, gid)
+        else:
+            self.upgrade_user_home(home_path, uid, gid)
+
+    def init_group(
+        self,
+        user: Optional[str] = None,
+        groups: Optional[Set[str]] = None,
+        group: Optional[str] = None,
+        gid: Optional[int] = None,
+    ) -> None:
+        """Setup the current user's groups inside the chroot.
+
+        This will create the user's primary group and add them to a bunch of
+        supplemental groups.  The primary group is synced with the active
+        account outside the SDK to help facilitate accessing of files &
+        resources (e.g. any /dev nodes).
+
+        The primary group must not already exist inside the SDK (as a
+        pre-existing reserved name) otherwise we can't create it with the right
+        gid.
+
+        Args:
+            user: The username to add to groups.
+            groups: The account's supplemental groups.
+            group: The account's primary group (to be created).
+            gid: The primary group's gid.
+        """
+        if not user:
+            user = os.getenv("SUDO_USER")
+            assert user is not None
+        if groups is None:
+            groups = self.DEFGROUPS
+        if gid is None:
+            gid = pwd.getpwnam(user).pw_gid
+        if group is None:
+            group = grp.getgrgid(gid).gr_name
+
+        path = Path(self.chroot.full_path("/etc/group"))
+        lines = path.read_text(encoding="utf-8").splitlines()
+
+        # Make sure the group isn't one the existing reserved ones.
+        # Add the user to all the existing ones too.
+        for i, line in enumerate(lines):
+            entry = line.split(":")
+            if entry[0] == group:
+                # If the group exists with the same gid, no need to add a new
+                # one. This often comes up with e.g. the "users" group.
+                if entry[2] == str(gid):
+                    return
+                cros_build_lib.die(
+                    f"{group}: this group cannot be used to build CrOS"
+                )
+            if entry[0] in groups:
+                if entry[-1]:
+                    entry[-1] += ","
+                entry[-1] += user
+                lines[i] = ":".join(entry)
+
+        line = f"{group}:x:{gid}:{user}"
+        logging.debug("%s: adding group: %s", path, line)
+        lines.insert(0, line)
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def init_user_home(self, home: Path, uid: int, gid: int) -> None:
+        """Initialize the user's /home dir."""
+        shutil.copytree(self.chroot.full_path("/etc/skel"), home)
+
+        (home / "openos").symlink_to(constants.CHROOT_SOURCE_ROOT)
+
+        osutils.Chown(home, uid, group=gid, recursive=True)
+
+    def upgrade_user_home(self, home: Path, uid: int, gid: int) -> None:
+        """Apply any live updates to the user's /home dir."""
+        del uid, gid  # Unused.
+        # Rip out CHROOT_CWD support.
+        bash_profile = home / ".bash_profile"
+        if bash_profile.exists():
+            old_contents = bash_profile.read_text(encoding="utf-8")
+            new_contents = "\n".join(
+                x
+                for x in old_contents.split("\n")
+                if x != 'cd "${CHROOT_CWD:-${HOME}/openos/src/scripts}"'
+            )
+            if old_contents != new_contents:
+                bash_profile.write_text(new_contents, encoding="utf-8")
+
+    def init_etc(self, user: Optional[str] = None) -> None:
+        """Setup the /etc paths."""
+        if user is None:
+            user = os.getenv("SUDO_USER")
+
+        etc_dir = Path(self.chroot.full_path("/etc"))
+
+        # Setup some symlinks.
+        mtab = etc_dir / "mtab"
+        if not mtab.is_symlink():
+            osutils.SafeUnlink(mtab)
+            mtab.symlink_to("/proc/mounts")
+
+        # Copy config from outside chroot into chroot.
+        for path in ("hosts", "resolv.conf"):
+            host_path = Path("/etc") / path
+            chroot_path = etc_dir / path
+            if host_path.exists():
+                chroot_path.write_bytes(host_path.read_bytes())
+                chroot_path.chmod(0o644)
+
+        # Setup the SDK make.conf file.
+        build_target = build_target_lib.BuildTarget(
+            constants.CHROOT_BUILDER_BOARD
+        )
+        self._sysroot.InstallMakeConfSdk(build_target)
+
+        # Add chromite/sdk/bin and chromite/bin into the path globally. We rely
+        # on 'env-update' getting called later.
+        env_d = etc_dir / "env.d" / "99openos"
+        chroot_chromite_bin = (
+            constants.CHROOT_SOURCE_ROOT / constants.CHROMITE_BIN_SUBDIR
+        )
+        env_d_contents = f"""\
+PATH="{constants.CHROOT_SOURCE_ROOT}/chromite/sdk/bin:{chroot_chromite_bin}"
+CROS_WORKON_SRCROOT="{constants.CHROOT_SOURCE_ROOT}"
+PORTAGE_USERNAME="{user}"
+"""
+        if path_util.is_citc_checkout():
+            cog_workspace_id = path_util.read_workspace_id()
+            env_d_contents += f"""\
+CROS_COG_WORKSPACE_ID="{cog_workspace_id}"
+"""
+        env_d_contents += "\n"
+        env_d.write_text(
+            env_d_contents,
+            encoding="utf-8",
+        )
+
+        profile_d = etc_dir / "profile.d"
+        profile_d.mkdir(mode=0o755, parents=True, exist_ok=True)
+        for f in ("40-openos-cachedir.sh", "50-openos-niceties.sh"):
+            (profile_d / f).symlink_to(
+                f"{constants.CHROOT_SOURCE_ROOT}/chromite/sdk/etc/profile.d/{f}"
+            )
+
+        # Enable bash completion.
+        bash_completion_d = etc_dir / "bash_completion.d"
+        bash_completion_d.mkdir(mode=0o755, parents=True, exist_ok=True)
+        (bash_completion_d / "cros").symlink_to(f"{_BASH_COMPLETION_DIR}/cros")
+
+        # Setup sudo config.  We can't symlink it directly as sudo permission
+        # checks (reasonably) reject it.  And we rewrite some content.
+        sudoers_d = etc_dir / "sudoers.d" / "90_cros"
+        sudoers_d_template = (
+            constants.CHROMITE_DIR / "sdk" / "etc" / "sudoers.d" / "90_cros.in"
+        )
+        sudoers_d_contents = (
+            sudoers_d_template.read_text(encoding="utf-8")
+            .replace(
+                "%%CROS_ENV_KEEP%%",
+                " ".join(constants.CHROOT_ENVIRONMENT_ALLOWLIST),
+            )
+            .replace("%%CROS_USERNAME%%", user)
+        )
+        sudoers_d.parent.mkdir(mode=0o750, exist_ok=True)
+        osutils.WriteFile(sudoers_d, sudoers_d_contents, chmod=0o0644)
+        osutils.Chown(sudoers_d.parent, 0, 0, recursive=True)
+
+    def init_var(self, uid: Optional[int] = None) -> None:
+        """Handle /var contents from SDK tarball."""
+        if uid is None:
+            uid_str = os.getenv("SUDO_UID")
+            assert uid_str is not None
+            uid = int(uid_str)
+
+        for chroot_path, out_path in (
+            ("var/cache", "sdk/cache"),
+            ("var/log", "sdk/logs"),
+        ):
+            src_dir = Path(self.chroot.path) / chroot_path
+            dst_dir = self.chroot.out_path / out_path
+            # chroot source didn't have this path? Then skip it.
+            if not src_dir.exists():
+                continue
+
+            osutils.SafeMakedirsNonRoot(dst_dir)
+            osutils.MoveDirContents(src_dir, dst_dir, allow_nonempty=True)
+
+        cache_dir = self.chroot.full_path(constants.CHROOT_CACHE_ROOT)
+        osutils.Chown(cache_dir, uid, group=constants.PORTAGE_GID)
+
+        # Create edb cache stub directories.
+        edb_cache_dep = Path(
+            self.chroot.full_path(constants.CHROOT_EDB_CACHE_ROOT / "dep")
+        )
+        osutils.SafeMakedirs(edb_cache_dep, mode=0o2775)
+        # Set users/groups.
+        osutils.Chown(
+            edb_cache_dep,
+            constants.PORTAGE_UID,
+            group=constants.PORTAGE_GID,
+            recursive=True,
+        )
+
+    @metrics_lib.timed("cros_sdk_lib.ChrootCreator.run")
+    def run(
+        self,
+        user: Optional[str] = None,
+        uid: Optional[int] = None,
+        group: Optional[str] = None,
+        gid: Optional[int] = None,
+    ) -> None:
+        """Create the chroot.
+
+        Args:
+            user: The user account to use (e.g. for testing).
+            uid: The user id to use (e.g. for testing).
+            group: The group account to use (e.g. for testing).
+            gid: The group id to use (e.g. for testing).
+        """
+        logging.notice("Creating chroot. This may take a few minutes...")
+
+        metrics_prefix = "cros_sdk_lib.ChrootCreator.run"
+        with metrics_lib.timer(f"{metrics_prefix}.ExtractSdkTarball"):
+            # Unpack the chroot.
+            Path(self.chroot.path).mkdir(
+                mode=0o755, parents=True, exist_ok=True
+            )
+            compression_lib.extract_tarball(self.sdk_tarball, self.chroot.path)
+
+        with metrics_lib.timer(f"{metrics_prefix}.init"):
+            self.init_timezone()
+            self.init_user(user=user, uid=uid, gid=gid)
+            self.init_group(user=user, group=group, gid=gid)
+            self.init_etc(user=user)
+            self.init_var(uid=uid)
+
+        MountChrootPaths(self.chroot, uid=uid, gid=gid)
+
+        self._make_chroot()
+
+
+@metrics_lib.timed("cros_sdk_lib.CreateChroot")
+def CreateChroot(*args, **kwargs) -> None:
+    """Convenience method."""
+    ChrootCreator(*args, **kwargs).run()
+
+
+class ChrootEnteror:
+    """Enters an existing chroot (and syncs state we care about)."""
+
+    ENTER_CHROOT = os.path.join(
+        constants.CHROMITE_SHELL_DIR, "sdk_lib/enter_chroot.sh"
+    )
+
+    # The rlimits we will lookup & pass down, in order.
+    RLIMITS_TO_PASS = (
+        resource.RLIMIT_AS,
+        resource.RLIMIT_CORE,
+        resource.RLIMIT_CPU,
+        resource.RLIMIT_FSIZE,
+        resource.RLIMIT_MEMLOCK,
+        getattr(resource, 'RLIMIT_NICE', resource.RLIMIT_CPU),
+        resource.RLIMIT_NOFILE,
+        resource.RLIMIT_NPROC,
+        resource.RLIMIT_RSS,
+        resource.RLIMIT_STACK,
+    )
+
+    # We want a proc limit at least this small.
+    _RLIMIT_NPROC_MIN = 4096
+
+    # We want a file limit at least this small.
+    _RLIMIT_NOFILE_MIN = 262144
+
+    # Path to sysctl knob.  Class-level constant for easy test overrides.
+    _SYSCTL_VM_MAX_MAP_COUNT = Path("/proc/sys/vm/max_map_count")
+
+    # Path to ptrace knob.  Class-level constant for easy test overrides.
+    _SYSCTL_KERNEL_PTRACE_SCOPE = Path("/proc/sys/kernel/yama/ptrace_scope")
+
+    def __init__(
+        self,
+        chroot: "chroot_lib.Chroot",
+        chrome_root_mount: Optional[Path] = None,
+        cmd: Optional[List[str]] = None,
+        cwd: Optional[Path] = None,
+        read_only: bool = False,
+    ) -> None:
+        """Initialize.
+
+        Args:
+            chroot: Where the new chroot will be created.
+            chrome_root_mount: Where to mount |chrome_root| inside the chroot.
+            cmd: Program to run inside the chroot.
+            cwd: Directory to change to before running |additional_args|.
+            read_only: Whether to mount the chroot read-only.
+        """
+        self.chroot = chroot
+        self.chrome_root_mount = chrome_root_mount
+        self.cmd = cmd
+        self.read_only = read_only
+
+        if cwd and not cwd.is_absolute():
+            cwd = Path(chroot.chroot_path(cwd))
+        self.cwd = cwd
+
+    def _check_chroot(self) -> None:
+        """Verify the chroot is usable."""
+        st = os.statvfs(
+            Path(self.chroot.full_path(Path("/") / "usr" / "bin" / "sudo"))
+        )
+        if st.f_flag & os.ST_NOSUID:
+            cros_build_lib.die("chroot cannot be in a nosuid mount")
+
+    def _enter_chroot(
+        self, cmd: Optional[List[str]] = None, cwd: Optional[Path] = None
+    ) -> cros_build_lib.CompletedProcess:
+        """Enter the chroot, platform-aware.
+
+        On Linux: Uses kernel chroot + pivot_root (original behavior).
+        On macOS: Uses QEMU user-mode chroot emulation.
+        """
+        self._check_chroot()
+
+        if cmd is None:
+            cmd = self.cmd
+        if cwd is None:
+            cwd = self.cwd or constants.CHROOT_SOURCE_ROOT / "src" / "scripts"
+
+        # On macOS, use QEMU-based enter (no kernel chroot available)
+        if platform_enter.is_macos():
+            enter_impl = platform_enter.MacOSEnter(self.chroot.path)
+            return enter_impl.enter(
+                cmd=cmd,
+                cwd=cwd,
+                env=None,
+                read_only=self.read_only,
+            )
+
+        # Linux: Original chroot+pivot_root path
+        wrapper = [self.ENTER_CHROOT] + self.chroot.get_enter_args(
+            for_shell=True
+        )
+        if self.chrome_root_mount:
+            wrapper += ["--chrome_root_mount", str(self.chrome_root_mount)]
+
+        # This sets up the chroot environment (e.g. /home).
+        result = cros_build_lib.dbg_run(wrapper, check=False)
+        if result.returncode:
+            return result
+
+        # Run command or interactive shell.  Also include the non-chrooted path
+        # to the source trunk for scripts that may need to print it (e.g.
+        # build_image.sh).
+        wrapper = [
+            "/usr/bin/sudo",
+            "-u",
+            os.environ["SUDO_USER"],
+            f"--chdir={cwd}",
+            # TODO(b/307703861): Drop -i here.
+            "-i",
+        ]
+
+        # Setup variables to initialize inside the chroot.
+        wrapper += [
+            f"EXTERNAL_TRUNK_PATH={constants.SOURCE_ROOT}",
+            # We don't auto-update pinned depot_tools inside of the SDK.
+            "DEPOT_TOOLS_UPDATE=0",
+            # Force LANG=C.UTF-8, so locales do not need to be generated.
+            "LANG=C.UTF-8",
+        ]
+
+        # Needs to be checked after we run MountChrootPaths as it initializes
+        # the ssh-auth-sock socket.
+        ssh_auth_sock = Path(self.chroot.path) / "tmp" / "ssh-auth-sock"
+        if ssh_auth_sock.is_socket():
+            os.environ["SSH_AUTH_SOCK"] = "/tmp/ssh-auth-sock"
+        else:
+            os.environ.pop("SSH_AUTH_SOCK", None)
+
+        wrapper += [
+            f"{v}={os.getenv(v)}"
+            for v in constants.CHROOT_ENVIRONMENT_ALLOWLIST
+            if v in os.environ
+        ]
+
+        # Set GIT_PROXY_COMMAND so git:// URLs automatically work w/a proxy.
+        if any(
+            os.getenv(v) for v in ("all_proxy", "https_proxy", "http_proxy")
+        ):
+            wrapper += [
+                f"GIT_PROXY_COMMAND={constants.CHROOT_SOURCE_ROOT}"
+                "/chromite/shell/proxy-gw",
+            ]
+
+        # Split the command into environment variables and the command to run.
+        if cmd:
+            while cmd and "=" in cmd[0]:
+                wrapper.append(cmd.pop(0))
+            if cmd and cmd[0] != "--":
+                wrapper += ["--"]
+            wrapper += cmd
+
+        env = os.environ.copy()
+        # Clear locale related variables since C.UTF-8 is used in the chroot.
+        env.pop("LANGUAGE", None)
+        for v in list(env):
+            if v.startswith("LC_"):
+                env.pop(v, None)
+
+        # See pivot_root(8) man page for the safe usage of pivot_root.
+        # See also pivot_root(".", ".") section of pivot_roo(2) man page.
+        os.chdir(self.chroot.path)
+        cros_build_lib.dbg_run(["pivot_root", ".", "."])
+        # After pivot_root, we're running inside the CrOS sdk.  Reset PATH to
+        # match so we don't rely on the host distro's PATH bleeding in and
+        # requiring it be compatible. Once PATH has changed, force bash to
+        # clear its lookup cache just in case a program later is installed
+        # differently.
+        env["PATH"] = (
+            "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:"
+            "/sbin:/bin:/opt/bin"
+        )
+        osutils.UmountDir(".", lazy=True, cleanup=False)
+        return cros_build_lib.dbg_run(
+            ["chroot", "."] + wrapper, env=env, check=False
+        )
+
+    @classmethod
+    def get_rlimits(cls) -> str:
+        """Serialize current rlimits."""
+        return str(tuple(resource.getrlimit(x) for x in cls.RLIMITS_TO_PASS))
+
+    @classmethod
+    def set_rlimits(cls, limits: str) -> None:
+        """Deserialize rlimits."""
+        for rlim, limit in zip(cls.RLIMITS_TO_PASS, ast.literal_eval(limits)):
+            cur_limit = resource.getrlimit(rlim)
+            if cur_limit != limit:
+                # Turn the number into a symbolic name for logging.
+                name = "RLIMIT_???"
+                for name, num in resource.__dict__.items():
+                    if name.startswith("RLIMIT_") and num == rlim:
+                        break
+                logging.debug(
+                    "Restoring user rlimit %s from %r to %r",
+                    name,
+                    cur_limit,
+                    limit,
+                )
+
+                resource.setrlimit(rlim, limit)
+
+    def _setup_rlimit_nproc(self) -> None:
+        """Update process rlimits.
+        
+        On macOS: No-op; these kernel tuning knobs are Linux-only.
+        """
+        if platform_enter.is_macos():
+            return
+        # Some systems set the soft limit too low.  Bump it to the hard limit.
+        # We don't override the hard limit because it's something the admins put
+        # in place and we want to respect such configs.  http://b/234353695
+        soft, hard = resource.getrlimit(resource.RLIMIT_NPROC)
+        if soft != resource.RLIM_INFINITY and soft < self._RLIMIT_NPROC_MIN:
+            if soft < hard or hard == resource.RLIM_INFINITY:
+                resource.setrlimit(resource.RLIMIT_NPROC, (hard, hard))
+
+    def _setup_vm_max_map_count(self) -> None:
+        """Update OS limits as ThinLTO opens lots of files at the same time.
+        
+        On macOS: No-op; /proc/sys/vm/ is Linux-only.
+        """
+        if platform_enter.is_macos():
+            return
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        resource.setrlimit(
+            resource.RLIMIT_NOFILE,
+            (
+                max(soft, self._RLIMIT_NOFILE_MIN),
+                max(hard, self._RLIMIT_NOFILE_MIN),
+            ),
+        )
+        try:
+            max_map_count = int(
+                self._SYSCTL_VM_MAX_MAP_COUNT.read_text(encoding="utf-8")
+            )
+        except FileNotFoundError:
+            return
+        if max_map_count < self._RLIMIT_NOFILE_MIN:
+            logging.notice(
+                "Raising vm.max_map_count from %s to %s",
+                max_map_count,
+                self._RLIMIT_NOFILE_MIN,
+            )
+            self._SYSCTL_VM_MAX_MAP_COUNT.write_text(
+                str(self._RLIMIT_NOFILE_MIN), encoding="utf-8"
+            )
+
+    def _setup_kernel_ptrace_scope(self) -> None:
+        """Enable ptrace support since our build uses it.
+
+        Gentoo's sandbox uses ptrace to manage statically linked programs.
+        On macOS: No-op; Yama ptrace_scope is Linux-only.
+
+        https://docs.kernel.org/admin-guide/LSM/Yama.html#ptrace-scope
+        """
+        if platform_enter.is_macos():
+            return
+        try:
+            current = self._SYSCTL_KERNEL_PTRACE_SCOPE.read_text(
+                encoding="utf-8"
+            ).strip()
+        except FileNotFoundError:
+            return
+
+        # These settings are known to work.
+        if current in ("0", "1"):
+            return
+
+        # This setting cannot be changed.
+        if current == "3":
+            logging.warning(
+                "%s is set to '3'; builds might fail",
+                self._SYSCTL_KERNEL_PTRACE_SCOPE,
+            )
+            return
+
+        logging.notice("Adjusting ptrace_scope from %r to %r", current, "1")
+        try:
+            self._SYSCTL_KERNEL_PTRACE_SCOPE.write_text("1", encoding="utf-8")
+        except OSError as e:
+            logging.warning("%s: %s", self._SYSCTL_KERNEL_PTRACE_SCOPE, e)
+
+    def run(
+        self, cmd: Optional[List[str]] = None, cwd: Optional[Path] = None
+    ) -> cros_build_lib.CompletedProcess:
+        """Enter the chroot."""
+        if "CHROMEOS_SUDO_RLIMITS" in os.environ:
+            self.set_rlimits(os.environ.pop("CHROMEOS_SUDO_RLIMITS"))
+        self._setup_rlimit_nproc()
+        self._setup_vm_max_map_count()
+        self._setup_kernel_ptrace_scope()
+        if self.read_only:
+            with ChrootReadOnly(path=self.chroot.path):
+                return self._enter_chroot(cmd=cmd, cwd=cwd)
+        else:
+            return self._enter_chroot(cmd=cmd, cwd=cwd)
+
+
+def EnterChroot(*args, **kwargs) -> cros_build_lib.CompletedProcess:
+    """Convenience method."""
+    return ChrootEnteror(*args, **kwargs).run()
+
+
+class _ChrootWritable:
+    """A context manager for ensuring the Chroot mount writability."""
+
+    def __init__(
+        self, writable: bool, path: Union[str, os.PathLike] = "/"
+    ) -> None:
+        self._want_read_only = not writable
+        self._chroot_path = path
+        self._needs_remount = False
+
+    def __enter__(self) -> None:
+        # This context manager doesn't make sense outside the chroot.
+        assert IsChrootReady(self._chroot_path)
+
+        assert osutils.IsMounted(self._chroot_path)
+        self._needs_remount = (
+            osutils.IsMountedReadOnly(self._chroot_path) != self._want_read_only
+        )
+
+        if self._needs_remount:
+            self._remount(read_only=self._want_read_only)
+
+    def __exit__(self, _type, _value, _traceback) -> None:
+        if self._needs_remount:
+            # Path mounts may change (e.g., pivot_root on chroot entry), which
+            # means the path mount looks different by the time we exit. Just
+            # ignore it.
+            if not osutils.IsMounted(self._chroot_path):
+                return
+
+            self._remount(read_only=not self._want_read_only)
+
+    def _remount(self, read_only: bool) -> None:
+        """Perform the remount operation.
+
+        Args:
+            read_only: if True, remount read-only; otherwise, remount
+                read/write.
+        """
+        logging.debug(
+            "Re-mounting chroot %s", "read-only" if read_only else "read-write"
+        )
+        try:
+            ro = osutils.MS_RDONLY if read_only else 0
+            osutils.Mount(
+                None,
+                self._chroot_path,
+                None,
+                osutils.MS_REMOUNT | osutils.MS_BIND | ro,
+            )
+        except PermissionError:
+            # Try via sudo instead.
+            ro = "ro" if read_only else "rw"
+            cros_build_lib.sudo_run(
+                [
+                    "mount",
+                    "-o",
+                    ",".join(("remount", "bind", ro)),
+                    self._chroot_path,
+                ]
+            )
+
+
+class ChrootReadWrite(_ChrootWritable):
+    """Context manager for ensuring the Chroot mount is read/write.
+
+    Operations that need to update the main chroot mount (i.e., the contents of
+    |Chroot.path|, not |Chroot.out_path|) may require the chroot be mounted in a
+    writable state. Such operations should be performed within this
+    ChrootReadWrite context manager.
+
+    If the chroot is already mounted read/write, then this context manager is a
+    no-op.
+
+    Note: carefully consider whether you really want to mount the chroot
+    read/write. Most writable state should go into |Chroot.out_path|, such that
+    we can avoid writing to |Chroot.path| most of the time.
+
+    Examples:
+
+        # Perform some chroot updates. The chroot may already be writable, but
+        # we document it anyway.
+        with ChrootReadWrite():
+            PerformChrootUpdates()
+
+        # Perform some chroot updates on chroot entry. The chroot is mounted
+        # read-only, and we want it read/write only for the Update operations.
+        with ChrootReadOnly():
+            ...
+            with ChrootReadWrite():
+                # Do a few maintenance steps read/write:
+                PerformChrootUpdates()
+            # Back to regular SDK shell, read-only.
+    """
+
+    def __init__(self, path: Union[str, os.PathLike] = "/") -> None:
+        """Initialize a ChrootReadWrite context manager.
+
+        Args:
+            path: The chroot mount point.
+        """
+        super().__init__(writable=True, path=path)
+
+
+class ChrootReadOnly(_ChrootWritable):
+    """Context manager for ensuring the Chroot mount is read-only.
+
+    Most code should assume that the chroot may be mounted read-only on chroot
+    entry, and so should be using a ChrootReadWrite manager for operations
+    where we need a writable chroot. See ChrootReadWrite for more info.
+    """
+
+    def __init__(self, path: Union[str, os.PathLike] = "/") -> None:
+        """Initialize a ChrootReadOnly context manager.
+
+        Args:
+            path: The chroot mount point.
+        """
+        super().__init__(writable=False, path=path)

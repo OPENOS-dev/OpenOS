@@ -1,0 +1,64 @@
+# Copyright 2021 OCS (Open Code Studio)
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Strip packages and place them in <sysroot>/stripped-packages."""
+
+import os
+from typing import List
+
+from chromite.lib import build_target_lib
+from chromite.lib import commandline
+from chromite.lib import cros_build_lib
+from chromite.lib import gmerge_binhost
+from chromite.lib import install_mask
+
+
+def create_parser() -> commandline.ArgumentParser:
+    """Creates the cmdline argparser, populates the options and description."""
+    parser = commandline.ArgumentParser(description=__doc__)
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--board",
+        default=cros_build_lib.GetDefaultBoard(),
+        help="The board that processed packages belong to.",
+    )
+    group.add_argument(
+        "--sysroot",
+        type="str_path",
+        help="Sysroot that processed packages belong to. "
+        "This is incompatible with --board.",
+    )
+
+    parser.add_argument(
+        "--deep",
+        action="store_true",
+        default=False,
+        help="Also strip dependencies of packages.",
+    )
+    parser.add_argument(
+        "packages", nargs="+", metavar="package", help="Packages to strip."
+    )
+    return parser
+
+
+def main(argv: List[str]) -> int:
+    """Main function."""
+    cros_build_lib.AssertInsideChroot()
+    parser = create_parser()
+    options = parser.parse_args(argv)
+    options.freeze()
+
+    if options.sysroot is not None:
+        sysroot = options.sysroot
+    else:
+        sysroot = build_target_lib.get_default_sysroot_path(options.board)
+
+    os.environ["DEFAULT_INSTALL_MASK"] = "\n".join(install_mask.DEFAULT)
+
+    if not gmerge_binhost.update_gmerge_binhost(
+        sysroot, options.packages, options.deep
+    ):
+        return 1
+    return 0
