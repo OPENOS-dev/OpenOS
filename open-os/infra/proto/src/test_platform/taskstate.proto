@@ -1,0 +1,71 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform";
+
+message TaskState {
+  enum LifeCycleMask {
+    LIFE_CYCLE_MASK_UNSPECIFIED = 0;
+    // Mask for LifeCycle values in which a task started running.
+    LIFE_CYCLE_MASK_STARTED = 0x10;
+    // Mask for LifeCycle values in which a task completed running.
+    LIFE_CYCLE_MASK_COMPLETED = 0x20;
+    // Mask for LifeCycle values in which a task is in its final state.
+    LIFE_CYCLE_MASK_FINAL = 0x40;
+  }
+
+  enum LifeCycle {
+    LIFE_CYCLE_UNSPECIFIED = 0;
+
+    // Normal lifecycle: PENDING -> RUNNING -> COMPLETED.
+
+    // Waiting to start.
+    LIFE_CYCLE_PENDING = 0x01;
+    // Running.
+    LIFE_CYCLE_RUNNING = 0x10;
+    // Ran to completion without being cancelled externally, regardless
+    // of whether it succeeded or failed.
+    LIFE_CYCLE_COMPLETED = 0x70;
+
+    // Abnormal lifecycle
+
+    // Never got a chance to run, cancelled externally.
+    LIFE_CYCLE_CANCELLED = 0x41;
+    // Never got a chance to run, rejected due to no capacity.
+    LIFE_CYCLE_REJECTED = 0x42;
+    // Started running but was cancelled externally while running.
+    LIFE_CYCLE_ABORTED = 0x50;
+  }
+
+  LifeCycle life_cycle = 1;
+
+  enum Verdict {
+    // The task produced no usable verdict (possibly because it never
+    // ran, or never finished, or the results were unparseable).
+    //
+    // Under most circumstances, this should be treated as a failure or
+    // an infrastructure failure.
+    VERDICT_UNSPECIFIED = 0;
+    // The task produced a definitive verdict: it passed.
+    VERDICT_PASSED = 1;
+    // The task produced a definitive verdict: it failed.
+    VERDICT_FAILED = 2;
+    // The task definitively produced no verdict (for instance, because
+    // the test is irrelevant in the given environment).
+    //
+    // Under most circumstances, this should be treated as a passing
+    // (but uninteresting).
+    VERDICT_NO_VERDICT = 3;
+    // The task failed, but passed after one or more retries.
+    VERDICT_PASSED_ON_RETRY = 4;
+  }
+
+  // Verdict describes whether the task passed, failed, or had some other
+  // indefinite verdict.
+  Verdict verdict = 2;
+}

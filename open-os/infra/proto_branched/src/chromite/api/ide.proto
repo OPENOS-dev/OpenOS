@@ -1,0 +1,64 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+message GenerateMergedCompilationDBRequest {
+  message Flags {
+    // If true, the execution stops on first failed package.
+    bool fail_fast = 1;
+
+    // Whether to build tests alongside packages before generating.
+    bool with_tests = 2;
+  }
+
+  // The chroot to use for generating the compdb.
+  // The method expects that the build artifacts were generated and
+  // stored in out_path.
+  // Required.
+  chromiumos.Chroot chroot = 1;
+
+  // The build target to generate a compdb for.
+  // Required.
+  chromiumos.BuildTarget build_target = 2;
+
+  // Directory to store merged build artifacts.
+  // WARNING: existing dir if any will be completely removed.
+  chromiumos.Path build_dir = 3;
+
+  // Output file path for compile commands json.
+  chromiumos.Path compile_commands = 4;
+
+  // List of packages to process.
+  repeated chromiumos.PackageInfo packages = 5;
+
+  // Flag arguments.
+  Flags flags = 6;
+}
+
+message GenerateMergedCompilationDBResponse {}
+
+// Service for IDE functionalities
+service IdeService {
+  option (service_options) = {
+    module : "ide",
+  };
+
+  // Generate compilation database for ChromeOS packages and
+  // merge build artifacts for selected packages and their dependencies
+  // into a single build directory.
+  rpc GenerateMergedCompilationDB(GenerateMergedCompilationDBRequest)
+      returns (GenerateMergedCompilationDBResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  };
+}

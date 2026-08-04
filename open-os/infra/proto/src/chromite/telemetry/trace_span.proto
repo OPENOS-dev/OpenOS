@@ -1,0 +1,187 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// using proto2 for compatibility with upstream
+syntax = "proto2";
+
+package chromite.telemetry;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/telemetry";
+
+import "google/protobuf/struct.proto";
+
+// Proto used by chromeos build tools to produce trace spans.
+message TraceSpan {
+  // Defines the telemetry sdk used to produce this entry
+  message TelemetrySdk {
+    // name of the telemetry sdk being used to instrument the code
+    optional string name = 1;
+
+    // version of the sdk
+    optional string version = 2;
+
+    // programming language for the sdk.
+    optional string language = 3;
+  }
+
+  message System {
+    // name of the os like Gentoo, Ubuntu.
+    optional string os_name = 1;
+    // version of os run on the machine
+    optional string os_version = 2;
+    // the family of os like Linux, Darwin, Windows
+    optional string os_type = 3;
+    // the processor used on the host
+    optional string cpu = 4;
+    // information about the host architecture like amd64, x86
+    optional string host_architecture = 5;
+  }
+
+  // Provides some metadata about the executing process
+  message Process {
+    optional string pid = 1;
+
+    // name of the executable. For Linux, Name from /proc/{pid}/status
+    optional string executable_name = 2;
+
+    // full path of the executable. For Linux, target of /proc/{pid}/exe
+    optional string executable_path = 3;
+
+    // the actual command executed. typically the first arg from
+    // /proc/{pid}/cmdline
+    optional string command = 4;
+
+    // the list of args passed to the command. typically contained in the
+    // /proc/{pid}/cmdline
+    repeated string command_args = 5;
+
+    // Whether the current owner is root
+    optional bool owner_is_root = 6;
+
+    // The runtime name like Cython, Jython etc
+    optional string runtime_name = 7;
+
+    // the version of the runtime being used
+    optional string runtime_version = 8;
+
+    // human readable description of runtime
+    optional string runtime_description = 9;
+
+    // the c api version used in this runtime
+    optional string api_version = 10;
+
+    // select set of environment variables and their values
+    map<string, string> env = 11;
+  }
+
+  // describes the resource where the trace was generated.
+  message Resource {
+    optional Process process = 1;
+    optional System system = 2;
+    optional google.protobuf.Struct attributes = 3;
+  }
+
+  // Points to the location for the scope of current span
+  message InstrumentationScope {
+    // Points to the code location where the span originated
+    optional string name = 1;
+
+    // version number for this code module
+    optional string version = 2;
+  }
+
+  enum SpanKind {
+    SPAN_KIND_UNSPECIFIED = 0;
+    SPAN_KIND_INTERNAL = 1;
+    SPAN_KIND_SERVER = 2;
+    SPAN_KIND_CLIENT = 3;
+  }
+
+  // Denotes any events published for this span
+  message Event {
+    // unix timestamp in millis when the event occurs
+    optional int64 event_time_millis = 1;
+    optional string name = 2;
+    optional google.protobuf.Struct attributes = 3;
+  }
+
+  // A single stack frame within the stacktrace
+  message StackFrame {
+    optional string function_name = 1;
+    optional string file_name = 2;
+    optional int64 line_number = 3;
+    optional int64 column_number = 4;
+  }
+
+  // Stacktrace captured during an exception
+  message StackTrace {
+    repeated StackFrame stack_frames = 1;
+
+    // The number of frames dropped to save packet size
+    optional int64 dropped_frames_count = 2;
+
+    // Since multiple spans will contain the same trace, this is a way to
+    // minimize the size of message.
+    optional string stacktrace_hash = 3;
+  }
+
+  // captures the status for the current span
+  message Status {
+    enum StatusCode {
+      STATUS_CODE_UNSET = 0;
+      STATUS_CODE_OK = 1;
+      STATUS_CODE_ERROR = 2;
+    }
+    optional StatusCode status_code = 1;
+    optional string message = 2;
+    optional StackTrace stack_trace = 3;
+  }
+
+  // Represents the trace-context
+  message Context {
+    // the random id generated for each trace. It is generated for each process
+    // execution.
+    optional string trace_id = 1;
+    // the random id generated for each span within a trace.
+    optional string span_id = 2;
+    optional string trace_state = 3;
+  }
+
+  message Link {
+    optional Context context = 1;
+    optional google.protobuf.Struct attributes = 2;
+  }
+
+  // --------------------------------
+  // Fields for TraceSpan
+  // --------------------------------
+
+  optional string name = 1;
+
+  optional Context context = 2;
+
+  optional string parent_span_id = 3;
+
+  optional SpanKind span_kind = 4;
+
+  // unix timestamp in millis when the span started
+  optional int64 start_time_millis = 5;
+
+  // unix timestamp in millis when the span ended
+  optional int64 end_time_millis = 6;
+
+  optional google.protobuf.Struct attributes = 7;
+
+  repeated Event events = 8;
+
+  repeated Link links = 9;
+
+  optional Status status = 10;
+
+  optional Resource resource = 11;
+
+  optional InstrumentationScope instrumentation_scope = 12;
+
+  optional TelemetrySdk telemetry_sdk = 13;
+}

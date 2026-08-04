@@ -1,0 +1,30 @@
+{
+  "bucket": "chromeos-releases-test",
+  "dryrun": false,
+  "keyset": "update_signer",
+  "src_unsigned_image": {
+    "build": {
+      "bucket": "chromeos-releases",
+      "build_target": {
+        "name": "grunt"
+      },
+      "channel": "dev-channel",
+      "version": "11021.17.0"
+    },
+    "image_type": 6,
+    "milestone": "R70"
+  },
+  "tgt_unsigned_image": {
+    "build": {
+      "bucket": "chromeos-releases",
+      "build_target": {
+        "name": "grunt"
+      },
+      "channel": "dev-channel",
+      "version": "12499.42.0"
+    },
+    "image_type": 6,
+    "milestone": "R78"
+  },
+  "verify": true
+}

@@ -1,0 +1,104 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.phosphorus;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus";
+
+import "google/protobuf/timestamp.proto";
+import "test_platform/phosphorus/common.proto";
+import "test_platform/request.proto";
+
+// PrejobRequest defines the input of `phosphorus prejob`.
+message PrejobRequest {
+  Config config = 1;
+
+  string dut_hostname = 2;
+
+  // TODO(crbug.com/1162347): Delete this post-migration.
+  map<string, string> provisionable_labels = 3 [ deprecated = true ];
+
+  // What needs to be installed onto the DUT at the end of prejob, e.g.
+  // "cros-version": "reef-release/R77-12345.0.0".
+  // TODO(crbug.com/1162347): Delete this post-migration.
+  map<string, string> desired_provisionable_labels = 4 [ deprecated = true ];
+
+  // What needs to be installed onto the DUT at the end of prejob, as specified
+  // in the cros_test_platform request.
+  repeated test_platform.Request.Params.SoftwareDependency
+      software_dependencies = 8;
+
+  // What is installed on the DUT before the prejob, e.g.
+  // "cros-version": "reef-release/R77-12345.0.0".
+  map<string, string> existing_provisionable_labels = 5;
+
+  // Hard deadline for execution.
+  //
+  // All prejob execution should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 6;
+
+  // If set, use the Provision TLS API for the prejob.
+  // See go/cros-prover go/cros-tls
+  //
+  // crbug.com/1137444: This is a transitional argument. Once go/cros-prover
+  // migration is complete, all prejobs will use the TLS API and this argument
+  // will be dropped.
+  bool use_tls = 7;
+
+  // ProvisionTarget defines an addtional provision target and its software
+  // dependencies. Addtional provision target will share other config(e.g.
+  // use_tls) from the primary DUT.
+  message ProvisionTarget {
+    string dut_hostname = 1;
+    repeated test_platform.Request.Params.SoftwareDependency
+        software_dependencies = 2;
+    // Provision OS bundled firmware is controlled at each DUT level, so we need
+    // this flag for secondary devices as well.
+    bool update_firmware = 3;
+    // Provision googler ssh key or not is controlled at each DUT level.
+    bool provision_googler_ssh_key = 4;
+  }
+
+  // This field provide metadata to provision secondary devices in a multi-DUTs
+  // test.
+  repeated ProvisionTarget addtional_targets = 9;
+
+  // This field served as a flag to decide if we should update OS bundled
+  // firmware(RW) during the provision step.
+  bool update_firmware = 10;
+
+  // This field controls whether to provision googler ssh key only.
+  // If set, provision will only enable googler ssh key on the DUT.
+  // Otherwise, provision will enable external ssh key (which is the current
+  // status) on the DUT.
+  bool provision_googler_ssh_key = 11;
+}
+
+// PrejobResponse defines the output of `phosphorus prejob`.
+message PrejobResponse {
+  // Values should be consistent with https://aip.dev/216
+  enum State {
+    // Should not be used.
+    STATE_UNSPECIFIED = 0;
+    // The prejob succeeded.
+    //
+    // Some prejob failures may not be detectable during execution. These
+    // failures will be detected when parsing results off the prejob logs in a
+    // later step of test_runner.
+    SUCCEEDED = 1;
+    // The prejob failed.
+    FAILED = 2;
+    // The prejob hit the requested timeout.
+    TIMED_OUT = 3;
+    // The prejob was aborted externally.
+    ABORTED = 4;
+  }
+
+  // `phosphorus prejob` exits with exit code 0 unless there is an
+  // infrastructure failure. When the exit code is 0, `state` indicates the
+  // best known state of the prejob execution (see comments on State enum).
+  State state = 1;
+}

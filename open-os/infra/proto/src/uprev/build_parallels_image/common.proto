@@ -1,0 +1,16 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package uprev.build_parallels_image;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/uprev/build_parallels_image";
+
+// Config defines configuration parameters of `phosphorus
+// build-parallels-image-*` commands.
+message Config {
+  // Unified Fleet System service host, e.g. ufs.api.cr.dev.
+  string cros_ufs_service = 1;
+}

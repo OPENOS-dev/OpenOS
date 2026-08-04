@@ -1,0 +1,38 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.steps;
+
+import "test_platform/request.proto";
+import "test_platform/steps/enumeration.proto";
+import "test_platform/steps/execution.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/steps";
+
+message ComputeBackfillRequests {
+  // Each ComputeBackfillRequest is handled independently.
+  repeated ComputeBackfillRequest requests = 1;
+  map<string, ComputeBackfillRequest> tagged_requests = 2;
+}
+
+message ComputeBackfillResponses {
+  // Each ComputeBackfillResponse corresponds to a single
+  // ComputeBackfillRequest handled independently.
+  repeated ComputeBackfillResponse responses = 1;
+  // tagged_responses only contains responses for requests that need to be
+  // backfilled. Successfully completed requests are not included.
+  map<string, ComputeBackfillResponse> tagged_responses = 2;
+}
+
+// ComputeBackfillRequest defines the input of the compute-backfill step.
+message ComputeBackfillRequest {
+  test_platform.Request request = 1;
+  EnumerationResponse enumeration = 2;
+  ExecuteResponse execution = 3;
+}
+
+// ComputeBackfillResponse defines the output of the compute-backfill step.
+message ComputeBackfillResponse { test_platform.Request request = 1; }

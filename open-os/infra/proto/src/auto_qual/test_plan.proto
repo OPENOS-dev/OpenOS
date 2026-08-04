@@ -1,0 +1,18 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+import "auto_qual/os_build_target.proto";
+import "auto_qual/test.proto";
+
+message TestPlan {
+  repeated OSBuildTarget os_build_target = 1;
+  repeated Test test = 2;
+}
+
+message TestPlans { repeated TestPlan test_plan = 1; }

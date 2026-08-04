@@ -1,0 +1,23 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.autotest;
+
+import "chromite/api/test_metadata.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/autotest";
+
+// TestPlatformArgs defines the input format used by autotest's dynamic suite
+// (see
+// https://chromium.googlesource.com/chromiumos/third_party/autotest/+/refs/heads/master/server/cros/dynamic_suite/dynamic_suite.py)
+// This argument is available to the control.cros_test_platform suite, as an
+// autotest entry point for cros_test_platform.
+//
+// These arguments are in addition to the standard dynamic_suite arguments
+// passed in via the run_suite command line
+// (see
+// https://chromium.googlesource.com/chromiumos/third_party/autotest/+/refs/heads/master/site_utils/run_suite.py).
+message TestPlatformArgs { repeated chromite.api.AutotestTest tests = 1; }

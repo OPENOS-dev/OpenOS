@@ -1,0 +1,64 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+import "test_platform/skylab_local_state/common.proto";
+import "chromiumos/test/lab/api/dut.proto";
+
+// LoadRequest defines the input of `skylab_local_state load`.
+message LoadRequest {
+  Config config = 1;
+
+  // DUT hostname.
+  string dut_name = 3;
+
+  // Swarming run ID. Used in the results directory name.
+  string run_id = 4;
+
+  // DUT ID, used in the name of the DUT state cache file.
+  string dut_id = 5;
+
+  // Test ID, used in the results directory name.
+  string test_id = 6;
+
+  // A flag to indicates if the dut_name is a scheduling unit dut_name.
+  bool multi_duts_flag = 7;
+
+  reserved 2;
+  reserved "results_dir";
+}
+
+// Represents a DUT from lab.
+message Dut {
+  string hostname = 1;
+  string board = 2;
+  string model = 3;
+}
+
+// LoadResponse defines the output of `skylab_local_state load`.
+message LoadResponse {
+  // What is currently installed on the DUT, e.g.
+  // "cros-version": "reef-release/R77-12345.0.0".
+  map<string, string> provisionable_labels = 1;
+
+  // The path to the newly created directory containing the host info file.
+  string results_dir = 2;
+
+  // In a multi-DUTs use cases, we need return some basic information
+  // of all DUTs under a scheduling unit, so that provision and test
+  // exection steps can determine which of them will be used based on
+  // test metadata.
+  repeated Dut dut_topology = 4;
+
+  // This is only used by CFT MVP.
+  repeated chromiumos.test.lab.api.DutTopology lab_dut_topology = 5;
+
+  reserved 3;
+  reserved "async_results";
+}

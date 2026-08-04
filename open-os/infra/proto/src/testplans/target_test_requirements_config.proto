@@ -1,0 +1,250 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+import "google/protobuf/wrappers.proto";
+import "chromiumos/test/api/provision_state.proto";
+import "chromiumos/test/api/test_suite.proto";
+import "test_platform/common/cft_steps_config.proto";
+import "test_platform/request.proto";
+
+import "lab/license.proto";
+
+message TestSuiteCommon {
+  // Human-readable consistent name for a build target, test type pair.
+  string display_name = 1;
+
+  // Whether or not the test suite is considered critical.
+  google.protobuf.BoolValue critical = 2;
+
+  message TestSuiteGroup { string test_suite_group = 1; }
+  // A list of groups to which this test suite belongs.
+  // This is a key into other testingconfig modules.
+  repeated TestSuiteGroup test_suite_groups = 3;
+
+  // Whether this suite should be disabled by default. It will only be enabled
+  // if some other rule forces it to be put into the test plan.
+  bool disable_by_default = 4;
+}
+
+// Specs for a companion DUT in multi-dut tests.
+message TestCompanion {
+  // Board means Cros board or an Android phone family (e.g. pixel7, which
+  // includes pixel7a, pixel7 and pixel7pro models) following the same naming
+  // convention as in suite scheduler: http://shortn/_Xphologdnc
+  // The initial implementation of multi-dut in CQ only support board-level.
+  // Future improvements may add model and other specs.
+  string board = 1;
+  // Provision config for the companion.
+  chromiumos.test.api.CompanionConfig config = 2;
+}
+
+message TastTestShard {
+  // The total number of shards to be used in a test run.
+  int64 total_shards = 1;
+
+  // The index of the shard to use.
+  // Note: This value is 0-indexed.
+  int64 shard_index = 2;
+}
+
+message HwTestCfg {
+  enum HwTestSuiteType {
+    HW_TEST_SUITE_TYPE_UNSPECIFIED = 0;
+    AUTOTEST = 1;
+    TAST = 2;
+  }
+  // Configuration for a hardware test suite.
+  // NEXT ID: 27
+  message HwTest {
+    TestSuiteCommon common = 12;
+
+    // Name of the test suite to run.
+    string suite = 1;
+    // The key that identifies a distinct type of device in Skylab.
+    // Skylab uses the term "board", hence use of this otherwise controversial
+    // word.
+    // e.g. could use device_target 'caroline' to test the build_target
+    // 'caroline-arcnext'.
+    string skylab_board = 11;
+
+    // Key that further specifies the device to test on in Skylab.
+    // e.g. for skylab_board 'octopus', may require skylab_model 'ampton'
+    string skylab_model = 15;
+
+    HwTestSuiteType hw_test_suite_type = 13;
+
+    // The swarming pool in which to run the test suite, e.g. DUT_POOL_QUOTA.
+    string pool = 14;
+
+    // The licenses required for the DUT the test will run on.
+    repeated lab.LicenseType licenses = 16;
+
+    // If true, then run test via containerized autoserv binary rather than
+    // autoserv on the drone.  This allows opt-in to the containerized execution
+    // path.
+    // TODO(b/227666105): Deprecate after removing all references.
+    bool run_via_container = 17;
+
+    // If true, then run test via CFT workflow.
+    // This allows opt-in to the CFT execution path.
+    bool run_via_cft = 18;
+
+    // Tags criteria that will be used to enumerate tests for CFT test execution
+    // workflow.
+    chromiumos.test.api.TestSuite.TestCaseTagCriteria tag_criteria = 19;
+
+    // No-op with CTP2 rollout, use max_in_shard instead.
+    int64 total_shards = 22 [ deprecated = true ];
+
+    // See test_platform.Request.TestPlan.max_in_shard.
+    int64 max_in_shard = 25;
+
+    // If true, then run test via cros_test_runner(trv2) workflow.
+    // This flag can only be true if run_via_cft is true.
+    bool run_via_trv2 = 20;
+
+    // Steps config for cft test execution. If not provided, all desired steps
+    // will be executed by default. Will only be passed on to trv2 if
+    // run_via_cft & run_via_trv2 is true.
+    test_platform.common.CftStepsConfig trv2_steps_config = 21;
+
+    reserved 2 to 10;
+
+    // Optional companion DUTs for multi-dut tests.
+    repeated TestCompanion companions = 23;
+
+    // If true, then autotest tests will be sharded
+    bool enable_autotest_sharding = 24;
+
+    // Additional attributes to be used in scheduling. This field should only
+    // be used if another field in this message doesn't cover the scheduling
+    // requirement. See message definition in test_platform/request.proto for
+    // complete documentation.
+    test_platform.Request.Params.FreeformAttributes freeform_attributes = 26;
+  }
+
+  repeated HwTest hw_test = 1;
+}
+
+message TastVmTestCfg {
+  message TastTestExpr {
+    // A single tast test expression. See https://goo.gl/UPNEgT
+    string test_expr = 1;
+  }
+
+  message TastVmTest {
+    TestSuiteCommon common = 4;
+
+    // String containing short human-readable name describing test suite.
+    string suite_name = 1;
+    // List of string expressions describing which tests to run; this
+    // is passed directly to the 'tast run' command. See
+    // https://goo.gl/UPNEgT for info about test expressions.
+    repeated TastTestExpr tast_test_expr = 2;
+
+    reserved 3;
+
+    TastTestShard tast_test_shard = 5;
+  }
+
+  repeated TastVmTest tast_vm_test = 1;
+}
+
+message TastGceTestCfg {
+  reserved 2;
+  reserved "gce_metadata";
+
+  message TastTestExpr {
+    // A single tast test expression. See https://goo.gl/UPNEgT
+    string test_expr = 1;
+  }
+
+  message TastGceTest {
+    // This message should be used to fill
+    // recipes.chromeos.gce_test.GceTestProperties.GceMetadata.
+    message GceMetadata {
+      // The GCE project in which we create GCE images/instances for test.
+      string project = 1;
+
+      // The GCE zone in which we create GCE instances for test.
+      string zone = 2;
+
+      // The machine type of the GCE instance (e.g. n2-standard-8).
+      string machine_type = 3;
+
+      // The network the GCE instance should be part of.
+      string network = 4;
+
+      // The subnet the GCE instance should be part of.
+      string subnet = 5;
+    }
+
+    TestSuiteCommon common = 1;
+
+    // String containing short human-readable name describing test suite.
+    string suite_name = 2;
+    // List of string expressions describing which tests to run; this
+    // is passed directly to the 'tast run' command. See
+    // https://goo.gl/UPNEgT for info about test expressions.
+    repeated TastGceTestCfg.TastTestExpr tast_test_expr = 3;
+    // GCE instace metadata to run the tests on.
+    GceMetadata gce_metadata = 4;
+    TastTestShard tast_test_shard = 5;
+  }
+
+  repeated TastGceTest tast_gce_test = 1;
+}
+
+message VmTestCfg {
+  message VmTest {
+    TestSuiteCommon common = 8;
+
+    // Test suite to be run in VMTest.
+    string test_suite = 2;
+
+    reserved 1, 3 to 7;
+  }
+
+  repeated VmTest vm_test = 1;
+}
+
+// Specifies a CrOS builder to target.
+message TargetCriteria {
+  // DEPRECATED: we need to target builder_name instead. build_target
+  // has to go away. See https://crbug.com/1016536
+  oneof target_type {
+    // Any CrOS build target, such as "kevin". This should correspond to a
+    // Portage overlay.
+    string build_target = 2;
+  }
+  // A CrOS builder to target for testing, e.g. eve-postsubmit or
+  // amd64-generic-kernel-v5_4-cq.
+  string builder_name = 3;
+}
+
+// Details which testing is needed for a single CrOS build target.
+message PerTargetTestRequirements {
+  // Specifies the crieria for builds to target for testing.
+  TargetCriteria target_criteria = 1;
+
+  // These configure what testing is needed for these BuildCriteria.
+  HwTestCfg hw_test_cfg = 3;
+  VmTestCfg vm_test_cfg = 5;
+  TastVmTestCfg direct_tast_vm_test_cfg = 7;
+  TastGceTestCfg tast_gce_test_cfg = 8;
+
+  reserved 2, 4, 6;
+}
+
+// A listing of all testing that should be done for all CrOS builds.
+message TargetTestRequirementsCfg {
+  // The testing that should be performed for a single set of target criteria.
+  repeated PerTargetTestRequirements per_target_test_requirements = 1;
+}

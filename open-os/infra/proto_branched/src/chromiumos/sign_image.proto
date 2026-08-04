@@ -1,0 +1,52 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+enum SignerType {
+  SIGNER_UNSPECIFIED = 0;
+  SIGNER_PRODUCTION = 1;
+  SIGNER_STAGING = 2;
+  SIGNER_DEV = 3;
+}
+
+// TODO(b:173049030) Obsolete, will be removed when GSC signing is extended to
+// Dauntless.
+message Cr50Instructions {
+  // The target for the image.
+  // These names are assigned to target in the signing instructions file.
+  enum Target {
+    UNSPECIFIED = 0;
+    PREPVT = 1;
+    RELEASE_CANDIDATE = 2;
+    NODE_LOCKED = 3;
+    GENERAL_RELEASE = 4;
+  }
+  Target target = 1;
+
+  // Device ID for NODE_LOCKED.  (Format: '%08x-%08x'.)
+  string device_id = 2;
+}
+
+message GscInstructions {
+  // The target for the image.
+  // These names are assigned to target in the signing instructions file.
+  enum Target {
+    UNSPECIFIED = 0;
+    PREPVT = 1;
+    RELEASE_CANDIDATE = 2;
+    NODE_LOCKED = 3;
+    GENERAL_RELEASE = 4;
+    NIGHTLY = 5;
+  }
+  Target target = 1;
+
+  // Device ID for NODE_LOCKED.  (Format: '%08x-%08x'.)
+  string device_id = 2;
+}

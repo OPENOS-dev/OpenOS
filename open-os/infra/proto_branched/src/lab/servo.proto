@@ -1,0 +1,80 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab";
+
+// NEXT TAG: 10
+message Servo {
+  reserved 6;
+  // Servo-specific configs
+  string servo_hostname = 2;
+  int32 servo_port = 3;
+  string servo_serial = 4;
+  // Based on
+  // https://docs.google.com/document/d/1TPp7yp-uwFUh5xOnBLI4jPYtYD7IcdyQ1dgqFqtcJEU/edit?ts=5d8eafb7#heading=h.csdfk1i6g0l
+  // servo_type will contain different setup of servos. So string is recommended
+  // than enum.
+  string servo_type = 5;
+  ServoSetupType servo_setup = 7;
+  // Based on http://go/fleet-servo-topology
+  ServoTopology servo_topology = 8;
+  ServoFwChannel servo_fw_channel = 9;
+}
+
+// Servo Setup Type describes the capabilities of servos.
+// Next Tag : 3
+enum ServoSetupType {
+  SERVO_SETUP_REGULAR = 0;
+  SERVO_SETUP_DUAL_V4 = 1;
+  // SERVO_SETUP_INVALID explicitly marks errors in servo setup.
+  SERVO_SETUP_INVALID = 2;
+}
+
+// Servo Firmware Channel describes the firmware expected to have on servos.
+// Next Tag : 4
+enum ServoFwChannel {
+  // Servo firmware from Stable channel.
+  SERVO_FW_STABLE = 0;
+  // The previous Servo firmware from Stable channel.
+  SERVO_FW_PREV = 1;
+  // Servo firmware from Dev channel.
+  SERVO_FW_DEV = 2;
+  // Servo firmware from Alpha channel.
+  SERVO_FW_ALPHA = 3;
+}
+
+// Servo Topology describe connected servo devices on DUT set-up to provide
+// Servo functionality. Next Tag : 3
+message ServoTopology {
+  ServoTopologyItem main = 1;
+  repeated ServoTopologyItem children = 2;
+}
+
+// Servo Topology Item describe details of one servo device on DUT set-up.
+// Next Tag : 6
+message ServoTopologyItem {
+  // type provides the type of servo device. Keeping as String to avoid issue
+  // with introduce new type.
+  string type = 1;
+  // sysfs_product provides the product name of the device recorded in File
+  // System.
+  string sysfs_product = 2;
+  // serial provides the serial number of the device.
+  string serial = 3;
+  // usb_hub_port provides the port connection to the device.
+  // e.g. '1-6.2.2' where
+  //   '1-6'  - port on the labstation
+  //   '2'    - port on smart-hub connected to the labstation
+  //   '2'    - port on servo hub (part of servo_v4 or servo_v4.1) connected to
+  //   the smart-hub
+  // The same path will look '1-6.2' if connected servo_v4 directly to the
+  // labstation.
+  string usb_hub_port = 4;
+  // This is the firmware version of servo device.
+  string fw_version = 5;
+}

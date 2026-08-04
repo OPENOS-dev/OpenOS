@@ -1,0 +1,30 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package uprev.build_parallels_image;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/uprev/build_parallels_image";
+
+import "google/protobuf/timestamp.proto";
+import "uprev/build_parallels_image/common.proto";
+
+// ProvisionRequest defines the input of `phosphorus
+// build-parallels-image-provision`.
+message ProvisionRequest {
+  Config config = 1;
+
+  // DUT hostname.
+  string dut_name = 2;
+
+  // The Google Storage path (prefix) where images are located. For example,
+  // 'gs://chromeos-image-archive/eve-release/R86-13380.0.0'.
+  string image_gs_path = 3;
+
+  // Hard deadline for execution.
+  //
+  // All provisioning should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 4;
+}

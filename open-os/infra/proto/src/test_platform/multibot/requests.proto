@@ -1,0 +1,38 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.multibot;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/multibot";
+
+import "test_platform/phosphorus/prejob.proto";
+import "test_platform/multibot/common.proto";
+import "test_platform/request.proto";
+
+// External API for requesting a multi-bot job
+message LeaderRequest {
+
+  // What test to run with the multi-bot task
+  test_platform.Request.Test payload = 1;
+
+  // What attributes to require and provision for follower tasks
+  repeated FollowerSpec follower_specs = 2;
+}
+
+// Internal per-bot request for follower task
+message FollowerRequest {
+  // Pubsub subscription to use for this follower task (pre-existing)
+  string subscription_name = 1;
+
+  // Attribute filter to apply to judge whether incoming messages are 'for you'
+  map<string, string> incoming_filter = 2;
+
+  // Attributes to apply to outgoing messages to address them to the leader
+  map<string, string> outgoing_attributes = 3;
+
+  // Prejob request parameters
+  phosphorus.PrejobRequest prejob = 4;
+}

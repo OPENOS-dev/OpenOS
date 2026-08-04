@@ -1,0 +1,21 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package prototype;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/prototype";
+
+import "prototype/client.proto";
+import "prototype/client_profile.proto";
+import "prototype/milestone.proto";
+import "prototype/design_project.proto";
+
+message ConfigBundle {
+  repeated Client clients = 1;
+  repeated ClientProfile client_profiles = 2;
+  repeated Milestone milestones = 3;
+  repeated DesignProject design_projects = 4;
+}

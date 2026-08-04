@@ -1,0 +1,421 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform;
+
+import "chromite/api/test_metadata.proto";
+import "chromiumos/common.proto";
+import "chromiumos/test/api/test_suite.proto";
+import "chromiumos/test/api/test_execution_metadata.proto";
+import "chromiumos/test/api/ctp2.proto";
+import "google/protobuf/duration.proto";
+import "test_platform/execution/param.proto";
+import "test_platform/common/cft_steps_config.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform";
+
+// Request represents a request to the ChromeOS Test Platform to run a test,
+// set of tests, suite of tests, or test plan on a set of devices (eventually
+// also: virtual devices) in the ChromeOS Test Lab.
+message Request {
+  // Params defines parameters that apply to an entire Request.
+  //
+  // NEXT_TAG: 26
+  message Params {
+    // HardwareAttributes defines the hardware-bound characteristics
+    // of the devices to run tests on.
+    message HardwareAttributes {
+      // Model is the model to run tests against.
+      string model = 1;
+
+      // If require_stable_device is true, the tests are scheduled to run on a
+      // device with label-device-stable: True. The label-device-stable
+      // dimension is typically used to filter out devices that have known
+      // unstable hardware, e.g. devices early in development.
+      bool require_stable_device = 2;
+    }
+
+    HardwareAttributes hardware_attributes = 1;
+
+    // SoftwareAttributes defines software characteristics that are strongly
+    // associated with a device, though not immutable or hardware-bound.
+    message SoftwareAttributes { chromiumos.BuildTarget build_target = 2; }
+
+    SoftwareAttributes software_attributes = 2;
+
+    // FreeformAttributes defines user-specified device attributes that are
+    // opaque to the test platform. It is preferrable not to use these, but
+    // they are provided to cover cases in which the test platform does not
+    // present a parameter corresponding to the attributes of interest.
+    message FreeformAttributes {
+      // SwarmingDimensions are raw swarming bot dimensions, expressed as
+      // "key:value" strings.
+      repeated string swarming_dimensions = 1;
+    }
+
+    FreeformAttributes freeform_attributes = 9;
+
+    // SoftwareDependency defines mutable software characteristics of the
+    // devices to run tests on (for instance, the desired version of ChromeOS).
+    message SoftwareDependency {
+      oneof dep {
+        // ChromeOS build name, e.g. "reef-release/R77-12345.0.0"
+        string chromeos_build = 3;
+
+        // The bucket with the build images (default: chromeos-image-archive).
+        string chromeos_build_gcs_bucket = 7;
+
+        // Readonly firmware build name, e.g.
+        // "firmware-reef-9042.B-firmwarebranch/R72-11311.0.0"
+        string ro_firmware_build = 4;
+
+        // Read-write firmware build name, e.g.
+        // "firmware-reef-9042.B-firmwarebranch/R72-11311.0.0"
+        string rw_firmware_build = 5;
+
+        // Readonly EC firmware build name, e.g.
+        // "reef-release/R123-12345.0.0"
+        string ec_ro_firmware_build = 10;
+
+        // Read-write EC firmware build name, e.g.
+        // "reef-release/R123-12345.0.0"
+        string ec_rw_firmware_build = 11;
+
+        // Google Cloud Storage path for obtaining LaCrOS images.
+        //
+        // Unlike chromeos/ro_firmware/rw_firmware, this is full Google Cloud
+        // Storage path (e.g. gs://shiny-lacros/builds/M56/for-pupr/1.2.3.4).
+        string lacros_gcs_path = 6;
+
+        // The android image version for android provisioning
+        string android_image_version = 8;
+
+        // gms core cipd package for android provisioning
+        string gms_core_package = 9;
+      }
+    }
+
+    repeated SoftwareDependency software_dependencies = 3;
+
+    // SecondaryDevice defines software and hardware characteristics of a
+    // secondary device to run multi-DUTs tests on.
+    message SecondaryDevice {
+      SoftwareAttributes software_attributes = 1;
+      HardwareAttributes hardware_attributes = 2;
+      repeated SoftwareDependency software_dependencies = 3;
+    }
+
+    repeated SecondaryDevice secondary_devices = 14;
+
+    // Scheduling defines parameters that affect how the tests in this
+    // request are prioritized relative to other requests, and how capacity for
+    // them is allocated.
+    message Scheduling {
+      // ManagedPool enumerates certain large pools of DUTs in the lab.
+      //
+      // The distinction between managed / unmanaged pools (below) is historic
+      // and no longer relevant.
+      enum ManagedPool {
+        MANAGED_POOL_UNSPECIFIED = 0;
+        MANAGED_POOL_CQ = 1;
+        MANAGED_POOL_BVT = 2;
+        MANAGED_POOL_SUITES = 3;
+        MANAGED_POOL_CTS = 4;
+        MANAGED_POOL_CTS_PERBUILD = 5;
+        MANAGED_POOL_CONTINUOUS = 6;
+        MANAGED_POOL_ARC_PRESUBMIT = 7;
+        MANAGED_POOL_QUOTA = 8;
+      }
+
+      oneof pool {
+        // Managed pool of devices to run tests in.
+        ManagedPool managed_pool = 1;
+
+        // Unmanaged pool of devices to run tests in.
+        // Must not be a managed pool.
+        string unmanaged_pool = 2;
+      }
+
+      // Priority corresponds to a swarming task priority; if specified, it
+      // should be in the range [50,255]. This priority will be used for
+      // any swaming tasks created by this run.
+      //
+      // Note that the scheduler behavior with a given priority depends on
+      // other factors, such as pool. In particular, if requests are run in
+      // a quotascheduler-controlled pool, then this priority will be ignored,
+      // as priority will be determined by quota account balances.
+      int64 priority = 4;
+
+      // It is an error to set both qs_account and priority at the same time.
+      // qs_account should be used if the request is scheduled on a pool
+      // managed by QuotaScheduler. See go/qs-enabled-pools for details.
+      // If qs_account is set for requests on no QuotaScheduler pools,
+      // it will be ignored and the request will default to running at
+      // the lowest priority.
+      string qs_account = 5;
+
+      // tr_hours will be used to extend the TestRunner child builders spawned
+      // by this CTP request. This will only work in private pools and not in
+      // the shared pool.
+      //
+      // NOTE: If you are building requests using this field to extend
+      // TestRunner than its default configured length then you will likely need
+      // to also modify your CTP BB request to accommodate longer TR child
+      // builders.
+      int64 tr_hours = 6;
+    }
+
+    Scheduling scheduling = 4;
+
+    // Retry defines parameters that affect how failed tests within
+    // a request are retried.
+    message Retry {
+      // Whether to allow test retries.
+      bool allow = 1;
+
+      // Maximum number of retries of tests within this invocation to allow.
+      // 0 = unlimited.
+      int32 max = 2;
+    }
+
+    Retry retry = 5;
+
+    // Metadata defines parameters that determine where test definitions
+    // and metadata are stored and discovered from.
+    message Metadata {
+      // A Google Storage path to the location of test metadata to be used.
+      // For example:
+      // "gs://chromeos-image-archive/arkham-release/R57-9202.10.11".
+      string test_metadata_url = 1;
+
+      // A Google Storage path to the location of image archive in which to find
+      // debug symbols to be used in post-process symbolication of crashes. This
+      // is generally the same as test_metadata_url.
+      string debug_symbols_archive_url = 2;
+
+      // A Google Storage path to the location of container metadata to be used.
+      // Used for CFT test executions. Will be required if run_via_cft is true.
+      // For example:
+      // "gs://chromeos-image-archive/arkham-release/R57-9202.10.11/metadata/containers.jsonpb".
+      string container_metadata_url = 3;
+    }
+
+    Metadata metadata = 6;
+
+    // Time defines parameters related to timeouts.
+    message Time {
+      // Maximum duration for the entire request to be handled.
+      google.protobuf.Duration maximum_duration = 1;
+    }
+
+    Time time = 7;
+
+    // Decorations defines parameters that add additional decorations to
+    // test runs.
+    message Decorations {
+      // AutotestKeyvals are (key, value) pairs that will be added to all
+      // autotest tasks run.
+      map<string, string> autotest_keyvals = 1;
+
+      // Tags are swarming tags that will be applied to all swarming tasks
+      // launched.
+      repeated string tags = 2;
+
+      // Additional test_args to be applied to the autotest invocation. This
+      // will not overwrite existing test_args, so it will be possible to have
+      // duplicate values.
+      map<string, string> test_args = 3;
+    }
+
+    Decorations decorations = 8;
+
+    // Migrations defines parameters that facilitate gradual migrations between
+    // different implementations of downstream components.
+    message Migrations {
+      reserved "use_test_runner";
+      reserved 1;
+      reserved "enable_synchronous_offload";
+      reserved 2;
+      reserved "notificationless_offload";
+      reserved 3;
+    }
+
+    Migrations migrations = 12;
+
+    // Uniformly applied parameters for all test executions in this request.
+    test_platform.execution.Param execution_param = 13;
+
+    reserved "notifications";
+    reserved 11;
+    reserved "legacy";
+    reserved 10;
+
+    // TestExecutionBehavior specifies how tests should be run.
+    // This can include information about whether the tests should run and
+    // if failures should be exonerated.
+    enum TestExecutionBehavior {
+      BEHAVIOR_UNSPECIFIED = 0;
+      // The tests are critical and failures will block CQ.
+      CRITICAL = 1;
+      // The tests are not critical and failures will not block CQ.
+      NON_CRITICAL = 2;
+    }
+
+    // The behavior of the tests run in this request. It currently reflects the
+    // test unit's criticality as specified by target_test_requirements_config.
+    TestExecutionBehavior test_execution_behavior = 15;
+
+    // If true, this suite will be executed through CFT execution path
+    // using containers defined in container_metadata_url.
+    bool run_via_cft = 16;
+
+    // If true, this suite will be scheduled by Scheduke, not Quota Scheduler.
+    bool schedule_via_scheduke = 17;
+
+    // If true and run_via_cft is true, this suite will run via trv2.
+    bool run_via_trv2 = 18;
+
+    // Steps config for cft test execution. If not provided, all desired steps
+    // will be executed by default. Will only be passed on to trv2 if
+    // run_via_cft & run_via_trv2 is true.
+    test_platform.common.CftStepsConfig trv2_steps_config = 19;
+
+    // If set the suite will be run using CTPv2, using the 3D solver to
+    // determine hardware Note all tests within this suite/group *must* have a
+    // 3d expression set in the respective harness
+    bool ddd_suite = 20;
+
+    // ResultsUploadConfig controls behavior around post test uploads.
+    message ResultsUploadConfig {
+      // TestResultsUploadVisibility controls access to results of the test run.
+      enum TestResultsUploadVisibility {
+        // TEST_RESULTS_VISIBILITY_UNSPECIFIED should result in behavior
+        // acceptable for main lab test results. As of Sept. 2023 that means
+        // publishing to board/model realms.
+        TEST_RESULTS_VISIBILITY_UNSPECIFIED = 0;
+        // TEST_RESULTS_VISIBILITY_BOARD_MODEL gives access to test results on
+        // a user's access to a board/model.
+        TEST_RESULTS_VISIBILITY_BOARD_MODEL = 1;
+        // TEST_RESULTS_VISIBILITY_CUSTOM_REALM publishes test results to a
+        // realm determined by the TestRunner bucket (set in CommonConfig).
+        // Visibility is determined by LUCI configs.
+        TEST_RESULTS_VISIBILITY_CUSTOM_REALM = 2;
+      }
+
+      // TestResultsUploadVisibility sets the visibility of all test results
+      // triggered by this cros_test_platform request.
+      TestResultsUploadVisibility mode = 1;
+    }
+
+    ResultsUploadConfig results = 21;
+
+    // If true, thus suite will translate from a CftTestRequest into a
+    // CrosTestRequest. Must have run_via_trv2 set to true to have an effect.
+    bool translate_trv2_request = 22;
+
+    // Filter info passed along to the v2 request for ctpv2's execution.
+    // Should only be set for runs be rerouted to ctpv2, but will be no-op
+    // for ctpv1 executions.
+    repeated chromiumos.test.api.CTPFilter user_defined_filters = 23;
+
+    // If true and run_via_cft is true, this suite will run via ctpv2 using
+    // quota scheduler instead of scheduke.
+    bool run_ctpv2_with_qs = 24;
+
+    // If true and run_via_cft is true, this suite will run via ctpv2 in dry-run
+    // mode instead of sending tasks to Scheduke.
+    bool dry_run_ctpv2 = 25;
+
+    // If true then the request is an AL type run in CTPv2 and TRv2.
+    bool is_al_run = 26;
+
+    // create_al_invocations signals to CTP if we should create an invocation at
+    // runtime if no ATP information is provided. This should only really be
+    // used by Kron, crosfleet, and LED testing.
+    //
+    // NOTE: This should always be disabled for partners.
+    bool create_al_invocation = 27;
+
+    // Skip provisioning if true.
+    bool skip_provisioning = 28;
+  }
+
+  Params params = 1;
+
+  message Tag { string value = 1; }
+
+  // SuiteRequest defines an individual named suite.
+  message Suite {
+    string name = 1;
+    reserved 2;
+    reserved "run_via_cft";
+    string test_args = 4;
+  }
+
+  message Test {
+    message Autotest {
+      string name = 1;
+      string test_args = 2;
+
+      // Name to be used to display this test's output artifacts, e.g. logs,
+      // results etc. By default display_name is the same as name.
+      //
+      // display_name is especially useful when using test_args to distinguish
+      // between multiple instances of the same test in a request.
+      string display_name = 3;
+    }
+
+    oneof harness { Autotest autotest = 1; }
+  }
+
+  // Enumeration is a previously enumerated test plan.
+  //
+  // This is a copy of test_platform.steps.EnumerationResponse
+  // Keep in sync.
+  message Enumeration {
+    message AutotestInvocation {
+      chromite.api.AutotestTest test = 1;
+      string test_args = 2;
+      string display_name = 3;
+      map<string, string> result_keyvals = 4;
+    }
+    repeated AutotestInvocation autotest_invocations = 2;
+  }
+
+  message TestPlan {
+    repeated Suite suite = 1;
+    repeated Test test = 2;
+    Enumeration enumeration = 3;
+    chromiumos.test.api.TestSuite.TestCaseTagCriteria tag_criteria = 4;
+    // Seed to be used as the randomization seed when sharding test cases.
+    // Seed will only be used when tag_criteria is provided.
+    int64 seed = 5;
+    // Test arguments provided for each cros_test_runner execution.
+    // Exclusive to the local server execution path of cros_test_runner.
+    chromiumos.test.api.AutotestExecutionMetadata test_args = 6;
+    // The total number of shards to be used in a test run.
+    // Can be overridden if the bucketing process creates more buckets
+    // than total_shards.
+    // Only used when tag_criteria is also set.
+    int64 total_shards = 7;
+    // The total number of tests allowed to be used in a shard.
+    // Total_shards takes priority over max_in_shard.
+    // Only used when tag_criteria is also set.
+    int64 max_in_shard = 8;
+    // if enable_autotest_sharding is True, then autotest tests will be sharded
+    bool enable_autotest_sharding = 9;
+    // For non 3D this will result in each selected device executed n times.
+    // For 3D this will result in each EQC being executed n times.
+    chromiumos.test.api.Iterations iterations = 10;
+    // For non-3D, this will ignore tests with variantCategory metadata values
+    bool ignore_variant_category = 11;
+    // Applies suite level 3D variant category expression to tests in suite
+    string ddd_variant_category = 12;
+  }
+
+  TestPlan test_plan = 5;
+  reserved 6, 7;
+}

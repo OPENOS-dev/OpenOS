@@ -1,0 +1,40 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+// This file contains the configuration options for the Build API calls
+// themselves.
+
+// The type of Build API call being made. This allows specifying the desired
+// behavior for testing purposes.
+enum CallType {
+  // None set, treated as a CALL_TYPE_EXECUTE.
+  CALL_TYPE_NONE = 0;
+  // Call the endpoint normally.
+  CALL_TYPE_EXECUTE = 1;
+  // Only run validation.
+  CALL_TYPE_VALIDATE_ONLY = 2;
+  // Get a mock success response without running the endpoint.
+  CALL_TYPE_MOCK_SUCCESS = 3;
+  // Get a mock failure response without running the endpoint.
+  CALL_TYPE_MOCK_FAILURE = 4;
+  // Get a mock invalid input response without running the validation.
+  CALL_TYPE_MOCK_INVALID = 5;
+}
+
+// The config message itself. This is the message passed to the Build API's
+// config option.
+message BuildApiConfig {
+  // The logs are always sent to stdout. Setting this log path allows also
+  // sending the logs to a file (i.e. tee-ing the logs).
+  string log_path = 1;
+  // The type of call being made. By default the endpoint will execute
+  // normally, but other testing execution modes can be enabled that help
+  // test API consumer code.
+  CallType call_type = 2;
+}

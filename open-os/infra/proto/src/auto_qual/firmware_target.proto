@@ -1,0 +1,64 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+message BaseFirmwareVersionString { string version = 1; }
+
+message BaseFirmwareVersionStruct {
+  uint32 major_version = 1;
+  uint32 minor_version = 2;
+  uint32 patch_number = 3;
+}
+
+message GscFirmwareVersionStruct {
+  uint32 minor_version = 1;
+  uint32 major_version = 2;
+  uint32 epoch = 3;
+}
+message FirmwareTargetVersion {
+  oneof info {
+    BaseFirmwareVersionStruct base_version = 1;
+    BaseFirmwareVersionString base_version_string = 2;
+    GscFirmwareVersionStruct gsc_version = 3;
+  };
+}
+
+message BaseFirmwareTarget {
+  string uri = 1;
+  FirmwareTargetVersion version = 2;
+}
+
+message FirmwareTargetInfo {
+  oneof info {
+    BaseFirmwareTarget ec = 1;
+    BaseFirmwareTarget ap = 2;
+    BaseFirmwareTarget gsc = 3;
+    BaseFirmwareTarget fpmcu = 4;
+    BaseFirmwareTarget ish = 5;
+    BaseFirmwareTarget pdc = 6;
+  };
+}
+
+// An instance of a firmware target paring the version/uri with the readability.
+message FirmwareTarget {
+  enum ReadabilityType {
+    READABILITY_TYPE_UNSPECIFIED = 0;
+    RO = 1;
+    RW = 2;
+  }
+  repeated ReadabilityType readability = 1;
+  FirmwareTargetInfo fw = 2;
+}
+
+message FirmwareTargetGroupDefinition { repeated FirmwareTarget group = 1; }
+
+message FirmwareTargetDefinition {
+  repeated FirmwareTarget current = 1;
+  repeated FirmwareTargetGroupDefinition previous = 2;
+}

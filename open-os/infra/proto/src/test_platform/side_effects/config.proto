@@ -1,0 +1,64 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.side_effects;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/side_effects";
+
+// TKOConfig describes TKO connection params.
+message TKOConfig {
+  // The connection to the TKO CloudSQL instance is done via cloud_sql_proxy.
+  // proxy_socket is the UNIX socket used by the cloud_sql_proxy.
+  string proxy_socket = 1 [ json_name = "proxy_socket" ];
+
+  string mysql_user = 2 [ json_name = "mysql_user" ];
+
+  // File containing the MySQL password. Populated from the encrypted password.
+  string mysql_password_file = 3 [ json_name = "mysql_password_file" ];
+
+  // MySQL password encrypted using the Cloud KMS key and encoded as base64
+  // string.
+  string encrypted_mysql_password = 4
+      [ json_name = "encrypted_mysql_password" ];
+}
+
+// GoogleStorageConfig describes GS offloading params.
+message GoogleStorageConfig {
+  // Google Storage bucket where the results will be offloaded.
+  // E.g. "chromeos-autotest-results".
+  string bucket = 1;
+
+  // File containing the gsutil credentials, e.g. a key file of a service
+  // acccount.
+  string credentials_file = 2 [ json_name = "credentials_file" ];
+}
+
+// ChromePerfConfig describes the params for uploading Chrome performance
+// results to https://chromeperf.appspot.com. These results are displayed on
+// the perf dashboard: go/crosbolt.
+message ChromePerfConfig {
+  // Iff true, tko/parse uploads perf results to ChromePerf in addition to
+  // uploading results to TKO.
+  bool enabled = 1;
+}
+
+// CTSConfig describes CTS results offload params.
+message CTSConfig {
+  // Iff true, gs_offloader offloads CTS results to CTS-specific locations
+  // in addition to regular offloading.
+  bool enabled = 1;
+}
+
+// Config defines configuration for side effects.
+message Config {
+  TKOConfig tko = 1;
+
+  GoogleStorageConfig google_storage = 2 [ json_name = "google_storage" ];
+
+  ChromePerfConfig chrome_perf = 3 [ json_name = "chrome_perf" ];
+
+  CTSConfig cts = 4;
+}

@@ -1,0 +1,1440 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+package satlabrpcserver;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/satlabrpcserver";
+
+import "google/protobuf/timestamp.proto";
+import "test_platform/request.proto";
+import "chromiumos/longrunning/operations.proto";
+import "chromiumos/test/api/servod_service.proto";
+import "chromiumos/test/api/devboard_service.proto";
+
+service SatlabRpcService {
+  rpc ListAccessibleModels(ListAccessibleModelsRequest)
+      returns (ListAccessibleModelsResponse);
+  rpc ListBuildVersions(ListBuildVersionsRequest)
+      returns (ListBuildVersionsResponse);
+  rpc StageBuild(StageBuildRequest) returns (StageBuildResponse);
+  rpc ListConnectedDutsFirmware(ListConnectedDutsFirmwareRequest)
+      returns (ListConnectedDutsFirmwareResponse);
+  rpc GetSystemInfo(GetSystemInfoRequest) returns (GetSystemInfoResponse);
+  rpc GetVersionInfo(GetVersionInfoRequest) returns (GetVersionInfoResponse);
+  rpc GetNetworkInfo(GetNetworkInfoRequest) returns (GetNetworkInfoResponse);
+  rpc GetPeripheralInformation(GetPeripheralInformationRequest)
+      returns (GetPeripheralInformationResponse);
+  rpc UpdateDutsFirmware(UpdateDutsFirmwareRequest)
+      returns (UpdateDutsFirmwareResponse);
+
+  // Run Suite
+  rpc ListBuildTargets(ListBuildTargetsRequest)
+      returns (ListBuildTargetsResponse);
+  rpc ListMilestones(ListMilestonesRequest) returns (ListMilestonesResponse);
+  rpc ListTestPlans(ListTestPlansRequest) returns (ListTestPlansResponse);
+  rpc GetTestPlan(GetTestPlanRequest) returns (GetTestPlanResponse);
+  rpc Topology(TopologyRequest) returns (TopologyResponse);
+  rpc AddTopology(AddTopologyRequest) returns (AddTopologyResponse);
+  rpc DeleteTopology(DeleteTopologyRequest) returns (DeleteTopologyResponse);
+
+  // Android Desktop
+  rpc ListAndroidBranches(ListAndroidBranchesRequest) returns (ListAndroidBranchesResponse);
+  rpc ListAndroidTargets(ListAndroidTargetsRequest) returns (ListAndroidTargetsResponse);
+  rpc ListAndroidTestModules(ListAndroidTestModulesRequest) returns (ListAndroidTestModulesResponse);
+  rpc ListAndroidBuilds(ListAndroidBuildsRequest) returns (ListAndroidBuildsResponse);
+  rpc ListAndroidSuites(ListAndroidSuitesRequest) returns (ListAndroidSuitesResponse);
+  rpc ValidateAndroidBuild(ValidateAndroidBuildRequest) returns (ValidateAndroidBuildResponse);
+  rpc RunAndroidLabqual (RunAndroidLabqualRequest) returns (RunAndroidLabqualResponse);
+  rpc ListDrive (ListDriveRequest) returns (ListDriveResponse);
+
+  // Autoqual
+  rpc ListTestEfforts(ListTestEffortsRequest) returns (ListTestEffortsResponse);
+  rpc CancelTestEffort(CancelTestEffortRequest) returns (CancelTestEffortResponse);
+  rpc CreateTestEffort(CreateTestEffortRequest) returns (CreateTestEffortResponse);
+
+  // services to run different types of test suites
+  rpc RunSuite(RunSuiteRequest) returns (RunSuiteResponse);
+  rpc RunTest(RunTestRequest) returns (RunTestResponse);
+  rpc RunTestPlan(RunTestPlanRequest) returns (RunTestPlanResponse);
+  rpc RunStorageQual(RunStorageQualRequest) returns (RunStorageQualResponse);
+  rpc RunQualification(RunQualificationRequest)
+      returns (RunQualificationResponse);
+  rpc RunLabQual (RunLabQualRequest) returns (RunLabQualResponse);
+  rpc Run (RunRequest) returns (RunResponse);
+
+  // manage DUTs
+  rpc AddPool(AddPoolRequest) returns (AddPoolResponse);
+  rpc UpdatePool(UpdatePoolRequest) returns (UpdatePoolResponse);
+  rpc DeleteDuts(DeleteDutsRequest) returns (DeleteDutsResponse);
+  rpc AddDuts(AddDutsRequest) returns (AddDutsResponse);
+  rpc RepairDuts(RepairDutsRequest) returns (RepairDutsResponse);
+  rpc OpenCCD(OpenCCDRequest) returns (stream OpenCCDReply);
+  rpc SendMessageToCCDSession(SendMessageToCCDSessionRequest) returns (SendMessageToCCDSessionResponse);
+  rpc StableVersion(StableVersionRequest) returns (StableVersionResponse);
+  rpc UpdateDevice(UpdateDeviceRequest) returns (UpdateDeviceResponse);
+  rpc Testlab(TestlabRequest) returns (TestlabResponse);
+
+  // get DUTs information
+  rpc GetDutDetail(GetDutDetailRequest) returns (GetDutDetailResponse);
+  rpc ListDutTasks(ListDutTasksRequest) returns (ListDutTasksResponse);
+  rpc ListDutEvents(ListDutEventsRequest) returns (ListDutEventsResponse);
+  rpc ListEnrolledDuts(ListEnrolledDutsRequest)
+      returns (ListEnrolledDutsResponse);
+  rpc ListDuts(ListDutsRequest) returns (ListDutsResponse);
+
+  // setup
+  rpc SetCloudConfiguration(SetCloudConfigurationRequest)
+      returns (SetCloudConfigurationResponse);
+  rpc GetCloudConfiguration(GetCloudConfigurationRequest)
+      returns (GetCloudConfigurationResponse);
+  rpc IsAuth (IsAuthRequest) returns (IsAuthResponse);
+  rpc DutWifiInfo (DutWifiInfoRequest) returns (DutWifiInfoResponse);
+  rpc SetDutWifiInfo (SetDutWifiInfoRequest) returns (SetDutWifiInfoResponse);
+
+  // system
+  rpc Reboot(RebootRequest) returns (RebootResponse);
+  rpc UploadLog(UploadLogRequest) returns (UploadLogResponse);
+  rpc DownloadLog(DownloadLogRequest) returns (stream DownloadLogResponse);
+
+  // servo
+  rpc StartServod(chromiumos.test.api.StartServodRequest)
+      returns (chromiumos.longrunning.Operation) {
+    option (chromiumos.longrunning.operation_info) = {
+      response_type : "StartServodResponse",
+      metadata_type : "StartServodMetadata"
+    };
+  }
+
+  // devboard
+  rpc StartDevboardService(chromiumos.test.api.StartDevboardServiceRequest)
+      returns (chromiumos.longrunning.Operation) {
+    option (chromiumos.longrunning.operation_info) = {
+      response_type : "chromiumos.test.api.StartDevboardServiceResponse",
+      metadata_type : "chromiumos.test.api.StartDevboardServiceMetadata"
+    };
+  }
+
+  // Jobs/Tasks information
+  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+  rpc DownloadJobLog(DownloadJobLogRequest) returns (DownloadJobLogResponse);
+  rpc CheckDownloadJobLogStatus(CheckDownloadJobLogStatusRequest) returns (CheckDownloadJobLogStatusResponse);
+  rpc JobLogLink(JobLogLinkRequest) returns (JobLogLinkResponse);
+  rpc ListJobLogTasks(ListJobLogTasksRequest) returns (ListJobLogTasksResponse);
+
+  // Jobs operation
+  rpc AbortJobs(AbortJobsRequest) returns (AbortJobsResponse);
+
+  // Satlab update
+  rpc IsUpdateAvailable (IsUpdateAvailableRequest) returns (IsUpdateAvailableResponse);
+}
+
+message StartServodResponse {
+  // Empty response for success.
+  message Success {}
+
+  // Error message for failure.
+  message Failure { string error_message = 1; }
+
+  oneof result {
+    Success success = 1;
+    Failure failure = 2;
+  }
+}
+
+message StartServodMetadata {}
+
+message ListBuildTargetsRequest {}
+
+// NEXT_TAG = 2
+message ListBuildTargetsResponse { repeated string build_targets = 1; }
+
+// NEXT_TAG = 4
+message BuildItem {
+  // NEXT_TAG = 4
+  enum BuildStatus {
+    BUILD_STATUS_PASS = 0;
+    BUILD_STATUS_FAIL = 1;
+    BUILD_STATUS_RUNNING = 2;
+    BUILD_STATUS_ABORTED = 3;
+  }
+  string value = 1;
+  bool is_staged = 2;
+  BuildStatus status = 3;
+}
+
+// NEXT_TAG = 4
+message ListMilestonesRequest {
+  string board = 1;
+  string model = 2;
+  // The type that we want to filter from the google bucket
+  // e.g. firmware, release
+  string filter_type = 3;
+}
+
+// NEXT_TAG = 3
+message ListMilestonesResponse { repeated BuildItem milestones = 1; }
+
+// NEXT_TAG = 2
+message ListAccessibleModelsRequest { string board = 1; }
+
+// NEXT_TAG = 3
+message Model {
+  string name = 1;
+  repeated string boards = 2;
+}
+
+// NEXT_TAG = 2
+message ListAccessibleModelsResponse { repeated Model models = 1; }
+
+// NEXT_TAG = 5
+message ListBuildVersionsRequest {
+  string board = 1;
+  string model = 2;
+  int32 milestone = 3;
+  // The type that we want to filter from the google bucket
+  // e.g. firmware, release
+  string filter_type = 4;
+}
+
+// NEXT_TAG = 2
+message ListBuildVersionsResponse { repeated BuildItem build_versions = 1; }
+
+// NEXT_TAG = 6
+message StageBuildRequest {
+  string board = 1;
+  string model = 2;
+  string build_version = 3;
+  // The type that we want to stage to our bucket
+  // e.g. firmware, release
+  string filter_type = 4;
+  // Optional. If an artifact is provided, we still stage the entire folder. We only use this file as a marker to find the correct path (we find the directory where this file exists).
+  string artifact = 5;
+}
+
+// NEXT_TAG = 3
+message StageBuildResponse {
+  string build_bucket = 1;
+  string path = 2;
+}
+
+// NEXT_TAG = 1
+message ListConnectedDutsFirmwareRequest {}
+
+// NEXT_TAG = 4
+message ConnectedDutFirmwareInfo {
+  string ip = 1;
+  string current_firmware = 2;
+  string update_firmware = 3;
+}
+
+// NEXT_TAG = 2
+message ListConnectedDutsFirmwareResponse {
+  repeated ConnectedDutFirmwareInfo duts = 1;
+}
+
+// NEXT_TAG = 1
+message GetSystemInfoRequest {}
+
+// NEXT_TAG = 3
+message GetSystemInfoResponse {
+  float cpu_temperature = 1;
+  google.protobuf.Timestamp start_time = 2;
+}
+
+// NEXT_TAG = 2
+message GetPeripheralInformationRequest { string dut_hostname = 1; }
+
+// NEXT_TAG = 2
+message GetPeripheralInformationResponse { string json_info = 1; }
+
+// NEXT_TAG = 2
+message UpdateDutsFirmwareRequest { repeated string ips = 1; }
+
+// NEXT_TAG = 3
+message FirmwareUpdateCommandOutput {
+  string ip = 1;
+  string command_output = 2;
+}
+
+// NEXT_TAG = 2
+message UpdateDutsFirmwareResponse {
+  repeated FirmwareUpdateCommandOutput outputs = 1;
+}
+
+// NEXT_TAG = 3
+message Dim {
+  string key = 1;
+  string value = 2;
+}
+
+// NEXT_TAG = 18
+message RunSuiteRequest {
+  string suite = 1;
+  string build_target = 2;
+  string milestone = 3;
+  string build_version = 4;
+  string model = 5;
+  string pool = 6;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 7;
+  bool cft = 8;
+  bool trv2 = 9;
+  bool upload_to_cpcon = 10;
+  repeated string tag_includes = 11;
+  repeated string tag_excludes = 12;
+  repeated string test_name_includes = 13;
+  repeated string test_name_excludes = 14;
+  bool android_desktop = 15;
+  string target_type = 16;
+  int64 max_shard = 17;
+}
+
+// NEXT_TAG = 2
+message RunSuiteResponse { string build_link = 1; }
+
+// NEXT_TAG = 2
+message GetVersionInfoRequest {}
+
+// NEXT_TAG = 7
+message GetVersionInfoResponse {
+  reserved 5;
+  string version = 1;
+  string chromeos_version = 2;
+  string track = 3;
+  string description = 4;
+  string host_id = 6;
+}
+
+// NEXT_TAG = 4
+message AddPoolRequest {
+  reserved 1;
+  string pool = 2;
+  repeated string hostnames = 3;
+}
+
+// NEXT_TAG = 1
+message AddPoolResponse {}
+
+// NEXT_TAG = 2
+message UpdatePoolRequest {
+  // NEXT_TAG = 4
+  message Item {
+    reserved 1;
+    repeated string pools = 2;
+    string hostname = 3;
+  }
+
+  repeated Item items = 1;
+}
+
+// NEXT_TAG = 1
+message UpdatePoolResponse {}
+
+// NEXT_TAG = 2
+message GetDutDetailRequest { string address = 1; }
+
+// NEXT_TAG = 3
+message StringListPair {
+  string key = 1;
+  repeated string values = 2;
+}
+
+// NEXT_TAG = 13
+message GetDutDetailResponse {
+  string bot_id = 1;
+  string task_id = 2;
+  string external_ip = 3;
+  string authenticated_as = 4;
+  google.protobuf.Timestamp first_seen_ts = 5;
+  bool is_dead = 6;
+  google.protobuf.Timestamp last_seen_ts = 7;
+  bool quarantined = 8;
+  string maintenance_msg = 9;
+  repeated StringListPair dimensions = 10;
+  string task_name = 11;
+  string version = 12;
+}
+
+// NEXT_TAG = 4
+message ListDutTasksRequest {
+  // the IP address of DUT
+  string address = 1;
+
+  // A page token, received from the previous `ListDUTEvents` call.
+  // Provide this, to retrieve the subsequent page.
+  string page_token = 2;
+
+  // The maximum number of events to return
+  // if unspecified, at most 30 events will be returned
+  int32 page_size = 3;
+}
+
+// NEXT_TAG = 7
+message Task {
+  string id = 1;
+  google.protobuf.Timestamp start_at = 2;
+  float duration = 3;
+  string url = 4;
+  bool is_success = 5;
+  string name = 6;
+}
+
+// NEXT_TAG = 4
+message ListDutTasksResponse {
+  // A page token, the next token for retrieving the subsequent page.
+  // if it is empty, means it is at the end, no more plans
+  // that we can read from the bucket
+  string next_page_token = 1;
+
+  repeated Task tasks = 2;
+}
+
+// NEXT_TAG = 4
+message ListDutEventsRequest {
+  // the IP address of DUT
+  string address = 1;
+
+  // A page token, received from the previous `ListDUTEvents` call.
+  // Provide this, to retrieve the subsequent page.
+  string page_token = 2;
+
+  // The maximum number of events to return
+  // if unspecified, at most 30 events will be returned
+  int32 page_size = 3;
+}
+
+// NEXT_TAG = 7
+message BotEvent {
+  string msg = 1;
+  string event_type = 2;
+  google.protobuf.Timestamp created_at = 3;
+  string task_id = 4;
+  string task_link = 5;
+  string version = 6;
+}
+
+// NEXT_TAG = 3
+message ListDutEventsResponse {
+  // A page token, the next token for retrieving the subsequent page.
+  // if it is empty, means it is at the end, no more plans
+  // that we can read from the bucket
+  string next_page_token = 1;
+
+  repeated BotEvent events = 2;
+}
+
+// NEXT_TAG = 12
+message RunTestRequest {
+  repeated string tests = 1;
+  string test_args = 2;
+  string board = 3;
+  string model = 4;
+  string milestone = 5;
+  string build = 6;
+  string pool = 7;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 8;
+  bool cft = 9;
+  bool trv2 = 10;
+  bool upload_to_cpcon = 11;
+}
+// NEXT_TAG = 2
+message RunTestResponse { string build_link = 1; }
+
+// NEXT_TAG = 1
+message ListEnrolledDutsRequest {}
+
+// NEXT_TAG = 18
+message Dut {
+  string address = 1;
+  string name = 2;
+  string hostname = 3;
+  string board = 4;
+  string model = 5;
+  repeated string pools = 6;
+  string mac_address = 7;
+  bool is_pingable = 8;
+  string servo_serial = 9;
+  string servo_type = 10;
+  int32 servo_port = 11;
+  string state = 12;
+  bool has_test_image = 13;
+  BotInfo bot_info = 14;
+  string ccd_status = 15;
+  // If the board is granted, returns True.
+  // Otherwise returns False.
+  bool has_permission = 16;
+  bool has_android_desktop_image = 17;
+}
+
+// NEXT_TAG = 5
+message BotInfo {
+  // NEXT_TAG = 6
+  enum BotState {
+    NO_STATE_SET = 0;
+    ALIVE = 1;
+    BUSY = 2;
+    DEAD = 3;
+    QUARANTINED = 4;
+    IDLE = 5;
+  }
+
+  BotState bot_state = 1;
+  // Link to the current running task.
+  string current_task = 2;
+  // Name of the task currently running (Test/Repair/Deploy).
+  string task_name = 3;
+  // Dimensions of the bot
+  repeated StringListPair dimensions = 4;
+}
+
+// NEXT_TAG = 2
+message ListEnrolledDutsResponse { repeated Dut duts = 1; }
+
+// NEXT_TAG = 1
+message ListDutsRequest {}
+
+// NEXT_TAG = 2
+message ListDutsResponse { repeated Dut duts = 1; }
+
+// NEXT_TAG = 2
+message DeleteDutsRequest { repeated string hostnames = 1; }
+
+// NEXT_TAG = 4
+message DeleteDutsResponse {
+  // pass contains the hostnames that we have deleted DUTs successfully
+  repeated string pass = 1;
+  // fail contains the hostnames that we failed to delete DUTs
+  repeated string fail = 2;
+  reserved 3;
+}
+
+// NEXT_TAG = 1
+message GetNetworkInfoRequest {}
+
+// NEXT_TAG = 4
+message GetNetworkInfoResponse {
+  string hostname = 1;
+  string mac_address = 2;
+  bool is_connected = 3;
+}
+
+// NEXT_TAG = 2
+message AddDutsRequest {
+  // NEXT_TAG = 8
+  message Param {
+    // The IP address that connected to Satlab
+    string address = 1;
+    // The hostname that a user wants to name the DUT
+    string hostname = 2;
+    // The board of the DUT
+    string board = 3;
+    // The model of the DUT
+    string model = 4;
+    // The label pool that user wants to add
+    repeated string pools = 5;
+    // The servo serial number that connected with DUT
+    string servo_serial = 6;
+    // The os of the DUT
+    // support 'chromeos', 'android_desktop'
+    string os = 7;
+  }
+
+  repeated Param duts = 1;
+}
+
+// NEXT_TAG = 3
+message AddDutsResponse {
+  // NEXT_TAG = 3
+  message PassedData {
+    string hostname = 1;
+    // the url of of deploying job
+    string url = 2;
+  }
+
+  repeated PassedData pass = 1;
+
+  // NEXT_TAG = 3
+  message FailedData {
+    string hostname = 1;
+    // the reason that why we can not add the DUT.
+    string reason = 2;
+  }
+
+  repeated FailedData fail = 2;
+}
+
+// NEXT_TAG = 1
+message ListTestPlansRequest {}
+
+// NEXT_TAG = 2
+message ListTestPlansResponse {
+  // the name of test plan
+  repeated string names = 1;
+}
+
+// NEXT_TAG = 14
+message RunTestPlanRequest {
+  // the name of the test plan in the bucket that a user wants to run
+  string test_plan_name = 1;
+  string board = 2;
+  string model = 3;
+  string milestone = 4;
+  string build = 5;
+  string pool = 6;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 7;
+  bool cft = 8;
+  bool trv2 = 9;
+  bool upload_to_cpcon = 10;
+  bool android_desktop = 11;
+  string target_type = 12;
+  int64 max_shard = 13;
+}
+
+// NEXT_TAG = 2
+message RunTestPlanResponse { string build_link = 1; }
+
+// NEXT_TAG = 2
+message GetTestPlanRequest {
+  // the name of test plan we want to fetch the content
+  string name = 1;
+}
+
+// NEXT_TAG = 2
+message GetTestPlanResponse {
+  // plan is the content of the test plan
+  test_platform.Request.TestPlan plan = 1;
+}
+
+// NEXT_TAG = 4
+message SetCloudConfigurationRequest {
+  string boto_key_id = 1;
+  string boto_key_secret = 2;
+  string gcs_bucket_url = 3;
+}
+
+// NEXT_TAG = 1
+message SetCloudConfigurationResponse {}
+
+// NEXT_TAG = 1
+message GetCloudConfigurationRequest {}
+
+// NEXT_TAG = 3
+message GetCloudConfigurationResponse {
+  string boto_key_id = 1;
+  string gcs_bucket_url = 2;
+}
+
+// NEXT_TAG = 1
+message RebootRequest {}
+
+// NEXT_TAG = 1
+message RebootResponse {}
+
+// NEXT_TAG = 1
+message UploadLogRequest {}
+
+// NEXT_TAG = 2
+message UploadLogResponse {
+  // the link of visit the tar file in bucket
+  string bucket_link = 1;
+}
+
+// NEXT_TAG = 1
+message DownloadLogRequest {}
+
+// NEXT_TAG = 2
+message DownloadLogResponse { bytes file_chunk = 1; }
+
+// NEXT_TAG = 3
+message RepairDutsRequest {
+  // The DUTs' hostnames that a user wants to repair.
+  repeated string hostnames = 1;
+  // a flag that control we want to deep repair.
+  bool deep = 2;
+}
+
+// NEXT_TAG = 2
+message RepairDutsResponse {
+  // NEXT_TAG = 5
+  message RepairResult {
+    // The hostname that has been triggered the repair task.
+    string hostname = 1;
+    string build_link = 2;
+    string task_link = 3;
+    bool is_success = 4;
+  }
+  repeated RepairResult result = 1;
+}
+
+// NEXT_TAG = 10
+message RunStorageQualRequest {
+  string suite = 1;
+  string board = 2;
+  string model = 3;
+  string milestone = 4;
+  string build = 5;
+  string pool = 6;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 7;
+  string bug_id = 8;
+  string test = 9;
+}
+
+// NEXT_TAG = 2
+message RunQualificationResponse { string build_link = 1; }
+
+// NEXT_TAG = 11
+message RunQualificationRequest {
+  // Identifies the qualification
+  string qualification_id = 1;
+
+  // Specifies which device to run tests on
+  string board = 2;
+  string model = 3;
+  string dlm_sku_id = 4;
+
+  // Specifies which software to run tests against
+  string milestone = 5;
+  string version = 6;
+
+  // Specifies which tests to run
+  string centralized_suite = 7;
+  bool is_incremental_run = 8;
+
+  // Specifies further scheduling parameters
+  string pool = 9;
+  repeated Dim dims = 10;
+}
+
+// NEXT_TAG = 2
+message RunStorageQualResponse { string build_link = 1; }
+
+// NEXT_TAG = 19
+message Job {
+  // NEXT_TAG = 4
+  enum JobType {
+    TYPE_NOT_SET = 0;
+    SUITE = 1;
+    TESTPLAN = 2;
+    TEST = 3;
+  }
+  // NEXT_TAG = 9
+  enum JobStatus {
+    STATUS_NOT_SET = 0;
+    PENDING = 1;
+    RUNNING = 2;
+    // Job ran and completed normally irrespective of swarming task exit code
+    // This should be sure for CTP (suite/testplan) tasks, as these task
+    // don't indicate actual test status.
+    COMPLETE = 3;
+    // Job ran and completed nomarlly with swarming exit code = 0
+    COMPLETE_SUCCESS = 4;
+    // Job ran and completed nomarlly with swarming exit code != 0
+    COMPLETE_FAILURE = 5;
+    // Job ran longer than allowed time
+    TIMED_OUT = 6;
+    // Job never ran due to lack of bot availablity
+    EXPIRED = 7;
+    // Job manually canceled or killed or aborted
+    ABORTED = 8;
+  }
+
+  string job_id = 1;
+  string name = 2;
+  google.protobuf.Timestamp created_time = 3;
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp finished_time = 5;
+  JobStatus status = 6;
+  string parent_job_id = 7;
+  string hostname = 8;
+  string label_pool = 9;
+  string satlab_id = 10;
+  string task_url = 11;
+  string results_url = 12;
+  TasksStatusCount child_status_count = 13;
+  string board = 14;
+  string model = 15;
+  string build = 16;
+  string cpcon_url = 17;
+  bool auto_qual = 18;
+}
+
+// NEXT_TAG = 3
+message Tag {
+  string key = 1;
+  string value = 2;
+}
+
+// Use one of the values in this enum to query for task/job in one of the
+// specified state.
+// Use 'ALL' to not use any filtering based on task state.
+// Note: This enum is same as the one found in swarming.proto
+// https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/swarming/proto/api_v2/swarming.proto#121
+
+// NEXT_TAG = 11
+enum StateQuery {
+  // Query for all tasks currently TaskState.PENDING.
+  QUERY_PENDING = 0;
+  // Query for all tasks currently TaskState.RUNNING. This includes tasks
+  // currently in the overhead phase; mapping input files or archiving outputs
+  // back to the server.
+  QUERY_RUNNING = 1;
+  // Query for all tasks currently TaskState.PENDING or TaskState.RUNNING. This
+  // is the query for the 'active' tasks.
+  QUERY_PENDING_RUNNING = 2;
+  // Query for all tasks that completed normally as TaskState.COMPLETED,
+  // independent of the process exit code.
+  QUERY_COMPLETED = 3;
+  // Query for all tasks that completed normally as TaskState.COMPLETED and that
+  // had exit code 0.
+  QUERY_COMPLETED_SUCCESS = 4;
+  // Query for all tasks that completed normally as TaskState.COMPLETED and that
+  // had exit code not 0.
+  QUERY_COMPLETED_FAILURE = 5;
+  // Query for all tasks that are TaskState.EXPIRED.
+  QUERY_EXPIRED = 6;
+  // Query for all tasks that are TaskState.TIMED_OUT.
+  QUERY_TIMED_OUT = 7;
+  // Query for all tasks that are TaskState.CANCELED.
+  QUERY_CANCELED = 9;
+  // Query for all tasks, independent of the task state.
+  //
+  // In hindsight, this constant should have been the value 0. Sorry, the
+  // original author was young and foolish.
+  QUERY_ALL = 10;
+}
+
+// Note: This enum is same as the one found in swarming.proto
+// Use this to specify the sort_by, default is CREATED_TS
+// https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/swarming/proto/api_v2/swarming.proto#167
+
+// NEXT_TAG = 5
+enum SortBy {
+  CREATED_TS = 0;
+  COMPLETED_TS = 2;
+  ABANDONED_TS = 3;
+  STARTED_TS = 4;
+}
+
+// NEXT_TAG = 9
+message ListJobsRequest {
+  google.protobuf.Timestamp created_time_gt = 1;
+  google.protobuf.Timestamp created_time_lt = 2;
+  // Job type is one of test/testplan/suite.
+  Job.JobType job_type = 3;
+  // This are different filters that we want to query jobs
+  // eg: label-pool:abc or satlab-id:xyz etc
+  repeated Tag tags = 4;
+  SortBy sort_by = 5;
+  StateQuery query_status = 6;
+  string page_token = 7;
+  // No. of records, max 1000
+  int64 limit = 8;
+}
+
+// NEXT_TAG = 3
+message ListJobsResponse {
+  // A page token, the next token for retrieving the subsequent page.
+  // if it is empty, means it is at the end, no more plans
+  // that we can read from the bucket
+  string next_page_token = 1;
+  repeated Job jobs = 2;
+}
+
+// NEXT_TAG = 3
+message CftMixTestplan {
+  test_platform.Request.TestPlan cft = 1;
+  test_platform.Request.TestPlan non_cft = 2;
+}
+// Returns counts of child tasks per status.
+// NEXT_TAG = 2
+message TasksStatusCount {
+  // NEXT_TAG = 3
+  message TaskCount {
+    StateQuery state = 1;
+    int32 count = 2;
+  }
+  repeated TaskCount task_count = 1;
+}
+
+// NEXT_TAG = 5
+message AbortJobsRequest {
+  repeated string ids = 1;
+  Job.JobType job_type = 2;
+  google.protobuf.Timestamp created_time_gt = 3;
+  google.protobuf.Timestamp created_time_lt = 4;
+}
+
+// NEXT_TAG = 1
+message AbortJobsResponse {}
+
+// NEXT_TAG = 3
+message OpenCCDRequest {
+  string servo_serial = 1;
+  bool rma_auth = 2;
+}
+
+// NEXT_TAG = 2
+message OpenCCDReply {
+  string message = 1;
+}
+
+// NEXT_TAG = 1
+message IsUpdateAvailableRequest {}
+
+// NEXT_TAG = 2
+message IsUpdateAvailableResponse {
+  bool is_update_available = 1;
+}
+
+// NEXT_TAG = 3
+message SendMessageToCCDSessionRequest {
+  string servo_serial = 1;
+  string message = 2;
+}
+
+// NEXT_TAG = 1
+message SendMessageToCCDSessionResponse {}
+
+// NEXT_TAG = 8
+message AdvancedSettings {
+  bool cft = 1;
+  bool trv2 = 2;
+  bool upload_to_cpcon = 3;
+  // maximum number of test modules in one shard
+  int64 max_in_shard = 4;
+  // test runner timeout (hours)
+  int64 test_runner_timeout = 5;
+  // number of shards
+  int32 static_shard = 6;
+  // CTP timeout
+  int32 ctp_timeout = 7;
+}
+
+// NEXT_TAG = 9
+message RunLabQualRequest {
+  string board = 1;
+  string milestone = 2;
+  string build = 3;
+  string model = 4;
+  string pool = 5;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 6;
+  string firmware_path = 7;
+  AdvancedSettings settings = 8;
+}
+
+// NEXT_TAG = 2
+message RunLabQualResponse {
+  string build_link= 1;
+}
+
+// NEXT_TAG = 4
+message StableVersionRequest {
+  string board = 1;
+  string model = 2;
+  bool is_desktop = 3;
+}
+
+// NEXT_TAG = 4
+message StableVersionResponse {
+  string os_image = 1;
+  string fw_version = 2;
+  string fw_image = 3;
+}
+
+// NEXT_TAG = 1
+message IsAuthRequest {}
+
+// NEXT_TAG = 2
+message IsAuthResponse {
+  bool is_auth = 1;
+}
+
+// NEXT_TAG = 2
+message TopologyRequest {
+  string hostname = 1;
+}
+
+// NEXT_TAG = 2
+message TopologyResponse {
+  string pasit_host = 1;
+}
+
+// NEXT_TAG = 3
+message AddTopologyRequest {
+  string hostname = 1;
+  string content = 2;
+}
+
+// NEXT_TAG = 1
+message AddTopologyResponse {}
+
+// NEXT_TAG = 2
+message DeleteTopologyRequest {
+  string hostname = 1;
+}
+
+// NEXT_TAG = 1
+message DeleteTopologyResponse {}
+
+// NEXT_TAG = 2
+message DownloadJobLogRequest {
+  string id = 1;
+}
+
+// NEXT_TAG = 2
+message DownloadJobLogResponse {
+  string task_id = 1;
+}
+
+// NEXT_TAG = 2
+message CheckDownloadJobLogStatusRequest {
+  string task_id = 1;
+}
+
+// NEXT_TAG = 6
+// all status for the download job.
+enum DownloadJobLogStatus{
+  PENDING = 0;
+  DOWNLOADING = 1;
+  ZIPPING = 2;
+  UPLOADING = 3;
+  COMPLETED = 4;
+  FAILED = 5;
+}
+
+// NEXT_TAG = 3
+message CheckDownloadJobLogStatusResponse {
+  DownloadJobLogStatus status = 1;
+  string error_message = 2;
+}
+
+// NEXT_TAG = 2
+message JobLogLinkRequest {
+  string task_id = 1;
+}
+
+// NEXT_TAG = 2
+message JobLogLinkResponse {
+  // returns the GCS bucket link for downloading.
+  string link = 1;
+}
+
+// NEXT_TAG = 2
+message ListJobLogTasksRequest {}
+
+// NEXT_TAG = 2
+message ListJobLogTasksResponse {
+// NEXT_TAG = 3
+  message Task {
+    string id = 1;
+    DownloadJobLogStatus status = 2;
+  }
+
+  repeated Task tasks = 1;
+}
+
+// NEXT_TAG = 4
+message ListAndroidBuildsRequest {
+  string board = 1;
+  string branch = 2;
+  repeated string targets = 3;
+}
+
+// NEXT_TAG = 2
+message ListAndroidBuildsResponse {
+  repeated string builds = 1;
+}
+
+// NEXT_TAG = 3
+message ListAndroidSuitesRequest {
+  string build_id = 1;
+  string target = 2;
+}
+
+// NEXT_TAG = 2
+message ListAndroidSuitesResponse {
+  repeated string suites = 1;
+}
+
+// NEXT_TAG = 3
+message ListAndroidBranchesRequest {
+  string board = 1 [deprecated = true];
+  repeated string targets = 2;
+}
+
+// NEXT_TAG = 2
+message ListAndroidBranchesResponse {
+  repeated string branches = 1;
+}
+
+// NEXT_TAG = 2
+message ListAndroidTargetsRequest {
+  string branch = 1;
+}
+
+// NEXT_TAG = 2
+message ListAndroidTargetsResponse {
+  repeated string targets = 1;
+}
+
+// NEXT_TAG = 4
+message ListAndroidTestModulesRequest {
+  string build_id = 1;
+  string target = 2;
+  string suite = 3;
+}
+
+// NEXT_TAG = 2
+message ListAndroidTestModulesResponse {
+  repeated string modules = 1;
+}
+
+// NEXT_TAG = 3
+message UpdateDeviceRequest {
+  string hostname = 1;
+  // Specify which OS is allowed on the DUT.
+  // Allowed options: [ANDROID_ONLY, ANY, CHROMEOS_ONLY]
+  string os_restriction = 2;
+}
+
+// NEXT_TAG = 1
+message UpdateDeviceResponse {}
+
+// NEXT_TAG = 25
+message RunRequest {
+
+  // NEXT_TAG = 2
+  message Suite {
+    string name = 1;
+  }
+
+  // NEXT_TAG = 3
+  message Test {
+    string name = 1;
+    string args = 2;
+  }
+
+  // NEXT_TAG = 3
+  message Testplan {
+    string name = 1;
+    bool auto_qual = 2;
+  }
+
+  oneof task {
+    Suite suite = 1;
+    Test test = 2;
+    Testplan plan = 3;
+  }
+
+  // NEXT_TAG = 4
+  message Build {
+    string branch = 1;
+    string target = 2;
+    string id = 3;
+  }
+
+  // NEXT_TAG = 2
+  message Drive {
+    // The ID of the file
+    string id = 1;
+  }
+
+  oneof test_option {
+    // This build is used for cross-branch testing
+    Build android_test_build = 22;
+    Drive drive = 23;
+  }
+
+  // set the DUT OS.
+  // it only supports "android" / "chromeos" now.
+  string os = 4;
+
+  // base information
+  string board = 5;
+  optional string model = 6;
+  optional string milestone = 7;
+  optional string target = 17;
+  string build = 9;
+  string pool = 10;
+
+  repeated Dim dims = 11;
+  repeated string tag_includes = 12;
+  repeated string tag_excludes = 13;
+  repeated string test_name_includes = 14;
+  repeated string test_name_excludes = 15;
+  repeated string user_defined_filter = 19;
+  bool skip_provisioning = 24;
+
+
+  AdvancedSettings settings = 16;
+
+  optional string target_type = 8 [deprecated = true];
+  optional string test_target = 18 [deprecated = true];
+   // the branch for cross-branch testing
+  optional string test_branch = 20 [deprecated = true];
+   // the build ID for cross-branch testing
+  optional string test_build = 21 [deprecated = true];
+}
+
+// NEXT_TAG = 2
+message RunResponse {
+  string link = 1;
+}
+
+// NEXT_TAG = 5
+message ValidateAndroidBuildRequest {
+  string board = 1;
+  string branch = 2;
+  repeated string targets = 3;
+  string build = 4;
+}
+
+// NEXT_TAG = 2
+message ValidateAndroidBuildResponse {
+  bool is_valid = 1;
+}
+
+// NEXT_TAG = 2
+message TestlabRequest {
+  string ip_address = 1;
+}
+
+// NEXT_TAG = 2
+message TestlabResponse {
+  bool enabled = 1;
+}
+
+// NEXT_TAG = 1
+message DutWifiInfoRequest {}
+
+// NEXT_TAG = 3
+message DutWifiInfoResponse {
+  string ssid = 1;
+  string password = 2;
+}
+
+// NEXT_TAG = 3
+message SetDutWifiInfoRequest {
+  string ssid = 1;
+  string password = 2;
+}
+
+// NEXT_TAG = 1
+message SetDutWifiInfoResponse {}
+
+// NEXT_TAG = 7
+message RunAndroidLabqualRequest {
+  string hostname = 1;
+  string firmware_path = 2;
+  string build = 3;
+  string board = 4;
+  string model = 5;
+  optional string target = 6;
+}
+
+// NEXT_TAG = 2
+message RunAndroidLabqualResponse {
+  string link = 1;
+}
+
+// NEXT_TAG = 3
+// Request message for listing test efforts.
+// Test efforts are queried in reverse chronological order.
+message ListTestEffortsRequest {
+  // Optional. The maximum number of test efforts to return. The service may
+  // return fewer than this value.
+  // If unspecified, at most 50 test efforts will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 1;
+
+  // Optional. A page token, received from a previous `ListTestEfforts` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 2;
+}
+
+// NEXT_TAG = 4
+message ListTestEffortsResponse {
+  // Token to retrieve the next page of test efforts. If this field
+  // is omitted, there are no subsequent pages.
+  string next_page_token = 1;
+
+  repeated TestEffort efforts = 2;
+
+  uint32 total_size = 3;
+}
+
+// NEXT_TAG = 2
+// Request message for cancelling a test effort.
+message CancelTestEffortRequest {
+  // Required. The resource ID of the test effort to cancel.
+  string id = 1;
+}
+
+// NEXT_TAG = 1
+message CancelTestEffortResponse {}
+
+// NEXT_TAG = 2
+message CreateTestEffortRequest {
+  TestEffort effort = 1;
+}
+
+// NEXT_TAG = 2
+message CreateTestEffortResponse {
+  string id = 1;
+}
+
+// NEXT_TAG = 13
+message TestEffort {
+
+  // NEXT_TAG = 10
+  // The possible states of a test effort.
+  enum State {
+    // No test effort state is specified.
+    STATE_UNSPECIFIED = 0;
+
+    // The test effort is created.
+    CREATED = 1;
+
+    // The test effort has incomplete results.
+    INCOMPLETE = 2;
+
+    // The test effort has failed.
+    FAILED = 3;
+
+    // The test effort has unreported results.
+    UNREPORTED = 4;
+
+    // The test effort is not applicable.
+    NOT_APPLICABLE = 5;
+
+    // The test effort has passed.
+    SUCCEEDED = 6;
+
+    // The test effort is requested to be cancelled.
+    CANCEL_REQUESTED = 7;
+
+    // The test effort is cancelled.
+    CANCELLED = 8;
+
+    // The cancelling the test effort failed.
+    CANCEL_FAILED = 9;
+  }
+
+  // NEXT_TAG = 5
+  // Represents the Android build target.
+  message AndroidBuildTarget {
+    // Required. Represents the name of a configured branch in the Android Build
+    // system.
+    string branch = 1;
+
+    // Required. The board target. (e.g. product_name-release_config-build_variant).
+    string target = 2;
+
+    // Required. The build ID of the test effort.
+    string build_id = 3;
+
+    // Optional. Product name of the build target.
+    string product = 4;
+  }
+
+  // NEXT_TAG = 3
+  // The pool of the test effort.
+  message Pool {
+    // NEXT_TAG = 4
+    // The category of pool to schedule tests against.
+    enum PoolType {
+      // Not used. Exists to distinguish between an unset value and DEFAULT.
+      POOL_TYPE_UNSPECIFIED = 0;
+
+      // Pools used when scheduling tests without any special exceptions
+      DEFAULT_POOL = 1;
+
+      // Pools to use when scheduling FAFT PD tests.
+      FAFT_PD = 2;
+
+      // Pools to schedule tests with extremely long runtimes (3+ hours)
+      EXTENDED_DURATION = 3;
+    }
+
+    // Required. The label of the pool.
+    string label = 1;
+
+    // Required. The category of pool to schedule tests against.
+    PoolType type = 2;
+  }
+
+  // Output only. The ID of the test effort.
+  string id = 1;
+
+  // Optional. The satlab ID that the test effort comes from.
+  string satlab_id = 2;
+
+  // Required. The board of the test effort.
+  string board = 3;
+
+  // Required. The model of the test effort.
+  string model = 4;
+
+  // Required. The pools of the test effort.
+  repeated Pool pools = 5;
+
+  // Test plan reference.
+  string testplan = 6;
+
+  // Testhaus link.
+  string testhaus_url = 7;
+
+  // Overall result of the test effort.
+  State state = 8;
+
+  // The time when the test effort was created.
+  google.protobuf.Timestamp created_at = 9;
+
+  // Specifies the Operating System build targets to test against.
+  oneof os {
+    // Test against an Android build.
+    AndroidBuildTarget android = 10;
+  }
+
+  // Specifies the test build targets to test with.
+  oneof test_source {
+    // Test with an Android build target.
+    AndroidBuildTarget android_test_target = 11;
+  }
+
+  // Option to make boot tests optional.
+  bool skip_boot_prerequisite = 12;
+}
+
+// NEXT_TAG = 2
+message ListDriveRequest {
+  // use as filter (e.g. cts, gts)
+  optional string type = 1;
+}
+
+// NEXT_TAG = 2
+message ListDriveResponse {
+  // NEXT_TAG = 3
+  message File {
+    string id = 1;
+    string name = 2;
+  }
+
+  repeated File files = 1;
+}

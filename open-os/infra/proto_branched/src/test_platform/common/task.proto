@@ -1,0 +1,25 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.common;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/common";
+
+// TaskLogData describes the location at which logs of a test_platform task
+// are stored.
+message TaskLogData {
+  // gs_url is the full google storage URL at which a task's logs are stored.
+  string gs_url = 1;
+
+  // Deprecated: Use the testhaus_url field below instead.
+  // stainless_url is the full URL to the stainless logs viewer for archived
+  // logs.
+  string stainless_url = 2 [ deprecated = true ];
+
+  // testhaus_url is the full URL to the Testhaus logs viewer for archived
+  // logs.
+  string testhaus_url = 3;
+}

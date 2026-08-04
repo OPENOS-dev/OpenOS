@@ -1,0 +1,47 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+message TestRequirement {
+  // Hierarchies will be enforced in ascending order.
+  enum HierarchyEnforcement {
+    HIERARCHY_ENFORCEMENT_UNSPECIFIED = 0;
+    OS = 1;
+    TEST_PLAN = 2;
+    TEST = 3;
+    BOARD = 4;
+    MODEL = 5;
+    AP_RO_VERSION = 6;
+    AP_RW_VERSION = 7;
+    EC_RO_VERSION = 8;
+    EC_RW_VERSION = 9;
+    GSC_RO_VERSION = 10;
+    GSC_RW_VERSION = 11;
+  }
+  message TestScope {
+    // The scope that the requirement applies to
+    //    For example OS, Board, Model, etc.
+    //    Can be qualified test_plan.os.board
+    string hierarchy = 1;
+    // The actual value to scope on
+    string filter = 2;
+  }
+  message AnalysisDimension {
+    string name = 1;
+    string value = 2;
+  }
+  message Analyzer {
+    string name = 1;
+    repeated AnalysisDimension dimension = 2;
+  }
+  repeated TestScope scope = 1;
+  Analyzer analyzer = 2;
+}
+
+message TestRequirements { repeated TestRequirement test_plan_requirement = 1; }

@@ -1,0 +1,1324 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// TODO(b/177487002): cannot include prototype.milestone at this time.
+// import "prototype/milestone.proto";
+
+// Common message definitions.
+
+// A BuildTarget encapsulates a board and an associated profile, and mirrors a
+// chromite.lib.build_target_lib.BuildTarget.
+message BuildTarget {
+  // The name of the build target (a.k.a. board name).
+  string name = 1;
+
+  // The profile to use.
+  Profile profile = 2;
+}
+
+// Generic GCS path split into bucket name and path within
+message GcsPath {
+  string bucket = 1;
+  string path = 2;
+}
+
+// Chroot is used to define how to enter a chroot.
+message Chroot {
+  // Deprecated fields.
+  // R80 was the last release branch to use 'goma'.
+  reserved 5;
+  reserved "goma";
+
+  message ChrootEnv {
+    // USE flags to set.
+    repeated UseFlag use_flags = 1;
+    // FEATURES flags to set.
+    repeated Feature features = 2;
+  }
+
+  // The directory containing the chroot.
+  string path = 1;
+  // The cache directory override.
+  string cache_dir = 2;
+  // Environment configuration.
+  ChrootEnv env = 3;
+  // The directory where the chrome source should be mounted.
+  string chrome_dir = 4;
+  // The directory where build state and output artifacts should be placed.
+  string out_path = 6;
+}
+
+// FEATURES environment variable component message.
+message Feature { string feature = 1; }
+
+message RemoteexecConfig {
+  // The location of the re-client binaries needed for remote execution.
+  string reclient_dir = 1;
+  // The config file to pass in to reproxy.
+  string reproxy_cfg_file = 2;
+  // The directory where the logs will be extracted.
+  SyncedDir log_dir = 3;
+}
+
+message RemoteexecArtifacts {
+  // List of log files.
+  repeated string log_files = 1;
+}
+
+message GomaConfig {
+  reserved 2;
+  reserved "goma_client_json";
+
+  // The goma install location.
+  // Required.
+  string goma_dir = 1;
+  // Path to the Goma client used for build package.
+  // If None, goma_dir will be used instead.
+  string chromeos_goma_dir = 3;
+
+  // Facilitates testing new Goma approaches before rolling them out
+  // more widely.
+  enum GomaApproach {
+    GOMA_APPROACH_UNSPECIFIED = 0;
+    DEFAULT = 1;
+    RBE_PROD = 2;
+    RBE_STAGING = 3;
+    RBE_CHROMEOS = 4;
+  }
+  GomaApproach goma_approach = 4;
+
+  // The directory where the goma logs will be extracted.
+  SyncedDir log_dir = 5;
+  // The name of the goma stats file. It will be dumped inside log_dir.
+  string stats_file = 6;
+  // The name of the goma counterz file. It will be dumped inside log_dir.
+  string counterz_file = 7;
+}
+
+message GomaArtifacts {
+  // The Goma artifacts (stats file, counterz file, and log files) are placed
+  // in the directory specified by the GomaConfig.log_dir.
+
+  // Goma stats file.
+  string stats_file = 1;
+  // Goma counterz file.
+  string counterz_file = 2;
+  // Goma log files.
+  repeated string log_files = 3;
+}
+
+// Message describing a package, The corresponding variable names are from
+// https://devmanual.gentoo.org/ebuild-writing/variables/index.html
+message PackageInfo {
+  // The package name (PN variable).
+  string package_name = 1;
+
+  // The package category (CATEGORY variable).
+  string category = 2;
+
+  // The package version and revision (PVR variable).
+  string version = 3;
+}
+
+// Information about the sysroot's profile.
+message Profile {
+  // The name of the profile.
+  string name = 1;
+}
+
+// Message describing a package index (binhost) file.
+message PackageIndexInfo {
+  // The snapshot SHA
+  string snapshot_sha = 1;
+
+  // The snapshot number.  Higher is newer.
+  int32 snapshot_number = 2;
+
+  // The build target.
+  BuildTarget build_target = 3;
+
+  // The full URI of the package index file.
+  string location = 4;
+
+  // The sysroot profile.
+  Profile profile = 5;
+
+  // TODO(crbug/1088059): Add status of the prebuilts:
+  // - Passed HW Tests?
+  // - Marked stable?
+  // Etc
+}
+
+// A message to clarify inside/outside chroot paths.
+message Path {
+  // Location enum; whether the resource is inside or outside of the chroot.
+  enum Location {
+    NO_LOCATION = 0;
+    INSIDE = 1;
+    OUTSIDE = 2;
+  }
+
+  // The path to the resource.
+  string path = 1;
+  // The path location.
+  Location location = 2;
+}
+
+// A message used to indicate an output location for results. Specifically,
+// this is used to automatically transfer files out of the chroot when needed.
+// Note: No more than one ResultPath per message can be supported.
+message ResultPath {
+  // Required unless type is TRANSFER_TRANSLATE.
+  // The result directory information.
+  Path path = 1;
+
+  // Transfer enum; how Paths in the response are transferred out of the chroot.
+  enum Transfer {
+    TRANSFER_UNSPECIFIED = 0;
+
+    // Paths are copied to ResultPath.path.  Default when unspecifed.
+    TRANSFER_COPY = 1;
+
+    // Path messages are updated from Path.Location.INSIDE to
+    // Path.Location.OUTSIDE in place without copying, based on knowledge of the
+    // chroot structure. Note that such resulting artifacts may be modified or
+    // removed by future API calls, so callers should exercise care regarding
+    // their longevity. ResultPath.path must be empty.
+    TRANSFER_TRANSLATE = 2;
+  }
+  Transfer transfer = 2;
+}
+
+// A SyncedDir will have all of its contents transferred into a tmp directory
+// in the chroot before the endpoint is called, and afterwords its contents
+// will be exactly what was in the tmp directory when the endpoint completed.
+message SyncedDir {
+  // Required.
+  // The directory being synced.
+  string dir = 1;
+}
+
+// See also crrev.com/c/1929452 and:
+//   https://cs.corp.google.com/piper///depot/google3/third_party/luci/buildbucket/proto/common.proto?l=147-176&rcl=257714215
+// A Gerrit patchset.
+message GerritChange {
+  // Gerrit hostname, e.g. "chromium-review.googlesource.com".
+  string host = 1;
+  // Gerrit project, e.g. "chromium/src".
+  string project = 2;
+  // Change number, e.g. 12345.
+  int64 change = 3;
+  // Patch set number, e.g. 1.
+  int64 patchset = 4;
+}
+
+message GitilesCommit {
+  // Gitiles hostname, e.g. "chromium.googlesource.com".
+  string host = 1;
+  // Repository name on the host, e.g. "chromium/src".
+  string project = 2;
+  // Commit HEX SHA1.
+  string id = 3;
+  // Commit ref, e.g. "refs/heads/master".
+  // NOT a branch name: if specified, must start with "refs/".
+  string ref = 4;
+  // Defines a total order of commits on the ref. Requires ref field.
+  uint32 position = 5;
+}
+
+// Message for USE flags.
+message UseFlag {
+  // The use flag.
+  string flag = 1;
+}
+
+// Message for defining a release builder.
+// Used to generate release_builders.star.
+message ReleaseBuilder {
+  message Date {
+    // Format: YYYY-MM-DD (ISO 8601)
+    // E.g. 2020-02-10
+    string value = 1;
+  }
+
+  // The release milestone. Needs to have "branch_name" filled out.
+  // TODO(b/177487002): cannot include prototype.Milestone at this time.
+  // prototype.Milestone milestone = 1;
+  message Milestone {
+    // E.g. 86
+    int32 number = 1;
+
+    // Initially planned branch date for the milestone.
+    Date target_branch_date = 2;
+
+    // Actual branch name when the branch is created.
+    // E.g. release-R86-13421.B
+    string branch_name = 3;
+  }
+  oneof milestone_message { Milestone milestone = 1; }
+
+  // Schedule to use for release builder.
+  // e.g. "0 5 * * *"
+  string build_schedule = 2;
+
+  // Expiration date of builder.
+  // A builder with an expiration date set (that has not yet occurred)
+  // will not be pruned as a stale milestone by automatic release config
+  // management.
+  Date expiration_date = 3;
+
+  // Mapping from Android package names to their corresponding Android branches
+  // for this release, e.g. "android-vm-rvc" -> "git_rvc-arc-m110".
+  // Android uprev builders are automatically set up according to this mapping.
+  map<string, string> android_branches = 4;
+}
+
+message ReleaseBuilders {
+  // Release builders to generate _define_release blocks for
+  // in release_builders.star.
+  repeated ReleaseBuilder builders = 1;
+}
+
+// The types of images that can be built.
+// These correspond to support types in lib/constants.py such
+// as IMAGE_TYPE_BASE, IMAGE_TYPE_RECOVERY, and so on.
+enum ImageType {
+  // Please only use prefixed IMAGE_TYPE values. See: b/187214166
+  // Removed in R92.
+  reserved "BASE", "TEST", "DEV", "BASE_VM", "TEST_VM", "RECOVERY", "FACTORY";
+  reserved "FIRMWARE", "CR50_FIRMWARE", "BASE_GUEST_VM", "TEST_GUEST_VM", "DLC";
+  reserved "GSC_FIRMWARE", "ACCESSORY_USBPD", "ACCESSORY_RWSIG", "HPS_FIRMWARE";
+
+  IMAGE_TYPE_UNDEFINED = 0;
+
+  IMAGE_TYPE_BASE = 1;
+  IMAGE_TYPE_DEV = 2;
+  IMAGE_TYPE_TEST = 3;
+  IMAGE_TYPE_BASE_VM = 4;
+  IMAGE_TYPE_TEST_VM = 5;
+  IMAGE_TYPE_RECOVERY = 6;
+  IMAGE_TYPE_FACTORY = 7;
+  IMAGE_TYPE_FIRMWARE = 8;
+  IMAGE_TYPE_CR50_FIRMWARE = 9;
+  IMAGE_TYPE_BASE_GUEST_VM = 10;
+  IMAGE_TYPE_TEST_GUEST_VM = 11;
+  IMAGE_TYPE_DLC = 12;
+  IMAGE_TYPE_GSC_FIRMWARE = 13;
+  IMAGE_TYPE_ACCESSORY_USBPD = 14;
+  IMAGE_TYPE_ACCESSORY_RWSIG = 15;
+  IMAGE_TYPE_HPS_FIRMWARE = 16;
+  IMAGE_TYPE_NETBOOT = 17;
+  // Used for payload signing.
+  IMAGE_TYPE_UPDATE_PAYLOAD = 18;
+  IMAGE_TYPE_FLEXOR_KERNEL = 19;
+  // Used for standalone firmware shellball signing.
+  IMAGE_TYPE_SHELLBALL = 20;
+  // Used for standalone recovery kernel signing.
+  IMAGE_TYPE_RECOVERY_KERNEL = 21;
+}
+
+// The various channels that we release through.
+enum Channel {
+  CHANNEL_UNSPECIFIED = 0;
+  CHANNEL_STABLE = 1;
+  CHANNEL_BETA = 2;
+  CHANNEL_DEV = 3;
+  CHANNEL_CANARY = 4;
+  CHANNEL_LTS = 5;
+  CHANNEL_LTC = 6;
+  CHANNEL_AGNOSTIC = 7;
+}
+
+// A map of release milestones to their appropriate channels.
+message ReleaseChannels {
+  message ChannelList { repeated Channel channels = 1; }
+  map<int32, ChannelList> release_channels = 1;
+}
+
+// The available delta types.
+enum DeltaType {
+  DELTA_UNKNOWN = 0;
+  NO_DELTA = 1;
+  FSI = 2;
+  MILESTONE = 3;
+  OMAHA = 4;
+  STEPPING_STONE = 5;
+  N2N = 6;
+}
+
+// A wrapper around a serialized protocol buffer.
+message ProtoBytes { bytes serialized_proto = 1; }
+
+// List of known locations that firmware can be built from.
+enum FwLocation {
+  FW_LOCATION_UNKNOWN = 0;
+  PLATFORM_EC = 1;        // platform/ec/firmware_builder.py
+  PLATFORM_ZEPHYR = 2;    // platform/ec/zephyr/firmware_builder.py
+  PLATFORM_TI50 = 3;      // platform/ti50/common/firmware_builder.py
+  PLATFORM_CR50 = 4;      // platform/cr50/firmware_builder.py
+  PLATFORM_CHAMELEON = 5; // platform/chameleon/v3/ec/firmware_builder.py
+  PLATFORM_GSC_UTILS = 6; // platform/gsc-utils/firmware_builder.py
+  PLATFORM_AP = 7;        // platform/rules_cros_firmware/ap/firmware_builder.py
+  PLATFORM_RENODE = 8;    // platform/ec/util/renode/firmware_builder.py
+  PLATFORM_DAGWOOD = 9;   // platform/dagwood/firmware_builder.py
+  PLATFORM_EC_LEGACY = 10; // platform/ec-legacy/firmware_builder.py
+  PLATFORM_EC_LEGACY_RENODE =
+      11;            // platform/ec-legacy/util/renode/firmware_builder.py
+  PLATFORM_PDC = 12; // platform/pdc/firmware_builder.py
+}
+
+// Additional information about artifacts used by PrepareForBuild endpoints.
+// TODO(crbug/1019868): This is migrating to ArtifactProfileInfo.
+message PrepareForBuildAdditionalArgs {
+  oneof prepare_for_build_args {
+    // ToolchainService Chrome AFDO artifacts require profile name.
+    string chrome_cwp_profile = 1;
+
+    // ToolchainService Kernel AFDO artifacts require a kernel version.
+    string kernel_version = 2;
+  }
+}
+
+// ToolchainService Unverified Release AFDO artifacts require information
+// about the builder that created the image used to generate the unverified
+// chrome benchmark perf file.
+message AfdoRelease {
+  // ToolchainService Chrome AFDO artifacts require profile name.
+  string chrome_cwp_profile = 1;
+
+  // The build id of the image_build.  Used to generate the location for the
+  // image archive.
+  int64 image_build_id = 2;
+}
+
+// Artifact profile information used by artifact prepare/bundle endpoints in
+// addition to input_artifacts.
+message ArtifactProfileInfo {
+  oneof artifact_profile_info {
+    // ToolchainService Chrome AFDO artifacts require profile name.
+    string chrome_cwp_profile = 1;
+
+    // ToolchainService Kernel AFDO artifacts require a kernel version.
+    string kernel_version = 2;
+
+    // ToolchainService Unverified Release AFDO artifacts require more.
+    AfdoRelease afdo_release = 3;
+  }
+  // Profile architecture, required in all artifacts.
+  string arch = 4;
+}
+
+// Artifact information. Used by the ArtifactsService.PrepareForBuild and
+// BundleArtifacts endpoints to dispatch the appropriate service routines to
+// prepare or bundle as a batch.
+message ArtifactsByService {
+
+  // How to publish code coverage information for an artifact.
+  message CodeCoverageUploadInfo {
+    // The type of code coverage information the artifact represents.
+    enum CodeCoverageType {
+      UNSPECIFIED = 0;
+
+      // LLVM Code Coverage is generated.
+      LLVM = 1;
+
+      // LCOV Code Coverage is generated.
+      LCOV = 2;
+    }
+    CodeCoverageType coverage_type = 1;
+  }
+
+  // TODO(b/187790484): Drop this message.
+  // Artifacts handled within the ArtifactsService endpoints directly.
+  message Legacy {
+    // Legacy artifacts, handled in cros_artifacts. DO NOT ADD TO THIS.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+      // Indicates wanting a zip file of everything in the image directory.
+      // TODO(b/187790484): moves to ArtifactsByService.Image
+      IMAGE_ZIP = 1;
+      // Indicates wanting update payloads.
+      // TODO(b/187790484): moves to ArtifactsByService.Test
+      TEST_UPDATE_PAYLOAD = 2;
+      // Indicates wanting the autotest tarballs.
+      // TODO(b/187790484): moves to ArtifactsByService.Test
+      AUTOTEST_FILES = 3;
+      // Indicates wanting a tarball containing private TAST test bundles.
+      // TODO(b/187790484): moves to ArtifactsByService.Test
+      TAST_FILES = 4;
+      // Indicates wanting a tarball containing guest images and test bundles.
+      // TODO(b/187790484): moves to ArtifactsByService.Test
+      PINNED_GUEST_IMAGES = 5;
+      // Indicates wanting an archive of firmware images built from source.
+      // TODO(b/187790484): moves to ArtifactsByService.Package
+      FIRMWARE = 6;
+      // Indicates wanting a tarball of the Ebuilds logs.
+      // TODO(b/187790484): moves to ArtifactsByService.Sysroot
+      EBUILD_LOGS = 7;
+      // Indicates wanting an archive of the ChromeOS Config.
+      // TODO(b/187790484): moves to ArtifactsByService.Sysroot
+      CHROMEOS_CONFIG = 8;
+
+      reserved 9;
+
+      // Indicates wanting a tar.xz archive for each image created.
+      // TODO(b/187790484): moves to ArtifactsByService.Image
+      IMAGE_ARCHIVES = 10;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 11 to 26;
+
+      // Indicates wanting a tarball containing fingerprint MCU test binaries.
+      // TODO(b/187790484): moves to ArtifactsByService.Test
+      FPMCU_UNITTESTS = 27;
+      // Indicates wanting a test image tarball suitable for importing into GCE.
+      // TODO(b/187790484): moves to ArtifactsByService.Image
+      GCE_TARBALL = 28;
+
+      reserved 29 to 31;
+
+      // Indicates wanting the Bundled debug symbol files.
+      // TODO(b/187790484): Moves from legacy to ArtifactsByService/Get.
+      DEBUG_SYMBOLS = 32;
+
+      reserved 33 to 56;
+    }
+    // Information about one or more artifacts.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // R83 was the last release branch to use profile_info.
+      reserved 3;
+      reserved "profile_info";
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Legacy legacy = 1;
+
+  message Toolchain {
+    // Artifacts which the ArtifactsService endpoints pass to ToolchainService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 1 to 10;
+
+      // These values were previously used by now-turned-down orderfile,
+      // clang-tidy, and llvm-PGO builders.
+      reserved 11 to 14;
+
+      // Indicates an unvetted AFDO Chrome profile.  (Generated by HW Tests in
+      // the benchmark-afdo-generate builder.)
+      UNVERIFIED_CHROME_BENCHMARK_AFDO_FILE = 15;
+      // Indicates a vetted AFDO Chrome profile.
+      VERIFIED_CHROME_BENCHMARK_AFDO_FILE = 16;
+
+      // Indicates a vetted AFDO Kernel profile.
+      VERIFIED_KERNEL_CWP_AFDO_FILE = 17;
+      // Indicates an unvetted AFDO Kernel CWP profile.
+      UNVERIFIED_KERNEL_CWP_AFDO_FILE = 18;
+
+      // Indicates an unvetted AFDO Chrome CWP profile.
+      UNVERIFIED_CHROME_CWP_AFDO_FILE = 19;
+      // Indicates a vetted AFDO Chrome CWP profile.
+      VERIFIED_CHROME_CWP_AFDO_FILE = 20;
+      // Indicates a vetted AFDO profile for release.
+      VERIFIED_RELEASE_AFDO_FILE = 21;
+
+      // Indicates an unvetted AFDO perf data file (from HW Test).
+      UNVERIFIED_CHROME_BENCHMARK_PERF_FILE = 22;
+      // Indicates an unstripped Chrome binary.
+      CHROME_DEBUG_BINARY = 23;
+
+      // Indicates toolchain logs for the compiler warnings for werror monitor
+      TOOLCHAIN_WARNING_LOGS = 24;
+
+      // Indicates a prod Chrome AFDO profile for Android/Linux.
+      CHROME_AFDO_PROFILE_FOR_ANDROID_LINUX = 25;
+
+      // Indicates diagnoses for Clang crashes
+      CLANG_CRASH_DIAGNOSES = 26;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 27 to 28;
+
+      // Indicates Rusage logs from Compiler Invocations
+      COMPILER_RUSAGE_LOG = 29;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 30 to 51;
+
+      // Tarballs of cross-compiling toolchain prebuilts.
+      SDK_TOOLCHAIN_PREBUILTS = 52;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 53 to 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      // specifying those here.  Examples include AFDO artifacts and release
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Toolchain toolchain = 2;
+
+  message Image {
+    // Artifacts which the ArtifactsService endpoints pass to ImageService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      // TODO(b/187790484): once an IMAGE_ZIP value is added here, please
+      // update the build planner (in chromiumos/infra/go), where it says
+      // "use the new output artifacts IMAGE_ZIP"
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 1 to 33;
+
+      // DLC image (squashfs).  Added in R91.
+      DLC_IMAGE = 34;
+
+      reserved 35 to 37;
+
+      // license_credits.html.
+      LICENSE_CREDITS = 38;
+
+      reserved 39 to 42;
+
+      // factory_image.zip.
+      FACTORY_IMAGE = 43;
+
+      reserved 44;
+
+      // stripped-packages.tar archive.
+      STRIPPED_PACKAGES = 45;
+
+      reserved 46 to 48;
+
+      // image_scripts.tar.xz archive.
+      IMAGE_SCRIPTS = 49;
+
+      reserved 50 to 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Image image = 3;
+
+  message Package {
+    // Artifacts which the ArtifactsService endpoints pass to PackageService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 1 to 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Package package = 4;
+
+  message Sysroot {
+    // Artifacts which the ArtifactsService endpoints pass to SysrootService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 1 to 31;
+
+      // Debug artifacts in a tarball.
+      DEBUG_SYMBOLS = 32;
+
+      reserved 33 to 34;
+
+      // Breakpad sym files in a tarball.
+      BREAKPAD_DEBUG_SYMBOLS = 35;
+
+      reserved 36 to 39;
+
+      // Simple Chrome Sysroot archive.
+      SIMPLE_CHROME_SYSROOT = 40;
+
+      // Chrome Ebuild Environment archive.
+      CHROME_EBUILD_ENV = 41;
+
+      reserved 42 to 46;
+
+      // The fuzzer's sysroot as bundled via cros_generate_sysroot.py.
+      FUZZER_SYSROOT = 47;
+
+      reserved 48 to 49;
+
+      // Archive the entire sysroot.
+      SYSROOT_ARCHIVE = 50;
+
+      reserved 52;
+
+      // Bazel-specific performance artifacts.
+      BAZEL_PERFORMANCE_ARTIFACTS = 53;
+
+      reserved 54 to 55;
+
+      // Merged compile_commands.json.
+      COMPILE_COMMANDS_JSON = 56;
+    }
+
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+
+    // If true, ignore errors during breakpad symbol generation.
+    bool ignore_breakpad_symbol_generation_errors = 3;
+
+    // The ExpectedFiles enum from cros_generate_breakpad_symbols.py.
+    enum BreakpadSymbolGenerationExpectedFile {
+      // Not used but required by proto3 syntax.
+      EXPECTED_FILE_UNSET = 0;
+
+      EXPECTED_FILE_ASH_CHROME = 1;
+      EXPECTED_FILE_LIBC = 2;
+      EXPECTED_FILE_CRASH_REPORTER = 3;
+      EXPECTED_FILE_LIBMETRICS = 4;
+    }
+    // During BREAKPAD_DEBUG_SYMBOLS generation, do not complain about missing
+    // any of the expected files in this list.
+    repeated BreakpadSymbolGenerationExpectedFile
+        ignore_breakpad_symbol_generation_expected_files = 4;
+  }
+  Sysroot sysroot = 5;
+
+  message Test {
+    // Artifacts which the ArtifactsService endpoints pass to TestService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 1 to 36;
+
+      UNIT_TESTS = 37;
+
+      reserved 38;
+
+      CODE_COVERAGE_LLVM_JSON = 39;
+
+      reserved 40 to 41;
+
+      // HWQual archive.
+      HWQUAL = 42;
+
+      reserved 43 to 45;
+
+      // Code coverage artifacts generated by Rust CC builder.
+      CODE_COVERAGE_RUST_LLVM_JSON = 46;
+
+      reserved 47;
+
+      // Code coverage artifacts generated by Go test.
+      CODE_COVERAGE_GOLANG = 48;
+
+      reserved 49 to 53;
+
+      // Code coverage artifacts for E2E coverage.
+      CODE_COVERAGE_E2E = 54;
+
+      reserved 55 to 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+
+      // Optional information related to code coverage.
+      CodeCoverageUploadInfo code_coverage_upload_info = 6;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Test test = 6;
+
+  // Profile information needed by the artifact handler, if any.
+  ArtifactProfileInfo profile_info = 7;
+
+  message Firmware {
+    // Artifacts which the ArtifactsService endpoints pass to FirmwareService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      // TODO(b/187790484): BuilderConfig.Artifacts.ArtifactTypes is a common
+      // namespace for all services.  We must reserve numbers until that is
+      // gone.
+      reserved 1 to 29;
+
+      // Firmware artifacts in a tarball.
+      FIRMWARE_TARBALL = 30;
+
+      // Metadata about the firmware.
+      FIRMWARE_TARBALL_INFO = 31;
+
+      reserved 32;
+
+      // FirmwareService: LCOV code coverage files.
+      FIRMWARE_LCOV = 33;
+
+      reserved 34 to 43;
+
+      // Code coverage HTML report tar archive.
+      CODE_COVERAGE_HTML = 44;
+
+      reserved 45 to 54;
+
+      // FirmwareService: Token Database.
+      FIRMWARE_TOKEN_DATABASE = 55;
+
+      reserved 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+
+      // The firmware location.
+      FwLocation location = 6;
+
+      // Optional information related to code coverage.
+      CodeCoverageUploadInfo code_coverage_upload_info = 7;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Firmware firmware = 8;
+
+  message Infra {
+    // Infra artifacts, e.g. a pinned manifest.  Not actually passed to Build
+    // API -- all artifacts in this message are handled by recipes. Chromite
+    // should completely ignore this message.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      reserved 1 to 35;
+
+      BUILD_MANIFEST = 36;
+
+      reserved 37 to 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Infra infra = 9;
+
+  message Sdk {
+    // Artifacts which the ArtifactsService endpoints pass to FirmwareService.
+    enum ArtifactType {
+      UNSPECIFIED = 0;
+
+      reserved 1 to 50;
+
+      // A tarball containing the SDK itself.
+      SDK_TARBALL = 51;
+
+      reserved 52 to 56;
+    }
+    // Information about one or more artifacts.  This should match the rest of
+    // the ArtifactInfo definitions in ArtifactsByService, other than having
+    // it's own (service-specific) definition for ArtifactType.
+    message ArtifactInfo {
+      // The ArtifactType.  One or more types to which the rest of the fields
+      // apply.
+      repeated ArtifactType artifact_types = 1;
+
+      // GS location in which to upload artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      //
+      // BuilderConfig.Artifacts.artifacts_gs_location is used for all
+      // artifacts.  Artifact can be published to additional locations by
+      // specifying those here.  Examples: include AFDO artifacts and Release
+      // images.
+      repeated string gs_locations = 2;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+
+      // This used to be PublishCondition, which is deprecated as per
+      // b/202987478.
+      reserved 5;
+    }
+    // Input artifact information
+    repeated ArtifactInfo input_artifacts = 1;
+
+    // Output artifact information
+    repeated ArtifactInfo output_artifacts = 2;
+  }
+  Sdk sdk = 10;
+}
+
+// Artifact information. Used by the ArtifactsService.PrepareForBuild and
+// BundleArtifacts endpoints Response messages.
+message UploadedArtifactsByService {
+  // Legacy artifacts, handled directly ArtifactsService.
+  // Artifacts handled within the ArtifactsService endpoints directly.
+  // TODO(b/187790484): Drop this message.
+  message Legacy {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Legacy.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Legacy legacy = 1;
+
+  message Toolchain {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Toolchain.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Toolchain toolchain = 2;
+
+  message Image {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Image.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Image image = 3;
+
+  message Package {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Package.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Package package = 4;
+
+  message Sysroot {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Sysroot.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Sysroot sysroot = 5;
+
+  message Test {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Test.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Test test = 6;
+
+  message Firmware {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Firmware.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // The firmware location.
+      FwLocation location = 3;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 4;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 5;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Firmware firmware = 7;
+
+  message Infra {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Infra.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Infra infra = 8;
+
+  message Sdk {
+    message ArtifactPaths {
+      // The ArtifactType.
+      ArtifactsByService.Sdk.ArtifactType artifact_type = 1;
+
+      // Absolute path to the artifact file.
+      repeated Path paths = 2;
+
+      // Whether or not the artifact generation failed.
+      bool failed = 3;
+
+      // Failure reason that the artifact was not generated.
+      string failure_reason = 4;
+    }
+    repeated ArtifactPaths artifacts = 1;
+  }
+  Sdk sdk = 9;
+}
+
+// Field extension that indicates if the field
+// can be removed from logging services
+extend google.protobuf.FieldOptions { optional bool logging_optional = 54444; }

@@ -1,0 +1,45 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// CollectPackageMetadata request.
+message CollectPackageMetadataRequest {
+  // The chroot to execute the request.
+  chromiumos.Chroot chroot = 1;
+
+  // The sysroot to collect package metadata from.
+  //
+  // Packages must have already been built and installed into sysroot for
+  // their metadata to be collected.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+message CollectPackageMetadataResponse {
+  // Whether the collection was successful.
+  bool success = 1;
+
+  // The collected metadata encoded as ProtoJSON strings.
+  //
+  // Each string contains one protobuf message that represents the collected
+  // metadata.
+  repeated string metadata_protojson = 2;
+}
+
+service ThirdPartyInventoryService {
+  option (service_options) = {
+    module : "third_party_inventory",
+    service_chroot_assert : INSIDE,
+  };
+
+  rpc CollectPackageMetadata(CollectPackageMetadataRequest)
+      returns (CollectPackageMetadataResponse);
+}

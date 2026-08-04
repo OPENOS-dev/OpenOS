@@ -1,0 +1,100 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.phosphorus;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus";
+
+import "chromiumos/build/api/container_metadata.proto";
+import "google/protobuf/timestamp.proto";
+import "test_platform/phosphorus/common.proto";
+
+// RunTestRequest defines the input of `phosphorus runtest`.
+message RunTestRequest {
+  Config config = 1;
+
+  // A test may use more than one DUT at once.
+  repeated string dut_hostnames = 2;
+
+  // Autotest describes the DUT-agnostic parameters of an autotest test run.
+  message Autotest {
+    // Test name as given in the control file.
+    string name = 1;
+
+    // Args to pass into the test run (meaning depends on the test).
+    string test_args = 2;
+
+    // Name to be used to display this test's output artifacts, e.g. logs,
+    // results etc. By default display_name is the same as name.
+    string display_name = 3;
+
+    // True for client-side tests, false for server-side tests.
+    bool is_client_test = 4;
+
+    // Key:value pairs added to the autoserv command. These are metadata which
+    // should not affect code execution.
+    map<string, string> keyvals = 5;
+
+    // Hostname of peer DUTs in a multi-DUTs task.
+    repeated string peer_duts = 6;
+
+    // The image storage server to fetch the image from.
+    // e.g. gs://chromeos-image-archive or gs://chromeos-releases-test
+    string image_storage_server = 7;
+  }
+
+  oneof test { Autotest autotest = 3; }
+
+  // Hard deadline for execution.
+  //
+  // All test execution should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 5;
+
+  // If set, a Docker container to use to run autoserv. The container must
+  // contain autoserv under the same path as the host (e.g.
+  // "/usr/local/autotest/server/autoserv").
+  //
+  // Results will be in the same results dir on the host.
+  //
+  // The container will be pulled if needed.
+  chromiumos.build.api.ContainerImageInfo container_image_info = 6;
+
+  // If provided limit the execution time of the suite to this
+  int64 max_execution_seconds = 7;
+
+  reserved 4;
+  reserved "environment";
+}
+
+// RunTestResponse defines the output of `phosphorus runtest`.
+message RunTestResponse {
+  // Values should be consistent with https://aip.dev/216
+  enum State {
+    // Should not be used.
+    STATE_UNSPECIFIED = 0;
+    // The test succeeded.
+    //
+    // Some test failures may not be detectable during execution. These
+    // failures will be detected when parsing results off the test logs in a
+    // later step of test_runner.
+    SUCCEEDED = 1;
+    // The test failed.
+    FAILED = 2;
+    // The test hit the requested timeout.
+    TIMED_OUT = 3;
+    // The test was aborted externally.
+    ABORTED = 4;
+  }
+
+  // `phosphorus runtest` exits with exit code 0 unless there is an
+  // infrastructure failure. When the exit code is 0, `state` indicates the
+  // best known state of the test execution (see comments on State enum).
+  State state = 1;
+
+  // Absolute path to the test results directory created by `runtest`.
+  // Must be inside config.task.results_dir (the overall results directory).
+  string results_dir = 2;
+}

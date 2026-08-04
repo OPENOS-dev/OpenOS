@@ -1,0 +1,21 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+// ReceiveRequest defines the input of `skylab_local_state receive`.
+message ReceiveRequest {
+  // The path to the directory where host info file(s) will be placed. It will
+  // be created it if does not exist yet.
+  string results_dir = 1;
+
+  int32 message_count = 2;
+}
+
+// ReceiveResponse defines the output of `skylab_local_state receive`.
+message ReceiveResponse { int32 received_messages = 1; }

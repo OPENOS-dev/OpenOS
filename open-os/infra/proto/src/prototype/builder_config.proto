@@ -1,0 +1,20 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package prototype;
+
+import "chromiumos/build/api/system_image.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/prototype";
+
+// Defines a builder from platform's point of view.
+message BuilderConfig {
+  // Whether this builder should be considered criticial.
+  bool critical = 1;
+
+  // Defines the build target for this builder config.
+  chromiumos.build.api.SystemImage.BuildTarget build_target = 2;
+}

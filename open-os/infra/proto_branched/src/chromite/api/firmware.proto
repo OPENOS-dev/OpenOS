@@ -1,0 +1,308 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+// Protos for executing firmware builder functionality.  Added in R88.
+
+// Added in R91.
+message BcsVersionInfo {
+  // ChromeOS version string, such as "R91-13844.0.0-45436".
+  string version_string = 1;
+  // Extend with fields that break down the version string.
+  // This should come from chromiumos/common.proto.
+}
+
+// Added in R91.
+message FirmwareVersionInfo {
+  // Firmware version string, such as "atlas_v2.0.923-84a1d7260".
+  string version_string = 1;
+  // Extend with fields that break down the version string.
+}
+
+// Metrics collected on every successful firmware build.
+message FwBuildMetric {
+  // Lowercase name of the firmware target built. E.g. phaser.
+  string target_name = 1;
+
+  // Lowercase name of the platform the firmware target belongs to. May be
+  // blank. E.g. octopus.
+  string platform_name = 2;
+
+  // List of firmware sections and their free and total sizes in bytes.
+  repeated FwSection fw_section = 3;
+
+  message FwSection {
+    // Region as described in FMAP or linker script.
+    // E.g. EC_RO, EC_RW, EC_NVRAM, RO_BSS, RW_BSS, SHARED_MEM.
+    string region = 1;
+
+    // The number of bytes used in this section.
+    uint32 used = 2;
+
+    // The total number of bytes available in this section. If this doesn't
+    // apply the value will be zero.
+    uint32 total = 3;
+
+    // If true, the metric will be tracked on gerrit with {region: used} info.
+    bool track_on_gerrit = 4;
+  }
+
+  // Version number components: "major.minor.tiny".
+  message Version {
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 tiny = 3;
+  }
+
+  // Optional information related to a specific target type.
+  oneof image_type { ZephyrTarget zephyr = 4; }
+
+  // Zephyr-base firmware target related build metrics.
+  message ZephyrTarget {
+    // The version of the Zephyr kernel used during build.
+    Version kernel_version = 1;
+  }
+}
+
+// A list of FW metrics collected on every successful firmware build
+// Implementation note, this is a separate message since it serves as the
+// serialization base between the build_api end point and the entry point
+// in the firmware_builder.py.
+message FwBuildMetricList { repeated FwBuildMetric value = 1; }
+
+// Metrics collect on successful firmware unit test runs.
+message FwTestMetric {
+  // Name of firmware test.
+  string name = 1;
+  // Percent of lines covered. (covered_lines / total_lines * 100)
+  float coverage_percent = 2;
+  // Number of covered lines.
+  uint32 covered_lines = 3;
+  // Total number of executable lines in files linked by this test.
+  uint32 total_lines = 4;
+}
+
+// A list of FW metrics collected on every successful firmware unit test.
+// Implementation note, this is a separate message since it serves as the
+// serialization base between the build_api end point and the entry point
+// in the firmware_builder.py.
+message FwTestMetricList { repeated FwTestMetric value = 1; }
+
+// FirmwareTarget contains a fw build target. Used by firmware_builder.py.
+message FirmwareTarget { string name = 1; }
+
+message BuildAllFirmwareRequest {
+  // Location of firmware to build call into firmware_builder.py entry point.
+  // The `build` subcommand will be called
+  chromiumos.FwLocation firmware_location = 1;
+
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 2;
+
+  // Whether to pass --code-coverage to firmware_builder.py.
+  bool code_coverage = 3;
+
+  // List of firmware targets. Optionally used by firmware_builder.py.
+  repeated FirmwareTarget firmware_targets = 4;
+
+  // Whether to pass --avb-enabled to firmware_builder.py.
+  bool avb_enabled = 5;
+}
+
+message BuildAllFirmwareResponse {
+  // Metrics collected on every successful firmware build
+  FwBuildMetricList metrics = 1;
+}
+
+message TestAllFirmwareRequest {
+  // Location of firmware to build call into firmware_builder.py entry point.
+  // The `test` subcommand will be called
+  chromiumos.FwLocation firmware_location = 1;
+
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 2;
+
+  // Whether to pass --code-coverage to firmware_builder.py.
+  bool code_coverage = 3;
+
+  // List of firmware targets. Optionally used by firmware_builder.py.
+  repeated FirmwareTarget firmware_targets = 4;
+
+  // Whether to pass --avb-enabled to firmware_builder.py.
+  bool avb_enabled = 5;
+}
+
+message TestAllFirmwareResponse {
+  // Metrics collect on successfuly firmware unit test runs
+  FwTestMetricList metrics = 1;
+}
+
+message BundleFirmwareArtifactsRequest {
+  // firmware_location was moved to artifacts.output_artifacts[].location before
+  // chromite started processing it.  We could potentially reuse this number if
+  // we want.
+  // reserved 1;
+  // reserved "firmware_location";
+
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 2;
+
+  // The output directory in which to place the bundled artifacts.
+  chromiumos.ResultPath result_path = 3;
+
+  // The artifact types requested.  The firmware_location is found in
+  // artifacts.output_artifacts[].location.
+  chromiumos.ArtifactsByService.Firmware artifacts = 4;
+
+  // The ChromeOS style version to use in FirmwareArtifactInfo.
+  // Added and deprecated in R91.
+  string bcs_version = 5 [ deprecated = true ];
+
+  // BcsVersionInfo to use in (copy into) FirmwareArtifactInfo.TarballInfo.
+  BcsVersionInfo bcs_version_info = 6;
+
+  // List of firmware targets. Optionally used by firmware_builder.py.
+  repeated FirmwareTarget firmware_targets = 7;
+}
+
+message BundleFirmwareArtifactsResponse {
+  // The artifacts that were bundled.
+  chromiumos.UploadedArtifactsByService.Firmware artifacts = 1;
+  // The directory the artifacts were written to. You need this to compute the
+  // relative filenames.
+  chromiumos.Path artifact_dir = 2;
+}
+
+// Contents of a Firmware.FIRMWARE_TARBALL_INFO artifact.
+message FirmwareArtifactInfo {
+  // TODO(crbug/1176305): Use types from
+  // chromiumos/config/api/software/firmware_config.proto
+  message TarballInfo {
+    // The ChromeOS style version.
+    // Use bcs_version_info.version_string instead.
+    // Deprecated since R91.
+    string bcs_version = 1 [ deprecated = true ];
+
+    // The name of the firmware image used by the firmware updater. Typically
+    // the device name, but can differ when a device may have two or more
+    // different firmware images.
+    string firmware_image_name = 2;
+
+    // The type of a firmware binary.
+    message FirmwareType {
+      enum Type {
+        UNKNOWN = 0;
+        MAIN = 1;
+        EC = 2;
+        PD = 3;
+        GSC = 4;
+      }
+    }
+    FirmwareType.Type type = 3;
+
+    // The firmware version from chromeos-firmwareupdate --manifest.
+    message Version {
+      int32 major = 1;
+      int32 minor = 2;
+    }
+    // Use firmware_version_info instead.
+    // Deprecated since R91.
+    Version version = 4 [ deprecated = true ];
+
+    // Added in R91.  Required.
+    FirmwareVersionInfo firmware_version_info = 5;
+
+    // The ChromeOS board associated with this artifact. I.e. brya or rex
+    // Some artifacts are shared between 2 or more boards. For example the
+    // EC firmware mtlrvpp_mchp is used by both rex and fatcat.
+    repeated string board = 6;
+
+    // Should the builder initiate a sign operation for this tarball. As of
+    // 2024-10-31, it is only used for the GSC test binaries.
+    bool request_signed_test_binary = 7;
+
+    // Indicates that this tarball should be published as the single tarball
+    // artifact in goldeneye for this version. Note that goldeneye only supports
+    // a single firmware artifact per version.
+    bool publish_to_goldeneye = 8;
+  }
+
+  message LcovTarballInfo {
+    // The type of LCOV info.
+    message LcovType {
+      enum Type {
+        UNKNOWN = 0;
+        LCOV = 1;
+      }
+    }
+    LcovType.Type type = 1;
+  }
+
+  message CoverageHtmlInfo {}
+
+  message TokenDatabaseInfo {
+    // The type of token database.
+    message TokenDatabaseType {
+      enum Type {
+        UNKNOWN = 0;
+        EC = 1;
+      }
+    }
+    TokenDatabaseType.Type type = 1;
+  }
+
+  message ObjectInfo {
+    // The name of the file.
+    string file_name = 1;
+
+    oneof firmware_object_info {
+      // Info about Firmware.FIRMWARE_TARBALL.
+      TarballInfo tarball_info = 2;
+
+      // Info about an LCOV tarball.
+      LcovTarballInfo lcov_info = 3;
+
+      // Info about html tarball.
+      CoverageHtmlInfo coverage_html = 4;
+
+      // Info about the token database.
+      TokenDatabaseInfo token_info = 5;
+    }
+  }
+  repeated ObjectInfo objects = 1;
+
+  // The value provided by BundleFirmwareArtifactsRequest, this is the version
+  // of ChromeOS used for this build.
+  // Added in R91.
+  BcsVersionInfo bcs_version_info = 2;
+}
+
+// The Firmware service.  Added in R88.
+service FirmwareService {
+  option (service_options) = {
+    module : "firmware",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Builds all of the firmware targets at specified location. Added in R90.
+  rpc BuildAllFirmware(BuildAllFirmwareRequest)
+      returns (BuildAllFirmwareResponse);
+
+  // Runs all of the firmware tests at specified location. Added in R90.
+  rpc TestAllFirmware(TestAllFirmwareRequest) returns (TestAllFirmwareResponse);
+
+  // Bundles any firmware images and other artifacts. Added in R90.
+  rpc BundleFirmwareArtifacts(BundleFirmwareArtifactsRequest)
+      returns (BundleFirmwareArtifactsResponse);
+}

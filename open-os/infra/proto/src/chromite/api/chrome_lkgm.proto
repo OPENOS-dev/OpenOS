@@ -1,0 +1,31 @@
+// Proto config.
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+// ChromeLkgmService/FindLkgm request and response messages.
+message FindLkgmRequest {
+  string chrome_src = 1;
+  string cache_dir = 2;
+  chromiumos.BuildTarget build_target = 3;
+  uint32 fallback_versions = 4;
+  bool use_external_config = 5;
+}
+
+message FindLkgmResponse {
+  string chromeos_lkgm = 1;
+  string config_name = 2;
+  string full_version = 3;
+  string error = 4;
+}
+
+service ChromeLkgmService {
+  option (service_options) = {
+    module : "chrome_lkgm",
+  };
+  rpc FindLkgm(FindLkgmRequest) returns (FindLkgmResponse);
+}

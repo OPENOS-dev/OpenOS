@@ -1,0 +1,76 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Custom option defs must be proto2 syntax.
+syntax = "proto2";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "google/protobuf/descriptor.proto";
+
+// Build API custom Service and Method options.
+
+// Config to allow chroot assertions to be made via service/method options.
+enum ChrootAssertion {
+  NO_ASSERTION = 0;
+  INSIDE = 1;
+  OUTSIDE = 2;
+}
+
+// Allows setting services or endpoints to invisible in the methods listing.
+// Services/endpoints that are hidden can still be called, they just won't
+// appear in MethodService/Get. This can be convenient for endpoints in
+// development, allowing them to be committed in progress then enabled when
+// completed, i.e. making them still invisible on branches that may have been
+// cut during that time.
+enum ListVisibility {
+  LV_NOT_SPECIFIED = 0;
+  LV_VISIBLE = 1;
+  LV_HIDDEN = 2;
+}
+
+// Allow specifying whether the ToT or branched BAPI should execute the call.
+// Defaults to branched.
+enum BranchedExecution {
+  EXECUTE_NOT_SPECIFIED = 0;
+  EXECUTE_BRANCHED = 1;
+  EXECUTE_TOT = 2;
+}
+
+// Custom Service options.
+message BuildApiServiceOptions {
+  // The name of the controller module implementing the service.
+  required string module = 1;
+  // Assert any methods in the service are run inside/outside the chroot when
+  // specified, unless overridden by the method config.
+  optional ChrootAssertion service_chroot_assert = 2;
+  // Set to LV_INVISIBLE to hide the entire service from the methods listing.
+  optional ListVisibility service_visibility = 3;
+  // Set to EXECUTE_TOT to have all methods execute in the ToT BAPI by default.
+  optional BranchedExecution service_branched_execution = 4;
+}
+
+// Custom Method options.
+message BuildApiMethodOptions {
+  // The name of the function implementing the method if different than the
+  // method name defined in the .proto.
+  optional string implementation_name = 1;
+  // Assert the method is run inside/outside the chroot when specified,
+  // overriding the service config when set.
+  optional ChrootAssertion method_chroot_assert = 2;
+  // Set to LV_INVISIBLE to hide the method from the methods listing.
+  optional ListVisibility method_visibility = 3;
+  // Set to EXECUTE_TOT to have the method execute in the ToT BAPI.
+  optional BranchedExecution method_branched_execution = 4;
+}
+
+extend google.protobuf.ServiceOptions {
+  optional BuildApiServiceOptions service_options = 55000;
+}
+
+extend google.protobuf.MethodOptions {
+  optional BuildApiMethodOptions method_options = 55000;
+}

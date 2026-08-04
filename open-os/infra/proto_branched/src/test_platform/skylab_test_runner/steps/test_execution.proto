@@ -1,0 +1,39 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner.steps;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps";
+
+import "test_platform/skylab_test_runner/config.proto";
+import "test_platform/skylab_test_runner/request.proto";
+import "test_platform/skylab_test_runner/cft_request.proto";
+import "test_platform/skylab_test_runner/common_config.proto";
+import "test_platform/skylab_test_runner/cros_test_runner_request.proto";
+import "chromiumos/test/api/trv2_dynamic.proto";
+
+// RunTestsRequest is the input for the Go-based replacement of test_runner.
+message RunTestsRequest {
+  test_platform.skylab_test_runner.Request request = 1;
+  test_platform.skylab_test_runner.Config config = 2;
+  test_platform.skylab_test_runner.CFTTestRequest cft_test_request = 3;
+  test_platform.skylab_test_runner.CommonConfig common_config = 4;
+  test_platform.skylab_test_runner.CrosTestRunnerRequest
+      cros_test_runner_request = 5;
+  chromiumos.test.api.CrosTestRunnerDynamicRequest
+      cros_test_runner_dynamic_request = 6;
+  bool is_al_run = 7;
+}
+
+// RunTestsResponse is the output from the Go-based replacement of test_runner.
+message RunTestsResponse {
+  // A markdown string that should be used in Buildbucket as a summary of the
+  // test_runner build.
+  string error_summary_markdown = 1;
+
+  // compressed result that will be read by CTP.
+  string compressed_result = 2 [ json_name = "compressed_result" ];
+}

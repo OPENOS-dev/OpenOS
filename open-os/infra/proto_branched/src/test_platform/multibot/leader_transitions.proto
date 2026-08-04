@@ -1,0 +1,50 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.multibot;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/multibot";
+
+import "test_platform/multibot/common.proto";
+
+// Messages for state transitions for the leader task.
+
+// LeaderTransitionMessage is used internally by the leader for all state
+// transitions
+message LeaderTransitionMessage {
+  enum LeaderState {
+    STATE_UNDEFINED = 0x00;
+    // Leader task has started executing and scheduling followers.
+    STATE_SCHEDULING = 0x10;
+    // Leader task is executing prejob work
+    STATE_RUNNING_PREJOB = 0x20;
+    // Leader task is waiting and collection host info from follower tasks
+    STATE_WAITING_FOR_FOLLOWERS = 0x30;
+    // Leader task is sending 'Payload Ready' messages to followers. It will
+    // automatically enter this state when it has gathered all host info and
+    // automatically exits it after sending the message.
+    STATE_NOTIFYING_FOLLOWERS = 0x40;
+    // Leader task is running payload; followers are waiting.
+    STATE_RUNNING_PAYLOAD = 0x50;
+    // Leader task is running any necessary cleanup, after which it will
+    // terminate.
+    STATE_CLEANING = 0x60;
+  }
+
+  LeaderState new_state = 1;
+
+  // Used only for the Waiting for Followers steps, contains the number of
+  // followers still required and all gathered info for the ones already seen
+  FollowersState follower_gathering = 2;
+}
+
+// State of followers still needed and information about those already retrieved
+message FollowersState {
+  // Number of follower tasks the leader is still waiting for
+  int32 waiting_for_followers = 1;
+
+  HostInfoStore followers_heard = 2;
+}

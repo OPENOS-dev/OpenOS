@@ -1,0 +1,46 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.result_flow;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow";
+
+import "test_platform/result_flow/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// PublishRequest defines the input of `result_flow publish`.
+message PublishRequest {
+  // Subscribers call Buildbucket to fetch the build information via this ID.
+  int64 build_id = 1;
+  // Should not be used, as the parent CTP build may contain multiple
+  // TestPlanRuns. Use parent_uid below.
+  int64 parent_build_id = 2 [ deprecated = true ];
+  // PubSub endpoint to publish a CTP build.
+  PubSubConfig ctp = 3;
+  // PubSub endpoint to publish a test runner build.
+  PubSubConfig test_runner = 4;
+  // Hard deadline for execution.
+  //
+  // Publish command should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 5;
+  // True if subscribers should fetch the build's final status from
+  // Buildbucket. The message may be earlier than the build's completion. If
+  // the Buildbucket's response does not contain its final status, subscribers
+  // should retry. Otherwise, subscribers should expect an intermediate status
+  // of the build.
+  bool should_poll_for_completion = 6;
+  // The UID of the parent test plan run, which kicks off this test run.
+  // Placed inside the pubsub message for test_runner builds.
+  string parent_uid = 7;
+}
+
+// PublishRequest defines the output of `result_flow publish`.
+message PublishResponse {
+  // `result_flow publish` exits with exit code 0 unless there is an
+  // infrastructure failure. When the exit code is 0, `state` indicates the
+  // best known state of the publish execution (see comments on State enum).
+  State state = 1;
+}

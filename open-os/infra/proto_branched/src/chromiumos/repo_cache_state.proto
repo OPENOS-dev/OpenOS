@@ -1,0 +1,29 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+message RepoState {
+  // The state of the tree.
+  enum State {
+    // Unknown: Treated as if it was DIRTY.
+    STATE_UNSPECIFIED = 0;
+    // Clean.  The tree is clean.
+    STATE_CLEAN = 1;
+    // Dirty.  The tree is in the process of being updated.
+    STATE_DIRTY = 2;
+    // Recovery.  Recovery from DIRTY is in progress.
+    STATE_RECOVERY = 3;
+  }
+  State state = 1;
+  // The checked out branch.
+  string manifest_branch = 2;
+  // The manifest URL.
+  string manifest_url = 3;
+}

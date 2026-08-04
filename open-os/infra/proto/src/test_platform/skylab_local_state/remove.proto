@@ -1,0 +1,19 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+import "test_platform/skylab_local_state/common.proto";
+
+// RemoveRequest defines the input of `skylab_local_state remove`.
+message RemoveRequest {
+  Config config = 1;
+
+  // Swarming run ID. Used in the results directory name.
+  string run_id = 2;
+}

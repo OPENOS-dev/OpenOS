@@ -1,0 +1,201 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// Defines a type of bot associated with a bot group.
+message BotType {
+  // The string bot "shirt size" to be requested for the group.
+  string bot_size = 1;
+  // The number of cores per bot. Will be used to limit quota usage.
+  float cores_per_bot = 2;
+  // Estimated hourly cost.
+  float hourly_cost = 3;
+  // Amount of memory in GB allocated to bot.
+  float memory_gb = 4;
+}
+
+// Defines Swarming dimensions associated with a bot group.
+message SwarmingDimension {
+  // Dimesion name
+  string name = 1;
+  // Dimension value
+  string value = 2;
+  // Dimension multiple values
+  repeated string values = 3;
+}
+
+// Bot Policy to apply to a bot group.
+message BotPolicy {
+  // Bot group controlled by this policy, like, 'cq', 'postsubmit',...
+  string bot_group = 1;
+  // Resource group for quota and cost tracking.
+  string resource_group = 11;
+  // The type of bot to be requested.
+  BotType bot_type = 2;
+  // Scaling restriction specifies the limits on how the group can be
+  // expanded or reduced.
+  message ScalingRestriction {
+    // Hard limit on the maximum number of bots to request.
+    int32 bot_ceiling = 1;
+    // Hard limit on the minimum number of bots to request.
+    int32 bot_floor = 2;
+    // Soft limit on the number of idle bots to maintain.
+    int32 min_idle = 3;
+    // Hard minimum limit on the absolute delta between request amount and
+    // existing bot count.
+    int32 step_size = 4;
+    // Static number to request when demand is not accessible.
+    int32 bot_fallback = 5;
+  }
+  ScalingRestriction scaling_restriction = 3;
+
+  // A set of restrictions on the regions and how to distribute bots
+  // between them.
+  message RegionRestriction {
+    // Region of the bot sub-group.
+    string region = 1;
+    // Specific prefix of the bot sub-group.
+    string prefix = 2;
+    // Weight to be applied to this sub-group. The number of bots requested
+    // from each region will be proportional to the weight unless a
+    // quota limit is violated.
+    float weight = 3;
+  }
+  repeated RegionRestriction region_restrictions = 4;
+  // A set of dimensions used to validate current Swarming allocations.
+  repeated SwarmingDimension swarming_dimensions = 5;
+
+  // Specifies mode for a bot policy
+  enum Mode {
+    UNKNOWN_MODE = 0;
+    // Collect stats only for a bot group.
+    MONITORED = 1;
+    // Generate configuration updates for bot group.
+    CONFIGURED = 2;
+  }
+  // Set whether a bot group should be configured or only monitored.
+  Mode policy_mode = 6;
+  // Number of hours to lookback for Swarming stats.
+  sint32 lookback_hours = 7;
+  // Specifies mode for a bot scaling
+  enum BotScalingMode {
+    UNKNOWN_SCALING_MODE = 0;
+    // Scale up or down bots by the step size associated with bot group..
+    STEPPED = 1;
+    // Scale up or down bots by the demand on the bot group.
+    // For use on smaller bot groups that are susceptible to smaller increases.
+    DEMAND = 2;
+    // Scale down bots by the step size associated with bot group.
+    // Scale up bots by the demand on the bot group.
+    STEPPED_DECREASE = 3;
+  }
+  // Set the scaling approach for the bot group being monitored.
+  BotScalingMode scaling_mode = 8;
+  // Swarming instance name:  chromeos-swarming.appspot.com
+  string swarming_instance = 9;
+  // Application namespace within Swarming instance.
+  string application = 10;
+}
+
+// Configures the root message.
+message BotPolicyCfg {
+  // All bot policies.
+  repeated BotPolicy bot_policies = 1;
+}
+
+// Reduced version of BotPolicy meant for output properties
+message ReducedBotPolicy {
+  // Bot group controlled by this policy, like, 'cq', 'postsubmit',...
+  string bot_group = 1;
+  // The type of bot to be requested.
+  BotType bot_type = 2;
+  // Set whether a bot group should be configured or only monitored.
+  BotPolicy.Mode policy_mode = 3;
+}
+
+// Configures the root message.
+message ReducedBotPolicyCfg {
+  // All bot policies in reduced form.
+  repeated ReducedBotPolicy bot_policies = 1;
+}
+
+// Scaling Action that resulted because of bot demand.
+message ScalingAction {
+  // Bot group modified by the action. Should be the same as BotPolicy.
+  string bot_group = 1;
+  // The type of bot requested. Should be the same as BotPolicy.
+  BotType bot_type = 2;
+  // Specifies if there has been a change since the last iteration.
+  enum Actionable {
+    UNSPECIFIED = 0;
+    // There is a change since last time.
+    YES = 1;
+    // There is no change since last time.
+    NO = 2;
+  }
+  // Whether there has been a change in the number of bots requested
+  // for this bot group. See step_size for more info.
+  Actionable actionable = 3;
+  // Total number of bots requested for the group.
+  int32 bots_requested = 4;
+  // How the bot requests are distributed between regions & prefixes.
+  message RegionalAction {
+    // Region of the bot sub-group.
+    string region = 1;
+    // Specific prefix of the bot sub-group.
+    string prefix = 2;
+    // Number of bots requested from the sub-group.
+    int32 bots_requested = 3;
+  }
+  repeated RegionalAction regional_actions = 5;
+  // Estimated savings based on current run.
+  // Based on current number of bots compared against the max.
+  float estimated_savings = 6;
+  // Minimum number of bots to keep alive for bot group.
+  // Repeated for display/reporting purposes
+  int32 bot_min = 7;
+  // Hard limit on the maximum number of bots that can be requested.
+  // Repeated for display/reporting purposes
+  int32 bot_max = 8;
+  // Application namespace within Swarming instance.
+  string application = 9;
+}
+
+// Resource utilization based on regional assignment.
+message ResourceUtilization {
+  // Region of the bot sub-group.
+  string region = 1;
+  // Number of VMs allocated across all bot groups.
+  int32 vms = 2;
+  // Number of CPUs allocated across all bot groups.
+  float cpus = 3;
+  // Amount of memory in GB allocated across all bot groups.
+  float memory_gb = 4;
+  // Amount of disk in GB allocated across all bot groups.
+  float disk_gb = 5;
+  // NUmber of CPUs that could be allocated based on max values.
+  float max_cpus = 6;
+}
+
+// Application utilization, per application at a
+// regional assignment.
+message ApplicationUtilization {
+  // Application namespace to associate resources.
+  string application = 1;
+  repeated ResourceUtilization resource_utilization = 2;
+}
+
+// All the actions that will be executed by RoboCrop.
+message RoboCropAction {
+  // List of an action per bot group scaled by RoboCrop.
+  repeated ScalingAction scaling_actions = 1;
+  repeated ResourceUtilization resource_utilization = 2;
+  repeated ApplicationUtilization appl_resource_utilization = 3;
+}

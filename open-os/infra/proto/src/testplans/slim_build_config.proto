@@ -1,0 +1,19 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+import "testplans/common.proto";
+
+// Configures the scheduling of slim CQ builds when the triggering CLs only
+// affect paths which are eligible for slim builds.
+message SlimBuildCfg {
+  // File patterns that are eligible for slim builds.
+  // See documentation in the FilePattern message.
+  repeated FilePattern slim_eligible_file_patterns = 1;
+}

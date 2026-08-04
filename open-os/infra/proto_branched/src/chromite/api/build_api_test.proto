@@ -1,0 +1,174 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+import "chromiumos/metrics.proto";
+
+// Messages used to test build_api message and service handling.
+
+message NestedPath { chromiumos.Path path = 1; }
+
+enum TestEnum {
+  TEST_ENUM_UNSPECIFIED = 0;
+  TEST_ENUM_FOO = 1;
+  TEST_ENUM_BAR = 2;
+  TEST_ENUM_BAZ = 3;
+}
+
+message MultiFieldMessage {
+  int32 id = 1;
+  string name = 2;
+  bool flag = 3;
+  TestEnum test_enum = 4;
+}
+
+// Simple input message.
+message TestRequestMessage {
+  string id = 1;
+  // Chroot message for parsing and automatic chroot re-execution testing.
+  chromiumos.Chroot chroot = 2;
+  // Path and ResultPath messages for insertion/extraction testing.
+  chromiumos.Path path = 3;
+  chromiumos.Path another_path = 4;
+  NestedPath nested_path = 5;
+  chromiumos.ResultPath result_path = 6;
+  // BuildTarget messages for parsing tests.
+  chromiumos.BuildTarget build_target = 7;
+  repeated chromiumos.BuildTarget build_targets = 8;
+  // For SyncedDir syncing tests.
+  chromiumos.SyncedDir synced_dir = 9;
+  repeated chromiumos.SyncedDir synced_dirs = 10;
+  // Repeated message with multiple fields.
+  repeated MultiFieldMessage messages = 11;
+  TestEnum test_enum = 12;
+  repeated TestEnum test_enums = 13;
+  int32 number = 14;
+  repeated int32 numbers = 15;
+  // RemoteexecConfig message for testing remote execution values parsing.
+  chromiumos.RemoteexecConfig remoteexec_config = 16;
+}
+
+// Simple output message.
+message TestResultMessage {
+  string result = 1;
+  // Path messages for ResultPath testing.
+  chromiumos.Path artifact = 2;
+  NestedPath nested_artifact = 3;
+  repeated chromiumos.Path artifacts = 4;
+  repeated chromiumos.MetricEvent events = 5;
+}
+
+// The test service.
+service TestApiService {
+  // Mocking the method returns means we don't have an implementation of this
+  // module, but we do require it.
+  option (service_options) = {
+    module : "build_api_test",
+  };
+
+  // Method that has input and output messages.
+  rpc InputOutputMethod(TestRequestMessage) returns (TestResultMessage);
+  // Method name override.
+  rpc RenamedMethod(TestRequestMessage) returns (TestResultMessage) {
+    option (method_options) = {
+      implementation_name : "CorrectName",
+    };
+  }
+  rpc HiddenMethod(TestRequestMessage) returns (TestResultMessage) {
+    option (method_options) = {
+      method_visibility : LV_HIDDEN,
+    };
+  }
+}
+
+// Inside chroot service.
+service InsideChrootApiService {
+  // Mocking the method returns means we don't have an implementation of this
+  // module, but we do require it.
+  option (service_options) = {
+    module : "build_api_test",
+    service_chroot_assert : INSIDE,
+  };
+
+  // No override of service level inside assertion.
+  rpc InsideServiceInsideMethod(TestRequestMessage) returns (TestResultMessage);
+
+  // Override service level inside assertion with outside assertion.
+  rpc InsideServiceOutsideMethod(TestRequestMessage)
+      returns (TestResultMessage) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+}
+
+// Outside chroot service.
+service OutsideChrootApiService {
+  // Mocking the method returns means we don't have an implementation of this
+  // module, but we do require it.
+  option (service_options) = {
+    module : "build_api_test",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // No override of service level outside assertion.
+  rpc OutsideServiceOutsideMethod(TestRequestMessage)
+      returns (TestResultMessage);
+
+  // Override service level outside assertion with inside assertion.
+  rpc OutsideServiceInsideMethod(TestRequestMessage)
+      returns (TestResultMessage) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  }
+}
+
+service HiddenService {
+  option (service_options) = {
+    module : "build_api_test",
+    service_chroot_assert : OUTSIDE,
+    service_visibility : LV_HIDDEN,
+  };
+
+  rpc HiddenMethod(TestRequestMessage) returns (TestResultMessage);
+}
+
+service TotExecutionService {
+  option (service_options) = {
+    module : "build_api_test",
+    service_branched_execution : EXECUTE_TOT,
+    service_chroot_assert : OUTSIDE,
+  };
+
+  rpc TotServiceTotMethod(TestRequestMessage) returns (TestResultMessage);
+
+  // This is not a valid combination.
+  rpc TotServiceTotMethodInside(TestRequestMessage)
+      returns (TestResultMessage) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  }
+
+  rpc TotServiceBranchedMethod(TestRequestMessage) returns (TestResultMessage) {
+    option (method_options) = {
+      method_branched_execution : EXECUTE_BRANCHED,
+    };
+  }
+
+  rpc TotServiceBranchedMethodInside(TestRequestMessage)
+      returns (TestResultMessage) {
+    option (method_options) = {
+      method_branched_execution : EXECUTE_BRANCHED,
+    };
+  }
+}

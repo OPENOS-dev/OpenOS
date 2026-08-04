@@ -1,0 +1,59 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+import "test_platform/taskstate.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+// Defines a config for tests to be retried automatically.
+message SuiteRetryCfg {
+  // Tag defines which suite this config set should apply.
+  string test_suite = 1;
+
+  // Scenario defines the test failure conditions that trigger retry.
+  message Scenario {
+    // Name of the test.
+    string test_name = 1;
+
+    // Failure reason/summary. This field is a substring of the actual error
+    // message. Ex: 'SSH connection failed' or 'DUT rebooted'.
+    string reason = 2;
+
+    // Verdict of the test run.
+    test_platform.TaskState.Verdict verdict = 3;
+
+    // Should the DUT/VM restart before retry?
+    bool requires_restart = 4;
+  }
+
+  // Scenarios to retry for each build_target.
+  repeated Scenario suite_scenarios = 3;
+
+  message BuilderScenario {
+    // Tag defines which builders this config set should apply.
+    repeated string builders = 1;
+
+    repeated Scenario scenarios = 2;
+  }
+  repeated BuilderScenario builder_scenarios = 4;
+
+  // Reason scenario defines test failure conditions irrespective of which test.
+  message ReasonScenario {
+    // Failures reason.
+    string reason = 1;
+
+    // Verdict of the test run.
+    test_platform.TaskState.Verdict verdict = 2;
+
+    // Should the DUT/VM restart before retry?
+    bool requires_restart = 3;
+  }
+
+  // ReasonScenarios to retry for the suite.
+  repeated ReasonScenario reason_scenarios = 5;
+}

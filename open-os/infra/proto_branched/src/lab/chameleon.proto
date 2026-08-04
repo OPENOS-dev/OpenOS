@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab";
+
+import "lab/rpm.proto";
+
+// Next Tag: 8
+message Chameleon {
+  reserved 1;
+  repeated ChameleonType chameleon_peripherals = 3;
+  // Indicate if there's audio_board in the chameleon.
+  bool audio_board = 2;
+
+  string hostname = 4;
+
+  // Remote Power Management for chameleon device.
+  OSRPM rpm = 5;
+
+  // Indicate the audio box jack plugger state
+  // Next Tag: 4
+  enum AudioBoxJackPlugger {
+    AUDIOBOX_JACKPLUGGER_UNSPECIFIED = 0;
+    AUDIOBOX_JACKPLUGGER_WORKING = 1;
+    AUDIOBOX_JACKPLUGGER_BROKEN = 2;
+    AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE = 3;
+  }
+  AudioBoxJackPlugger audiobox_jackplugger = 6;
+
+  // Indicate the trrs types
+  // Next Tag: 3
+  enum TRRSType {
+    TRRS_TYPE_UNSPECIFIED = 0;
+    TRRS_TYPE_CTIA = 1;
+    TRRS_TYPE_OMTP = 2;
+    // Refer "go/wiki/Phone_connector_(audio)#TRRS_standards" for more types
+  }
+  // Indicate the type of audio cable
+  TRRSType trrs_type = 7;
+}
+
+// Next Tag: 12
+enum ChameleonType {
+  reserved 1, 6 to 8;
+  CHAMELEON_TYPE_INVALID = 0;
+  CHAMELEON_TYPE_DP = 2;
+  CHAMELEON_TYPE_DP_HDMI = 3 [ deprecated = true ];
+  CHAMELEON_TYPE_VGA = 4 [ deprecated = true ];
+  CHAMELEON_TYPE_HDMI = 5;
+  CHAMELEON_TYPE_V2 = 9;
+  CHAMELEON_TYPE_V3 = 10;
+  CHAMELEON_TYPE_RPI = 11;
+}

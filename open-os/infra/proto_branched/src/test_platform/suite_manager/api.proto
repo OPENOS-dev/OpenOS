@@ -1,0 +1,222 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Define a schema for debugging events in kron.
+syntax = "proto3";
+
+package test_platform.suite_manager;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_manager";
+
+import "testplans/suite_scheduler.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/any.proto";
+
+// The `Status` type defines a logical error model that is suitable for
+// different programming environments, including REST APIs and RPC APIs. It is
+// used by [gRPC](https://github.com/grpc). Each `Status` message contains
+// three pieces of data: error code, error message, and error details.
+//
+// You can find out more about this error model and how to work with it in the
+// [API Design Guide](https://cloud.google.com/apis/design/errors).
+//
+// TODO(b/341171108): This type is from google/rpc/status.proto but is brought
+// in manually due to proto generation errors. Remove once those are resolved.
+message Status {
+  // The status code, which should be an enum value of
+  // [google.rpc.Code][google.rpc.Code].
+  int32 code = 1;
+
+  // A developer-facing error message, which should be in English. Any
+  // user-facing error message should be localized and sent in the
+  // [google.rpc.Status.details][google.rpc.Status.details] field, or localized
+  // by the client.
+  string message = 2;
+
+  // A list of messages that carry the error details.  There is a common set of
+  // message types for APIs to use.
+  repeated google.protobuf.Any details = 3;
+}
+
+message GetConfigRequest { string name = 1; }
+message GetConfigResponse {
+  Status status = 1;
+  testplans.SchedulerConfig config = 2;
+}
+
+message FetchConfigsRequest {
+  message Filters {
+    string name = 1;
+    string suite = 2;
+    string pool = 3;
+    testplans.SchedulerConfig.LaunchCriteria.LaunchProfile launch_profile = 4;
+    repeated testplans.Branch target_branches = 5;
+  }
+
+  // These fields will be treated as ANDs. Populate accordingly under that
+  // assumption. An empty set of filters functionally means fetch all.
+  Filters filters = 1;
+}
+message FetchConfigsResponse {
+  Status status = 1;
+  repeated testplans.SchedulerConfig configs = 2;
+}
+
+message AddConfigRequest {
+  string config_name = 1;
+  testplans.SchedulerConfig config_payload = 2;
+}
+message AddConfigResponse { Status status = 1; }
+
+message DeleteConfigRequest { string config_name = 1; }
+message DeleteConfigResponse { Status status = 1; }
+
+message UpdateConfigRequest {
+  // config_name is included as a redundant field so that in the case of a
+  // rename, we know which config to adjust.
+  string config_name = 1;
+  testplans.SchedulerConfig config_payload = 2;
+  google.protobuf.FieldMask update_mask = 3;
+}
+message UpdateConfigResponse { Status status = 1; }
+
+message BuildTarget {
+  string board = 1;
+  repeated string models = 2;
+  repeated string variants = 3;
+}
+
+message FetchBuildTargetsRequest {
+  message Filters {
+    string board = 1;
+    string model = 2;
+    bool include_variants = 3;
+  }
+  // These fields will be treated as ANDs. Populate accordingly under that
+  // assumption. An empty set of filters functionally means fetch all.
+  Filters filters = 1;
+}
+message FetchBuildTargetsResponse {
+  Status status = 1;
+  repeated BuildTarget build_targets = 2;
+}
+
+message EstimateImpactRequest {
+  testplans.SchedulerConfig config = 1;
+
+  // If this field is populated then the service will return the difference
+  // between the two using the following logic <config impact> - <compare_config
+  // impact> = diff. This is expected to be used when testing the impact of
+  // changes to an existing config.
+  testplans.SchedulerConfig compare_config = 2;
+}
+message EstimateImpactResponse {
+  Status status = 1;
+  oneof impact {
+    int64 impact_hours = 2;
+    int64 impact_hours_difference = 3;
+  }
+}
+
+message BatchEstimateImpactRequest {
+  message Request {
+    // request_uuid will be used to identify each requests so that the order of
+    // response does not affect useability. These values must be unique.
+    string request_uuid = 1;
+    testplans.SchedulerConfig config = 2;
+
+    // If this field is populated then the service will return the difference
+    // between the two using the following logic <config impact> -
+    // <compare_config impact> = diff. This is expected to be used when testing
+    // the impact of changes to an existing config.
+    testplans.SchedulerConfig compare_config = 3;
+  }
+  repeated Request requests = 1;
+}
+message BatchEstimateImpactResponse {
+  Status status = 1;
+
+  message Reponse {
+    // request_uuid will link the reponses to the requests.
+    string request_uuid = 1;
+    oneof impact {
+      int64 impact_hours = 2;
+      int64 impact_hours_difference = 3;
+    }
+  }
+  repeated Reponse reponses = 2;
+}
+
+// TODO(b/339518338): Implement after a new control flow is worked out for
+// proposal storage and accessing.
+message ProposeChangeRequest {
+  string config_name = 1;
+  testplans.SchedulerConfig config = 2;
+
+  string author = 3;
+}
+// TODO(b/339518338): Implement after a new control flow is worked out for
+// proposal storage and accessing.
+message ProposeChangeResponse {
+  Status status = 1;
+  string uuid = 2;
+}
+
+// TODO(b/339518338): Implement after a new control flow is worked out for
+// proposal storage and accessing.
+message UpdateProposalRequest {}
+// TODO(b/339518338): Implement after a new control flow is worked out for
+// proposal storage and accessing.
+message UpdateProposalResponse {
+  Status status = 1;
+  string uuid = 2;
+}
+
+service SuiteManagerService {
+  // GetConfig returns a singular config that exactly matches the name provided
+  // in the request.
+  rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
+
+  // FetchConfigs returns SuiteScheduler configs from long term storage based
+  // on the filter parameters provided.
+  rpc FetchConfigs(FetchConfigsRequest) returns (FetchConfigsResponse);
+
+  // AddConfig adds a new config to long term storage.
+  //
+  // NOTE: Duplicate config names are not allowed.
+  rpc AddConfig(AddConfigRequest) returns (AddConfigResponse);
+
+  // DeleteConfig removes a config from long term storage
+  rpc DeleteConfig(DeleteConfigRequest) returns (DeleteConfigResponse);
+
+  // UpdateConfig updates fields in a config already in long term storage.
+  rpc UpdateConfig(UpdateConfigRequest) returns (UpdateConfigResponse);
+
+  // FetchBuildTargets returns a list of build targets according to the current
+  // lab_config.cfg.
+  rpc FetchBuildTargets(FetchBuildTargetsRequest)
+      returns (FetchBuildTargetsResponse);
+
+  // EstimateImpact returns the estimated impact of a config in hours. If
+  // multiple configs are given then it returns the difference between the two
+  // using the logic:  <config impact> - <compare_config impact> = diff.
+  rpc EstimateImpact(EstimateImpactRequest) returns (EstimateImpactResponse);
+
+  // BatchEstimateImpact returns the estimated impact of a config in hours. If
+  // multiple configs are given then it returns the difference between the two
+  // using the logic:  <config impact> - <compare_config impact> = diff
+  rpc BatchEstimateImpact(BatchEstimateImpactRequest)
+      returns (BatchEstimateImpactResponse);
+
+  // TODO(b/339518338): Implement after a new control flow is worked out for
+  // proposal storage and accessing.
+  //
+  // NOTE: This service should disallow multiple open proposals for a single
+  // config.
+  rpc ProposeChange(ProposeChangeRequest) returns (ProposeChangeResponse);
+
+  // TODO(b/339518338): Implement after a new control flow is worked out for
+  // proposal storage and accessing.
+  rpc UpdateProposal(UpdateProposalRequest) returns (UpdateProposalResponse);
+}

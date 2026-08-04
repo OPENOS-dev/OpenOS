@@ -1,0 +1,48 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Proto config.
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+// TODO(https://crbug.com/1151028): fix dependency for chromite protoc
+// import "chromiumos/config/api/test/metadata/v1/metadata.proto";
+
+message AssembleRequest {
+  // The chroot used to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+
+  // Target directory for the RTD dirs.
+  chromiumos.ResultPath target_dir = 2;
+}
+
+message AssembleResponse { repeated RemoteTestDriver remote_test_drivers = 1; }
+
+message RemoteTestDriver {
+  // A folder containing the files needed to build a docker image for
+  // the Remote Test Driver. This folder will contain a Dockerfile in addition
+  // to test harness(es) and content. It will be such that `gcloud builds
+  // submit` can be invoked in the directory.
+  chromiumos.Path build_context = 1;
+  // Metadata about the RTD.
+  // TODO(https://crbug.com/1151028): fix dependency for chromite protoc
+  // repeated chromiumos.config.api.test.metadata.v1.Specification
+  // specifications = 2;
+}
+
+service RemoteTestDriverService {
+  option (service_options) = {
+    module : "remote_test_driver",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Build RTDs (Tauto, Tast, etc.) and put them into a folder containing
+  // everything needed to build a Dockerized RTD image. The caller can then do a
+  // docker build from inside that directory.
+  rpc Assemble(AssembleRequest) returns (AssembleResponse);
+}

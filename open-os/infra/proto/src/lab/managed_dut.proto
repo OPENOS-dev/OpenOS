@@ -1,0 +1,82 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab";
+
+import "google/protobuf/timestamp.proto";
+
+import "chromiumos/test/api/dut_attribute.proto";
+import "chromiumos/storage_path.proto";
+import "chromiumos/config/api/mfg_config_id.proto";
+
+message HistoryRecord {
+  ManagedDut.ManagedState state = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  string note = 4;
+  string lease_owner = 5;
+}
+
+message Lock { string reason = 1; }
+
+message Pool { string name = 1; }
+
+message NetworkIdentifier {
+  oneof identifier {
+    string ip_address = 1;
+    string hostname = 2;
+  }
+}
+
+message ManagedDut {
+
+  enum ManagedState {
+    UNKNOWN = 0;
+    READY = 1; // AIP says use ACTIVE - but in this context I disagree.
+    PROVISION = 2;
+    VERIFY = 3;
+    LEASED = 4;
+    FAILED = 5;
+    RESET = 6;
+  }
+
+  NetworkIdentifier name =
+      1; // Hostname or IP address or other network identifier.
+  string display_name = 2;
+  // Arbitrary test fields describing characteristics of a Dut that are used
+  // Tests, specify similar tags for test constraints e.g. touchscreen these
+  // tags are used to match a Dut to a test.
+  chromiumos.test.api.DutAttributeList tag = 3;
+  // Pools are just arbitrary groupings of Duts useful for test scheduling.
+  // for example allowing a lab to split half the devices for one particular
+  // test suite and the rest for a different.
+  // Pools are really just arbitrary strings and could be in the tags field,
+  // but for better user administration of pools it is better to keep them
+  // separate.
+  repeated Pool pool = 4;
+  // Tags that detail if a Dut has a particular periheral or not, example
+  // servo.   These again are kept separate from generic tags for ease of
+  // administration.
+  chromiumos.test.api.DutAttributeList peripheral =
+      5; // Labels that users configure for servo etc.
+  chromiumos.config.api.MfgConfigId mfg_config_id = 6;
+  chromiumos.StoragePath provisioned_build = 7; // provision_service.proto
+  ManagedState state = 8;
+  Lock lock = 9; // A lock can be in any state, so it is a separate field.
+  string operator_notes = 10; // Lock reason or any other free text information.
+  string provisioned_firmware_version = 11; // Current Dut RW firmware.
+  repeated HistoryRecord history =
+      12; // State changes over time.
+          // DUT's that are associated ( close by ) this DUT, the string should
+          // be a network identifier and the DUT should be known to the DUT
+          // Manager. Schedulers that wish to give the assoiciated Dut to a test
+          // must obtain a lease on that Dut.
+  repeated NetworkIdentifier associated_dut = 13;
+  bool is_associated_dut =
+      14; // Associated DUT's should be excluded from general lease requests ?
+}

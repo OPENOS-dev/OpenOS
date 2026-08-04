@@ -1,0 +1,31 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+// Config defines configuration parameters of skylab_local_state.
+message Config {
+  // Admin service host, e.g. foo.appspot.com.
+  string admin_service = 1;
+
+  // Autotest directory on the drone, e.g. "/usr/local/autotest".
+  string autotest_dir = 2;
+
+  // Inventory V2 service host, e.g. cros-lab-inventory.appspot.com.
+  string cros_inventory_service = 3;
+
+  // Unified Fleet System service host, e.g. ufs.api.cr.dev.
+  string cros_ufs_service = 4;
+
+  // Swarming bot prefix to be used on the drone
+  string bot_prefix = 5;
+
+  // Unified Fleet System service host, e.g. `os`, `os-partner`
+  // If left empty, should be handled as if it were `os`
+  string ufs_namespace = 6;
+}

@@ -1,0 +1,22 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package uprev.build_parallels_image;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/uprev/build_parallels_image";
+
+import "uprev/build_parallels_image/common.proto";
+
+// SaveRequest defines the input of `phosphorus build-parallels-image-save`.
+message SaveRequest {
+  Config config = 1;
+
+  // DUT hostname.
+  string dut_name = 2;
+
+  // E.g. "needs_repair", "ready" etc.
+  string dut_state = 3;
+}

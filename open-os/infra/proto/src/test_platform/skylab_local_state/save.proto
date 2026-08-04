@@ -1,0 +1,37 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+import "test_platform/skylab_local_state/common.proto";
+
+// SaveRequest defines the input of `skylab_local_state save`.
+message SaveRequest {
+  Config config = 1;
+
+  // The path to the directory where the host info file is located.
+  string results_dir = 2;
+
+  // DUT hostname, used in the name of the host info file.
+  string dut_name = 3;
+
+  // DUT ID, deprecated in skylab_local_state.
+  string dut_id = 4;
+
+  // E.g. "needs_repair", "ready" etc.
+  string dut_state = 5;
+
+  // If true, mark results directory as ready for offload.
+  bool seal_results_dir = 6;
+
+  // Hostname of peer DUTs in a multi-DUTs task.
+  repeated string peer_duts = 7;
+
+  // Special repair-requests to enforce repair actions.
+  repeated string repair_requests = 8;
+}

@@ -1,0 +1,179 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner;
+
+import "test_platform/common/task.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner";
+
+// Result defines the output format of skylab_test_runner.
+// It contains a summary of test results from a single Swarming task run.
+message Result {
+  // Autotest describes the result summary for the case of autotest harness.
+  message Autotest {
+    // TestCase describes the result of an individual test case.
+    // A single control file may correspond to multiple test cases.
+    // NEXT ID: 6
+    message TestCase {
+      // Test case name as it appears in status.log.
+      string name = 1;
+
+      // Verdict defines the test case result to be reported.
+      // NEXT ID: 6
+      enum Verdict {
+        // Status was not specificed.
+        VERDICT_UNDEFINED = 0;
+
+        // The test has passed.
+        VERDICT_PASS = 1;
+
+        // The test has failed.
+        VERDICT_FAIL = 2;
+
+        // The test was skipped before execution.
+        VERDICT_NO_VERDICT = 3;
+
+        // The test has crashed during exectuion due to an error.
+        VERDICT_ERROR = 4;
+
+        // The test has started but was aborted before finishing.
+        VERDICT_ABORT = 5;
+      }
+
+      Verdict verdict = 2;
+
+      // A one line human readable description of what happened during test
+      // case execution (e.g. error/warning message). Not intended to be machine
+      // parseable. There's no guarantee that a given root cause will always
+      // resolve to the same summary.
+      string human_readable_summary = 3;
+
+      // The start time of the test case run.
+      google.protobuf.Timestamp start_time = 4;
+
+      // The end time of the test case run.
+      google.protobuf.Timestamp end_time = 5;
+    }
+
+    repeated TestCase test_cases = 1;
+
+    // False if test_cases represents all of the test cases to be run by the
+    // task. True otherwise (e.g. the task was aborted early).
+    bool incomplete = 2;
+
+    reserved 3;
+    reserved "synchronous_log_data_url";
+  }
+
+  // AndroidGeneric describes the result summary for the case of TradeFed, Mobly
+  // or any other Android genric harness.
+  message AndroidGeneric {
+    // GivenTestCase describes the result of an individual parent test case
+    // which results in having multiple child test cases
+    message GivenTestCase {
+      string parent_test = 1;
+      repeated Autotest.TestCase child_test_cases = 2;
+      // False if test_cases represents all of the test cases to be run by the
+      // task. True otherwise (e.g. the task was aborted early).
+      bool incomplete = 3;
+    }
+
+    repeated GivenTestCase given_test_cases = 1;
+  }
+
+  // Which test harness was used.
+  oneof harness {
+    Autotest autotest_result = 1;
+    AndroidGeneric android_generic_result = 11;
+  }
+
+  // Prejob contains all preparatory operations that run before the actual
+  // test cases.
+  message Prejob {
+    // Step describes an individual prejob operation e.g. provision.
+    message Step {
+      // Step name, e.g. as it appears in status.log.
+      string name = 1;
+
+      // Verdict defines the final step status. Eventually may have different
+      // cases from the test case verdict, e.g. VERDICT_SKIPPED.
+      enum Verdict {
+        VERDICT_UNDEFINED = 0;
+        VERDICT_PASS = 1;
+        VERDICT_FAIL = 2;
+      }
+
+      Verdict verdict = 2;
+
+      // A one line human readable description of what happened during step
+      // execution (e.g. error/warning message). Not intended to be machine
+      // parseable. There's no guarantee that a given root cause will always
+      // resolve to the same summary.
+      string human_readable_summary = 3;
+    }
+
+    repeated Step step = 1;
+  }
+
+  Prejob prejob = 2;
+
+  test_platform.common.TaskLogData log_data = 3;
+
+  // StateUpdate contains Skylab state changes that resulted from the test run.
+  // It is consumed by `skylab_local_state save`.
+  message StateUpdate {
+    // E.g. "needs_repair", "ready" etc.
+    string dut_state = 1;
+  }
+
+  StateUpdate state_update = 4;
+
+  // Set of test results. The string is a UUID used to identify each test, and
+  // comes from the client.
+  map<string, Autotest> autotest_results = 6;
+
+  // The start time of the shard run.
+  google.protobuf.Timestamp start_time = 7;
+
+  // The end time of the shard run.
+  google.protobuf.Timestamp end_time = 8;
+
+  string host_name = 9;
+
+  message Links {
+    enum Name {
+      UNKNOWN = 0;
+      TEST_HAUS = 1;
+      GOOGLE_STORAGE = 2;
+    }
+    Name name = 1;
+    string url = 2;
+  }
+  repeated Links resource_urls = 10;
+
+  // Human-readable error, if any.
+  string error_string = 12;
+
+  // Error type, if any.
+  TestRunnerErrorType error_type = 13;
+
+  reserved 5;
+  reserved "async_results";
+}
+
+enum TestRunnerErrorType {
+  NONE = 0;
+  INPUT_VALIDATION = 1;
+  AUTH = 2;
+  DUT_CONNECTION = 3;
+  PROVISION = 4;
+  SERVO = 5;
+  TEST_HARNESS = 6;
+  PUBLISH = 7;
+  OTHER = 8;
+}

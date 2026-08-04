@@ -1,0 +1,26 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// MetricEvent encompasses all datapoints that might be of interest for
+// monitoring within chromiumos infrastructure.
+message MetricEvent {
+  // The name of this event.
+  string name = 1;
+
+  // The timestamp in Unix-epoch millisecond time.
+  int64 timestamp_milliseconds = 2;
+
+  // If the event was a timer, give its duration.
+  uint64 duration_milliseconds = 3;
+
+  // An arbitrary integer gauge.
+  uint64 gauge = 4;
+}

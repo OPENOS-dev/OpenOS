@@ -1,0 +1,61 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cycler;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/cycler";
+
+// Like it says on the tin, will run stats only.
+message NoopEffectConfiguration {}
+
+// Move objects that match the configuration to another bucket + prefix.
+// If the destination is within the configured bucket/prefix the behavior
+// on those objects created via the move is undefined. They may or may not
+// exist in whole or in part at the time the prefix is iterated.
+message MoveEffectConfiguration {
+
+  // The destination bucket for the moved objects (e.g. 'engeg-testing-bucket').
+  string destination_bucket = 1;
+
+  // The destination prefix for the moved objects (e.g. 'moved-files-prefix/').
+  // Note: Prefixes are literal, and no '/' will be infered/appended.
+  string destination_prefix = 2;
+}
+
+// Duplicate objects that match the configuration to another bucket + prefix.
+// If the destination is within the configured bucket/prefix the behavior
+// on those objects created via the duplicate is undefined. They may or may not
+// exist in whole or in part at the time the prefix is iterated.
+message DuplicateEffectConfiguration {
+
+  // The destination bucket for the copied objects (e.g.
+  // 'engeg-testing-bucket').
+  string destination_bucket = 1;
+
+  // The destination prefix for the copied objects (e.g.
+  // 'copied-files-prefix/'). Note: Prefixes are literal, and no '/' will be
+  // infered/appended.
+  string destination_prefix = 2;
+}
+
+// Change the storage class of an object in place.
+message ChillEffectConfiguration {
+
+  // The existing storage classes.
+  enum EnumStorageClass {
+    UNKNOWN = 0;
+    STANDARD = 1;
+    NEARLINE = 2;
+    COLDLINE = 3;
+    ARCHIVE = 4;
+  }
+
+  // The desired destination storage class.
+  EnumStorageClass to_storage_class = 1;
+}
+
+// Delete the objects that match the configuration.
+message DeleteEffectConfiguration {}

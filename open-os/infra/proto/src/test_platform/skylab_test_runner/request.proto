@@ -1,0 +1,130 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner";
+
+import "chromiumos/build/api/container_metadata.proto";
+import "google/protobuf/timestamp.proto";
+import "test_platform/execution/param.proto";
+import "test_platform/request.proto";
+
+// Request represents a request for running an individual test via the
+// skylab_test_runner recipe.
+message Request {
+  // Prejob defines parameters that affect the steps before the actual test
+  // (e.g. provision).
+  message Prejob {
+    // What needs to be installed onto the DUT at the end of prejob, as
+    // specified in the cros_test_platform request.
+    repeated test_platform.Request.Params.SoftwareDependency
+        software_dependencies = 1;
+
+    // Mutable software prerequisites. Are installed before running the test if
+    // necessary. E.g. {"cros-version" : "reef-release/R77-12345.0.0"}
+    // TODO(crbug.com/1162347): Delete this post-migration.
+    map<string, string> provisionable_labels = 2 [ deprecated = true ];
+
+    // If set, use the Provision TLS API for the prejob.
+    // See go/cros-prover go/cros-tls
+    //
+    // crbug.com/1137444: This is a transitional argument. Once go/cros-prover
+    // migration is complete, all prejobs will use the TLS API and this argument
+    // will be dropped.
+    bool use_tls = 3;
+    // In a multi-DUT test scenario, software_attributes and hardware_attributes
+    // can help us determine primary DUT in a DUT topology.
+    test_platform.Request.Params.SoftwareAttributes software_attributes = 4;
+    test_platform.Request.Params.HardwareAttributes hardware_attributes = 5;
+    // Will present in a multi-DUTs test request, it includes necessary metadata
+    // to help us determine DUT topology(primary/secondaries), as well as
+    // software dependencies to run prejob for secondary DUTs.
+    repeated test_platform.Request.Params.SecondaryDevice secondary_devices = 6;
+  }
+
+  Prejob prejob = 1;
+
+  // Test describes which test harness and which test(s) to run.
+  message Test {
+    message Autotest {
+      string name = 1;
+      string test_args = 2;
+
+      // Keyvals are key:value pairs added to the autoserv command.
+      map<string, string> keyvals = 3;
+
+      // If true, run the test as a client-side test: the test logic is
+      // executed in its entirety on the DUT itself.
+      // Otherwise, run the test as a server-side test: the test logic is
+      // executed on the drone server and interacts with the DUT as an external
+      // object.
+      bool is_client_test = 4;
+
+      // Name to be used to display this test's output artifacts, e.g. logs,
+      // results etc. By default display_name is the same as name.
+      //
+      // display_name is especially useful when using test_args to distinguish
+      // between multiple instances of the same test in a request.
+      string display_name = 5;
+    }
+
+    oneof harness { Autotest autotest = 1; }
+
+    // User-specified options for how results are served to clients
+    message OffloadOptions {
+      // If this test needs synchronous offloading of results to Google Storage
+      bool synchronous_gs_enable = 1;
+    }
+
+    OffloadOptions offload = 2;
+  }
+
+  Test test = 2;
+
+  // Soft deadline for test_runner execution.
+  //
+  // All prejob or test execution should abort beyond this deadline.
+  // Clean up actions may execute beyond the deadline.
+  google.protobuf.Timestamp deadline = 3;
+
+  // The UID of the individual CTP request which kicked off this test run.
+  // Note that distinct requests inside a multi-request CTP build will have
+  // different UIDs.
+  string parent_request_uid = 4;
+
+  // The buildbucket ID of the CTP build that sent this test_runner request.
+  int64 parent_build_id = 5;
+
+  // Set of Tests to run. The string is a UUID provided by the client
+  // and used to identify each test result in the response.
+  map<string, Test> tests = 6;
+
+  // Uniformly applied parameters for all test executions in the parent test
+  // platform request.
+  test_platform.execution.Param execution_param = 7;
+
+  // If set, a Docker container to use to run autoserv. The container must
+  // contain autoserv under the same path as the host (e.g.
+  // "/usr/local/autotest/server/autoserv").
+  //
+  // The container will be pulled if needed.
+  chromiumos.build.api.ContainerImageInfo container_image_info = 8
+      [ deprecated = true ];
+
+  // TestExecutionBehavior specifies how tests should be run.
+  // This can include information about whether the tests should run and
+  // if failures should be exonerated.
+  test_platform.Request.Params.TestExecutionBehavior
+      default_test_execution_behavior = 9;
+
+  // The retry attempt identifier. Details how many retries
+  // this build has performed.
+  int32 retry_number = 10;
+
+  // Configuration related to results upload of the particular test.
+  test_platform.Request.Params.ResultsUploadConfig results_upload_config = 11;
+}

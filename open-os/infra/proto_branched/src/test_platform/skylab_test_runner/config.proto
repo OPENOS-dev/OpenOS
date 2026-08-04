@@ -1,0 +1,81 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner";
+
+import "test_platform/phosphorus/common.proto";
+
+// Config defines configuration parameters of skylab_test_runner.
+message Config {
+  // Lab defines configuration parameters related to the lab and the lab
+  // platform services.
+  message Lab {
+    // Admin service host, e.g. foo.appspot.com.
+    string admin_service = 1;
+
+    // Inventory V2 service host, e.g. cros-lab-inventory.appspot.com.
+    string cros_inventory_service = 2;
+
+    // Unified Fleet System service host, e.g. ufs.api.cr.dev.
+    string cros_ufs_service = 3;
+  }
+
+  // Harness defines configuration parameters related to the test harness
+  // (autotest, tast, etc).
+  message Harness {
+    // Autotest directory inside the drone container,
+    // e.g. "/usr/local/autotest".
+    string autotest_dir = 1;
+
+    // The name of the base lxc image used for Server Side Packaging (SSP).
+    //
+    // autoserv fetches the base image from a hard-coded path on Google
+    // Storage: gs://abci-ssp/autotest-containers/{name}.tar.xz
+    //
+    // See go/ctp-ssp for an overview of SSP.
+    string ssp_base_image_name = 3;
+
+    // The maximum duration for prejobs (e.g. provisioning).
+    int64 prejob_deadline_seconds = 4;
+
+    reserved 2;
+    reserved "synch_offload_subdir";
+  }
+
+  // Output defines parameters around how the task will deliver output to
+  // the callers, e.g. Google Storage bucket.
+  message Output {
+    // A Google Storage path prefix to upload all log-data to synchronously.
+    // Reflected in the test_platform.skylab_test_runner.Result.log_data
+    // returned by the task.
+    string log_data_gs_root = 2;
+
+    reserved 1;
+    reserved "gs_root_dir";
+  }
+
+  // PubSub defines the configuration parameters for PubSub topic.
+  message PubSub {
+    string project = 1;
+    string topic = 2;
+  }
+
+  Lab lab = 1;
+  Harness harness = 2;
+  Output output = 3;
+
+  // Result flow topic: test_runner publishes messages to this topic at the
+  // start and the end of the build.
+  // The messages in this topic should be ACKed only by the result_flow
+  // pipeline.
+  PubSub result_flow_pubsub = 4;
+
+  test_platform.phosphorus.LogDataUploadStep log_data_upload_step = 5;
+  test_platform.phosphorus.FetchCrashesStep fetch_crashes_step = 6;
+  test_platform.phosphorus.PrejobStep prejob_step = 7;
+}

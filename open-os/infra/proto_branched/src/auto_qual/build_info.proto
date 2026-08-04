@@ -1,0 +1,38 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+message IndividualTarget {
+  string model_name = 1;
+  string sku = 2;
+}
+
+message UnibuildTarget {
+  string board = 1;
+  repeated IndividualTarget models = 2;
+}
+
+message BuildTargetType {
+  oneof build {
+    IndividualTarget individual = 1;
+    UnibuildTarget unibuild = 2;
+  }
+}
+
+message DeviceUnderTest {
+  enum HardwarePhase {
+    HARDWARE_PHASE_UNSPECIFIED = 0;
+    EVT = 1;
+    DVT = 2;
+    PVT = 3;
+    MP = 4;
+  }
+  HardwarePhase phase = 1;
+  BuildTargetType dut = 2;
+}

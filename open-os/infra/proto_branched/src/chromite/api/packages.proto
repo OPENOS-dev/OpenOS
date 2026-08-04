@@ -1,0 +1,463 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/binhost.proto";
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// This can easily be generalized to a Builds method if necessary, but
+// currently we have no use case for anything but Chrome, and making this
+// specifically for Chrome simplifies the calling code significantly.
+message BuildsChromeRequest {
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 1;
+  // The build target we are checking for.
+  chromiumos.BuildTarget build_target = 2;
+  // List of packages to be installed by the builder. If none are specified the
+  // standard list of packages is used.  Added in R79.
+  repeated chromiumos.PackageInfo packages = 3;
+}
+
+message BuildsChromeResponse {
+  // Whether or not it builds chrome.
+  bool builds_chrome = 1;
+}
+
+// Added in R92.
+message GetAndroidMetadataRequest {
+  // The build target to examine.
+  // Required.
+  chromiumos.BuildTarget build_target = 1;
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 2;
+}
+
+// Added in R92.
+message GetAndroidMetadataResponse {
+  // The Android Portage package name e.g. 'android-vm-rvc'.
+  string android_package = 1;
+  // The Android branch e.g. 'git_rvc-arc'
+  string android_branch = 2;
+  // The Android version e.g. '7123456'.
+  string android_version = 3;
+}
+
+message GetBestVisibleRequest {
+  // An atom to pass to portageq, e.g. 'chromeos-chrome'.
+  string atom = 1;
+
+  // The chroot path.  Added in R78.
+  // Required if not in the default location.
+  chromiumos.Chroot chroot = 2;
+
+  // The build target to examine. Checks the chroot when not provided.
+  // Required when examining a build target.  Added in R78.
+  chromiumos.BuildTarget build_target = 3;
+}
+
+message GetBestVisibleResponse {
+  // TODO: is this sufficient? Needs tag too?
+  chromiumos.PackageInfo package_info = 1;
+}
+
+message GetChromeVersionRequest {
+  // The chroot path.
+  // Required if not in the default location.
+  chromiumos.Chroot chroot = 1;
+
+  // The build target to examine.
+  // Required.
+  chromiumos.BuildTarget build_target = 2;
+}
+
+message GetChromeVersionResponse {
+  // The chrome version.
+  string version = 1;
+  // The commit hash of it.
+  string commit_hash = 2;
+}
+
+message GetTargetVersionsRequest {
+  // The chroot path.
+  // Required if not in the default location.
+  chromiumos.Chroot chroot = 1;
+
+  // The build target to examine.
+  // Required.
+  chromiumos.BuildTarget build_target = 2;
+
+  // Optional packages to generate the depgraph for, such as
+  // 'virtual/target-fuzzers'.  This is passed in based on the informational
+  // builder type, see chromite/config/chromeos_config.py for examples.
+  repeated chromiumos.PackageInfo packages = 3;
+}
+
+message GetTargetVersionsResponse {
+  // Android version, e.g. 5812377
+  string android_version = 1;
+  // Android-branch version, e.g. git_nyc
+  string android_branch_version = 2;
+  // Android-target version, e.g. cheets
+  string android_target_version = 3;
+  // Chrome version, e.g. 78.0.3877.0.
+  string chrome_version = 4;
+  // Full version, e.g. R78-12438.0.0.
+  string full_version = 5;
+  // Milestone version, e.g. 78.
+  string milestone_version = 6;
+  // Platform version, e.g. 12438.0.0.
+  string platform_version = 7;
+  // LaCrOS version, e.g. 111.0.5550.0.
+  string lacros_version = 8;
+}
+
+// The associated method can be run after InstallPackages.
+message GetBuilderMetadataRequest {
+  // The chroot path.
+  // Required if not in the default location.
+  chromiumos.Chroot chroot = 1;
+
+  // The build target to examine.
+  // Required.
+  chromiumos.BuildTarget build_target = 2;
+}
+
+message GetBuilderMetadataResponse {
+
+  message ModelMetadata {
+    // Name of model, such as "astronaut", "babymega", etc.
+    string model_name = 1;
+    // EC firmware version, such as "coral_v1.1.7292-04956f5df".
+    string ec_firmware_version = 2;
+    // Firmware key id, such as "CORALG"
+    string firmware_key_id = 3;
+    // Main readonly firmware version, such as "Google_Coral.10068.82.0".
+    string main_readonly_firmware_version = 4;
+    // Main readwrite firmware version, such as "Google_Coral.10068.82.0".
+    string main_readwrite_firmware_version = 5;
+  }
+
+  message BuildTargetMetadata {
+    // Name of build_target, such as auron_paine, coral, etc.
+    string build_target = 1;
+    // Name of android container branch, such as "git_pi-arc".
+    string android_container_branch = 2;
+    // Name of android container target, such as "cheets".
+    string android_container_target = 3;
+    // Name of android container version, such as "6387315".
+    string android_container_version = 4;
+    // Whether or not arc-use is enabled.
+    bool arc_use_set = 5;
+    // EC firmware version.
+    string ec_firmware_version = 6;
+    // Fingerprints.
+    repeated string fingerprints = 7;
+    // Kernel version, such as  "4.14.176-r1088".
+    string kernel_version = 8;
+    // Main firmware version, such as "Google_Auron_paine.6301.58.98.
+    string main_firmware_version = 9;
+  }
+
+  // Metadata for build targets.
+  repeated BuildTargetMetadata build_target_metadata = 1;
+  // Metadata for models.
+  repeated ModelMetadata model_metadata = 2;
+}
+
+// This can easily be generalized to a HasPrebuilt method if necessary, but
+// currently we have no use case for anything but Chrome, and making this
+// specifically for Chrome simplifies the calling code significantly.
+message HasChromePrebuiltRequest {
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 1;
+  // The build target whose prebuilt is being checked.
+  chromiumos.BuildTarget build_target = 2;
+  // Whether to look for internal chrome, or external chromium prebuilts.
+  // Shortcut for ensuring USE=chrome_internal. Does not disable
+  // chrome_internal when false if otherwise set (e.g. chroot env).
+  bool chrome = 3;
+}
+
+message HasChromePrebuiltResponse {
+  // Whether or not it has a prebuilt.
+  bool has_prebuilt = 1;
+}
+
+message NeedsChromeSourceRequest {
+  // The request that will be passed to InstallPackages.
+  InstallPackagesRequest install_request = 1;
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 2;
+}
+
+message NeedsChromeSourceResponse {
+  // Whether Chrome source is needed.
+  bool needs_chrome_source = 1;
+
+  // Reasons for needing Chrome source.
+  enum Reason {
+    UNSPECIFIED = 0;
+    // There is no Chrome prebuilt available.
+    NO_PREBUILT = 1;
+    // The builder is compiling from source.
+    COMPILE_SOURCE = 2;
+    // There is a local uprev of Chrome.
+    LOCAL_UPREV = 3;
+    // A follower package lacks prebuilts.
+    FOLLOWER_LACKS_PREBUILT = 4;
+  };
+  repeated Reason reasons = 2;
+
+  // Packages causing the need for source.
+  repeated chromiumos.PackageInfo packages = 3;
+
+  // Whether or not it builds Chrome.  See BuildsChrome().
+  bool builds_chrome = 4;
+}
+
+// The generic version of HasChromePrebuilt.
+message HasPrebuiltRequest {
+  // The chroot where the operations will be executed.
+  // Required.
+  chromiumos.Chroot chroot = 1;
+
+  // The build target whose prebuilt is being checked.
+  // Required.
+  chromiumos.BuildTarget build_target = 2;
+
+  // Whether to look for internal chrome, or external chromium prebuilts.
+  // Shortcut for ensuring USE=chrome_internal. Does not disable
+  // chrome_internal when false if otherwise set (e.g. chroot env).
+  bool chrome = 3;
+
+  // The package whose prebuilt is being queried.
+  // The category and package name are required.
+  chromiumos.PackageInfo package_info = 4;
+}
+
+message HasPrebuiltResponse {
+  // Whether or not it has a prebuilt.
+  bool has_prebuilt = 1;
+}
+
+message UprevPackagesRequest {
+  // The chroot path.
+  // Only required to clean the chroot.
+  chromiumos.Chroot chroot = 1;
+
+  // The build target(s) whose packages should be uprevved.
+  // Defaults to all build targets when none are given.
+  repeated chromiumos.BuildTarget build_targets = 2;
+
+  // Required.
+  // The overlay type to search against.
+  chromite.api.OverlayType overlay_type = 3;
+
+  // Optional.
+  // A directory where results should be dumped.
+  string output_dir = 4;
+
+  // If true, this is running in a limited checkout where not all referenced
+  // projects may be available, and ebuilds referencing missing projects should
+  // be ignored.  This is used for paygen builders.
+  bool ignore_missing_projects = 5;
+}
+
+// TODO(evanhernandez): Support build-target specific uprevs once needed.
+message UprevVersionedPackageRequest {
+  // The chroot path. Required.
+  chromiumos.Chroot chroot = 1;
+
+  // The package to uprev.
+  chromiumos.PackageInfo package_info = 2;
+
+  message GitRef {
+    // Relative path to the git repository.
+    string repository = 1;
+
+    // The name of the git ref.
+    string ref = 2;
+
+    // The exact sha1 of the git ref.
+    string revision = 3;
+  }
+
+  // The versions to consider for an update.
+  repeated GitRef versions = 3;
+
+  // The build targets whose sysroot should be cleaned of old versions.
+  repeated chromiumos.BuildTarget build_targets = 4;
+}
+
+message UprevVersionFileRequest {
+  // The chroot path. Required
+  chromiumos.Chroot chroot = 1;
+
+  // The file to uprev.
+  string file_path = 2;
+
+  message GitRef {
+    // Relative path to the git repository.
+    string repository = 1;
+
+    // The name of the git ref.
+    string ref = 2;
+
+    // The exact sha1 of the git ref.
+    string revision = 3;
+  }
+
+  // The versions to consider for an update
+  repeated GitRef versions = 3;
+}
+
+message UprevPackagesResponse {
+  message Ebuild { string path = 1; }
+
+  // The list of ebuilds that were modified. Contains added and deleted files.
+  repeated Ebuild modified_ebuilds = 1;
+
+  // The new version that was uprevved to when an uprev was completed.
+  string version = 2;
+
+  // Packages that were uprev'd.
+  repeated chromiumos.PackageInfo packages = 3;
+
+  // Additional info to be appended to uprev cl's commit msg.
+  string additional_commit_info = 4;
+}
+
+message UprevFileResponse {
+  // The list of files that were modified. Contains added and deleted files.
+  repeated string modified_files = 1;
+
+  // The new version that was uprevved to when an uprev was completed.
+  string version = 2;
+
+  // Additional info to be appended to uprev cl's commit msg.
+  string additional_commit_info = 3;
+}
+
+message UprevVersionedPackageResponse {
+  // list of uprev responses.
+  repeated UprevPackagesResponse responses = 1;
+}
+
+message UprevVersionFileResponse {
+  // List of uprev responses
+  repeated UprevFileResponse responses = 1;
+}
+
+message RevBumpChromeRequest {
+  // Rev bump chrome and its follower packages, if needed.
+  // Rev bumps can change the revision, but not the version, of a package.
+}
+
+// Service for package-centric functionality.
+service PackageService {
+  option (service_options) = {
+    module : "packages",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Check if the build target has chrome in its depgraph.  Added in R79.
+  rpc BuildsChrome(BuildsChromeRequest) returns (BuildsChromeResponse);
+
+  // Return Android metadata of the given build target.
+  // Added in R92.
+  rpc GetAndroidMetadata(GetAndroidMetadataRequest)
+      returns (GetAndroidMetadataResponse);
+
+  // Find the best (highest) available version of the requested package.
+  // This must be run after the chroot is set up (for chroot package lookup) or
+  // after the sysroot is created (for build target package lookup).
+  // Added in R79.
+  rpc GetBestVisible(GetBestVisibleRequest) returns (GetBestVisibleResponse);
+
+  // Like GetBestVisible, but returns only the chrome version. The chrome
+  // package version is something like 78.9.0.123_rc-r1, where the chrome
+  // version itself is just 78.9.0.123. This case does not have a spec in
+  // Portage, so it cannot be directly fetched by GetBestVisible.
+  // Added in R79.
+  rpc GetChromeVersion(GetChromeVersionRequest)
+      returns (GetChromeVersionResponse);
+
+  // Return the various build version fields that can be stored (e.g. in
+  // metadata.json).  Added in R79.
+  rpc GetTargetVersions(GetTargetVersionsRequest)
+      returns (GetTargetVersionsResponse);
+
+  // Return the various metabuilder fields for a release builder.
+  // This can be run after InstallPackages. Added in R84.
+  rpc GetBuilderMetadata(GetBuilderMetadataRequest)
+      returns (GetBuilderMetadataResponse);
+
+  // Check if there is an available chrome prebuilt for the most recent
+  // version of chrome.  Added in R79.
+  rpc HasChromePrebuilt(HasChromePrebuiltRequest)
+      returns (HasChromePrebuiltResponse);
+
+  // Check if there is an available prebuilt for the most recent version of the
+  // package.  Added in R83.
+  rpc HasPrebuilt(HasPrebuiltRequest) returns (HasPrebuiltResponse);
+
+  // Check whether the Chrome source tree is needed.  Does not compile nor
+  // install any packages.
+  rpc NeedsChromeSource(NeedsChromeSourceRequest)
+      returns (NeedsChromeSourceResponse);
+
+  // Rev bump Chrome.
+  // Revision bumps can change a pacakges revision, but not its version.
+  // e.g. 1.2.3.4_rc-r5 -> 1.2.3.4_rc-r6.
+  rpc RevBumpChrome(RevBumpChromeRequest)
+      returns (UprevVersionedPackageResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+
+  // The generic uprev process -- performs uprevs for all packages in the
+  // public and/or private overlays for the build target(s) specified.
+  // This handles all cros_workon packages except those that have a separate
+  // uprev process.  Added in R79.
+  rpc Uprev(UprevPackagesRequest) returns (UprevPackagesResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+
+  // Uprev a package that is externally versioned (e.g. Chrome).
+  // This endpoint iterates over a list of git refs that represent versions
+  // and searches for a new version, updating and upreving the package ebuild
+  // if such a version is found. The exact behavior depends on the package.
+  // Added in R79.
+  rpc UprevVersionedPackage(UprevVersionedPackageRequest)
+      returns (UprevVersionedPackageResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+
+  // Uprev a non-ebuild file that contains a version. (e.g. LKGM)
+  // This endpoint iterates over a list of git refs t hat represent versions
+  // and searches for a new version, updating and upreving the version file
+  // if such a version is found. The exact behavior depends on the file.
+  // Added in R148
+  rpc UprevVersionFile(UprevVersionFileRequest)
+      returns (UprevVersionFileResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+}

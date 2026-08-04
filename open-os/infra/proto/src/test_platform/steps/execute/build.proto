@@ -1,0 +1,19 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.steps.execute;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/steps/execute";
+
+// Build contains fields extracted from
+// https://chromium.googlesource.com/infra/luci/luci-go/+/master/buildbucket/proto/build.proto
+message Build {
+  google.protobuf.Timestamp create_time = 1;
+
+  int64 id = 2;
+}

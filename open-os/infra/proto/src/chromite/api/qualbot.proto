@@ -1,0 +1,74 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+
+// The request to run QualBot.
+message RunQualbotRequest {
+  // The Task To Run (e.g., "create-schedule").
+  string task = 1;
+
+  // Build ID
+  // Build URL populated by concatenation with
+  // https://cr-buildbucket.appspot.com/build/
+  string build_id = 2;
+
+  // Whether or not this is a staging run
+  bool is_staging = 3;
+}
+
+// A test effort launched by QualBot
+message LaunchedTest {
+  enum Location {
+    LOCATION_UNKNOWN = 0;
+    // Launched in the skylab
+    LOCATION_INTERNAL = 1;
+    // Launched in satlab for partners
+    LOCATION_EXTERNAL = 2;
+  }
+  // The location of the launched test effort.
+  Location location = 1;
+  // The test effort id (qual id)
+  string test_effort_id = 2;
+  // The test effort name (i.e.
+  // fatcat-moonstone-16702.0.0-119223-AP-RO_RW-16702.0.0-119223-EC-RO_RW-16702.0.0-119223-8680138474243569761-android-manual/firmware)
+  string test_effort_name = 3;
+  // The url to luci or abtd where the test results can be viewed.
+  string test_url = 4;
+}
+
+// The result of QualBot being run.
+message RunQualbotResponse {
+  // If QualBot failed, why did it?  Note: you should first check the
+  // exit status of the Build API endpoint.  If the exit status is
+  // zero, QualBot ran successfully and this reason should not be
+  // checked.  If the exit status is non-zero, you can check this
+  // field for the failure reason.
+  enum FailureReason {
+    // Failed for a reason not listed below.
+    FAILURE_UNKNOWN = 0;
+    // Failed to push commits to Gerrit.
+    FAILURE_SCHEDULE_PUSH_ERROR = 1;
+    // Failed due to merge conflict(s).
+    FAILURE_MERGE_CONFLICTS = 2;
+  };
+  FailureReason failure_reason = 1;
+
+  // List of launched tests
+  repeated LaunchedTest launched_tests = 2;
+}
+
+service QualbotService {
+  option (service_options) = {
+    module : "qualbot",
+  };
+
+  // Run QualBot.
+  rpc RunQualbot(RunQualbotRequest) returns (RunQualbotResponse);
+}

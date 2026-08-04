@@ -1,0 +1,102 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.phosphorus;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus";
+
+// BotEnvironment defines bot-specific parameters used by phosphorus.
+message BotEnvironment {
+  // Absolute path to the autotest directory for the bot, e.g.
+  // "/usr/local/autotest".
+  string autotest_dir = 1;
+}
+
+// TaskEnvironment defines task-specific parameters used by phosphorus.
+message TaskEnvironment {
+  // Absolute path to the results directory for a given run. Include results of
+  //  both tests and non-test tasks like provision
+  string results_dir = 2;
+
+  // Absolute path to the results directory for a given run's tests.
+  //  MUST be equal to ${results_dir}/autoserv_test if present. This restriction
+  //  may be lifted in the future.
+  string test_results_dir = 3;
+
+  // The name of the base lxc image used for Server Side Packaging (SSP).
+  //
+  // autoserv fetches the base image from a hard-coded path on Google
+  // Storage: gs://abci-ssp/autotest-containers/{name}.tar.xz
+  //
+  // See go/ctp-ssp for an overview of SSP.
+  string ssp_base_image_name = 4;
+
+  reserved 1;
+  reserved "synchronous_offload_dir";
+}
+
+// Knobs specific to the step that runs tasks to prepare the DUT for test.
+message PrejobStep {
+  ProvisionDutExperiment provision_dut_experiment = 1;
+  DutTopologyExperiment dut_topology_experiment = 2;
+}
+
+message ProvisionDutExperiment {
+  // Global flag to control this experiment.
+  bool enabled = 1;
+
+  message CrosVersionSelector {
+    // Selects prejob requests by the cros-version of the OS image to install on
+    // the DUT.
+    //
+    // e.g., a value of "reef-release" would select "reef-release/R87.1282.0.0"
+    // etc.
+    repeated string prefixes = 1;
+  }
+
+  oneof cros_version_selector {
+    // Only use ProvisionDut TLS API for the selected requests.
+    CrosVersionSelector cros_version_allow_list = 2;
+    // Use ProvisionDut TLS API for all requests *except* the ones selected.
+    CrosVersionSelector cros_version_disallow_list = 3;
+  }
+}
+
+message DutTopologyExperiment {
+  // Global flag to control this experiment.
+  bool enabled = 1;
+  // Test name allowlist to turn on this experiment on a per-test basis.
+  repeated string test_allowlist = 2;
+  // Suite name allowlist to turn on this experiment on a per-suite basis.
+  repeated string suite_allowlist = 3;
+}
+
+// Knobs specific to the step that uploads log-data to Google Storage.
+message LogDataUploadStep {
+  // Controls the maximum number of files that may be uploaded concurrently.
+  // If unset, a hard-coded constant is used to limit concurrency (i.e., there
+  // is no way to request unlimited concurrent uploads).
+  int32 max_concurrent_uploads = 1;
+}
+
+message FetchCrashesStep {
+  // URL of the crash server where crashes can be uploaded.
+  // e.g.: https://clients2.google.com/cr/report
+  string crash_server_report_url = 1;
+
+  // URL of the crash server where pre-uploaded crashes can be viewed.
+  // e.g.: https://crash.corp.google.com
+  string crash_server_view_url = 2;
+}
+
+// Config defines configuration parameters common to phosphorus subcommands.
+message Config {
+  BotEnvironment bot = 1;
+  TaskEnvironment task = 2;
+  LogDataUploadStep log_data_upload_step = 3;
+  FetchCrashesStep fetch_crashes_step = 4;
+  PrejobStep prejob_step = 5;
+}

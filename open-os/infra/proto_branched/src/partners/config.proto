@@ -1,0 +1,77 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package partners;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/partners";
+
+// PartnerConfig contains the metadata exported from Testhaus on a per-partner
+// basis.
+//
+// NEXT ID: 15
+message PartnerConfig {
+  // Project which the partner is associated with.
+  string project_id = 1;
+
+  // Account ID of the partner. With project_id forms a unique identifier.
+  int64 account_id = 2;
+
+  // Account name of the partner, generally human readable.
+  string account_name = 3;
+
+  // List of devices associated with the partner.
+  repeated ChromeOSDevice chrome_os_devices = 4;
+
+  // Name of the CTP builder bucket used by the partner.
+  string ctp_builder_bucket = 5;
+
+  // Name of the deploy builder bucket used by the partner.
+  string deploy_builder_bucket = 6;
+
+  // Which UFS namespace partners should use.
+  string ufs_namespace = 7;
+
+  // Name of the zone partners have access to in UFS.
+  string ufs_zone = 8;
+
+  // Name of the realm partners have access to in UFS.
+  string ufs_realm = 9;
+
+  // Name of the GCS bucket associated with the partner for test results
+  // and CrOS images.
+  string gs_bucket = 10;
+
+  // Service account used for CrOS infra for the partner.
+  string service_account = 11;
+
+  // Prefix of the swarming bots associated with the partner.
+  string bot_prefix = 12;
+
+  // Name of the realm associated with the partner.
+  string partner_private_realm = 13;
+
+  // Names of CRIA groups given access to partner LUCI infrastructure.
+  repeated string luci_access_groups = 14;
+}
+
+// ChromeOSDevice identifies a device used to partition infrastructure by.
+//
+// NEXT ID: 3
+message ChromeOSDevice {
+  // Board of the device.
+  string board = 1;
+
+  // Model of the device.
+  string model = 2;
+}
+
+// PartnerConfigList contains partner configs.
+//
+// Used to simplify the export/read process.
+message PartnerConfigList {
+  // List of PartnerConfigs.
+  repeated PartnerConfig values = 1;
+}

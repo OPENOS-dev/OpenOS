@@ -1,0 +1,80 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// Defines a configuration for disabling a test or set of tests.
+message TestDisablement {
+  // Optional human friendly name
+  string name = 1;
+
+  message FilterCriterion {
+    string key = 1;
+    repeated string values = 2;
+    bool negated = 3;
+  }
+
+  // Filter criteria related to the DUT on which the test will be run
+  // (e.g. model, wifi_chip).
+  repeated FilterCriterion dut_criteria = 2;
+
+  // Filter criteria related to the tests to run (e.g. test ID, suite).
+  repeated FilterCriterion test_criteria = 3;
+
+  // Filter criteria related to the context of this test execution
+  // (e.g. stage=CQ/postsubmit/release).
+  repeated FilterCriterion context_criteria = 4;
+
+  // This enum encapsulates both the question "should we run this test?"
+  // and the question "if this test fails, what should we do?" into a
+  // single enum value, along with potentially other information (e.g.
+  // WONT_FIX and SKIP_TEMPORARY both result in not executing the test,
+  // but communicate different future intent about whether we'll fix it
+  // eventually). FailureResponse encapsulates the concept of what to do
+  // in response to a failure, and whether to execute can be captured as
+  // a boolean.
+  enum TestBehavior {
+    CRITICAL = 0;
+    // Used to inform exoneration system.
+    INFORMATIONAL = 1;
+    // Not used in test disablement (this is an intrinsic property of the
+    // test and will be configured in the source tree near the test, not a
+    // transient one covered by disablement), but it's included here
+    // because we expect to reuse the enumeration.
+    INVALID = 2;
+    WONT_FIX = 3;
+    SKIP_TEMPORARY = 4;
+  }
+
+  // The behavior the test runner should use for all tests matching
+  // test_criteria when executed on DUTs matching dut_criteria in a
+  // context matching context_criteria.
+  TestBehavior behavior = 5;
+
+  // The bug or bugs that need to be fixed before this disablement can be
+  // removed. e.g. "b/1234567"
+  repeated string bug_ids = 6;
+}
+
+// Defines a configuration proto that encapsulates the individual
+// disablements.
+message TestDisablementCfg { repeated TestDisablement disablements = 1; }
+
+// Defines a config proto that captures the suites and tests to be
+// excluded from exoneration/disablement.
+message ExcludeCfg {
+  // Define exclude test config.
+  message ExcludeTest { string name = 1; }
+
+  // Define exclude suite config.
+  message ExcludeSuite { string name = 1; }
+
+  repeated ExcludeTest exclude_tests = 1;
+  repeated ExcludeSuite exclude_suites = 2;
+}

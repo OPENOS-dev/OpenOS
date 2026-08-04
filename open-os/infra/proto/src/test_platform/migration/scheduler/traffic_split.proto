@@ -1,0 +1,70 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.migration.scheduler;
+
+import "chromiumos/common.proto";
+import "test_platform/request.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/migration/scheduler";
+
+// The cros_test_platform traffic splitting stage interprets this config in two
+// phases.
+// 1. First, the request is matched to any of the rules in the suite_overrides,
+//    including the requested suite. If matching rules are found, second phase
+//    is skipped.
+// 2. Next, the request is matched against the base rules (exluding suite name)
+//    If no matching rules are found, the steps fails.
+//
+// If multiple rules are found, they *must agree on the traffic splitting
+// decision* including any pool overrides. In case of conflicting rules, the
+// step fails.
+message TrafficSplit {
+  // Rules are expected to be exhaustive. If an incoming request does not match
+  // any available rule, the traffic splitter will fail.
+  //
+  // This policy prevents requests for newly deployed models / pools from
+  // getting scheduled on the incorrect scheduler and then timing out due to
+  // lack of devices.
+  repeated Rule rules = 1;
+
+  // Unlike rules, suite overrides are only specified for suites that need
+  // different handling from the rule that otherwise matches the request.
+  repeated SuiteOverride suite_overrides = 2;
+}
+
+message Rule {
+  Request request = 1;
+  Backend backend = 2;
+  RequestMod request_mod = 3;
+}
+
+// Request is a subset of test_platform.Request that is relevant to the
+// scheduler backend traffic splitting decision.
+message Request {
+  test_platform.Request.Params.Scheduling scheduling = 1;
+  string model = 2;
+  chromiumos.BuildTarget build_target = 3;
+}
+
+enum Backend {
+  BACKEND_UNSPECIFIED = 0;
+  BACKEND_AUTOTEST = 1;
+  BACKEND_SKYLAB = 2;
+}
+
+// RequestMod contains the test_platform.Requset arguments that must be
+// overridden when forwarding a request to the chosen scheduler backend.
+message RequestMod { test_platform.Request.Params.Scheduling scheduling = 1; }
+
+// SuiteOverride provides per-suite overrides for the traffic split laid down by
+// the basic rules.
+message SuiteOverride {
+  // Incoming request must target this suite, in addition to the requirements
+  // of the rule specified below.
+  test_platform.Request.Suite suite = 1;
+  Rule rule = 2;
+}

@@ -1,0 +1,35 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+import "testplans/common.proto";
+
+// Specifies a file pattern that should only apply to builders whose name
+// matches the given regex.
+message FilePatternWithBuilderRegex {
+  // File pattern
+  FilePattern file_pattern = 1;
+  // The regex to apply to the builder name to determine whether this
+  // FilePattern is applicable.
+  string builder_name_regex = 2;
+}
+
+// Configures a list of paths that are either always relevant or irrelevant.
+// Note that forced relevance is evaluated first.
+message BuildIrrelevanceCfg {
+  // See documentation in the FilePattern message.
+  //
+  // File patterns that never affect ChromeOS builds.
+  repeated FilePattern irrelevant_file_patterns = 3;
+  // File patterns that always affect ChromeOS builds.
+  repeated FilePattern relevant_file_patterns = 4;
+
+  // File patterns that always affect ChromeOS builds, for some builders.
+  repeated FilePatternWithBuilderRegex relevant_file_patterns_for_builders = 5;
+}

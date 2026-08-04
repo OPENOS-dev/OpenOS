@@ -1,0 +1,93 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+import "chromiumos/common.proto";
+import "google/protobuf/struct.proto";
+import "testplans/common.proto";
+import "testplans/target_test_requirements_config.proto";
+
+message GenerateTestPlanRequest {
+  // Serialized buildbucket Build protos that are part of this orchestrator run.
+  // See
+  // https://chromium.googlesource.com/infra/luci/luci-go/+/master/buildbucket/proto/build.proto
+  repeated ProtoBytes buildbucket_protos = 5;
+
+  // The manifest-internal snapshot commit hash that's being used for the
+  // current build. Note that manifest_commit will be soon replaced with
+  // gitiles_commit below.
+  string manifest_commit = 7;
+  // Serialized buildbucket GitilesCommit, representing the manifest or
+  // manifest-internal commit to which the build is synced.
+  ProtoBytes gitiles_commit = 9;
+
+  // Serialized buildbucket GerritChanges, or none if this is a postsubmit run
+  // or similar. Explicit proto import is avoided here to prevent a dependency
+  // on the luci-go repo.
+  // See
+  // https://chromium.googlesource.com/infra/luci/luci-go/+/master/buildbucket/proto/common.proto
+  repeated ProtoBytes gerrit_changes = 8;
+}
+
+// The final test plan.
+message GenerateTestPlanResponse {
+  repeated HwTestUnit hw_test_units = 3;
+  repeated VmTestUnit vm_test_units = 6;
+  repeated TastVmTestUnit direct_tast_vm_test_units = 7;
+  repeated TastGceTestUnit tast_gce_test_units = 8;
+
+  reserved 2, 4, 5;
+}
+
+// The files that should be tested in a test plan.
+message BuildPayload {
+  // The GS bucket in which artifacts for the build are stored, e.g.
+  // gs://chromeos-image-archive
+  string artifacts_gs_bucket = 1;
+
+  // The path in the bucket in which artifacts for the build are stored, e.g.
+  // eve-paladin/R73-11588.0.0-rc4
+  string artifacts_gs_path = 2;
+
+  // Artifact type to files available for that type. e.g.
+  // "AUTOTEST_FILES": [ "control_files.tar" ]
+  google.protobuf.Struct files_by_artifact = 3;
+}
+
+// The parts of a TestUnit that are common among all test types.
+message TestUnitCommon {
+  // The build target for this test unit.
+  chromiumos.BuildTarget build_target = 2;
+
+  // A builder name for this test unit, e.g. eve-arcvm-cq.
+  string builder_name = 4;
+
+  // The build files provided to run this test unit.
+  BuildPayload build_payload = 3;
+}
+
+message HwTestUnit {
+  TestUnitCommon common = 1;
+  HwTestCfg hw_test_cfg = 2;
+}
+
+message TastVmTestUnit {
+  TestUnitCommon common = 1;
+  TastVmTestCfg tast_vm_test_cfg = 2;
+}
+
+message TastGceTestUnit {
+  TestUnitCommon common = 1;
+  TastGceTestCfg tast_gce_test_cfg = 2;
+}
+
+message VmTestUnit {
+  TestUnitCommon common = 1;
+  VmTestCfg vm_test_cfg = 2;
+}

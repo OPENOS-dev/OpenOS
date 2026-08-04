@@ -1,0 +1,39 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.v2;
+
+import "chromiumos/common.proto";
+import "chromiumos/test/api/v1/plan.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/v2;test_platform";
+
+message TestSpec {
+  // Optionally override build directory path given in Request
+  chromiumos.GcsPath build_directory = 1;
+
+  oneof spec {
+    chromiumos.test.api.v1.HWTestPlan hw_test_plan_v1 = 2;
+    // VM testing tbd
+  }
+}
+
+message Request {
+  // Required, specify the path to a GCS folder containing build artifacts
+  chromiumos.GcsPath build_directory = 1;
+
+  // One or more test specs to execute
+  repeated TestSpec test_specs = 2;
+
+  // Once client profiles are implemented, these details will be subsumed
+  // into a profile, but in the interim we need to able to specify pool and
+  // QuotaScheduler account to use.
+  message SchedulerSettings {
+    string pool = 1;
+    string qs_account = 2;
+  }
+  SchedulerSettings scheduler_settings = 3;
+}

@@ -1,0 +1,160 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+import "chromiumos/build_report.proto";
+import "chromiumos/common.proto";
+
+message SigningConfig {
+  // Display / logical name of this signing config, if any.
+  string display_name = 1;
+
+  // Keyset to sign with. Corresponds to TODO in CloudKMS, see go/TODO for
+  // more information.
+
+  // If set, overrides the keyset set at the BuildTargetSigningConfig level.
+  string keyset = 2;
+
+  // The channel to sign for.
+  // Not intended for specification in config files -- this field is populated
+  // at run time.
+  chromiumos.Channel channel = 10;
+  reserved 11;
+
+  // Image type that this signing config applies to.
+  chromiumos.ImageType image_type = 3;
+
+  // Miscellaneous signing parameters.
+  // TODO(b/298026507): Figure out what these do and whether we need to keep
+  // them.
+  bool recovery_zip = 4;
+  bool ensure_no_password = 5;
+  bool firmware_update = 6;
+
+  // See go/cros-signer-docs for more information on `input_files` and
+  // `output_names` and the templating they must support.
+
+  // Specific files to sign within the given archive.
+  // If not set, defaults will be used.
+  // Legacy defaults:
+  // https://source.corp.google.com/h/chrome-internal/chromeos/codesearch/+/main:src/platform/signing/signer-staging/signer/signing_poller.py;drc=0a0d9436f754f6e8c244e5bf1d6370c59316852b;l=600
+  repeated string input_files = 7;
+
+  // Templates for naming the output files for files specified in `input_files`.
+  // See go/cros-signer-docs for a description of templating.
+  // Must either be the same length as `input_files`, length 1 (assuming
+  // a templating directive like @BASENAME@ is used to properly disambiguate
+  // outputs), or length 0 (in which case a default template will be used,
+  // which has no guarantee wrt disambiguation/clobbering).
+  // Legacy behavior:
+  // https://source.corp.google.com/h/chrome-internal/chromeos/codesearch/+/main:src/platform/signing/signer-staging/signer/signing_poller.py;drc=0a0d9436f754f6e8c244e5bf1d6370c59316852b;l=933
+  repeated string output_names = 8;
+
+  // Path of the archive to sign.
+  // Not intended for specification in config files -- this field is populated
+  // at run time.
+  string archive_path = 9;
+}
+
+message BuildTargetSigningConfig {
+  // Signing config(s) for a specific build target.
+  string build_target = 1;
+
+  // Keyset to sign with. Corresponds to TODO in CloudKMS, see go/TODO for
+  // more information.
+  // Can be overridden at the individual artifact config level.
+  string keyset = 3;
+
+  // The ChromeOS version for the artifact we're signing. Used in generating
+  // output names. Just the platform version, e.g. "15603.0.0".
+  // Not intended for specification in config files -- this
+  // field is populated at run time.
+  string version = 4;
+
+  repeated SigningConfig signing_configs = 2;
+}
+
+message BuildTargetSigningConfigs {
+  repeated BuildTargetSigningConfig build_target_signing_configs = 1;
+}
+
+enum SigningStatus {
+  STATUS_UNDEFINED = 0;
+  STATUS_SUCCESS = 1;
+  STATUS_FAILURE = 2;
+}
+
+message SignedArtifact {
+  // Status of the signing operation.
+  SigningStatus status = 1;
+
+  // The versioned name of the signed artifact.
+  string signed_artifact_name = 2;
+
+  // Hashes of the signed artifact for GoldenEye.
+  ArtifactHashes artifact_hashes = 3;
+}
+
+message ArchiveArtifacts {
+  // The name of the unsigned archive.
+  string input_archive_name = 1;
+
+  // Image type of the archive.
+  chromiumos.ImageType image_type = 7;
+
+  // Keyset used to sign the archive artifacts.
+  string keyset = 2;
+
+  // Whether the keyset used to sign the artifacts is an MP keyset.
+  bool keyset_is_mp = 10;
+
+  // The resulting signed artifacts.
+  repeated SignedArtifact signed_artifacts = 3;
+
+  // Signed artifacts for a specific build target.
+  string build_target = 4;
+
+  // Channel the artifact was signed for.
+  chromiumos.Channel channel = 5;
+
+  reserved 6;
+
+  // Keyset versions.
+  chromiumos.KeysetVersions keyset_versions = 8;
+
+  // Status of the signing operation.
+  BuildReport.SignedBuildMetadata.SigningStatus signing_status = 9;
+}
+
+message BuildTargetSignedArtifacts {
+
+  // Signed artifacts, grouped by input_archive.
+  repeated ArchiveArtifacts archive_artifacts = 1;
+}
+
+message KeysetVersions {
+  // Version numbers of keysets used by signing.
+  int32 firmware_key_version = 1;
+  int32 firmware_version = 2;
+  int32 kernel_key_version = 3;
+  int32 kernel_version = 4;
+}
+
+message ArtifactHashes {
+  // Hashes sent via pubsub to GoldenEye see b/310256594.
+  // The md5 hash of the signed artifact.
+  string signed_md5 = 1;
+
+  // The sha1 hash of the signed artifact.
+  string signed_sha1 = 2;
+
+  // The sha256 hash of the signed artifact.
+  string signed_sha256 = 3;
+}

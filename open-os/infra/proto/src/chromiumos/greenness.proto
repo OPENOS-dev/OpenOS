@@ -1,0 +1,50 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// AggregateGreenness is the expression of greenness of source and infra
+// at a given point in time.
+// b:305071352 - target specific fields will be deprecated.
+message AggregateGreenness {
+  // Greenness specific to a target/builder.
+  message Greenness {
+    // The name of the target. Will be deprecated soon.
+    string target = 1;
+
+    // Indication of greenness for the target/builder in this run.
+    int64 metric = 2;
+
+    // Specifies context for greenness score if needed.
+    enum Context {
+      UNSPECIFIED = 0;
+      // The target/builder was not relevant.
+      IRRELEVANT = 1;
+    }
+    Context context = 3;
+
+    // Indication of build-only greenness for the target/builder in this run.
+    int64 build_metric = 4;
+
+    // The name of the builder. Ex: 'brya-kernelnext', etc.
+    string builder = 5;
+  }
+
+  // Aggregate indication of greenness for all targets/builders in this run.
+  int64 aggregate_metric = 1;
+
+  // List of greenness to target granularity. Will be deprecated soon.
+  repeated Greenness target_greenness = 2;
+
+  // Aggregate indication of build-only greenness for all targets/builders in this run.
+  int64 aggregate_build_metric = 3;
+
+  // List of greenness to builder granularity.
+  repeated Greenness builder_greenness = 4;
+}

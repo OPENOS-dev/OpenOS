@@ -1,0 +1,86 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.phosphorus;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus";
+
+import "google/protobuf/timestamp.proto";
+import "test_platform/phosphorus/common.proto";
+
+// FetchCrashesRequest defines the input of `phosphorus fetchcrashes`.
+message FetchCrashesRequest {
+  Config config = 1;
+
+  string dut_hostname = 2;
+
+  // Hard deadline for execution.
+  //
+  // FetchCrashes execution should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 3;
+
+  // If set, upload crashes.
+  // Currently, the command is a no-op if this is false, though eventually it
+  // may save crashes to output directories.
+  bool upload_crashes = 4;
+
+  // If set, upload crashes to http://crash-staging instead of http://crash.
+  // Useful for testing.
+  bool use_staging = 5 [ deprecated = true ];
+}
+
+// CrashSummary defines details of crashes that will be easily accessible to
+// callers always.
+message CrashSummary {
+  // Name of the crashing executable.
+  string exec_name = 1;
+
+  // If uploads were on, URL at which this crash can be found.
+  string upload_url = 2;
+
+  // Name of the integration test that was running when this crash happened, if
+  // any.
+  string in_progress_integration_test = 3;
+
+  // Crash signature (may not be populated for all crash types).
+  string sig = 4;
+
+  // Base part of crash filename in out dir. All files associated with the crash
+  // will start with this string.
+  // (e.g. chrome.20201202.130102.12345.4567)
+  string filename_base = 5;
+}
+
+// FetchCrashesResponse defines the output of `phosphorus fetch-crashes`.
+message FetchCrashesResponse {
+  // Values should be consistent with https://aip.dev/216
+  enum State {
+    // Should not be used.
+    STATE_UNSPECIFIED = 0;
+    // FetchCrashes succeeded.
+    SUCCEEDED = 1;
+    // FetchCrashes failed.
+    FAILED = 2;
+    // FetchCrashes hit the requested timeout.
+    TIMED_OUT = 3;
+    // FetchCrashes was aborted externally.
+    ABORTED = 4;
+  }
+
+  // `phosphorus fetch-crashes` exits with exit code 0 unless there is an
+  // infrastructure failure. When the exit code is 0, `state` indicates the
+  // best known state of the prejob execution (see comments on State enum).
+  State state = 1;
+
+  // Details on the uploaded crashes.
+  repeated CrashSummary crashes = 2;
+
+  // Names of crashes that are present only in RTD output
+  repeated string crashes_rtd_only = 4;
+
+  // Names of crashes that are present only in FetchCrashes output
+  repeated string crashes_tls_only = 5;
+}

@@ -1,0 +1,51 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab";
+
+import "google/protobuf/field_mask.proto";
+
+import "lab/managed_dut.proto";
+
+// DutManagerStorageService is the service that the provides persistant storage
+// for ManagedDut information in an TLE.
+
+// The only customer of this contract is the DutManager - it allows the
+// business logic of the DutManager to be re-used no matter how the
+// information about managed Duts is stored persistently.
+
+service DutManagerStorageService {
+  rpc CreateDut(CreateDutRequest) returns (CreateDutResponse);
+  rpc DeleteDut(DeleteDutRequest) returns (DeleteDutResponse);
+  rpc ListDut(ListDutRequest) returns (ListDutResponse);
+  rpc GetDut(GetDutRequest) returns (GetDutResponse);
+  rpc UpdateDut(UpdateDutRequest) returns (UpdateDutResponse);
+}
+
+message CreateDutRequest { lab.ManagedDut dut = 1; }
+
+message CreateDutResponse {}
+
+message DeleteDutRequest { string name = 1; }
+
+message DeleteDutResponse {}
+
+message ListDutRequest {}
+
+message ListDutResponse { repeated lab.ManagedDut duts = 1; }
+
+message GetDutRequest { string name = 1; }
+
+message GetDutResponse { lab.ManagedDut dut = 1; }
+
+message UpdateDutRequest {
+  lab.ManagedDut dut = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateDutResponse {}

@@ -1,0 +1,56 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.result_flow;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow";
+
+// PubSubConfig contains the config to interact with Pub/Sub.
+message PubSubConfig {
+  string project = 1;
+  string topic = 2;
+  string subscription = 3;
+  int32 max_receiving_messages = 4;
+}
+
+// BuildbucketConfig contains the config to interact with Buildbucket.
+message BuildbucketConfig {
+  string host = 1;
+  string project = 2;
+  string bucket = 3;
+  string builder = 4;
+}
+
+// BigqueryConfig contains the config to interact with Bigquery.
+message BigqueryConfig {
+  string project = 1;
+  string dataset = 2;
+  string table = 3;
+}
+
+// Source is a wrapper for the source side configuration.
+message Source {
+  PubSubConfig pubsub = 1;
+  BuildbucketConfig bb = 2;
+  repeated string fields = 3;
+}
+
+// Target is a wrapper for the target side configuration.
+message Target { BigqueryConfig bq = 1; }
+
+// Values should be consistent with https://aip.dev/216
+enum State {
+  // Should not be used.
+  STATE_UNSPECIFIED = 0;
+  // Successfully executed the command.
+  SUCCEEDED = 1;
+  // Encountered failure during the run.
+  FAILED = 2;
+  // The command has hit the predefined deadline.
+  TIMED_OUT = 3;
+  // The command was aborted externally.
+  ABORTED = 4;
+}

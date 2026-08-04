@@ -1,0 +1,14 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.phosphorus;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus";
+
+import "test_platform/phosphorus/common.proto";
+
+// UploadToTkoRequest defines the input of `phosphorus upload-to-tko`.
+message UploadToTkoRequest { Config config = 1; }

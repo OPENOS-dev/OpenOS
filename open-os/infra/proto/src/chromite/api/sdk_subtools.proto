@@ -1,0 +1,81 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// Installs and/or updates additional "subtools" packages into an SDK along with
+// their dependencies (rebuilding if dependencies have changed). All available
+// subtools that are configured are then bundled to be relocatable.
+message BuildSdkSubtoolsRequest {
+  // The chroot to use to execute the endpoint. If this chroot is not already
+  // set up as a "subtools" chroot, it will be converted into one.
+  chromiumos.Chroot chroot = 1;
+
+  // Which packages should be built.  The default is
+  // ["virtual/target-sdk-subtools"].
+  repeated chromiumos.PackageInfo packages = 2;
+
+  // A ResultPath to communicate to the build API how to map paths.
+  chromiumos.ResultPath result_path = 3;
+
+  message SubtoolName { string name = 1; }
+  // If specified, only prepare these subtool names for upload.
+  repeated SubtoolName upload_filter = 4;
+
+  // If specified, only upload subtools created from private overlays.
+  bool private_only = 5;
+}
+
+message BuildSdkSubtoolsResponse {
+  // Packages that failed to install or update during the update phase.
+  repeated FailedPackageData failed_package_data = 1;
+
+  // The bundled paths, each with upload metadata.
+  repeated chromiumos.Path bundle_paths = 2;
+}
+
+// Bundles previously created by a BuildSdkSubtoolsRequest are uploaded to a
+// storage bucket (e.g., CIPD), after verifying whether they have changed.
+message UploadSdkSubtoolsRequest {
+  // Whether to upload to production environments. When false, uploads will be
+  // done to staging environments instead.
+  bool use_production = 1;
+
+  // The pre-bundled paths to upload, each with upload metadata.
+  repeated chromiumos.Path bundle_paths = 2;
+}
+
+message UploadSdkSubtoolsResponse {
+  // Text to associate with the step in the luci UI.
+  string step_text = 1;
+
+  // Summary text in markdown format to use for the overall subtools build.
+  string summary_markdown = 2;
+}
+
+service SdkSubtoolsService {
+  option (service_options) = {
+    module : "sdk_subtools",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Executes the BuildSdkSubtoolsRequest.
+  rpc BuildSdkSubtools(BuildSdkSubtoolsRequest)
+      returns (BuildSdkSubtoolsResponse);
+
+  // Executes the UploadSdkSubtoolsRequest.
+  rpc UploadSdkSubtools(UploadSdkSubtoolsRequest)
+      returns (UploadSdkSubtoolsResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  };
+}

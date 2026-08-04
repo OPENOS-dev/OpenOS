@@ -1,0 +1,95 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package config;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/config";
+
+import "google/protobuf/field_mask.proto";
+
+// Describes different file types that can be replicated.
+enum FileType {
+  FILE_TYPE_UNSPECIFIED = 0;
+
+  // A JSON file. For protos encoded as JSON, FILE_TYPE_JSONPB should be used.
+  FILE_TYPE_JSON = 1;
+
+  // A proto encoded as a JSON file.
+  FILE_TYPE_JSONPB = 2;
+
+  // A file not described by the other types.
+  FILE_TYPE_OTHER = 3;
+}
+
+enum ReplicationType {
+  REPLICATION_TYPE_UNSPECIFIED = 0;
+
+  // Copy the entire file.
+  REPLICATION_TYPE_COPY = 1;
+
+  // Copy part of the file. When this type is used, a filtering mechanism must
+  // be specified, e.g. a FieldMask. Not valid for some FileTypes, e.g.
+  // FILE_TYPE_OTHER.
+  REPLICATION_TYPE_FILTER = 2;
+}
+
+// Describes how to replace a text with another text.
+message StringReplacementRule {
+  // The text before the transformation.
+  string before = 1;
+
+  // The text after the transformation.
+  string after = 2;
+}
+
+// Describes how a single file should be replicated.
+message FileReplicationRule {
+  // Path to the original file. Should be relative to the source root,
+  // e.g.
+  // "src/private-overlays/overlay-coral-private/chromeos-base/chromeos-config-bsp-coral-private/files/build_config.json"
+  string source_path = 1;
+
+  // Path to output the file. Should be relative to the source root,
+  // e.g.
+  // "src/overlays/overlay-coral/chromeos-base/chromeos-config-bsp-coral/files/build_config.json"
+  string destination_path = 2;
+
+  // The type of file being replicated.
+  FileType file_type = 3;
+
+  // The type of replication being done.
+  ReplicationType replication_type = 4;
+
+  // Fields to replicate to destination config payloads. Only relevant for
+  // REPLICATION_TYPE_FILTER. If set on other replication types a
+  // reader of this rule may choose to ignore this field or throw an error.
+  //
+  // # Behavior Specific to ChromeOS Config Payloads
+  //
+  // The mask applies to each device config in the config payload, NOT to the
+  // top-level payload; i.e. to copy the "audio" field to the destination,
+  // the mask should be "audio", not "chromeos.configs.audio". This is
+  // analogous to standard FieldMask behavior on a REST list operation, where
+  // the mask applies to each individual message. Sub-fields are still
+  // fully-qualified, as per standard FieldMasks, e.g.
+  // "bluetooth.config.build-path"
+  google.protobuf.FieldMask destination_fields = 5;
+
+  // String replacements to be done on the destination file. Replacements are
+  // done in the order they appear in this list.
+  //
+  // Note that replacements are done after filtering. For example, say a
+  // replacement rule changes the name of a field, "field1" -> "field2"; if
+  // destination_fields specifies "field2", the renamed fields will not be
+  // copied.
+  repeated StringReplacementRule string_replacement_rules = 6;
+}
+
+// Describes how files should be replicated, e.g. from private to public.
+message ReplicationConfig {
+  // Files to be replicated.
+  repeated FileReplicationRule file_replication_rules = 1;
+}

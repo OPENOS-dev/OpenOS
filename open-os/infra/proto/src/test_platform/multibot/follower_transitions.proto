@@ -1,0 +1,45 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.multibot;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/multibot";
+
+import "test_platform/skylab_local_state/multihost.proto";
+
+// FollowerStateChange is sent over the multibot Leader->Follower channel, to
+// carry state change information. The follower will only respect forward state
+// changes. The same message is used internally between follower states.
+message FollowerStateChange {
+  enum FollowerState {
+    STATE_UNDEFINED = 0x00;
+    // Follower task has started executing. Note: follower will enter this state
+    // automatically once it starts.
+    STATE_STARTED = 0x10;
+    // Follower task is waiting; payload has not started running.
+    // Note: follower will enter this state automatically after finishing
+    // prejob work and informing leader.
+    STATE_WAITING_TO_RUN_PAYLOAD = 0x20;
+    // Follower task is waiting; payload is running on leader.
+    STATE_RUNNING_PAYLOAD = 0x30;
+    // Follower task is running any necessary cleanup, after which it will
+    // terminate.
+    STATE_CLEANING = 0x40;
+  }
+  FollowerState new_state = 1;
+}
+
+// FollowerEvent is sent over the multibot Follower->Leader channel, to carry
+// follower event information. The leader may use this to change state,
+// depending on leader-specific logic and its internal state.
+message FollowerEvent {
+  message FinishedPrejob { skylab_local_state.MultiBotHostInfo host_info = 1; }
+
+  oneof event {
+    FinishedPrejob finished_prejob = 1;
+    bool died = 2;
+  }
+}

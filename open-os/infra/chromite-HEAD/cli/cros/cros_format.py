@@ -1,0 +1,331 @@
+# Copyright 2022 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Run the right formatter on the specified files.
+
+TODO: Support stdin & diffs.
+"""
+
+import collections
+import difflib
+import functools
+import itertools
+import logging
+import os
+from pathlib import Path
+from typing import Callable, Dict, List, NamedTuple, Optional
+
+from chromite.cli import analyzers
+from chromite.cli import command
+from chromite.format import formatters
+from chromite.lib import cros_build_lib
+from chromite.lib import ensure_bootstrap
+from chromite.lib import git
+from chromite.lib import osutils
+from chromite.lib import parallel
+from chromite.utils import shell_util
+from chromite.utils.parser import shebang
+
+
+# These are used in _BreakoutDataByTool, so add a constant to keep in sync.
+_PYTHON_EXT = frozenset({"*.py", "*.pyi"})
+_SHELL_EXT = frozenset({"*.sh"})
+
+# Map file names to a tool function.
+# NB: Order matters as earlier entries override later ones.
+_TOOL_MAP = collections.OrderedDict(
+    (
+        # These are plain text files.
+        (
+            frozenset(
+                {
+                    ".clang-format",
+                    ".gitignore",
+                    ".gitmodules",
+                    "COPYING*",
+                    "LICENSE*",
+                    "make.conf",
+                    "make.defaults",
+                    "package.accept_keywords",
+                    "package.force",
+                    "package.keywords",
+                    "package.mask",
+                    "package.provided",
+                    "package.unmask",
+                    "package.use",
+                    "package.use.force",
+                    "package.use.mask",
+                    "use.force",
+                    "use.mask",
+                }
+            ),
+            (formatters.whitespace.Data,),
+        ),
+        # NB: Must come before *.conf rules below.
+        (
+            frozenset({"metadata/layout.conf"}),
+            (formatters.portage_layout_conf.Data,),
+        ),
+        # TODO(build): Add a formatter for this.
+        (frozenset({"OWNERS*"}), (formatters.whitespace.Data,)),
+        (
+            frozenset({"*.bazel", "*.bzl", "*.star", "BUILD", "WORKSPACE"}),
+            (formatters.star.Data,),
+        ),
+        # Remember to change cros_lint to align supported extensions.
+        # LINT.IfChange(cpp_extensions)
+        (
+            frozenset({"*.c", "*.cc", "*.cpp", "*.cxx", "*.h", "*.hh"}),
+            (formatters.cpp.Data,),
+        ),
+        # LINT.ThenChange(cros_lint.py:cpp_extensions)
+        (frozenset({"*.gn", "*.gni"}), (formatters.gn.Data,)),
+        (frozenset({"*.go"}), (formatters.go.Data,)),
+        (frozenset({"*.json", "*.jsonproto"}), (formatters.json.Data,)),
+        # TODO(build): Add a formatter for this.
+        (
+            frozenset({"*.bashrc", "*.ebuild", "*.eclass"}),
+            (formatters.whitespace.Data,),
+        ),
+        # TODO(build): Add a formatter for this.
+        (frozenset({"*.md"}), (formatters.whitespace.Data,)),
+        (frozenset({"*.mojom"}), (formatters.mojom.Data,)),
+        # TODO(build): Add a formatter for this (minijail seccomp policies).
+        (frozenset({"*.policy"}), (formatters.whitespace.Data,)),
+        (frozenset({"*.proto"}), (formatters.proto.Data,)),
+        (_PYTHON_EXT, (formatters.python.Data,)),
+        (frozenset({"*.rs"}), (formatters.rust.Data,)),
+        # TODO(build): Add a formatter for this.
+        (_SHELL_EXT, (formatters.whitespace.Data,)),
+        # TODO(build): Add a formatter for this (SELinux policies).
+        (frozenset({"*.te"}), (formatters.whitespace.Data,)),
+        # NB: We don't list all the variations in filenames as .textproto is the
+        # only one that should be used, and `cros lint` enforces that.
+        (
+            frozenset({"*.textproto", "DIR_METADATA", "METADATA"}),
+            (formatters.textproto.Data,),
+        ),
+        (
+            frozenset({"*.grd", "*.svg", "*.xml", "*.xtb"}),
+            (formatters.xml.Data,),
+        ),
+        # TODO(build): Switch .toml to rustfmt when available.
+        # https://github.com/rust-lang/rustfmt/issues/4091
+        (
+            frozenset(
+                {
+                    "*.cfg",
+                    "*.conf",
+                    "*.ini",
+                    "*.rules",
+                    "*.toml",
+                    "*.txt",
+                    "*.vpython",
+                    "*.vpython3",
+                }
+            ),
+            (formatters.whitespace.Data,),
+        ),
+    )
+)
+
+
+def _BreakoutDataByTool(map_to_return, path) -> None:
+    """Maps a tool method to the content of the |path|."""
+    # Detect by content of the file itself.
+    try:
+        with open(path, "rb") as fp:
+            # We read 128 bytes because that's the Linux kernel's current limit.
+            # Look for BINPRM_BUF_SIZE in fs/binfmt_script.c.
+            data = fp.read(128)
+
+            try:
+                result = shebang.parse(data)
+            except ValueError:
+                # If the file doesn't have a shebang, nothing to do.
+                return
+
+            basename = os.path.basename(result.real_command)
+            if basename.startswith("python") or basename.startswith("vpython"):
+                for tool in _TOOL_MAP[_PYTHON_EXT]:
+                    map_to_return.setdefault(tool, []).append(path)
+            elif basename in ("sh", "dash", "bash"):
+                for tool in _TOOL_MAP[_SHELL_EXT]:
+                    map_to_return.setdefault(tool, []).append(path)
+    except IOError as e:
+        logging.debug("%s: reading initial data failed: %s", path, e)
+
+
+def _BreakoutFilesByTool(files: List[Path]) -> Dict[Callable, List[Path]]:
+    """Maps a tool method to the list of files to process."""
+    map_to_return = {}
+
+    for f in files:
+        abs_f = f.absolute()
+        for patterns, tools in _TOOL_MAP.items():
+            if any(abs_f.match(x) for x in patterns):
+                for tool in tools:
+                    map_to_return.setdefault(tool, []).append(f)
+                break
+        else:
+            if f.is_file():
+                _BreakoutDataByTool(map_to_return, f)
+
+    return map_to_return
+
+
+class DispatcherResult(NamedTuple):
+    """Result of running a format command.
+
+    Includes the process exit code and, if the file was and remains
+    misformatted, the path of the file (for messaging for the --check mode).
+    """
+
+    process_return: int
+    misformatted_file: Path  # None if file is now formatted.
+
+
+def _Dispatcher(
+    inplace: bool,
+    _debug: bool,
+    diff: bool,
+    dryrun: bool,
+    commit: Optional[str],
+    tool: Callable,
+    path: Path,
+) -> DispatcherResult:
+    """Call |tool| on |path| and take care of coalescing exit codes."""
+    if commit:
+        top_level = git.FindGitTopLevel(path.parent)
+        git_path = path.resolve().relative_to(top_level) if top_level else path
+        # Note `top_level` must be an ancestor of the current working dir. There
+        # is no need to ask GetObjectAtRev() to chdir to `top_level` first by
+        # passing it in.
+        old_data = git.GetObjectAtRev(None, git_path, commit)
+    else:
+        try:
+            old_data = osutils.ReadFile(path)
+        except FileNotFoundError:
+            logging.error("%s: file does not exist", path)
+            return DispatcherResult(os.EX_NOINPUT, None)
+        except UnicodeDecodeError:
+            logging.error("%s: file is not UTF-8 compatible", path)
+            return DispatcherResult(os.EX_DATAERR, None)
+
+    try:
+        new_data = tool(old_data, path=path)
+    except formatters.ParseError as e:
+        logging.error("%s: parsing error: %s", e.args[0], e.__cause__)
+        return DispatcherResult(os.EX_DATAERR, None)
+    if new_data == old_data:
+        return DispatcherResult(0, None)
+
+    if dryrun:
+        logging.warning("%s: needs formatting", path)
+        return DispatcherResult(1, path)
+    elif diff:
+        path = str(path).lstrip("/")
+        print(
+            "\n".join(
+                difflib.unified_diff(
+                    old_data.splitlines(),
+                    new_data.splitlines(),
+                    fromfile=f"a/{path}",
+                    tofile=f"b/{path}",
+                    fromfiledate=f"({commit})" if commit else "(original)",
+                    tofiledate="(formatted)",
+                    lineterm="",
+                )
+            )
+        )
+        return DispatcherResult(1, path)
+    elif inplace:
+        logging.debug("Updating %s", path)
+        osutils.WriteFile(path, new_data)
+        return DispatcherResult(0, None)
+    else:
+        print(new_data, end="")
+        return DispatcherResult(1, None)
+
+
+@command.command_decorator("format")
+class FormatCommand(analyzers.AnalyzerCommand):
+    """Run the right formatter on the specified files."""
+
+    EPILOG = """
+Exit status:
+ 0 - All inputs are correctly formatted, or
+     the inputs had no known formatting method, or
+     the inputs werereformatted & successfully updated.
+ 1 - Some inputs need to be formatted.
+65 - (EX_DATA ERR) Syntax errors prevented parsing & formatting.
+66 - (EX_NOINPUT) Inputs could not be read (file not found).
+
+For some file formats, see the CrOS style guide:
+https://www.chromium.org/chromium-os/developer-library/reference/style-guides/style-guides/
+
+Supported files: %s
+""" % (
+        " ".join(sorted(itertools.chain(*_TOOL_MAP))),
+    )
+
+    # AnalyzerCommand overrides.
+    inplace_option_aliases = ["--fix"]
+    can_modify_files = True
+    use_dryrun_options = True
+
+    def Run(self):
+        if cros_build_lib.IsInsideChroot():
+            logging.warning(
+                "It's recommended to run `cros format` outside the SDK."
+            )
+
+        files = self.discover_paths()
+        if not files:
+            return 0
+
+        tool_map = _BreakoutFilesByTool(files)
+        dispatcher = functools.partial(
+            _Dispatcher,
+            self.options.inplace,
+            self.options.debug,
+            self.options.diff,
+            self.options.dryrun,
+            self.options.commit,
+        )
+
+        # If we filtered out all files, do nothing.
+        # Special case one file (or fewer) as it's common -- faster to avoid the
+        # parallel startup penalty.
+        tasks = []
+        for tool, files in tool_map.items():
+            tasks.extend([tool, x] for x in files)
+
+        misformatted_files = []
+        if not tasks:
+            logging.warning("No files support formatting.")
+            ret = 0
+        elif len(tasks) == 1:
+            tool, files = next(iter(tool_map.items()))
+            ret, misformatted_file = dispatcher(tool, files[0])
+            if misformatted_file:
+                misformatted_files = [misformatted_file]
+        else:
+            ret = 0
+            # Run the tool in parallel on the files.
+            ensure_bootstrap.for_format()
+            for task_ret, task_file in parallel.RunTasksInProcessPool(
+                dispatcher, tasks, processes=self.options.jobs
+            ):
+                ret = max(ret, task_ret)
+                if task_file:
+                    misformatted_files.append(task_file)
+
+        if misformatted_files:
+            logging.notice(
+                "You can fix formatting errors by running:\n  cros format %s",
+                shell_util.cmd_to_str(misformatted_files),
+            )
+
+        return ret

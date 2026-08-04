@@ -1,0 +1,43 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// using proto2 for compatibility with upstream
+syntax = "proto2";
+
+package chromite.telemetry;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/telemetry";
+
+// Individual log event
+message LogEvent {
+  // unix timestamp in millis for the event
+  optional int64 event_time_ms = 1;
+  // serialized log message
+  optional bytes source_extension = 6;
+}
+
+message ClientInfo {
+  // Allocated id for the client
+  optional int32 client_type = 1;
+}
+
+// LogRequest made to log http api
+message LogRequest {
+  optional ClientInfo client_info = 1;
+
+  // id to identify the log source
+  optional int32 log_source = 2;
+
+  // unix timestamp in millis for the request
+  optional int64 request_time_ms = 4;
+
+  // list of log events published to collector
+  repeated LogEvent log_event = 3;
+}
+
+// Response from log http api
+message LogResponse {
+  // The number of milliseconds to wait before the next request
+  optional int64 next_request_wait_millis = 1;
+}

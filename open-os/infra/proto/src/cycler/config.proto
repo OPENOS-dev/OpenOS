@@ -1,0 +1,107 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cycler;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/cycler";
+
+import "cycler/effect.proto";
+
+// Closure of all config for a single cycler run.
+message RunConfig {
+
+  // The runlog configuration.
+  RunLogConfiguration run_log_configuration = 1;
+
+  // The stats configuration for the prefix and the action statistics.
+  StatsConfiguration stats_configuration = 2;
+
+  // Policy effect configuration.
+  PolicyEffectConfiguration policy_effect_configuration = 3;
+
+  // Must match the command line argument and policy effect as well.
+  bool mutation_allowed = 4;
+
+  // The bucket to operate on (can be overridden on the command line).
+  string bucket = 5;
+}
+
+// Options for the log generation during a cycler run.
+message RunLogConfiguration {
+  // The destination url 'directory' for the logs, can be file:// or gs://.
+  string destination_url = 1;
+
+  // The rough chunk size in bytes to deliver the logs in (before compression).
+  int64 chunk_size_bytes = 2;
+
+  // How many outstanding log messages can we have before blocking producers.
+  int64 channel_size = 3;
+
+  // How many retries we should make to persist logs.
+  int64 persist_retries = 4;
+
+  // How many logs we'll allow to fail persistence and still continue.
+  // Since we do log shipping in goroutines this is also the cap on the number
+  // of those.
+  int64 max_unpersisted_logs = 5;
+}
+
+// Options provided to any run providing stats.
+message StatsConfiguration {
+
+  // When generating a report for a prefix, how deep should the breakdown be.
+  int64 prefix_report_max_depth = 1;
+
+  // Histogram options for the objects ages.
+  HistogramOptions age_days_histogram_options = 2;
+
+  // Histogram options for the objects sizes.
+  HistogramOptions size_bytes_histogram_options = 3;
+}
+
+// Options for the Histogram generation during a cycler run.
+// See definition in: "google.golang.org/grpc/benchmark/stats"
+message HistogramOptions {
+
+  // The number of unique buckets in the histrogram.
+  int32 num_buckets = 1;
+
+  // The growth factor of each bucket to the next.
+  double growth_factor = 2;
+
+  // The base bucket's size.
+  double base_bucket_size = 3;
+
+  // The minimum valued bucket's value.
+  int64 min_value = 4;
+}
+
+// A policy effect configuration defines the policy and the resulting effect.
+message PolicyEffectConfiguration {
+
+  // The effect configuration must be one of the following configs.
+  oneof effect_configuration {
+    // Do nothing, will still gather stats.
+    NoopEffectConfiguration noop = 1;
+    // Move the object to another location (same bucket or another).
+    MoveEffectConfiguration move = 2;
+    // Change the storage class of the objects.
+    ChillEffectConfiguration chill = 3;
+    // Duplicate the object to another location (same bucket or another).
+    DuplicateEffectConfiguration duplicate = 4;
+    // Delete the object.
+    DeleteEffectConfiguration delete = 7;
+  }
+
+  // Common configuration values.
+
+  // The policy document to be parsed by rego and executed to determine if an
+  // effect is going to be taken upon the object.
+  string policy_document_path = 5;
+
+  // Constrain the prefix iterators to paths that match the following go regexp.
+  string prefix_regexp = 6;
+}

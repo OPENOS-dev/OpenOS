@@ -1,0 +1,62 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.steps;
+
+import "chromite/api/test_metadata.proto";
+import "test_platform/request.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/steps";
+
+message EnumerationRequests {
+  // Each EnumerationRequest is handled independently.
+  repeated EnumerationRequest requests = 1;
+  map<string, EnumerationRequest> tagged_requests = 2;
+}
+
+message EnumerationResponses {
+  // Each EnumerationResponse corresponds to a single EnumerationRequest
+  // handled independently.
+  repeated EnumerationResponse responses = 1;
+  map<string, EnumerationResponse> tagged_responses = 2;
+}
+
+// EnumerationRequest defines the input of the test enumeration step.
+message EnumerationRequest {
+  test_platform.Request.Params.Metadata metadata = 1;
+  test_platform.Request.TestPlan test_plan = 4;
+}
+
+// EnumerationResponse defines the output of the test enumeration step.
+//
+// This is copied in test_platform.Request.Enumeration
+// Keep in sync.
+message EnumerationResponse {
+  message AutotestInvocation {
+    chromite.api.AutotestTest test = 1;
+
+    // Passthrough arguments from test_platform.Request_Test
+    string test_args = 2;
+    string display_name = 3;
+
+    // result_keyvals are autotest keyvals that should be included in the
+    // results corresponding to this invocation.
+    //
+    // These keyvals are overridden by Request.Decorations.autotest_keyvals.
+    map<string, string> result_keyvals = 4;
+  }
+
+  repeated AutotestInvocation autotest_invocations = 2;
+
+  // If set, a summary of the errors encountered during enumeration.
+  //
+  // If set, the corresponding request's final verdict must reflect failure.
+  //
+  // autotest_invocations may be non-empty even when error_summary is set.
+  // In that case all included autotest_invocations must be executed, despite
+  // the error_summary.
+  string error_summary = 3;
+}

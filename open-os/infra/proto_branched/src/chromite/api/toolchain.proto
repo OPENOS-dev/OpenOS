@@ -1,0 +1,307 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+// Added in R77.
+
+import "chromite/api/artifacts.proto";
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+// TODO(crbug/1027720): Migrate BuilderConfig.Artifacts.ArtifactType to
+// common.proto, and stop including builder_config.proto.
+import "chromiumos/builder_config.proto";
+import "chromiumos/common.proto";
+
+// Information about a collection of artifacts.
+message ArtifactInfo {
+  // The ArtifactType.
+  chromiumos.BuilderConfig.Artifacts.ArtifactTypes artifact_type = 1;
+
+  // Artifacts for this ArtifactType.
+  repeated Artifact artifacts = 2;
+}
+
+// TODO(b/187790484): Migrate this to ArtifactsService/BuildSetup.
+//
+// Prepare the build for artifact building.
+message PrepareForToolchainBuildRequest {
+  // The artifact types that this build should make.
+  repeated chromiumos.BuilderConfig.Artifacts.ArtifactTypes artifact_types = 1;
+
+  // Note: both chroot and sysroot may be unspecified, when the endpoint is
+  // called prior to their creation.
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 2;
+  // The sysroot where the files live.
+  chromite.api.Sysroot sysroot = 3;
+
+  // Information about artifacts available when preparing.
+  repeated chromiumos.BuilderConfig.Artifacts.InputArtifactInfo
+      input_artifacts = 4;
+
+  // Additional arguments used in PrepareForBuild.
+  // TODO(crbug/1019868): Transition to artifact_profile_info.
+  chromiumos.PrepareForBuildAdditionalArgs additional_args = 5;
+
+  // Profile information used for the artifact.
+  chromiumos.ArtifactProfileInfo profile_info = 6;
+}
+
+message PrepareForToolchainBuildResponse {
+  // Does this artifact require a build?  See artifacts.proto in this directory.
+  PrepareForBuildResponse.BuildRelevance build_relevance = 1;
+}
+
+message BundleToolchainRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+  // The sysroot where the files live.
+  chromite.api.Sysroot sysroot = 2;
+
+  // Absolute path to the directory in which artifacts should be dropped.
+  string output_dir = 3;
+
+  // Which artifacts are wanted?
+  repeated chromiumos.BuilderConfig.Artifacts.ArtifactTypes artifact_types = 4;
+
+  // Additional arguments that were used in PrepareForBuild.
+  // TODO(crbug/1019868): Transition to artifact_profile_info.
+  chromiumos.PrepareForBuildAdditionalArgs additional_args = 5;
+
+  // Profile information used for the artifact.
+  chromiumos.ArtifactProfileInfo profile_info = 6;
+}
+
+// Response describing which bundles were dumped to the given output directory.
+message BundleToolchainResponse {
+  // In R80 and earlier, artifacts_info had a different type.
+  reserved 1;
+
+  // The artifacts that added to the output directory.
+  repeated ArtifactInfo artifacts_info = 2;
+}
+
+message GetUpdatedFilesRequest {
+  // We need the artifact info from BundleResponse and the profile info
+  // as the input of the request.
+  message UploadedArtifacts {
+    ArtifactInfo artifact_info = 1;
+    chromiumos.ArtifactProfileInfo profile_info = 2;
+  }
+  repeated UploadedArtifacts uploaded_artifacts = 1;
+}
+
+message GetUpdatedFilesResponse {
+  message UpdatedFile {
+    // The path to the (uncommitted) file.
+    string path = 1;
+  }
+  repeated UpdatedFile updated_files = 1;
+
+  // The commit message to use.
+  string commit_message = 2;
+
+  // The Cq-Depend footer is used by LUCI (and ChromeOS Recipes) to operate
+  // on interdependent changes at various steps.
+  message CqDependFooter {
+    // The gerrit change(s) we depend on.
+    repeated chromiumos.GerritChange gerrit_change = 1;
+  }
+
+  // The Cq-Cl-Tag footer is used by cq-orchestrator to choose quota pools.
+  message CqClTagFooter {
+    // The Cq-Cl-Tag value.
+    string tag = 1;
+  }
+
+  message CommitFooter {
+    oneof footer {
+      CqDependFooter cq_depend = 1;
+      CqClTagFooter cq_cl_tag = 2;
+    }
+  }
+
+  // Any footers to use.  Formatted to the current standard by Recipes.
+  repeated CommitFooter commit_footer = 3;
+}
+
+// A diagnostic finding from a Linter.
+message LinterFinding {
+  string message = 1;
+  repeated LinterFindingLocation locations = 2;
+  enum Linters {
+    LINTER_UNSPECIFIED = 0;
+    CLANG_TIDY = 1;
+    CARGO_CLIPPY = 2;
+    GO_LINT = 3;
+    // Previously used for IWYU.
+    reserved 4;
+  }
+  Linters linter = 3;
+  string lint_name = 4;
+  repeated LinterSuggestedFix suggested_fixes = 5;
+  chromiumos.PackageInfo package = 6;
+}
+
+// The code location of some linter finding.
+message LinterFindingLocation {
+  string filepath = 1;
+  int32 line_start = 2;
+  int32 line_end = 3;
+  int32 col_start = 4;
+  int32 col_end = 5;
+}
+
+// A linter suggested replacement.
+message LinterSuggestedFix {
+  LinterFindingLocation location = 1;
+  string replacement = 2;
+}
+
+// Request lints from some packages.
+message LinterRequest {
+  repeated chromiumos.PackageInfo packages = 1;
+
+  Sysroot sysroot = 2;
+  chromiumos.Chroot chroot = 3;
+
+  // Filter findings to only keep lints in modified lines
+  bool filter_modified = 4;
+
+  // Selectively disable unneeded linters
+  repeated LinterFinding.Linters disabled_linters = 5;
+}
+
+// Linter findings generated when emerging some package.
+message LinterResponse { repeated LinterFinding findings = 1; }
+
+// Request lints to be uploaded to GS for all packages.
+message DashboardLintRequest {
+  Sysroot sysroot = 1;
+  chromiumos.Chroot chroot = 2;
+  int64 start_time = 3;
+}
+
+// GS path where lints were uploaded.
+message DashboardLintResponse { string gs_path = 1; }
+
+// Request toolchains info for a board.
+message ToolchainsRequest { string board = 1; }
+
+// Toolchains info for a board.
+message ToolchainsResponse {
+  // e.g. x86_64-cros-linux-gnu
+  repeated string default_toolchains = 1;
+  // e.g. i686-cros-linux-gnu
+  repeated string nondefault_toolchains = 2;
+}
+
+// Parameters to run cros_setup_toolchains.
+message SetupToolchainsRequest {
+  // Boards whose toolchains we will always include.
+  // Maps to the --include-boards param of cros_setup_toolchains.
+  repeated chromiumos.BuildTarget boards = 1;
+
+  // The chroot to run the command in.
+  chromiumos.Chroot chroot = 2;
+
+  // Tuples or keywords to setup toolchains for.
+  // Corresponds to --targets of cros_setup_toolchains.
+  message ToolchainTarget { string target = 1; };
+  repeated ToolchainTarget targets = 3;
+
+  // Sysroot to install in (inside the SDK).
+  // Note: you don't want to pass this for regular board builds.  The sysroot
+  // we want toolchains in is almost always "/".  This parameter gets used by
+  // the SDK builder to install in the new SDK at /build/amd64-host.
+  string sysroot_path = 4;
+}
+
+message SetupToolchainsResponse {}
+
+// Request toolchain_utils presubmits to be run.
+message ToolchainUtilsPresubmitRequest {
+  // The chroot to run in.
+  chromiumos.Chroot chroot = 1;
+
+  // Modified file paths.
+  repeated string files = 2;
+}
+
+// Response from toolchain_utils presubmits.
+message ToolchainUtilsPresubmitResponse {
+  // Did presubmits pass.
+  bool success = 1;
+}
+
+// Service for toolchain-related functionality: compilers, linkers, runtimes.
+service ToolchainService {
+  option (service_options) = {
+    module : "toolchain",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // TODO(b/187790484): Migrate this to ArtifactsService/BuildSetup.
+  // Prepare to build toolchain artifacts.  This will be called twice:
+  // Once with chroot and sysroot = None, before the chroot is created, and
+  // again at the start of the 'install packages' step, if the build gets that
+  // far.  Added in R80.
+  rpc PrepareForBuild(PrepareForToolchainBuildRequest)
+      returns (PrepareForToolchainBuildResponse);
+
+  // TODO(b/187790484): Migrate this to ArtifactsService/Get.
+  // Bundle toolchain artifacts.  Added in R80.
+  rpc BundleArtifacts(BundleToolchainRequest) returns (BundleToolchainResponse);
+
+  // Added in R90.
+  rpc GetUpdatedFiles(GetUpdatedFilesRequest) returns (GetUpdatedFilesResponse);
+
+  rpc EmergeAndUploadLints(DashboardLintRequest)
+      returns (DashboardLintResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE
+    };
+  };
+
+  // Emerge the given packages and retrieve any findings from linters.
+  rpc EmergeWithLinting(LinterRequest) returns (LinterResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  };
+
+  // Emerge the given Rust packages and retrieve any findings from Cargo Clippy.
+  // FIXME(b/187790543): remove this endpoint oboleted by "EmergeWithLinting".
+  // This refactor has the following dependency chain:
+  //  1) Create EmergeWithLinting endpoint
+  //  2) Let Recipe Roller update the Build API for recipes
+  //  3) Update the recipe to use EmergeWithLinting
+  //  4) Delete GetClippyLints endpoint
+  rpc GetClippyLints(LinterRequest) returns (LinterResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  };
+
+  // Get the default and non-default toolchains for a board.
+  rpc GetToolchainsForBoard(ToolchainsRequest) returns (ToolchainsResponse);
+
+  rpc SetupToolchains(SetupToolchainsRequest)
+      returns (SetupToolchainsResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  };
+
+  rpc RunToolchainUtilsPresubmit(ToolchainUtilsPresubmitRequest)
+      returns (ToolchainUtilsPresubmitResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  }
+}

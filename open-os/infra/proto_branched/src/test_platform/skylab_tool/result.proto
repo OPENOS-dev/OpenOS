@@ -1,0 +1,60 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_tool;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_tool";
+
+// WaitTaskResult describes the format returned by the `skylab wait-task`
+// subcommand.
+message WaitTaskResult {
+  message Task {
+    string name = 1;
+    string state = 2;
+    // TODO(crbug.com/964573): Deprecate this field.
+    bool failure = 3;
+    bool success = 4;
+
+    // Note: These fields are a little problematic, because they are not
+    // independently meaningful to the caller; their meaning depends on the
+    // namespace (buildbucket vs. swarming) and, in the case of swarming,
+    // environment (dev vs. prod). Still, they are used by some clients, so
+    // preserved for now. Note the distinction between TaskRunID and
+    // TaskRequestID: in buildbucket runs, these will be equal. In swarming
+    // runs, they will differ in the last character (this is the difference
+    // between a swarming run id and request id).
+    string task_run_id = 5 [ json_name = "task-run-id" ];
+    string task_request_id = 6 [ json_name = "task-request-id" ];
+
+    // Note: these URL fields are only populated for -bb runs; eventually,
+    // non-bb runs will be deprecated.
+    string task_run_url = 7 [ json_name = "task-run-url" ];
+    string task_logs_url = 8 [ json_name = "task-logs-url" ];
+  }
+
+  Task result = 1 [ json_name = "task-result" ];
+  string stdout = 2;
+  repeated Task child_results = 3 [ json_name = "child-results" ];
+
+  message LogDataURL {
+    string isolate_url = 1 [ deprecated = true ];
+
+    // Google Storage URL, in full "gs://bucket/foo/bar/baz" form
+    string gs_url = 2 [ json_name = "gs-url" ];
+  }
+
+  LogDataURL log_data_url = 4 [ json_name = "log-data-url" ];
+}
+
+// WaitTasksResult describes the format returned by the `skylab wait-tasks`
+// subcommand.
+message WaitTasksResult {
+  repeated WaitTaskResult results = 1;
+
+  // True if an error or timeout was encountered while waiting for tasks to
+  // complete.
+  bool incomplete = 2;
+}

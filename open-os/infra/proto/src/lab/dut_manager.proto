@@ -1,0 +1,150 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "chromiumos/test/api/dut_attribute.proto";
+import "chromiumos/storage_path.proto";
+import "chromiumos/longrunning/operations.proto";
+import "chromiumos/config/api/mfg_config_id.proto";
+
+import "lab/managed_dut.proto";
+
+// Dut manager is a service the controls access to Dut's that are
+service DutManagerService {
+  // Give the DutManager control over a Dut.
+  rpc CreateManagedDut(CreateManagedDutRequest)
+      returns (chromiumos.longrunning.Operation) {
+    option (chromiumos.longrunning.operation_info) = {
+      response_type : "CreateManagedDutResponse",
+      metadata_type : "CreateMManagedDutMetadata"
+    };
+  }
+  rpc DeleteManagedDut(DeleteManagedDutRequest)
+      returns (DeleteManagedDutResponse);
+  // List all the Dut's and their current state.
+  // this is a MVP - future versions will allow filter params to be
+  // passed in so you can list all the failed Dut's etc/
+  // The state history will not be populated in List requests.
+  rpc ListManagedDuts(ListManagedDutsRequest) returns (ListManagedDutsResponse);
+  // Get details including state history for a given Dut.
+  rpc GetManagedDut(GetManagedDutRequest) returns (GetManagedDutResponse);
+  rpc UpdateManagedDut(UpdateManagedDutRequest)
+      returns (UpdateManagedDutResponse);
+  // Tests request temporary ownership of a Dut to run test on.
+  // test metadata specifies what type of hardware/software is required.
+  // Leases should be given a timeout, ideally the request would indicate the
+  // length of lease required and that lease time would be used.
+  rpc LeaseManagedDut(LeaseManagedDutRequest)
+      returns (chromiumos.longrunning.Operation) {
+    option (chromiumos.longrunning.operation_info) = {
+      response_type : "LeaseManagedDutResponse",
+      metadata_type : "LeaseManagedDutMetadata"
+    };
+  }
+  // When a test is done with a Dut it should return the lease.
+  rpc ReturnManagedDutLease(ReturnManagedDutLeaseRequest)
+      returns (ReturnManagedDutLeaseResponse);
+  // If a test needs to extend the time it owns the Dut is should renew
+  // the lease.
+  rpc ExtendManagedDutLease(ExtendManagedDutLeaseRequest)
+      returns (ExtendManagedDutLeaseResponse);
+  // Provision a Dut, used in the Moblab "flashstation" user journey.
+  rpc ProvisionManagedDut(ProvisionManagedDutRequest)
+      returns (ProvisionManagedDutResponse);
+  // Request that a Dut be verified, if the verify fails it should be
+  // put into repairs.  The call returns when the verification has started
+  // not when complete/repaired.
+  // Use case is when a Dut has been manually repaired this is how a user
+  // can request that the Dut be checked and returned to READY state.
+  rpc VerifyManagedDut(VerifyManagedDutRequest)
+      returns (VerifyManagedDutResponse);
+}
+
+message CreateManagedDutRequest {
+  NetworkIdentifier name = 1;
+  string display_name = 2;
+}
+
+message CreateManagedDutResponse {}
+
+message CreateMManagedDutMetadata {}
+
+message CreateManagedDutMetadata {}
+
+message DeleteManagedDutRequest { NetworkIdentifier name = 1; }
+
+message DeleteManagedDutResponse {}
+
+message ListManagedDutsRequest { repeated ManagedDut duts = 1; }
+
+message ListManagedDutsResponse { repeated ManagedDut duts = 1; }
+
+message GetManagedDutRequest { NetworkIdentifier name = 1; }
+
+message GetManagedDutResponse { ManagedDut dut = 1; }
+
+message UpdateManagedDutRequest {
+  ManagedDut dut = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateManagedDutResponse {}
+
+message LeaseManagedDutRequest {
+  chromiumos.test.api.DutAttribute model = 1;
+  string lease_owner = 2; // The task id / test id of the lease holder
+  chromiumos.StoragePath software_path = 3; // provision_service.proto
+  int32 lease_length_secs = 4;              // requested time in second
+  chromiumos.test.api.DutAttributeList tag = 5;
+  chromiumos.test.api.DutAttributeList pool = 6;
+  chromiumos.test.api.DutAttributeList peripheral = 7;
+  chromiumos.config.api.MfgConfigId mfg_config_id = 8;
+  int32 min_duts = 9;  // Minimum number of Duts requested, for multi dut
+  int32 max_duts = 10; // Maximum number of Duts requested, for multi dut
+  int32 number_associated_duts =
+      11; // Get a lease on a Dut that is associated with another DUT and not
+          // generally available for lease.
+}
+
+message LeaseManagedDutResponse {
+  repeated NetworkIdentifier name = 1;
+  google.protobuf.Timestamp expiry_time_secs = 2;
+}
+
+message ReturnManagedDutLeaseRequest {
+  NetworkIdentifier name = 1;
+  bool force = 2; // someone other than the leaseholder is expiring the lease.
+  string force_reason =
+      3; // why a forced lease return not by the owner was necessary.
+}
+
+message ReturnManagedDutLeaseResponse {}
+
+message ExtendManagedDutLeaseRequest {
+  NetworkIdentifier name = 1;
+  int32 lease_length_secs = 3;
+}
+
+message ExtendManagedDutLeaseResponse {
+  google.protobuf.Timestamp expiry_time_secs = 2;
+}
+
+message VerifyManagedDutRequest { NetworkIdentifier name = 1; }
+
+message VerifyManagedDutResponse {}
+
+message ProvisionManagedDutRequest {
+  NetworkIdentifier name = 1;
+  chromiumos.StoragePath build_path = 2;
+}
+
+message ProvisionManagedDutResponse {}

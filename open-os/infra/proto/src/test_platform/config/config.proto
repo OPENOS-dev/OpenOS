@@ -1,0 +1,107 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.config;
+
+import "test_platform/migration/test_runner/config.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/config";
+
+// Config defined configuration parameters of cros_test_platform.
+message Config {
+  reserved 2, 5, 6;
+
+  // Swarming defines configuration parameters related to a swarming instance.
+  message Swarming {
+    string server = 1;
+
+    string auth_json_path = 2;
+  }
+
+  // Isolate defines configuration parameters related to an isolate instance.
+  message Isolate { string auth_json_path = 1; }
+
+  // SkylabWorker defines configuration parameters related to
+  // skylab_swarming_worker.
+  message SkylabWorker {
+    // LUCI project for tasks; e.g. "chromeos"
+    string luci_project = 1;
+
+    // LogDog host for test task logs, e.g. luci-logdog.appspot.com
+    string log_dog_host = 2;
+  }
+
+  // Versioning defines configuration parameters dictating which versions of
+  // the downstream components to use.
+  message Versioning {
+    // CrosTestPlatformBinary describes which cros_test_platform version to
+    // use.
+    message CrosTestPlatformBinary {
+      // Use the CIPD version with this label.
+      string cipd_label = 1;
+    }
+
+    CrosTestPlatformBinary cros_test_platform_binary = 1;
+  }
+
+  // Buildbucket defines configuration parameters of a builder.
+  message Buildbucket {
+    // Buildbucket host, e.g. "cr-buildbucket.appspot.com".
+    string host = 1;
+
+    // Project+bucket+builder serves as a unique builder identifier, see
+    // BuilderID in the build proto:
+    // https://cs.chromium.org/search/?q=f:build.proto+BuilderID
+    string project = 2;
+    string bucket = 3;
+    string builder = 4;
+  }
+
+  // PubSub defines the configuration parameters for PubSub topic.
+  message PubSub {
+    string project = 1;
+    string topic = 2;
+  }
+
+  // TestRunner defines configuration parameters related to the test_runner
+  // recipe.
+  message TestRunner {
+    Buildbucket buildbucket = 1;
+
+    // TODO(crbug.com/1132489) Delete once builders stop using this.
+    PubSub pubsub = 2 [ deprecated = true ];
+
+    // go/ctp-result-flow: Trigger result flow processing of test runner
+    // results.
+    PubSub result_flow_channel = 3;
+
+    // go/buildbucket-pubsub: Buildbucket status updates for child builds.
+    PubSub bb_status_update_channel = 4;
+
+    // Which swarming pool the test_runner build will run in. Should match
+    // the buildbucket configuration
+    string swarming_pool = 5;
+  }
+
+  Swarming skylab_swarming = 1;
+
+  Isolate skylab_isolate = 3;
+
+  SkylabWorker skylab_worker = 4;
+
+  Versioning versioning = 7;
+
+  TestRunner test_runner = 8;
+
+  test_platform.migration.test_runner.Config test_runner_migration = 9;
+
+  // TODO(crbug.com/1132489) Delete once builders stop using this.
+  PubSub pubsub = 10 [ deprecated = true ];
+
+  // go/ctp-result-flow: CTP publishes a message with build ID, once
+  // at build start and again at build end
+  PubSub result_flow_channel = 11;
+}

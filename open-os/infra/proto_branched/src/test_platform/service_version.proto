@@ -1,0 +1,21 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform";
+
+// ServiceVersion denotes the version of services (e.g. the skylab CLI) that
+// can trigger Test Platform's Buildbucket builders (e.g. cros_test_platform
+// and dut_leaser). It is used to ensure that users keep their local versions
+// of such services up-to-date.
+message ServiceVersion {
+  reserved "global";
+  reserved 1;
+
+  int64 skylab_tool = 2;
+  int64 crosfleet_tool = 3;
+}

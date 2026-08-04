@@ -1,0 +1,225 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+// RequestStatus defines the result.
+enum RequestStatus {
+  STATUS_UNKNOWN = 0;
+  STATUS_PASS = 1;
+  STATUS_FAIL = 2;
+}
+
+message CreatePreMPKeysRequest {
+  // Docker image to use for signing operations.
+  // Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  // This should be set programatically at run time, not manually.
+  string docker_image = 5;
+
+  // Path to the local checkout of the chromiumos/platform/release-keys.
+  string release_keys_checkout = 6;
+
+  // If set, will use the DevPreMPKeys keyset and will run the CloudKMS exporter
+  // in dry run mode (so nothing will actually be exported to CloudKMS)..
+  bool dry_run = 7;
+
+  // Build target to create the PreMP keyset for.
+  chromiumos.BuildTarget build_target = 1;
+
+  // The version of the PreMP keyset, e.g. 2 in "FooPreMpKeys-v2".
+  // Should only be set if the PreMP keys need to be regenerated for some
+  // reason, e.g. if the existing keyset is broken or missing features.
+  // Usually adding a LOEM to the existing keyset is sufficient.
+  // Defaults to 1 (note that the "-v1" suffix is dropped, it is implicit).
+  int32 version = 2;
+
+  // Whether to skip generating android keys.
+  bool skip_android_keys = 3;
+
+  // Whether to generate UEFI keys.
+  bool uefi = 4;
+
+  // Whether to add a new loem to an existing keyset.
+  bool add_loem = 8;
+}
+
+message CreatePreMPKeysResponse { RequestStatus request_status = 2; }
+
+message CreateAccessoryKeyRequest {
+  // Build target to create the accessory keyset for.
+  chromiumos.BuildTarget build_target = 1;
+
+  // Accessory to create the keyset for.
+  string accessory = 2;
+
+  // If set, create PreMP keyset
+  bool is_pre_mp = 3;
+
+  // Docker image to use for signing operations.
+  // Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  // This should be set programmatically at run time, not manually.
+  string docker_image = 4;
+
+  // Path to the local checkout of the chromiumos/platform/release-keys.
+  string release_keys_checkout = 5;
+
+  // If set, no gcloud operations will actually be performed
+  bool dry_run = 6;
+
+  // If set, use chromeos-bot instead of chromeos-release-bot for
+  // cloud operations
+  bool is_staging = 7;
+
+  // The version of the keyset, e.g. 2 in "FooPreMpKeys-v2".
+  // Ignored if request is for PreMP keyset.
+  int32 version = 8;
+}
+
+message CreateAccessoryKeyResponse { RequestStatus request_status = 1; }
+
+message SignTi50PaosRequest {
+  // Cloud KMS properties for the key to use:
+  string project = 1;
+  string location = 2;
+  string keyring = 3;
+  string key = 4;
+  int32 version = 5;
+
+  // Directory where input (unsigned) artifacts are placed.
+  string archive_dir = 6;
+
+  // Directory where signed artifacts should be placed.
+  chromiumos.ResultPath result_path = 7;
+
+  // File name to be signed.
+  string filename = 8;
+
+  // Docker image to use for signing operations.
+  // Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  // This should be set programmatically at run time, not manually.
+  string docker_image = 9;
+
+  // Directory to be mounted to /tmp in the docker container.
+  // Needed to avoid filling up our small boot partition..
+  string tmp_path = 10;
+}
+
+message SignTi50PaosResponse {}
+
+message CreateCertRequest {
+  // Docker image to use for signing operations.
+  // Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  // This should be set programmatically at run time, not manually.
+  string docker_image = 1;
+
+  // If set, will skip gcloud operations.
+  bool dry_run = 2;
+
+  // If set, use dev project for cloud operations.
+  bool is_staging = 3;
+
+  // Name of the keyring.
+  string keyring = 4;
+
+  // Name of the key to create a cert for.
+  string key_name = 5;
+
+  // Path where cert should be placed.
+  string out_path = 6;
+
+  // Path to the local checkout of keys.
+  string release_keys_checkout = 7;
+
+  // Directory where artifacts should be placed.
+  chromiumos.ResultPath result_path = 8;
+}
+
+message CreateCertResponse {
+  // Status of cert creation.
+  RequestStatus request_status = 1;
+
+  // Path to created cert.
+  string cert_path = 2;
+}
+
+message SignViaOnlineHsmRequest {
+  // Docker image to use for signing operations.
+  // Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  // This should be set programmatically at run time, not manually.
+  string docker_image = 1;
+}
+
+message SignViaOnlineHsmResponse {}
+
+message CreateKeysHsmRequest {
+  // Docker image to use for signing operations.
+  // Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  // This should be set programmatically at run time, not manually.
+  string docker_image = 1;
+
+  // Path to the local checkout of the chromiumos/platform/release-keys.
+  string release_keys_checkout = 2;
+
+  optional bool dry_run = 3;
+
+  string keyset_name = 4;
+
+  optional bool exporter_dry_run = 5;
+}
+
+message CreateKeysHsmResponse { RequestStatus request_status = 1; }
+
+// The signing service.
+service SigningService {
+  option (service_options) = {
+    module : "signing",
+    service_branched_execution : EXECUTE_TOT,
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // Create a PreMP keyset for the given board.
+  // Example json:
+  // {
+  //   "board": "foo",
+  //   "uefi": true,
+  // }
+  rpc CreatePreMPKeys(CreatePreMPKeysRequest)
+      returns (CreatePreMPKeysResponse) {};
+
+  // Create an accessory keyset for the given board and accessory.
+  rpc CreateAccessoryKeys(CreateAccessoryKeyRequest)
+      returns (CreateAccessoryKeyResponse) {};
+
+  // Sign PAOs in a Ti50 tarball.
+  rpc SignTi50Paos(SignTi50PaosRequest) returns (SignTi50PaosResponse) {};
+
+  // Create cert for a given key.
+  rpc CreateCert(CreateCertRequest) returns (CreateCertResponse) {};
+
+  // Initiate a signing operation against the online HSM.
+  rpc SignViaOnlineHsm(SignViaOnlineHsmRequest)
+      returns (SignViaOnlineHsmResponse) {};
+
+  // Request key creation from the online HSM.
+  rpc CreateKeysHsm(CreateKeysHsmRequest) returns (CreateKeysHsmResponse) {};
+}

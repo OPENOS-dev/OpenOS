@@ -1,0 +1,25 @@
+# Copyright 2020 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# ChromeOS Build Team
+include chromiumos/owners:v1:/infra/OWNERS.build
+
+# ChromeOS CI Team
+include chromiumos/owners:v1:/infra/OWNERS.ci
+
+# Allow anyone to regenerate the json file.
+per-file gen/descriptors.json = *
+
+# Allow Auto-Qual to self service.
+per-file src/chromite/api/qualbot.proto = file:chromiumos/owners:v1:/firmware/OWNERS.automated_qual
+
+# ChromeOS Test Scheduling team
+include chromiumos/owners:v1:/infra/OWNERS.tse
+
+# Fleet team.
+ayatane@chromium.org
+xixuan@google.com
+
+# Service accounts, for rolling dependencies.
+recipe-mega-autoroller@chops-service-accounts.iam.gserviceaccount.com

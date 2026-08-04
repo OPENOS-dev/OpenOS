@@ -1,0 +1,20 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+// AutotestHostInfo defines the structure of the host info file which is used
+// to pass host information to Autotest and receive host information
+// changes from Autotest.
+message AutotestHostInfo {
+  map<string, string> attributes = 1;
+
+  repeated string labels = 2;
+
+  int32 serializer_version = 3 [ json_name = "serializer_version" ];
+}

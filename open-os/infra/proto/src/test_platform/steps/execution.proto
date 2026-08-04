@@ -1,0 +1,131 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.steps;
+
+import "test_platform/common/task.proto";
+import "test_platform/config/config.proto";
+import "test_platform/request.proto";
+import "test_platform/steps/enumeration.proto";
+import "test_platform/steps/execute/build.proto";
+import "test_platform/taskstate.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/steps";
+
+message ExecuteRequests {
+  // Each ExecuteRequest is handled independently.
+  repeated ExecuteRequest requests = 1;
+  map<string, ExecuteRequest> tagged_requests = 2;
+  // Build contains relevant information about the current test platform
+  // buildbucket build.
+  test_platform.steps.execute.Build build = 3;
+}
+
+message ExecuteResponses {
+  // Each ExecuteResponse corresponds to a single ExecuteRequest handled
+  // independently.
+  repeated ExecuteResponse responses = 1;
+  map<string, ExecuteResponse> tagged_responses = 2;
+}
+
+// ExecuteRequest defines the input of the Execute step.
+message ExecuteRequest {
+  // RequestParams are the request-wide parameters for the
+  // cros_test_platform request. This includes all the request-wide information
+  // needed in order to execute tests (e.g. labels, retry parameters,
+  // scheduling parameters).
+  test_platform.Request.Params request_params = 1;
+  EnumerationResponse enumeration = 2;
+  test_platform.config.Config config = 3;
+}
+
+// ExecuteResponse defines the output of the Execute step.
+message ExecuteResponse {
+  message TaskResult {
+    // URL at which a human can view the task's run state (e.g. link to
+    // swarming or cautotest job view).
+    string task_url = 2;
+
+    TaskState state = 3;
+
+    string name = 4;
+
+    // URL at which a human can view the task's logs (e.g. a link to
+    // stainless gs viewer for this task).
+    string log_url = 5;
+
+    // The attempt number, starting at 0.
+    // Within an execution, the tuple (name, attempt) will be unique.
+    int32 attempt = 6;
+
+    message TestCaseResult {
+      // Test case name which is generally independent from task name.
+      // E.g. a task named "tast.critical-system" may have a test case
+      // named "tast.audio.DevicePlay".
+      // For tasks with a single test case it will generally be the same
+      // as the task name, e.g. "logging_UserCrash".
+      string name = 1;
+
+      // Verdict describes whether the test case passed, failed, or had
+      // some other indefinite verdict.
+      TaskState.Verdict verdict = 2;
+
+      // A one line human readable description of what happened during
+      // test case execution (e.g. error/warning message). Not intended
+      // to be machine parseable. There's no guarantee that a given root
+      // cause will always resolve to the same summary.
+      string human_readable_summary = 3;
+    }
+
+    // The results of individual test cases that were executed as part of
+    // the task.
+    repeated TestCaseResult test_cases = 7;
+
+    // The results of steps run prior to running the actual tests
+    // (e.g. provision).
+    repeated TestCaseResult prejob_steps = 8;
+
+    // Logdata is the location at which the task's full output will
+    // eventually be available. Not intended for human's to view; use
+    // log_url instead.
+    test_platform.common.TaskLogData log_data = 9;
+
+    // Any rejected task dimensions from the task execution request,
+    // stored as key-value pairs. This field is only populated if the
+    // task was rejected by Swarming due to a lack of matching bot.
+    // DEPRECATED: use rejected_dimensions instead, as it allows multiple
+    // values for the same key. This will be deleted soon.
+    // TODO(https://crbug.com/11798680)
+    map<string, string> rejected_task_dimensions = 11 [ deprecated = true ];
+
+    message RejectedTaskDimension {
+      string key = 1;
+      string value = 2;
+    }
+
+    // Any rejected task dimensions from the task execution request,
+    // stored as key-value pairs. This field is only populated if the
+    // task was rejected by Swarming due to a lack of matching bot.
+    repeated RejectedTaskDimension rejected_dimensions = 12;
+
+    reserved 10;
+    reserved "synchronous_log_data_url";
+  }
+
+  // Use consolidated_results instead.
+  repeated TaskResult task_results = 1 [ deprecated = true ];
+
+  message ConsolidatedResult {
+    // result for each attempt of the corresponding enumeration.
+    repeated TaskResult attempts = 1;
+  }
+
+  repeated ConsolidatedResult consolidated_results = 3;
+
+  // State encodes the state of the overall execution, including the ultimate
+  // verdict (taking into account any sub-task verdicts).
+  TaskState state = 2;
+}

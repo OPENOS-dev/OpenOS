@@ -1,0 +1,99 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/*
+This proto matches the schema of paygen.json. An example
+of which looks like the following:
+
+{
+  "delta": [
+    {
+      "board": {
+        "public_codename": "AU from FSI to RSI in Beta channel",
+        "is_active": false,
+        "builder_name": "AU from FSI to RSI in Beta channel"
+      },
+      "delta_type": "NO_DELTA",
+      "generate_delta": false,
+      "delta_payload_tests": false,
+      "full_payload_tests": false
+    },
+    ...
+    {
+      "board": { ...
+      ...
+    }
+  ]
+}
+*/
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+message PayloadConfig {
+  // This is current configuration for payloads.
+  repeated PayloadProperties delta = 1;
+}
+
+// This is a single payload config field.
+message PayloadProperties {
+
+  // A board type and builder name, and if it is currently active.
+  message Board {
+
+    // The board's public codename (e.g. nyan-kitty).
+    string public_codename = 1;
+
+    // Is the board currently being supported.
+    bool is_active = 2;
+
+    // What is the builder name for the board (e.g. nyan_kitty).
+    string builder_name = 3;
+  }
+
+  // An enum of possible delta types.
+  enum DeltaType {
+    NOT_SET = 0;
+    NO_DELTA = 1;
+    OMAHA = 2;
+    STEPPING_STONE = 3;
+    MILESTONE = 4;
+    FSI = 5;
+  }
+
+  // The board to be considered for signing.
+  Board board = 1;
+
+  // The delta type to generate for the payload.
+  DeltaType delta_type = 2;
+
+  // The channel to sign payloads for (e.g. 'dev', 'stable', or '').
+  string channel = 3;
+
+  // The ChromeOS version (e.g. '12240.0.0' or '').
+  string chrome_os_version = 4;
+
+  // The version of chrome within the payload (e.g. '78.0.3877.0').
+  string chrome_version = 5;
+
+  // The milestone number (e.g. 73).
+  uint32 milestone = 6;
+
+  // Generate the image update deltas.
+  bool generate_delta = 7;
+
+  // Test the image update deltas we generated post signing.
+  bool delta_payload_tests = 8;
+
+  // Do a full payload test.
+  bool full_payload_tests = 9;
+
+  // An array of model names: ['teemo', 'kench', 'sion'].
+  // While we generally don't like repeated scalars, it conforms to the json.
+  repeated string applicable_models = 10;
+}

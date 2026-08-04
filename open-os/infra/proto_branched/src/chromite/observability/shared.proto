@@ -1,0 +1,37 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.observability;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/observability";
+
+import "google/protobuf/timestamp.proto";
+import "chromiumos/common.proto";
+import "chromiumos/builder_config.proto";
+
+message BuilderMetadata {
+  uint64 buildbucket_id = 1;
+  google.protobuf.Timestamp start_timestamp = 2;
+  chromiumos.BuildTarget build_target = 3;
+
+  chromiumos.BuilderConfig.Id.Type build_type = 4; // e.g. CQ, POSTSUBMIT, etc
+
+  string build_config_name = 5; // e.g. amd64-generic-arcnext-fuzzer-cq
+
+  uint32 annealing_commit_id = 6;
+  string manifest_commit = 7;
+}
+
+message BuildVersionData {
+  uint32 milestone = 1;
+  PlatformVersion platform_version = 2;
+}
+
+message PlatformVersion {
+  uint32 platform_build = 1;
+  uint32 platform_branch = 2;
+  uint32 platform_patch = 3;
+}

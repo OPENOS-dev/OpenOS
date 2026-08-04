@@ -1,0 +1,62 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Schema for configuring firmware versions.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// Config for signing of a specific model.
+message ModelSigningConfig {
+  // Key ID to use.
+  string key_id = 1; // e.g. "CROTAA"
+
+  // Brand code for the model.
+  string brand_code = 2; // e.g. "ZZCR"
+}
+
+// A sinfgle firmware version
+message FirmwareVersion {
+  // The URI at which the firmware binary can be found.
+  string uri = 1;
+
+  // SHA256 hash of the firmware binary.
+  string sha256 = 2;
+}
+
+// Config for a specific firmware type.
+message FirmwareConfig {
+  // Read-only firmware version.
+  FirmwareVersion ro_firmware = 1;
+
+  // Read-write firmware version.
+  FirmwareVersion rw_firmware = 2;
+}
+
+// This is the primary object to be used for configuring firmware for a model.
+message FirmwareConfigForModel {
+  // Name of the model in question.
+  string model = 1; // e.g. "crota"
+
+  // Signing config for the firmware of the model.
+  ModelSigningConfig signing = 2;
+
+  // AP Firmware config.
+  FirmwareConfig ap_firmware = 3;
+
+  // EC firmware config.
+  FirmwareConfig ec_firmware = 4;
+
+  // AP firmware containing the EC firmware for read-write EC.
+  // This is multually exclusive with ec_firmware.rw_firmware. At most one can
+  // have non-empty uri.
+  FirmwareVersion ap_firmware_for_ec_rw = 5;
+
+  // Fingerprint firmware.
+  FirmwareVersion fingerprint_firmware = 6;
+}

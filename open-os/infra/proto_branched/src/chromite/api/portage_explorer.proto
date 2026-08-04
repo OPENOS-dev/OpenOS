@@ -1,0 +1,136 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+message RunSpidersRequest {
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+}
+
+// All output from all the spiders. The unique ids are set in messages for
+// entities that are contained within other entities and listed in the output.
+message RunSpidersResponse {
+  // A build target (or board).
+  message BuildTarget {
+    // Name of the build target (or board).
+    string name = 1;
+    // Profile id that this build target is directly inheriting from.
+    Profile profile_id = 2;
+  }
+
+  // A profile.
+  message Profile {
+    // Unique ID for each profile in the form overlay_name:profile_name. Matches
+    // with build targets and profile inheritance.
+    string id = 1;
+    // Source path of the profile.
+    string path = 2;
+    // Name of the profile.
+    string name = 3;
+    // List of USE flags enabled or disabled in the profile.
+    repeated ProfileUse use_flags = 4;
+    // List of profiles this profile inherits from.
+    repeated Profile parent_profiles = 5;
+  }
+
+  // An overlay.
+  message Overlay {
+    // Source path of the overlay.
+    string path = 1;
+    // Name of the overlay.
+    string name = 2;
+    // List of profiles in the overlay.
+    repeated Profile profiles = 3;
+    // List of ebuilds in the overlay.
+    repeated Ebuild ebuilds = 4;
+    // List of eclasses in the overlay.
+    repeated Eclass eclasses = 5;
+  }
+
+  // An ebuild.
+  message Ebuild {
+    // Source path of the ebuild.
+    string path = 1;
+    // Store the package category/name the ebuild satisfies.
+    chromiumos.PackageInfo package_info = 2;
+    // Version of the ebuild, excluding revision.
+    string version = 3;
+    // Revision number of the ebuild.
+    int32 revision = 4;
+    // EAPI of the ebuild.
+    int32 eapi = 5;
+    // Description of the ebuild.
+    string description = 6;
+    // Homepage of the ebuild.
+    string homepage = 7;
+    // License of the ebuild.
+    string license = 8;
+    // Slot the ebuild is compatible with.
+    string slot = 9;
+    // SRC_URI for the ebuild.
+    string src_uri = 10;
+    // Portage features the ebuild restricts.
+    string restrict = 11;
+    // Build time dependencies.
+    string depend = 12;
+    // Run time dependencies.
+    string rdepend = 13;
+    // Build time dependencies needed during the build.
+    string bdepend = 14;
+    // Post time dependencies.
+    string pdepend = 15;
+    // List of USE flags used in the ebuild. Can be default enabled.
+    repeated EbuildUse use_flags = 16;
+    // List of eclass names the ebuild inherits from.
+    repeated string eclass_inherits = 17;
+  }
+
+  // An eclass.
+  message Eclass {
+    // Source path of the eclass.
+    string path = 1;
+    // Name of eclass.
+    string name = 2;
+    // List of eclass names the eclass inherits from.
+    repeated string eclass_inherits = 3;
+  }
+
+  // USE flags used in profiles. Can be enabled or disabled.
+  message ProfileUse {
+    // Name of USE flag.
+    string name = 1;
+    // True for if a use flag is enabled in profile, False for disabled.
+    bool enabled = 2;
+  }
+
+  // USE flags used in ebuilds. Can be default enabled for ebuilds.
+  message EbuildUse {
+    // Name of USE flag.
+    string name = 1;
+    // True for if use flag is default enabled in the ebuild, False for not.
+    bool default_enabled = 2;
+  }
+
+  // List of the current build targets (or boards).
+  repeated BuildTarget build_targets = 1;
+  // List of the current overlays.
+  repeated Overlay overlays = 2;
+}
+
+service PortageExplorerService {
+  option (service_options) = {
+    module : "portage_explorer",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Run each individual spider to record data.
+  rpc RunSpiders(RunSpidersRequest) returns (RunSpidersResponse);
+}

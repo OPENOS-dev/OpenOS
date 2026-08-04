@@ -1,0 +1,25 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// Stores information about the cached SDK.
+message SdkCacheState {
+  // The SDK version. See crbug.com/1023855.
+  int32 version = 1;
+
+  // The manifest branch.
+  string manifest_branch = 2;
+
+  // The manifest URL.
+  string manifest_url = 3;
+
+  // The git hash of the snapshot.
+  string snapshot_hash = 4;
+}

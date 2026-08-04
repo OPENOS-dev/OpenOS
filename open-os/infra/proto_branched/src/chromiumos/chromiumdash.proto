@@ -1,0 +1,87 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+import "google/protobuf/timestamp.proto";
+
+// A single milestone according to chromium dash.
+//
+// Example message:
+// {
+//   final_beta_cut: "2021-01-12T00:00:00",
+//   final_beta: "2021-01-13T00:00:00",
+//   feature_freeze: "2020-10-30T00:00:00",
+//   earliest_beta: "2020-12-03T00:00:00",
+//   stable_refresh_first: "2021-02-02T00:00:00",
+//   latest_beta: "2020-12-10T00:00:00",
+//   owners: {
+//     clank: "Krishna Govind",
+//     bling: "Bindu Suvarna",
+//     cros: "Marina Kazatcker",
+//     desktop: "Srinivas Sista"
+//   },
+//   stable_cut: "2021-01-12T00:00:00",
+//   stable_refresh_second: "2021-02-16T00:00:00",
+//   mstone: 88,
+//   late_stable_date: "2021-01-26T00:00:00",
+//   stable_date: "2021-01-19T00:00:00",
+//   ldaps: {
+//     clank: "govind",
+//     bling: "bindusuvarna",
+//     cros: "marinakz",
+//     desktop: "srinivassista "
+//   },
+//   earliest_beta_ios: "2020-11-17T00:00:00",
+//   branch_point: "2020-11-12T00:00:00",
+//   ltc_date: "2022-06-02T00:00:00",
+//   ltr_date: "2022-09-01T00:00:00",
+//   ltr_last_refresh_date: 2023-03-09T00:00:00
+// }
+message Milestone {
+  google.protobuf.Timestamp final_beta_cut = 1;
+  google.protobuf.Timestamp final_beta = 2;
+  google.protobuf.Timestamp feature_freeze = 3;
+  google.protobuf.Timestamp earliest_beta = 4;
+  // Was added and is authoritative for ChromeOS: crbug.com/1500733.
+  google.protobuf.Timestamp earliest_beta_chromeos = 20;
+  google.protobuf.Timestamp stable_refresh_first = 5;
+  google.protobuf.Timestamp latest_beta = 6;
+  // This maps product portion to the owners real _name_, not 'ldap'.
+  map<string, string> owners = 7;
+  google.protobuf.Timestamp stable_cut = 8;
+  google.protobuf.Timestamp stable_refresh_second = 9;
+  int32 mstone = 10;
+  google.protobuf.Timestamp late_stable_date = 11;
+  google.protobuf.Timestamp stable_date = 12;
+  map<string, string> ldaps = 13;
+  google.protobuf.Timestamp earliest_beta_ios = 14;
+  google.protobuf.Timestamp branch_point = 15;
+  google.protobuf.Timestamp stable_refresh_third = 16;
+  google.protobuf.Timestamp ltc_date = 17;
+  google.protobuf.Timestamp ltr_date = 18;
+  google.protobuf.Timestamp ltr_last_refresh_date = 19;
+}
+
+// A response to fetch_milestone_schedule.
+// e.g. https://chromiumdash.appspot.com/fetch_milestone_schedule?mstone=78&n=10
+//
+// Example message:
+// {
+//   mstones: [
+//      {
+//        final_beta_cut:...
+//        ..
+//      },
+//      {
+//        ...
+//      }
+//   ]
+// }
+message FetchMilestoneScheduleResponse { repeated Milestone mstones = 1; }

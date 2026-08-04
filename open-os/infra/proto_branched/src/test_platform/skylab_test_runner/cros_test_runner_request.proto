@@ -1,0 +1,182 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner";
+
+import "google/protobuf/any.proto";
+import "chromiumos/test/api/cros_tool_runner_container_service_templates.proto";
+import "chromiumos/test/lab/api/ip_endpoint.proto";
+import "chromiumos/test/api/provision.proto";
+import "chromiumos/test/api/cros_publish_service.proto";
+import "chromiumos/test/api/cros_test_cli.proto";
+import "chromiumos/test/api/test_suite.proto";
+import "chromiumos/test/api/post_test_service.proto";
+import "chromiumos/test/api/generic_service.proto";
+import "chromiumos/build/api/container_metadata.proto";
+import "test_platform/skylab_test_runner/cros_test_runner_service.proto";
+
+// CrosTestRunnerRequest is an input to CrosTestRunner that
+// provides greater flexibility in regards to the variability
+// and order by which test runner tasks are executed.
+//
+// next number = 5;
+message CrosTestRunnerRequest {
+  oneof start_request {
+    BuildMode build = 1;
+    test_platform.skylab_test_runner.CrosTestRunnerServerStartRequest server =
+        2;
+  }
+
+  message Task {
+    // List of containers to run for this task.
+    // ie container for cros-dut, then for cros-provision.
+    repeated ContainerRequest ordered_container_requests = 1;
+    oneof task {
+      ProvisionRequest provision = 2;
+      PreTestRequest pre_test = 3;
+      TestRequest test = 4;
+      PostTestRequest post_test = 5;
+      PublishRequest publish = 6;
+      GenericRequest generic = 8;
+    }
+    bool required = 7;
+  }
+
+  CrosTestRunnerParams params = 3;
+  repeated Task ordered_tasks = 4;
+}
+
+// Common parameters to include when sending a CrosTestRunnerRequest
+message CrosTestRunnerParams {
+  repeated chromiumos.test.api.TestSuite test_suites = 1;
+  // Container metadata to be used in test execution.
+  chromiumos.build.api.ContainerMetadata container_metadata = 2;
+  // Keyvals are (key, value) pairs
+  map<string, string> keyvals = 3;
+}
+
+// BuildMode provides the necessary parameters by which
+// test execution using a build may be achieved.
+message BuildMode {
+  // The buildbucket ID of the CTP build that sent this test_runner request.
+  int64 parent_build_id = 1;
+  // The UID of the individual CTP request which kicked off this test run.
+  // Note that distinct requests inside a multi-request CTP build will have
+  // different UIDs.
+  string parent_request_uid = 2;
+}
+
+// ProvisionRequest is designed to be extensible to all provisions
+// that implement the GenericProvisionService, not just cros-provision.
+message ProvisionRequest {
+  chromiumos.test.lab.api.IpEndpoint service_address = 1;
+  chromiumos.test.api.ProvisionStartupRequest startup_request = 2;
+  chromiumos.test.api.InstallRequest install_request = 3;
+  repeated DynamicDep dynamic_deps = 4;
+  // target refers to the device targeted for provision.
+  // i.e. primaryDevice, companionDevice_brya, companionDevice_brya_2
+  string target = 5;
+}
+
+// PreTestRequest targets requests towards services that implement
+// the PreTestService.
+message PreTestRequest {
+  chromiumos.test.lab.api.IpEndpoint service_address = 1;
+  google.protobuf.Any pre_test_request = 2;
+  repeated DynamicDep dynamic_deps = 3;
+}
+
+// TestRequest targets requests towards services that implement
+// the ExecutionService.
+message TestRequest {
+  chromiumos.test.lab.api.IpEndpoint service_address = 1;
+  chromiumos.test.api.CrosTestRequest test_request = 2;
+  repeated DynamicDep dynamic_deps = 3;
+}
+
+// PostTestRequest targets requests towards services that implement
+// the PostTestService.
+message PostTestRequest {
+  chromiumos.test.lab.api.IpEndpoint service_address = 1;
+  google.protobuf.Any post_test_request = 2;
+  repeated DynamicDep dynamic_deps = 3;
+  // RunActivityRequest will trigger a call to RunActivity
+  // within the rpc service `PostTestService`.
+  chromiumos.test.api.RunActivityRequest run_activity_request = 4;
+}
+
+// PublishRequest targets requests towards services that implement
+// the GenericPublishService.
+message PublishRequest {
+  chromiumos.test.lab.api.IpEndpoint service_address = 1;
+  chromiumos.test.api.PublishRequest publish_request = 2;
+  repeated DynamicDep dynamic_deps = 3;
+}
+
+// GenericRequest targets request towards services that implement
+// the GenericService.
+message GenericRequest {
+  chromiumos.test.lab.api.IpEndpoint service_address = 1;
+  chromiumos.test.api.GenericStartRequest start_request = 2;
+  chromiumos.test.api.GenericRunRequest run_request = 3;
+  chromiumos.test.api.GenericStopRequest stop_request = 4;
+  repeated DynamicDep dynamic_deps = 5;
+}
+
+// Starts a container and uploads its IpEndpoint to TestRunnerV2's
+// dynamic map of locally exposed information.
+//
+// Will not support dynamic injections into the container's start arguments.
+// If the generic template is not enough, then a specific template should be
+// implemented.
+message ContainerRequest {
+  // Starting a binary within a container sometimes requires a "metadata"
+  // file or some type of proto file as input.
+  message FileInput {
+    string identifier = 1;
+    google.protobuf.Any content = 2;
+
+    // Dependencies to be injected within 'context'
+    repeated DynamicDep dynamic_deps = 3;
+  }
+
+  // Identifier for DynamicDependencies to inject this container's IpEnpoint, eg
+  // cros-provision, cros-dut, etc.
+  string dynamic_identifier = 1;
+  chromiumos.test.api.Template container = 2;
+  // Dynamic dependencies for the templated container.
+  repeated DynamicDep dynamic_deps = 3;
+  // Identifiable file inputs for the binary call within the generic container.
+  repeated FileInput inputs = 4;
+  // default = "host"
+  string network = 5;
+  string container_image_key = 6;
+  // Location of image that can be directly pulled by docker.
+  // e.g. us-docker.pkg.dev/cros-registry/test-services/cros-dut:latest
+  // If set, ignore container_image_key.
+  string container_image_path = 7;
+}
+
+// Some information within TestRunnerV2 is required by the services it runs.
+// This information is not known at the time of request, and thus needs to be
+// dynamically injected within the request. This provides the definition
+// required to handle the injection, however, the exact object being injected is
+// unknown to this proto and must be handled by the implementation.
+message DynamicDep {
+  // camelCase object identifier, seperated by "."
+  // ie dutServer.address
+  // If the key needs to point to an array index, simply put the index
+  // after the seperator.
+  string key = 1;
+
+  // The identifier of the value within TestRunnerV2's map of
+  // locally exposed values.
+  // Separate by "." if an interior value of a top-level mapped
+  // object is required.
+  string value = 2;
+}

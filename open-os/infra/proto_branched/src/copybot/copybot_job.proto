@@ -1,0 +1,20 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package copybot;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/copybot";
+
+message CopybotJob {
+  repeated string notify_email = 1;
+  string group_name = 2;
+  float offset_hour_of_day = 3;
+  uint32 interval = 4;
+  uint32 timeout = 5;
+  repeated string config_file = 6;
+}
+
+message CopybotJobs { repeated CopybotJob copybot_jobs = 1; }

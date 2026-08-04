@@ -1,0 +1,25 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab_platform;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab_platform";
+
+// DutState defines the structure of the file used to cache variable DUT
+// information on the drone.
+message DutState {
+  // OS and/or fw versions installed on the DUT, e.g.
+  // {"cros-version":"terra-release/R75-12105.108.0"}.
+  // Used to construct variable bot dimensions.
+  map<string, string> provisionable_labels = 2
+      [ json_name = "provisionable_labels" ];
+
+  // Variable DUT attributes, e.g.
+  // {"job_repo_url":"http://devserver_ip:8082/static/terra-release/R75-12105.108.0/autotest/packages"}.
+  // Are fed into the Autotest harness via the host info file.
+  map<string, string> provisionable_attributes = 3
+      [ json_name = "provisionable_attributes" ];
+}

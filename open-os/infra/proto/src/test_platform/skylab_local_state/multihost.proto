@@ -1,0 +1,20 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_local_state;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state";
+
+import "test_platform/skylab_local_state/host_info.proto";
+
+// Host info and other necessary info to be shared by follower tasks in a
+// multi-bot job
+message MultiBotHostInfo {
+  skylab_local_state.AutotestHostInfo host_info = 1;
+
+  // DUT hostname.
+  string dut_name = 2;
+}

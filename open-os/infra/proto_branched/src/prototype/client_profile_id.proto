@@ -1,0 +1,21 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package prototype;
+
+import "prototype/client_id.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/prototype";
+
+// Id of a client profile. See comment in client.proto for
+// more details.
+message ClientProfileId {
+  // Required.
+  string id = 1;
+
+  // Required.
+  ClientId client_id = 2;
+}

@@ -1,0 +1,386 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Define a schema for reporting build status to downstream consumers.  This is
+// meant to be an enduring, backwards-compatible format (meaning we've adopted
+// an append-only strategy for extending, see go/cros-build-reporting-pipeline
+// for more information)
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+import "chromiumos/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// from chromiumos/config (ie: src/config)
+
+message Timeframe {
+  google.protobuf.Timestamp begin = 1;
+  google.protobuf.Timestamp end = 2;
+}
+
+// 'oneof' fields can't be repeated, so we wrap into a message type.
+message BuildId {
+  oneof id { int64 buildbucket_id = 1; }
+}
+
+message URI {
+  oneof uri {
+    string gcs = 1; // Google cloud storage URI (including gs://) for artifact.
+  }
+}
+
+message DlcArtifact {
+  URI uri = 1;       // URI of the DLC artifact.
+  string sha256 = 2; // SHA256 of the DLC artifact.
+  string id = 3;     // The id of the DLC.
+}
+
+// next: 18
+message BuildReport {
+  // Id serves as the primary key for the metadata and will be constant even
+  // when sending multiple partial messages.  Oneof to keep open changing the
+  // nature of the key in the future if needed.
+  oneof id { int64 buildbucket_id = 1; }
+  int64 count = 8;
+
+  BuildId parent = 9;
+  repeated BuildId children = 10;
+
+  BuildType type = 2;
+  BuildStatus status = 3;
+  BuildConfig config = 4;
+  StepDetails steps = 5;
+  repeated SignedBuildMetadata signed_builds = 6;
+  bool signing_was_mocked =
+      12; // True in staging environments where we mock signing.
+  repeated Payload payloads = 11;
+
+  // SDK version used for this build, e.g. "2022.06.25.171739".
+  string sdk_version = 13;
+  // How to find standalone toolchains from the above sdk,
+  // e.g. "2022/06/%(target)s-2022.06.25.171739.tar.xz".
+  // This path can be relative either to a GS url or a local file path.
+  string toolchain_url = 14;
+  // List of standalone toolchains, e.g.
+  // ["x86_64-cros-linux-gnu", "i686-cros-linux-gnu"].
+  repeated string toolchains = 15;
+  // The Google Storage bucket containing this build's SDK and toolchains.
+  // Should not include the "gs://" prefix.
+  // If not given, a default will be assumed, most likely chromiumos-sdk.
+  string sdk_bucket = 17;
+
+  // Artifacts from the build.
+  repeated BuildArtifact artifacts = 7;
+
+  // Holder object for DLCs.
+  DLCs dlcs = 16;
+
+  enum BuildType {
+    BUILD_TYPE_UNDEFINED = 0;
+    BUILD_TYPE_RELEASE = 1;
+    BUILD_TYPE_FIRMWARE = 2;
+    BUILD_TYPE_FACTORY = 3;
+    BUILD_TYPE_PUBLIC = 4;
+    BUILD_TYPE_PAYGEN = 5;
+    BUILD_TYPE_SNAPSHOT = 6;
+  }
+
+  message BuildStatus {
+    enum Status {
+      UNDEFINED = 0;
+
+      // Kind of status, 100*kind is base for that type of state.
+      KIND_TERMINAL = 1;
+      KIND_RUNNING = 2;
+
+      // Terminal states, indicate build has finished, no further status.
+      SUCCESS = 100;       // Build succeeded.
+      FAILURE = 101;       // Build failed for reasons related to it's input.
+      INFRA_FAILURE = 102; // Build failed independent of the input.
+      WATCHDOG = 103; // Build died for unknown reasons (from OOB watchdog).
+      CANCELED = 104; // Build explicitly canceled.
+
+      // Non-terminal states, more updates may be incoming.
+      RUNNING = 200;
+      WAITING = 201;
+    }
+
+    Status value = 1;
+  }
+
+  // Information about the build configuration.
+  message BuildConfig {
+    // Board model information.
+    message Model {
+      enum ModelVersionKind {
+        MODEL_VERSION_KIND_UNDEFINED = 0; // do not use.
+        MODEL_VERSION_KIND_EC_FIRMWARE =
+            1; // EC firmware version (e.g. coral_v1.1.7292-04956f5df).
+        MODEL_VERSION_KIND_MAIN_READONLY_FIRMWARE =
+            2; // Main read-only firmware version (e.g.
+               // Google_Coral.10068.82.0).
+        MODEL_VERSION_KIND_MAIN_READWRITE_FIRMWARE =
+            3; // Main read-write firmware version (e.g.
+               // Google_Coral.10068.82.0).
+      }
+
+      message ModelVersion {
+        ModelVersionKind kind = 1; // eg: MODEL_VERSION_KIND_EC_FIRMWARE.
+        string value = 2;          // eg: coral_v1.1.7292-04956f5df.
+      }
+
+      string name = 1;                    // Name of model (e.g. astronaut).
+      string firmware_key_id = 2;         // Firmware key id (e.g. CORALG).
+      repeated ModelVersion versions = 3; // Embedded versions.
+    }
+
+    message Release {
+      // List of channels for the build.
+      repeated chromiumos.Channel channels = 1;
+    }
+
+    // Information about the branch we're building on.
+    message Branch {
+      string name = 1; // eg: release-R90-13816.B
+    }
+
+    enum VersionKind {
+      VERSION_KIND_UNDEFINED = 0;  // do not use.
+      VERSION_KIND_ASH_CHROME = 1; // The system chrome.
+      VERSION_KIND_CHROME = 2;     // The Lacros (user) chrome.
+      VERSION_KIND_ARC = 3;        // Android Runtime Container.
+      VERSION_KIND_PLATFORM = 4;   // The platform version (e.g. 13816.0.0).
+      VERSION_KIND_MILESTONE = 5;  // The milestone versions (e.g. 96).
+      VERSION_KIND_ANDROID_CONTAINER =
+          6; // The android container version (e.g. 6387315).
+      VERSION_KIND_EC_FIRMWARE = 7; // The EC firmware version.
+      VERSION_KIND_FINGERPRINT = 8; // The build fingerprint.
+      VERSION_KIND_KERNEL = 9;      // The kernel version (e.g. 4.14.176-r1088).
+      VERSION_KIND_MAIN_FIRMWARE =
+          10; // The main firmware version (e.g. Google_Auron_paine.6301.58.98).
+    }
+
+    message Version {
+      VersionKind kind = 1; // eg: VERSION_KIND_ASH_CHROME.
+      string value = 2;     // eg: 98.0.4697.0.
+    }
+
+    // Information about the build target.
+    message Target { string name = 1; }
+
+    Branch branch =
+        1; // Optional branch information (not present for tip-of-tree).
+    Branch android_container_branch =
+        2;             // Optional android container branch information.
+    Target target = 3; // Name of build_target (e.g. coral).
+    Target android_container_target =
+        4;               // Name of android container target (e.g. cheets).
+    Release release = 5; // Optional information for release builds.
+    repeated Version versions =
+        6;                // Optional embedded versions (e.g. chrome, arc).
+    bool arc_use_set = 7; // Whether or not arc-use is enabled.
+
+    // List of board models covered by this build ie: expanded list of
+    // unibuild models at the time the build ran, may be empty.
+    repeated Model models = 8;
+  }
+
+  // Artifacts produced by the build.
+  //   These could be source from chromiumos/common.proto but this message is
+  //   intended to be a long-term archival format so it's easier and safer to
+  //   define our own artifact types for reporting.
+  message BuildArtifact {
+    enum Type {
+      // TODO(b/303704765): Add more artifact types as needed.
+
+      UNDEFINED = 0;
+
+      // Image archives.
+      // Typically named "image.zip".
+      IMAGE_ZIP = 1;
+      // Typically named "factory_image.zip".
+      FACTORY_IMAGE_ZIP = 2;
+      // Typically named "firmware_from_source.tar.bz2".
+      FIRMWARE_IMAGE_ARCHIVE = 3;
+      // Typically named "chromiumos_test_image.tar.xz".
+      TEST_IMAGE_ARCHIVE = 4;
+      // Typically named "model_AP.tbz2".
+      FIRMWARE_AP_IMAGE_ARCHIVE = 5;
+      // Typically named "model_EC.tbz2".
+      FIRMWARE_EC_IMAGE_ARCHIVE = 6;
+      // Typically named "gscprogram_GSC.tbz2"
+      FIRMWARE_GSC_IMAGE_ARCHIVE = 7;
+
+      // Other Chrome OS artifacts, not necessarily an image.
+      // Typically named something like
+      // "chromeos-hwqual-ambassador-R120-15638.0.0.tar.bz2".
+      HWQUAL_ARCHIVE = 101;
+      // Typically named "debug.tgz".
+      DEBUG_ARCHIVE = 102;
+
+      // Payload types
+      PAYLOAD_FULL = 400;
+      PAYLOAD_DELTA = 401;
+    }
+
+    Type type = 1;     // The artifact type.
+    URI uri = 2;       // URI of the artifact.
+    string sha256 = 3; // SHA256 hash of the artifact.
+    int64 size = 5;    // Size of the artifact (in bytes).
+
+    // Time of artifact creation.
+    google.protobuf.Timestamp created = 4;
+  }
+
+  // Build statistics
+  message StepDetails {
+    // Steps succeed or fail, no higher granularity given.
+    enum Status {
+      STEP_STATUS_UNDEFINED = 0;
+
+      // Kind of status, 100*kind is base for that type of state.
+      KIND_TERMINAL = 1;
+      KIND_RUNNING = 2;
+
+      // terminal states
+      STATUS_SUCCESS = 100; // Step succeeded.
+      STATUS_FAILURE = 101; // Step failed for reasons related to build input.
+      STATUS_INFRA_FAILURE =
+          102; // Step failed for reasons unrelated to build input.
+      STATUS_WATCHDOG = 103; // Step was interrupted when build died.
+      STATUS_CANCELED =
+          104; // Step was interrupted due to explicit cancelation.
+
+      // non-terminal states
+      STATUS_RUNNING = 200;
+    }
+
+    // Consistent predefined 'logical' step names for consistency and tracking
+    // performance over time. Increment by 100 to leave room for adding
+    // sub-steps in the future.
+    enum StepName {
+      STEP_UNDEFINED = 0;
+      STEP_OVERALL = 100;
+
+      STEP_SYNC = 200;
+      STEP_SYNC_CHROME = 201;
+
+      STEP_SDK = 300;
+      STEP_SDK_INIT = 301;
+      STEP_SDK_UPDATE = 302;
+
+      STEP_BUILD = 400;
+      STEP_BUILD_SYSROOT = 401;
+      STEP_BUILD_PACKAGES = 402;
+
+      STEP_DEBUG_SYMBOLS = 500;
+      STEP_UNIT_TESTS = 501;
+    }
+
+    message StepInfo {
+      // Step order-of-execution relative to other steps in this build.
+      // Needed due to the unordered nature of the map below.
+      int32 order = 1;
+      Status status = 2;     // Step status
+      Timeframe runtime = 3; // Step runtime information
+    }
+
+    StepName current = 1;
+
+    // This is a map from StepName enums to information about the step.
+    // Protobuffer doesn't allow enums to be used as map keys, so we're
+    // forced to use a string. Keys must be marshalled via the StepName
+    // enum to get their string representation.
+    map<string, StepInfo> info = 2;
+  }
+
+  // Metadata produced by signing images. Translated from the .json file that
+  // is generated alongside the image when it is signed.
+  message SignedBuildMetadata {
+
+    // A file along with the hashes verifying its contents.
+    message FileWithHashes {
+      string filename = 1;
+      string md5 = 2;
+      string sha1 = 3;
+      string sha256 = 4;
+      int64 size = 5;
+    }
+
+    enum VersionKind {
+      VERSION_KIND_UNDEFINED = 0;        // do not use.
+      VERSION_KIND_PLATFORM = 1;         // eg: 14324.43.0
+      VERSION_KIND_MILESTONE = 2;        // eg: 97
+      VERSION_KIND_KEY_FIRMWARE_KEY = 3; // eg: 1
+      VERSION_KIND_KEY_FIRMWARE = 4;     // eg: 1
+      VERSION_KIND_KEY_KERNEL_KEY = 5;   // eg: 1
+      VERSION_KIND_KEY_KERNEL = 6;       // eg: 1
+    }
+
+    message Version {
+      VersionKind kind = 1; // eg: VERSION_KIND_PLATFORM.
+      string value = 2;     // eg: 14324.43.0.
+    }
+
+    // Valid statuses signers can communicate.
+    enum SigningStatus {
+      SIGNING_STATUS_UNKNOWN = 0;
+      SIGNING_STATUS_DOWNLOADING = 1;
+      SIGNING_STATUS_SIGNING = 2;
+      SIGNING_STATUS_UPLOADING = 3;
+      SIGNING_STATUS_FINISHED = 4;
+      SIGNING_STATUS_RETRY = 5;
+      SIGNING_STATUS_PASSED = 6;
+      SIGNING_STATUS_FAILED = 7;
+    }
+
+    string release_directory =
+        1;                    // Directory of the release (eg:
+                              // "rubik-channel/kevin-kernelnext/14545.0.0/").
+    SigningStatus status = 2; // Status of signing.
+    string board = 3;         // The board the image is for.
+    chromiumos.ImageType type = 4;  // The type of image (eg: "recovery").
+    chromiumos.Channel channel = 5; // The channel of the image (eg: "stable").
+    string keyset = 6;
+    bool keyset_is_mp = 7;
+    repeated FileWithHashes files = 8;
+    repeated Version versions = 9;
+  }
+
+  message Payload {
+    // The actual payload. Contains the artifact URI, whether the payload
+    // is full or delta, etc.
+    BuildArtifact payload = 1;
+
+    enum PayloadType {
+      PAYLOAD_TYPE_UNKNOWN = 0;
+      PAYLOAD_TYPE_STANDARD = 1; // Regular OS payload.
+      PAYLOAD_TYPE_MINIOS = 2;
+      PAYLOAD_TYPE_DLC = 3;
+    }
+    PayloadType payload_type = 2;
+    string board = 3;               // The board the payload is for.
+    chromiumos.Channel channel = 4; // The channel the payload is for.
+
+    string appid = 5;
+    string metadata_signature = 6;
+    int64 metadata_size = 7;
+    string source_version = 8;        // e.g. 14388.8.0
+    string target_version = 9;        // e.g. 14440.0.0
+    int64 size = 10;                  // Size of payload, in bytes.
+    uint32 recovery_key_version = 11; // for miniOS payloads only.
+  }
+
+  // Representation of DLCs that may or may not live in Payloads.
+  message DLCs {
+    // DLC artifacts.
+    repeated URI dlc_artifacts = 1; // URIs of DLC artifacts.
+    repeated DlcArtifact dlc_artifact_details = 2;
+  }
+}

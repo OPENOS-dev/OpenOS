@@ -1,0 +1,53 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+import "chromiumos/checkpoint.proto";
+
+// Define protos for the Build Conductor. See go/cros-infra:build-conductor-dd
+// for details.
+message RetryRule {
+  // If `insufficient` is true, this rule alone is insufficient cause for retry.
+  // However, limits (such as cutoff_percent, max_retries, etc.) will still be
+  // enforced.
+  // A common use case for this field is a "catch-all" rule we want to impose
+  // a global max_retries (by matching all builds) but we don't want to just
+  // retry everything.
+  bool insufficient = 10;
+
+  // These fields will be used to match failures.
+  // If a value is not specified, any value is accepted for that field.
+
+  // Will be converted to the Status enum, but passed as an int here to
+  // prevent a dependency on the luci-go repo.
+  // See
+  // https://chromium.googlesource.com/infra/luci/luci-go/+/master/buildbucket/proto/common.proto
+  repeated int32 status = 1;
+  repeated string builder_name_re = 2;
+  repeated string summary_markdown_re = 3;
+  chromiumos.RetryStep failed_checkpoint = 4;
+  chromiumos.RetryStep before_checkpoint = 11;
+
+  // If more than a certain percent of builds fail, we'll stop retrying.
+  float cutoff_percent = 5;
+  // If we're more than this many seconds into this build collection, don't
+  // retry.
+  int32 cutoff_seconds = 6;
+  // Don't retry builds that have been running for more than build_runtime
+  // seconds.
+  int32 build_runtime_cutoff = 9;
+
+  // Maximum number of retries to do.
+  int32 max_retries = 7;
+  // Maximum number of retries to do per build.
+  int32 max_retries_per_build = 8;
+}
+
+message CollectConfig { repeated RetryRule rules = 1; }

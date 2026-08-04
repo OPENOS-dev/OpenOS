@@ -1,0 +1,671 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+import "chromiumos/common.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+// Configuration used by a builder during execution.
+message BuilderConfig {
+  // Used to control running of special steps.
+  enum RunSpec {
+    RUN_SPEC_UNSPECIFIED = 0;
+    // Do not run.
+    NO_RUN = 1;
+    // Run.
+    RUN = 2;
+    // Run and then exit.
+    RUN_EXIT = 3;
+  }
+
+  // A rule describing which subset of dependencies should be used.
+  // When used in combination with a list of packages, the intersection of the
+  // two sets will be used.
+  enum Dependencies {
+    DEPENDENCIES_UNSPECIFIED = 0;
+    // Use all dependencies.
+    ALL_DEPENDENCIES = 1;
+    // Only use dependencies affected by the changes applied to the build.
+    CL_AFFECTED_DEPENDENCIES = 2;
+  }
+
+  // A BuildOrchestrator is the software system that builds packages into a
+  // software image, such as Portage or Bazel.
+  // This is not related to the orchestrator recipe, CQ orchestrator, etc.
+  enum BuildOrchestrator {
+    // If unspecified, let recipes decide which build orchestrator to use.
+    BUILD_ORCHESTRATOR_UNSPECIFIED = 0;
+    PORTAGE = 1;
+    BAZEL = 2;
+  }
+
+  // Which packages should a Bazel-based build target.
+  enum BazelTargets {
+    // If unspecified, all packages will be build.
+    BAZEL_TARGETS_UNSPECIFIED = 0;
+    // Lite bazel builds cover only a limited set of packages
+    // to execute faster. The details of what exectly is built
+    // and what is skipped is left for Build API to decide.
+    LITE = 1;
+  }
+
+  // Unique identifier of the builder configuration.
+  message Id {
+    // The name of the configuration such as "arm-generic-postsubmit".
+    string name = 1;
+    reserved 2;
+    reserved "branch";
+    // Type of build.
+    enum Type {
+      TYPE_UNSPECIFIED = 0;
+      // Commit queue build.
+      CQ = 1;
+      // Postsubmit build.
+      POSTSUBMIT = 2;
+      // Toolchain build.
+      TOOLCHAIN = 3;
+      // Informational build.
+      INFORMATIONAL = 4;
+      // Release build.
+      RELEASE = 5;
+      // Public build.
+      PUBLIC = 6;
+      // Factory build.
+      FACTORY = 7;
+      // Incremental build.
+      INCREMENTAL = 8;
+      // SDK build.
+      SDK = 9;
+      // SNAPSHOT build.
+      SNAPSHOT = 10;
+      // Codesearch build.
+      CODESEARCH = 11;
+    }
+    Type type = 3;
+    // The name of the bucket the builder lives in.
+    string bucket = 4;
+  }
+  Id id = 1;
+
+  // General configuration for the builder.
+  message General {
+    // Whether or not the build is considered critical. A failure in a critical
+    // build for a CQ builder may, for example, prevent submission of the CL.
+    google.protobuf.BoolValue critical = 1;
+
+    enum Environment {
+      ENVIRONMENT_UNSPECIFIED = 0;
+      PRODUCTION = 1;
+      STAGING = 2;
+    }
+    Environment environment = 2;
+
+    // Rule describing conditions under which a builder should be launched.
+    message RunWhen {
+      enum Mode {
+        MODE_UNSPECIFIED = 0;
+
+        // Always run this builder. The file_patterns field will be ignored
+        // when this mode is selected.
+        ALWAYS_RUN = 1;
+
+        // Only run this builder if any file in the input gerrit_changes
+        // matches any file_pattern specified below. If file_patterns is empty,
+        // this option implies the builder will never run.
+        ONLY_RUN_ON_FILE_MATCH = 2;
+
+        // Do not run the builder if all files in the input gerrit_changes
+        // match any file_pattern speicifed below. If file_patterns is empty,
+        // this option implies the builder will always run.
+        NO_RUN_ON_FILE_MATCH = 3;
+      }
+
+      Mode mode = 1;
+
+      // chromiumos code file patterns, relative to chromiumos root, which may
+      // use * or ** for globbing.
+      // e.g.
+      // chromite/myfile.txt
+      // chromite/config/*
+      // **/*.md
+      repeated string file_patterns = 2;
+    }
+
+    // A rule describing conditions under which this builder should be launched.
+    RunWhen run_when = 3;
+
+    // Time before which ToT had a bug that would not manifest at the
+    // build stage. The CQ orchestrator should NOT reuse successful builds
+    // of the build_config before this.
+    google.protobuf.Timestamp broken_before = 4;
+
+    // SHA of the manifest snapshot until which ToT had a bug that would not
+    // manifest at the build stage. The CQ orchestrator should NOT reuse
+    // successful builds of the build_config before and including this snapshot.
+    string broken_until = 10;
+
+    // If present, this version number will be written to a version file
+    // alongside a bot's SDK Cache (chroot). On subsequent bot-run where an SDK
+    // Cache already exists, the version number in config will be compared to
+    // the number present in the version file, and the SDK Cache will be
+    // invalidated if there is a mismatch.
+    int32 sdk_cache_version = 5;
+
+    // Indicates whether the target is a unibuild.
+    bool unibuild = 6;
+
+    // Indicates which manifest a builder should sync to.
+    enum Manifest {
+      MANIFEST_UNSPECIFIED = 0;
+      PUBLIC = 1;
+      PRIVATE = 2;
+    }
+    Manifest manifest = 7;
+
+    // The Firmware Location, passed to FirmwareService calls.
+    FwLocation firmware_location = 8;
+
+    // Whether to publish image size data for the builder.
+    bool publish_image_sizes = 9;
+  }
+  General general = 2;
+
+  // Configuration pertaining to builders operating as "orchestrators".
+  // Orchestrators orchestrate the running of other child builders.
+  message Orchestrator {
+    reserved 1;
+
+    // Defines a child the orchestrator spawns and how it is handled.
+    message ChildSpec {
+      // BuilderConfig.Id.name of the child build. Would be expected to match
+      // this name and the BuilderConfig.Id.branch and BuilderConfig.Id.type of
+      // this parent orchestrator builder.
+      string name = 1;
+
+      enum CollectHandling {
+        COLLECT_HANDLING_UNSPECIFIED = 0;
+        // Indicates the result should be collected PRIOR to updating the
+        // 'build' manifest ref, and planning / running HW tests.
+        // This also indicates that should the orchestrator terminate before
+        // this child finishes the child will be terminated.
+        COLLECT = 1;
+        // Indicates the result should not be collected. Currently also
+        // indicates that should the orchestrator terminate before this child
+        // finishes this child is allowed to continue.
+        NO_COLLECT = 2;
+        // Indicates the result should be collected AFTER HW tests are complete.
+        // The result is not relevant to the 'build' manifest ref being
+        // published.
+        // Otherwise no different than COLLECT above.
+        COLLECT_AFTER_HW_TEST = 3;
+      }
+      CollectHandling collect_handling = 2;
+
+      // Name of the Buildbucket bucket in which the child builder lives.
+      // If not present, it is assumed that the child builder lives in the
+      // same bucket as its parent.
+      string bucket = 3;
+
+      // Which days of the week to run the child builder on. 0 is Sunday.
+      repeated int32 run_on = 4;
+    }
+    repeated ChildSpec child_specs = 5;
+
+    // GitilesCommit to use if not provided.
+    GitilesCommit gitiles_commit = 2;
+
+    // GerritChanges to apply.  To ignore these changes, use
+    // $chromeos/cros_infra_config.ignore_config_changelist=True.
+    repeated GerritChange gerrit_changes = 3;
+
+    // Follow on orchestrator to launch, and possibly wait for.
+    message FollowOnOrchestrator {
+      // BuilderConfig.Id.name of the follow on orchestrator.
+      string name = 1;
+
+      // Whether to wait for the follow on orchestrator to finish.
+      bool await_completion = 2;
+    }
+    FollowOnOrchestrator follow_on_orchestrator = 4;
+
+    // Follow on builders to launch. These are additional builders that are
+    // launched after the orchestrator's main child builders complete.
+    message FollowOnBuilders {
+      // Builder names to launch.
+      repeated string names = 1;
+
+      // Whether to wait for the follow on builders to finish.
+      bool await_completion = 2;
+
+      // Whether to trigger a rev bump for these builders.
+      bool rev_bump = 3;
+    }
+    FollowOnBuilders follow_on_builders = 7;
+
+    // If require_stable_devices is true, the tests are scheduled to run on
+    // devices with label-device-stable: True. The label-device-stable
+    // dimension is typically used to filter out devices that have known
+    // unstable hardware, e.g. devices early in development.
+    bool require_stable_devices = 6;
+  }
+  Orchestrator orchestrator = 3;
+
+  // Configuration pertaining to artifacts produced during a build.
+  message Artifacts {
+    // How to handle the uploading of prebuilts.
+    enum Prebuilts {
+      PREBUILTS_UNSPECIFIED = 0;
+      PUBLIC = 1;
+      PRIVATE = 2;
+      NONE = 3;
+    }
+    Prebuilts prebuilts = 1;
+
+    // Used to indicate artifact types that should be uploaded by the builder.
+    // Must be kept in sync with the dictionary in:
+    // https://chromium.googlesource.com/chromiumos/infra/recipes/+/refs/heads/master/recipe_modules/cros_artifacts/api.py
+    // TODO(b/187790484): Being replaced by common.ArtifactsByService, to
+    // eliminate the need to update cros_artifacts every time an artifact type
+    // is added.
+    enum ArtifactTypes {
+      ARTIFACT_TYPES_UNSPECIFIED = 0;
+      // Indicates wanting a zip file of everything in the image directory.
+      IMAGE_ZIP = 1;
+      // Indicates wanting update payloads.
+      TEST_UPDATE_PAYLOAD = 2;
+      // Indicates wanting the autotest tarballs.
+      AUTOTEST_FILES = 3;
+      // Indicates wanting a tarball containing private TAST test bundles.
+      TAST_FILES = 4;
+      // Indicates wanting a tarball containing guest images and test bundles.
+      PINNED_GUEST_IMAGES = 5;
+      // Indicates wanting an archive of firmware images built from source.
+      FIRMWARE = 6;
+      // Indicates wanting a tarball of the Ebuilds logs.
+      EBUILD_LOGS = 7;
+      // Indicates wanting an archive of the ChromeOS Config.
+      CHROMEOS_CONFIG = 8;
+      reserved 9;
+      // Indicates wanting a tar.xz archive for each image that has been
+      // created.
+      IMAGE_ARCHIVES = 10;
+
+      // Artifacts used by the toolchain.
+      //
+      // These values were previously used by now-turned-down orderfile,
+      // clang-tidy, and llvm-PGO builders.
+      reserved 11 to 14;
+
+      // Indicates an unvetted AFDO Chrome profile.  (Generated by HW Tests in
+      // the benchmark-afdo-generate builder.)
+      UNVERIFIED_CHROME_BENCHMARK_AFDO_FILE = 15;
+      // Indicates a vetted AFDO Chrome profile.
+      VERIFIED_CHROME_BENCHMARK_AFDO_FILE = 16;
+
+      // Indicates a vetted AFDO Kernel profile.
+      VERIFIED_KERNEL_CWP_AFDO_FILE = 17;
+      // Indicates an unvetted AFDO Kernel CWP profile.
+      UNVERIFIED_KERNEL_CWP_AFDO_FILE = 18;
+
+      // Indicates an unvetted AFDO Chrome CWP profile.
+      UNVERIFIED_CHROME_CWP_AFDO_FILE = 19;
+      // Indicates a vetted AFDO Chrome CWP profile.
+      VERIFIED_CHROME_CWP_AFDO_FILE = 20;
+      // Indicates a vetted AFDO profile for release.
+      VERIFIED_RELEASE_AFDO_FILE = 21;
+
+      // Indicates an unvetted AFDO perf data file (from HW Test).
+      UNVERIFIED_CHROME_BENCHMARK_PERF_FILE = 22;
+      // Indicates an unstripped Chrome binary.
+      CHROME_DEBUG_BINARY = 23;
+
+      // Indicates toolchain logs for the compiler warnings for werror monitor
+      TOOLCHAIN_WARNING_LOGS = 24;
+
+      // Indicates a prod Chrome AFDO profile for Android/Linux.
+      CHROME_AFDO_PROFILE_FOR_ANDROID_LINUX = 25;
+
+      // Indicates diagnoses for Clang crashes
+      CLANG_CRASH_DIAGNOSES = 26;
+
+      // Indicates wanting a tarball containing fingerprint MCU test binaries.
+      FPMCU_UNITTESTS = 27;
+
+      // Indicates wanting a test image tarball suitable for importing into GCE.
+      GCE_TARBALL = 28;
+
+      // Indicates Rusage logs from Compiler Invocations
+      COMPILER_RUSAGE_LOG = 29;
+
+      // FirmwareService: Firmware artifacts in a tarball.
+      FIRMWARE_TARBALL = 30;
+
+      // FirmwareService: Metadata about the firmware.
+      FIRMWARE_TARBALL_INFO = 31;
+
+      // ArtifactsService: BundleDebugSymbols
+      DEBUG_SYMBOLS = 32;
+
+      // FirmwareService: LCOV code coverage files.
+      FIRMWARE_LCOV = 33;
+
+      // DLC image (squashfs).  Added in R91.
+      DLC_IMAGE = 34;
+
+      // Breakpad debug symbols. Added in R93.
+      BREAKPAD_DEBUG_SYMBOLS = 35;
+
+      // Infra: Build manifest.
+      BUILD_MANIFEST = 36;
+
+      // TestService: unit tests.
+      UNIT_TESTS = 37;
+
+      // ImageService: license_credits.html.
+      LICENSE_CREDITS = 38;
+
+      // TestService: LLVM JSON Code Coverage.
+      CODE_COVERAGE_LLVM_JSON = 39;
+
+      // Simple Chrome Sysroot archive.
+      SIMPLE_CHROME_SYSROOT = 40;
+
+      // Chrome Ebuild Environment archive.
+      CHROME_EBUILD_ENV = 41;
+
+      // HWQual archive.
+      HWQUAL = 42;
+
+      // factory_image.zip archive.
+      FACTORY_IMAGE = 43;
+
+      // Code coverage HTML report tar archive.
+      CODE_COVERAGE_HTML = 44;
+
+      // stripped-packages.tar archive.
+      STRIPPED_PACKAGES = 45;
+
+      // Code coverage artifacts generated by Rust CC builder.
+      CODE_COVERAGE_RUST_LLVM_JSON = 46;
+
+      // The fuzzer's sysroot as bundled via cros_generate_sysroot.py.
+      FUZZER_SYSROOT = 47;
+
+      // Code coverage artifacts generated by Go test.
+      CODE_COVERAGE_GOLANG = 48;
+
+      // image_scripts.tar.xz archive.
+      IMAGE_SCRIPTS = 49;
+
+      // Archive the entire sysroot.
+      SYSROOT_ARCHIVE = 50;
+
+      // A tarball containing the SDK itself.
+      SDK_TARBALL = 51;
+
+      // Tarball of cross-compiling toolchain prebuilts.
+      SDK_TOOLCHAIN_PREBUILTS = 52;
+
+      // Bazel-specific performance artifacts.
+      BAZEL_PERFORMANCE_ARTIFACTS = 53;
+
+      // Code coverage artifacts for E2E coverage.
+      CODE_COVERAGE_E2E = 54;
+
+      // FirmwareService: Token Database.
+      FIRMWARE_TOKEN_DATABASE = 55;
+    }
+    repeated ArtifactTypes artifact_types = 2;
+
+    // Google storage bucket to upload prebuilts to.
+    string prebuilts_gs_bucket = 3;
+
+    // Google storage bucket to upload all artifacts to.
+    string artifacts_gs_bucket = 4;
+
+    // TODO(b/187790484): DEPRECATED: see artifacts_info.
+    message PublishInfo {
+      reserved 1;
+
+      // Artifact types to publish to this bucket.
+      repeated ArtifactTypes publish_types = 2;
+
+      // GS location in which to publish artifacts ("gs://" is prepended).
+      // Several fields can be logically specified:
+      //   %(kind)s: BuilderConfig.Id.Type with underscores turned into hyphens.
+      //   %(version)s: Chromeos version (e.g., R81-12813.0.0)
+      //   %(build_id)s: Buildbucket job ID.
+      //   %(target)s: build target name.
+      //   %(builder_name)s: The builder name (e.g. octopus-cq), lowercase with
+      //       underscores turned into hyphens.
+      //   %(gs_path)s: "%(builder_name)s/%(version)s-%(build_id)s".
+      //   %(artifact_name)s: The name of the artifact being published.
+      string publish_gs_location = 3;
+
+      // Any acl to apply, such as "public-read".
+      string acl_name = 4;
+    }
+    // There may be more than one set of publishing instructions.
+    repeated PublishInfo publish_artifacts = 5;
+
+    // TODO(b/187790484): DEPRECATED: see artifacts_info.
+    message InputArtifactInfo {
+      // Artifact type to seek in these buckets.  Use the first instance of the
+      // artifact found in the list of locations.
+      ArtifactTypes input_artifact_type = 1;
+
+      // Google storage locations containing these artifacts.
+      repeated string input_artifact_gs_locations = 2;
+    }
+    // There may be more than one set of consumable artifacts.
+    repeated InputArtifactInfo input_artifacts = 6;
+
+    // Profile information needed by artifact prepare/bundle endpoints.
+    // TODO(b/187790484): DEPRECATED: see artifacts_info.
+    ArtifactProfileInfo artifact_profile_info = 7;
+
+    // Artifacts separated by service.
+    ArtifactsByService artifacts_info = 8;
+
+    // Google storage bucket to upload devinstall prebuilts to.
+    // e.g. "chromeos-dev-installer".
+    string devinstall_prebuilts_gs_bucket = 9;
+
+    // Whether artifacts produced by this builder are eligible for attestation.
+    // Snoopy then determines if builder can get attestation and at what level.
+    bool attestation_eligible = 10;
+
+    // Whether to use the artifacts generated by CQ.
+    bool use_cq_prebuilts = 11;
+  }
+  Artifacts artifacts = 4;
+
+  // Configuration pertaining to Chrome.
+  message Chrome {
+    // Whether to build internal or external Chrome. Internal chrome adds
+    // Chrome branding.
+    bool internal = 1;
+  }
+  Chrome chrome = 5;
+
+  // Build specific configuration.
+  message Build {
+    // USE flags to use with the build.
+    repeated UseFlag use_flags = 1;
+
+    // The profile of the variant to set up and build.
+    message PortageProfile { string profile = 1; }
+    PortageProfile portage_profile = 2;
+
+    reserved 3 to 5;
+
+    // Whether to apply gerrit changes, if any. Use case is to build without
+    // changes after failure to identify the changes as the culprit.
+    bool apply_gerrit_changes = 6;
+
+    reserved 7 to 11;
+
+    // Below here are configuration specifications for the steps that call the
+    // Build API endpoints.  They are listed in the order in which steps are
+    // generally called, rather than in numerical order.
+
+    // Controls for the call to cros_artifacts.prepare_for_build.
+    // TODO(crbug/1019868): Drop this after all users have switched to
+    // artifacts.artifactProfileInfo.
+    message PrepareForBuild {
+      // Additional arguments from common.proto, passed into any
+      // PrepareFor*Build endpoint.
+      PrepareForBuildAdditionalArgs additional_args = 1;
+    }
+    PrepareForBuild prepare_for_build = 17;
+
+    // Controls for the call to SdkService.Update.
+    message SdkUpdate {
+      // Whether to compile from source (vs using prebuilts when able.)
+      bool compile_source = 1;
+
+      // Controls whether or not to run the SdkService.Update step.
+      // Note that the step may not do anything unless:
+      // (1) a toolchain update is detected.
+      // (2) compile_source was specified.
+      // (3) or, sdknext is specified.
+      // TODO(b/299638415): For now, keep this in-sync with
+      // update_chroot.run_spec.
+      RunSpec sdk_update_run_spec = 2;
+
+      // If true, this builder is considered an "sdknext" builder, and is used
+      // to test changes won't break the SDK builder.  The effect is that
+      // chromite.api.SdkService/Update will actually do an update_chroot.
+      bool sdknext = 3;
+
+      // If true, force the SDK to update.
+      bool force_update = 4;
+    }
+    SdkUpdate sdk_update = 12;
+
+    // Controls for the call to SysrootService.InstallToolchain.
+    message InstallToolchain {
+      // Whether to compile from source (vs using prebuilts when able.)
+      bool compile_source = 1;
+    }
+    InstallToolchain install_toolchain = 13;
+
+    // Controls for the call to InstallPackages.
+    message InstallPackages {
+      // Whether to compile from source (vs using prebuilts when able.)
+      bool compile_source = 1;
+
+      // Controls the running of the install packages step.
+      RunSpec run_spec = 2;
+
+      // Packages to build, or empty to build all packages.
+      repeated PackageInfo packages = 3;
+
+      // Some builders need to build Chrome with goma disabled.
+      // This is ignored if `user_remoteexec` is true.
+      bool disable_goma = 4;
+
+      // Whether to build chrome with remote execution reclient instead of goma.
+      // `diable_goma` is ignored if this is true.
+      bool use_remoteexec = 6;
+
+      // Set of package dependencies to install.
+      Dependencies dependencies = 5;
+
+      // What software system should install packages.
+      BuildOrchestrator install_packages_orchestrator = 7;
+
+      // Which bazel targets should be installed.
+      BazelTargets bazel_targets = 8;
+
+      // Skip package temp directory cleanup (useful for debug/postprocessing).
+      bool skip_clean_package_dirs = 9;
+
+      // Whether to execute Bazel actions remotely in RBE, for those actions
+      // that allow remote execution. Actions that are configured to execute
+      // only locally will do that irrespective of the value of this flag.
+      //
+      // Note that this is unrelate to the `use_remoteexec` setting, which
+      // controls whether to use reclient or goma for package-level builds of
+      // packages that support reclient/goma.
+      bool bazel_use_remote_execution = 10;
+    }
+    reserved 14;
+    InstallPackages install_packages = 16;
+
+    message BuildImages {
+      // Image types to build.
+      repeated ImageType image_types = 1;
+
+      // Whether to disable rootfs verification.
+      bool disable_rootfs_verification = 2;
+
+      // Custom disk layout to use. Note that large images can damage the lab,
+      // so don't use such images for hw testing.
+      // e.g. 4gb-rootfs
+      string disk_layout = 3;
+
+      // Whether to use the base image as the recovery image.
+      bool base_is_recovery = 4;
+
+      // Whether to check for an image size regression.
+      bool verify_image_size_delta = 5;
+
+      // What software system should build images.
+      BuildOrchestrator build_images_orchestrator = 6;
+    }
+    BuildImages build_images = 15;
+  }
+  Build build = 6;
+
+  message UnitTests {
+    reserved 4;
+
+    // Controls the running of ebuild tests with possible early exit.
+    RunSpec ebuilds_run_spec = 5;
+
+    // Whether to assume the sysroot is empty.
+    bool empty_sysroot = 6;
+
+    // Packages to be tested.
+    // Defaults to all testable packages when none are given.
+    repeated PackageInfo packages = 7;
+
+    // Set of package dependencies to test.
+    Dependencies dependencies = 8;
+
+    // Skipped packages.
+    repeated PackageInfo package_blocklist = 9;
+
+    // Whether or not to skip image unit tests. Defaults to false.
+    bool skip_image_tests = 10;
+
+    // What software system should run unit tests.
+    BuildOrchestrator unit_tests_orchestrator = 11;
+  }
+  UnitTests unit_tests = 7;
+
+  // TODO(b/299638415): This is redundant with SdkUpdate. Remove, once all
+  // fields have been merged into SdkUpdate.
+  message UpdateChroot {
+    // Controls whether or not this build will update the chroot immediately
+    // after it is initialized (unless explicitly overridden by the recipe).
+    // Most recipes update the chroot by default, if run_spec is UNSPECIFIED.
+    RunSpec run_spec = 1;
+  }
+  UpdateChroot update_chroot = 8;
+
+  // If this builder is associated with a build target, the build target.
+  chromiumos.BuildTarget build_target = 9;
+}
+
+// List of builder configs. Intended to be serialized to / from disk.
+message BuilderConfigs { repeated BuilderConfig builder_configs = 1; }

@@ -1,0 +1,95 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+message Path { string path = 1; }
+
+// A relevancy request.
+message GetRelevantBuildTargetsRequest {
+  // The set of build targets to check for relevancy.
+  repeated chromiumos.BuildTarget build_targets = 1;
+
+  // The relative paths in the source tree which have been modified.
+  repeated Path affected_paths = 2;
+}
+
+// The response to the relevancy request.
+message GetRelevantBuildTargetsResponse {
+  message RelevantTarget {
+    chromiumos.BuildTarget build_target = 1;
+
+    message Reason {
+      // The path that caused this reason.
+      Path trigger = 1;
+
+      // A fundamental build tooling path (e.g., chromite, src/scripts) was
+      // affected.
+      message BuildToolAffected {
+        // Which fundamental subtree was affected?
+        Path subtree = 1;
+      };
+
+      // A profile inherited by this target was affected.
+      message ProfileAffected {
+        // The profile that was affected.
+        Path profile = 1;
+      };
+
+      // An overlay inherited by this target was affected.
+      message OverlayAffected {
+        // The overlay that was affected.
+        Path overlay = 1;
+      };
+
+      // A package used by this build target was affected.
+      message PackageAffected {
+        // The package affected.
+        chromiumos.PackageInfo package_info = 1;
+
+        // The full path to the ebuild.
+        Path ebuild = 2;
+      };
+
+      // A special-case path rule resulted in the build target being affected.
+      message PathRuleAffected {
+        // The pattern that triggered the path rule.
+        string pattern = 1;
+      };
+
+      oneof reason {
+        BuildToolAffected build_tool_affected = 2;
+        ProfileAffected profile_affected = 3;
+        OverlayAffected overlay_affected = 4;
+        PackageAffected package_affected = 5;
+        PathRuleAffected path_rule_affected = 6;
+      }
+    };
+
+    // The reason this build target is considered relevant.  Note that a build
+    // target may be relevant for many reasons, but the logic short-circuits and
+    // stops looking for further reasons a target may be relevant after its
+    // already found one (since only one is enough to make the build relevant).
+    Reason reason = 2;
+  }
+
+  // The (possibly) reduced set of build targets which are applicable.
+  repeated RelevantTarget build_targets = 1;
+}
+
+service RelevancyService {
+  option (service_options) = {
+    module : "relevancy",
+  };
+
+  // Get the relevant build targets for a change.
+  rpc GetRelevantBuildTargets(GetRelevantBuildTargetsRequest)
+      returns (GetRelevantBuildTargetsResponse);
+}

@@ -1,0 +1,78 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.cros_test_platform;
+
+import "test_platform/request.proto";
+import "test_platform/steps/execution.proto";
+import "test_platform/config/config.proto";
+import "chromiumos/test/api/ctp2.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/cros_test_platform";
+
+message CrosTestPlatformProperties {
+  reserved 1;
+
+  // request describes a request to the cros_test_platform recipe, as
+  // described by a caller.
+  //
+  // Exactly one of request or requests must be set.
+  test_platform.Request request = 2;
+
+  // requests describes a set of requests to the cros_test_platform recipe, as
+  // described by a caller. The key in the dictionary is an opaque tag used to
+  // group the responses for the individual requests.
+  //
+  // Exactly one of request or requests must be set.
+  map<string, test_platform.Request> requests = 5;
+
+  // config describes configuration information for the cros_test_platform
+  // recipe.
+  //
+  // This property should not be specified by callers, but instead set by
+  // builder properties.
+  test_platform.config.Config config = 3;
+
+  // response describes the response from a cros_test_platform recipe.
+  // response is only set for builds with a single request.
+  //
+  // This property is set by the recipe execution, not by the caller.
+  test_platform.steps.ExecuteResponse response = 4 [ deprecated = true ];
+
+  // responses describes the responses from a cros_test_platform recipe.
+  //
+  // This property is set by the recipe execution, not by the caller.
+  map<string, test_platform.steps.ExecuteResponse> responses = 6
+      [ deprecated = true ];
+
+  // This consists of an ExecuteResponses proto, compressed and converted to
+  // base64 encoding for safe transmission as a string.
+  string compressed_responses = 8;
+
+  // This consists of an ExecuteResponses proto in JSON format, compressed and
+  // converted to base64 encoding for safe transmission as a string. It is an
+  // interim measure for switching off the responses field, which has become
+  // an urgent problem for message size. See crbug.com/1073551
+  string compressed_json_responses = 9 [ deprecated = true ];
+
+  // This recipe exports to ResultDB by default only if the build is a top-level
+  // build (i.e. it has no parent build). The following prop forces the recipe
+  // to ignore the ancestor check, and export no matter what. Defaults to false.
+  bool force_export = 10;
+
+  enum LUCIExperiments {
+    SUITE_EXECUTION_LIMIT = 0;
+  }
+  // This field is used for LUCI builder experiments defined in infra/config.
+  repeated LUCIExperiments experiments = 11;
+  // The following property used to determine the build configs are for
+  // parnters. Defaults to false.
+  bool partner_config = 12;
+
+  // New CTPv2 request. If this is provided, ctpv1 flow will be bypassed and
+  // CTPv2 binary will be invoked from recipes.
+  chromiumos.test.api.CTPv2Request ctpv2_request = 13;
+}

@@ -1,0 +1,31 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package prototype;
+
+import "prototype/client_id.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/prototype";
+
+// Client concept represents an end-user infra service that users interact with
+// directly. e.g: CQ, Release testing.
+// ClientId proto and companion protos are used for two purposes:
+//   1) Coordinate configs across different internal sub services to achieve a
+//      certain property that's required by the end-user infra service.
+//   2) Provide useful analytics of how the sub-services operate to fullfill
+//      requests from the end-user infra services.
+//
+//
+//
+//
+//    ---------------    1:N    -----------
+//    |   Client    | <---------| Profile |  // Use for coordinate
+//    ---------------           -----------  // behavioral configs
+//
+message Client {
+  string name = 1;
+  ClientId id = 2;
+}

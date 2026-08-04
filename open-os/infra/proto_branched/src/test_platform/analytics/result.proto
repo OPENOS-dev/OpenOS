@@ -1,0 +1,209 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.analytics;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/analytics";
+
+// TestPlanRun represents the test request defined by users and its running
+// status.
+message TestPlanRun {
+  // A unique name to identify this test plan run, format
+  // "testPlanRuns/CTP_BUILD_ID/REQ_KEY", where REQ_KEY is the CTP
+  // request’s key in the multiple-request,
+  // e.g. "testPlanRuns/8879199769272202448/octopus_ampton"
+  // Required field.
+  string uid = 1;
+
+  // CTP build ID.
+  int64 build_id = 2;
+
+  // Suite name. If the test plan is running an autotest suite,
+  // this field is the autotest suite name, e.g. wifi_interop.
+  string suite = 3;
+
+  // Human friendly url to access this run.
+  string execution_url = 4;
+
+  // The dut_pool in which the test plan ran, e.g. "DUT_POOL_QUOTA" or
+  // "wificell".
+  // It is case sensitive: "WIFICELL" and "wificell" represent different
+  // pools.
+  // Note that legacy pools "suites", "bvt" and "pcq" have been integrated
+  // into "DUT_POOL_QUOTA" and legacy pool "cts" has been renamed to
+  // "DUT_POOL_CTS".
+  string dut_pool = 5;
+
+  // The build target, a.k.a board name, e.g. "hatch", "octopus".
+  string build_target = 6;
+
+  // CrOS build version, e.g. "R84/13091.0.0".
+  string chromeos_build = 7;
+
+  Status status = 8;
+
+  // Use create_time/start_time/end_time below.
+  // Timestamp inside a struct can not be used to
+  // partition a Bigquery table.
+  Timeline timeline = 9 [ deprecated = true ];
+
+  // Time the CTP build was requested.
+  //
+  // Current CTP implementation does not report a single CTP request's timeline
+  // Thus, we use the CTP build's timeline to preent a Test Plan Run's
+  // lifecycle.
+  //
+  // BigQuery: Table partitioned on this field.
+  google.protobuf.Timestamp create_time = 10;
+
+  // Time the CTP build began to execute in a bot.
+  google.protobuf.Timestamp start_time = 11;
+
+  // Time the CTP build completed, unset if the task was
+  // stopped unexpectedly before its completion.
+  google.protobuf.Timestamp end_time = 12;
+}
+
+// TestRun contains Skylab task level information.
+message TestRun {
+  // Test runner build ID.
+  int64 build_id = 1;
+
+  // The name of the Skylab task corresponding to the test run, e.g.
+  // "tast.critical-chrome".
+  //
+  // For tasks containing a single test case, will generally be the same as the
+  // name of that test case, e.g. "provision_AutoUpdate.double".
+  // Required field.
+  string display_name = 2;
+
+  // Human friendly url to access this run.
+  string execution_url = 3;
+
+  // The TestPlanRun.uid of the parent test plan run.
+  string parent_uid = 4;
+
+  // Model name, e.g. "helios", "mimrock".
+  // Note that a single TestPlanRun may be spread across multiple models, if
+  // the test plan request did not specify a model to run.
+  string model = 5;
+
+  // Use create_time/start_time/end_time below.
+  // Timestamp inside a struct can not be used to
+  // partition a Bigquery table.
+  Timeline timeline = 6 [ deprecated = true ];
+
+  Status status = 7;
+
+  Verdict verdict = 8;
+
+  // The URL for the entire logs of this run.
+  string full_log_url = 9;
+
+  message Prejob { Verdict verdict = 1; }
+  Prejob prejob = 10;
+
+  // Time the test runner build was requested.
+  //
+  // TestRun's Bigquery table partitions on this field.
+  google.protobuf.Timestamp create_time = 11;
+
+  // Time the test runner build began to execute in a bot.
+  google.protobuf.Timestamp start_time = 12;
+
+  // Time the test runner build completed, unset if the task was
+  // stopped unexpectedly before its completion.
+  google.protobuf.Timestamp end_time = 13;
+}
+
+// TestCaseResult describes the result of an individual test case.
+message TestCaseResult {
+  // A unique name for this test case run,
+  // format "testCaseResults/TEST_RUNNER_BUILD_ID/TEST_CASE_NAME", e.g.
+  // "testCaseResults/8879199769272202448/provision_AutoUpdate.double".
+  // Required field.
+  string uid = 1;
+
+  // Test case name as it appears in status.log,
+  // e.g. "provision_AutoUpdate.double".
+  string display_name = 2;
+
+  // The TestRun.build_id of the parent test run.
+  int64 parent_build_id = 3;
+
+  Verdict verdict = 4;
+
+  // A one line human readable description of what happened during test
+  // case execution (e.g. error/warning message). Not intended to be machine
+  // parseable. There's no guarantee that a given root cause will always
+  // resolve to the same summary.
+  string human_readable_summary = 5;
+
+  // Time this test case was generated, which equals its test run's
+  // end_time.
+  //
+  // TestCaseResult's Bigquery table partitions on this field.
+  google.protobuf.Timestamp create_time = 6;
+}
+
+// The timeline of a task.
+message Timeline {
+  // Time the task was requested.
+  google.protobuf.Timestamp create_time = 1;
+  // Time the task began to execute in a bot.
+  google.protobuf.Timestamp start_time = 2;
+  // Time the task completed, unset if the task was
+  // stopped unexpectedly before its completion.
+  google.protobuf.Timestamp end_time = 3;
+  // Time the task was stopped unexpectedly, unset if
+  // task has run to its end.
+  google.protobuf.Timestamp abandon_time = 4;
+}
+
+// The latest known status of a task, may change as the run progresses.
+message Status {
+  // All the currently possible values (corresponding to
+  // testplatform.Taskstate.LifeCycle enum values):
+  //   NORMAL STATUS:
+  //
+  //     PENDING: task is pending somewhere and does not run.
+  //     RUNNING: task is running.
+  //     COMPLETED: ran to completion without being cancelled externally,
+  //       regardless of whether it succeeded or failed. A task is completed
+  //       only if all its sub-tasks have reached the end, either with a normal
+  //       or abnormal status.
+  //
+  //   ABNORMAL STATUS:
+  //
+  //     CANCELLED: never got a chance to run, cancelled externally.
+  //     REJECTED: never got a chance to run, rejected due to unsatisfiable
+  //       depenedencies.
+  //     ABORTED: started running but was cancelled externally while running.
+  string value = 1;
+}
+
+// The known tokens describe whether a task passed, failed, or had some other
+// indefinite verdict.
+message Verdict {
+  // All the currently possible values (corresponding to
+  // testplatform.Taskstate.Verdict enum values):
+  //
+  //   UNSPECIFIED(default): the task produced no usable verdict (possibly
+  //     because it never ran, or never finished, or the results were
+  //     unparseable).
+  //     Under most circumstances, this should be treated as a failure or
+  //     an infrastructure failure.
+  //   PASSED: test run definitively passed.
+  //   FAILED: test run definitively failed.
+  //   NO_VERDICT: the task definitively produced no verdict(for instance,
+  //     the test is irrelevant in the given environment).
+  //     Under most circumstances, this should be treated as a passing
+  //     (but uninteresting).
+  //   PASSED_ON_RETRY: the task failed, but passed after one or more retries.
+  string value = 1;
+}

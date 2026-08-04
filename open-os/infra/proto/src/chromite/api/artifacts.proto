@@ -1,0 +1,332 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// An artifact is a file generated during or after a build.
+message Artifact {
+  // Absolute path to the artifact file. Deprecated.
+  string path = 1;
+
+  // Absolute path to the artifact file. Replaces |path|.
+  chromiumos.Path artifact_path = 2;
+}
+
+// For artifacts that are built via docker and pushed to a Google Cloud Registry
+// (e.g. gcr.io), this provides the contents and instructions needed to perform
+// the docker build itself and push to the respective registry (managed/owned by
+// the CI project (e.g. chromeos-bot).
+message DockerBuild {
+  // Image name that will be set in the GRC
+  string image_name = 1;
+  // Docker file that will be used to perform the build (absolute path)
+  string docker_file_path = 2;
+  // Build context that stores all of the contents to be built in the container
+  // (absolute path)
+  string build_context_path = 3;
+}
+
+// TODO(b/187790484): PrepareForBuild has never existed in chromite, and is
+// being renamed to BuildSetup.  PrepareForBuildResponse is still used by
+// ToolchainService.
+message PrepareForBuildResponse {
+  // Whether this artifact requires a build.
+  enum BuildRelevance {
+    UNSPECIFIED = 0;
+    // Build is necessary to generate artifacts.
+    NEEDED = 1;
+    // Defer to other artifacts.  Used primarily for aggregation of artifact
+    // results.
+    UNKNOWN = 2;
+    // Artifacts are already generated.  The build is pointless.
+    POINTLESS = 3;
+  }
+  BuildRelevance build_relevance = 1;
+}
+
+message BuildSetupRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+
+  // The sysroot where the files live.
+  Sysroot sysroot = 2;
+
+  // Information about the artifacts.
+  chromiumos.ArtifactsByService artifact_info = 3;
+
+  // Whether we will proceed even if the build is POINTLESS.
+  bool forced_build_relevance = 4;
+}
+
+message BuildSetupResponse {
+  // Whether this artifact requires a build.
+  enum BuildRelevance {
+    UNSPECIFIED = 0;
+    // Build is necessary to generate artifacts.
+    NEEDED = 1;
+    // Defer to other artifacts.  Used primarily for aggregation of artifact
+    // results.
+    UNKNOWN = 2;
+    // Artifacts are already generated.  The build is pointless.
+    POINTLESS = 3;
+  }
+  BuildRelevance build_relevance = 1;
+}
+
+message GetRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+
+  // The sysroot where the files live.
+  Sysroot sysroot = 2;
+
+  // Artifact information.
+  chromiumos.ArtifactsByService artifact_info = 3;
+
+  // Result path for artifacts.
+  chromiumos.ResultPath result_path = 4;
+}
+
+message GetResponse {
+  // The artifacts that were bundled.
+  chromiumos.UploadedArtifactsByService artifacts = 1;
+}
+
+message BundleArtifactsRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+
+  // The sysroot where the files live.
+  Sysroot sysroot = 2;
+
+  // Artifact information.
+  chromiumos.ArtifactsByService artifact_info = 3;
+
+  // Absolute path to the directory in which artifacts should be dropped.
+  // TODO(b/187790484): Switch the recipes code to use result_path.
+  string output_dir = 4;
+
+  // Result path for artifacts.  If present this overrides output_dir.
+  chromiumos.ResultPath result_path = 5;
+}
+
+message BundleArtifactsResponse {
+  // The artifacts that were bundled.
+  chromiumos.UploadedArtifactsByService artifacts = 1;
+}
+
+// Request describing where build artifact bundles for a given build target
+// should be dumped.
+// TODO(b/187790484): BundleRequest and BundleResponse are being deprecated
+// (along with most of this file).  See BundleArtifactsRequest/Response
+message BundleRequest {
+  // The build target to bundle artifacts for.
+  // Deprecated. Use sysroot instead.
+  chromiumos.BuildTarget build_target = 1;
+
+  // Absolute path to the directory in which artifacts should be dropped.
+  string output_dir = 2;
+
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 3;
+  // The sysroot where the files live.
+  chromite.api.Sysroot sysroot = 4;
+
+  // Result path for artifacts. If present this overrides output_dir.
+  chromiumos.ResultPath result_path = 5;
+}
+
+// Response describing which bundles were dumped to the given output directory.
+message BundleResponse {
+  // The artifacts that added to the output directory.
+  repeated Artifact artifacts = 1;
+  // Instructions to complete docker builds with all of the required staged
+  // artifacts for the builds.
+  repeated DockerBuild docker_builds = 2;
+}
+
+// Request describing where to find build artifacts that are taken from a
+// sysroot.
+message BundleVmFilesRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+  // The sysroot where the files live.
+  chromite.api.Sysroot sysroot = 2;
+  // Test results directory relative to the sysroot.
+  string test_results_dir = 3;
+
+  // Absolute path to the directory in which artifacts should be dropped.
+  string output_dir = 4;
+}
+
+// Fetch the pinned guest image uris.
+message PinnedGuestImageUriRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+  // The sysroot where the files live.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+// Response from fetching pinned guest image uris.
+message PinnedGuestImageUriResponse {
+  message PinnedGuestImage {
+    string filename = 1;
+    string uri = 2;
+  }
+
+  // The pinned guest images.
+  repeated PinnedGuestImage pinned_images = 1;
+}
+
+// Request to fetch metadata files.
+message FetchMetadataRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+  // The sysroot where the files live.
+  // Absolute path within chroot.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+// Response containing the locations of metadata files.
+message FetchMetadataResponse {
+  // The absolute path to each metadata file.
+  repeated chromiumos.ResultPath filepaths = 1;
+}
+
+// Request to fetch test harness metadata files.
+message FetchTestHarnessMetadataRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+  // The sysroot where the files live.
+  // Absolute path within chroot.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+// Response containing the locations of test harness metadata files.
+message FetchTestHarnessMetadataResponse {
+  // The absolute path to each metadata file.
+  repeated chromiumos.ResultPath filepaths = 1;
+}
+
+// Request to fetch centralized suite files.
+message FetchCentralizedSuitesRequest {
+  // The chroot where the sysroot lives.
+  chromiumos.Chroot chroot = 1;
+  // The sysroot where the files live.
+  // Absolute path within chroot.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+// Response containing the locations of centralized suite files.
+message FetchCentralizedSuitesResponse {
+  // The absolute path to the SuiteSet file.
+  chromiumos.ResultPath suite_set_file = 1;
+  // The absolute path to the Suite file.
+  chromiumos.ResultPath suite_file = 2;
+}
+
+// Service for bundling build artifacts and dumping them somewhere on disk.
+service ArtifactsService {
+  option (service_options) = {
+    module : "artifacts",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // Perform pre-build setup for artifact builds.  Added in R90.
+  rpc BuildSetup(BuildSetupRequest) returns (BuildSetupResponse);
+
+  // Get artifacts for build. Added in R90.
+  rpc Get(GetRequest) returns (GetResponse);
+
+  // Fetch the pinned guest image locations.  Added in R77.
+  rpc FetchPinnedGuestImageUris(PinnedGuestImageUriRequest)
+      returns (PinnedGuestImageUriResponse);
+
+  // Fetch the paths for any metadata files.  Added in R94.
+  rpc FetchMetadata(FetchMetadataRequest) returns (FetchMetadataResponse);
+
+  // Fetch the paths for any metadata files.  Added in R127.
+  rpc FetchTestHarnessMetadata(FetchTestHarnessMetadataRequest)
+      returns (FetchTestHarnessMetadataResponse);
+
+  // Fetch the paths for any centralized suite files.  Added in R123.
+  rpc FetchCentralizedSuites(FetchCentralizedSuitesRequest)
+      returns (FetchCentralizedSuitesResponse);
+
+  //
+  // Everything that follows this line is planned to be deprecated
+  // as part of a BuildAPI refactoring detailed in b/187790484.
+  // Until that bug is closed, these endpoints are still used.
+  //
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with all files needed for Autotest HW testing.
+  rpc BundleAutotestFiles(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create the ChromeOS Config JSON payload.  Added in R78.
+  rpc BundleChromeOSConfig(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive of debug symbols.  Added in R90.
+  rpc BundleDebugSymbols(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with ebuild logs.
+  rpc BundleEbuildLogs(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with unsigned firmware images.
+  rpc BundleFirmware(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar.xz archive for each image that has been created.
+  // Added in R79.
+  rpc BundleImageArchives(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Generate zip containing all built images for the target.
+  rpc BundleImageZip(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with all guest images test bundles.
+  rpc BundlePinnedGuestImages(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create the simple chrome artifacts.
+  rpc BundleSimpleChromeArtifacts(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with all files needed for Tast HW testing.
+  rpc BundleTastFiles(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Generate minimal update payloads to be used in HW testing.
+  rpc BundleTestUpdatePayloads(BundleRequest) returns (BundleResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  }
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with VM memory and disk images.
+  rpc BundleVmFiles(BundleVmFilesRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tar archive with fingerprint MCU on-device unittest binaries.
+  // Added in R88.
+  rpc BundleFpmcuUnittests(BundleRequest) returns (BundleResponse);
+
+  // TODO(b/187790484): DEPRECATED use Get
+  // Create a tarball from the test image suitable for importing into GCE.
+  // Added in R89.
+  rpc BundleGceTarball(BundleRequest) returns (BundleResponse);
+}

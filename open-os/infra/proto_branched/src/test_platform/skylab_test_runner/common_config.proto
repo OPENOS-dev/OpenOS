@@ -1,0 +1,146 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner";
+
+// Config defines configuration parameters of skylab_test_runner.
+// NEXT TAG: 10
+message CommonConfig {
+
+  CrosFirmwareUpdateConfig cros_firmware_update_config = 1;
+
+  message CrosFirmwareUpdateConfig {
+    // Global flag to control OS bundled firmware update in prejob.
+    bool enabled = 1;
+
+    // Selects DUTs based on its board/model to determine if OS bundled firmware
+    // update should be executed. Both board and model can be used and it allows
+    // overlap, e.g. it considers a match as long as one of criteria is matched.
+    message CrosSlector {
+      // List of ChromeOS board names.
+      repeated string boards = 1;
+      // List of ChromeOS model names.
+      repeated string models = 2;
+    }
+
+    oneof cros_firmware_update_selector {
+      // Only update OS bundled firmware on boards/models match with the list.
+      CrosSlector allow_list = 2;
+      // Block OS bundled firmware update on boards/models match with the list.
+      CrosSlector block_list = 3;
+    }
+  }
+
+  // If true, indicates this bucket runs partner-private tests not intended to
+  // be shared generally/through Omnilab
+  bool partner_private = 2;
+
+  // Config to define when test_runner should execute via trv2.
+  Trv2Config enable_trv2_config = 3;
+
+  // Config to define when test_runner should use ile-de-france.
+  IleDeFranceConfig enable_ile_de_france_config = 5;
+
+  // If true, the board/model realm we attempt to publish to will not be
+  // verified via fetching a definitive list. This should only be enabled for
+  // builders where fetching an (internal) file from git is not possible.
+  //
+  // If this is enabled and an invalid board-model realm is determined, it's
+  // likely the result will not be visible to anyone.
+  bool skip_board_model_realm_check = 4;
+
+  // RdbConfig determines any configuration around ResultDB uploads.
+  message RdbConfig {
+    // If request.results_upload_config.TestResultsUploadVisibility is
+    // CUSTOM_REALM this value will be the realm the configs are uploaded to.
+    string custom_realm_name = 1;
+  }
+
+  RdbConfig rdb_config = 6;
+
+  // UfsConfig determines any configuration around Ufs api calls.
+  message UfsConfig {
+    // ufs namespace to be used for talking to ufs.
+    string ufs_namespace = 1;
+  }
+
+  UfsConfig ufs_config = 7;
+
+  // PartnerConfig determines any configuration around Partner settings.
+  message PartnerConfig {
+    // Account ID for the partner.
+    int64 account_id = 1;
+    // Partner GCS bucket name
+    string gcs_bucket = 2;
+  }
+
+  PartnerConfig partner_config = 8;
+
+  // XtsArchiveConfig defines the config for archiving XTS results to specific
+  // buckets to be ingested by XTS result pipeline.
+  XtsArchiveConfig xts_archive_config = 9;
+}
+
+// b/267268890: Config to control trv2 gradual rollout in prod. Should be
+// deprecated after full rollout.
+message Trv2Config {
+  // List of allowed suites which should run via trv2.
+  // 'Or' relationship between suites.
+  // 'And' relationship with allowed_boards & allowed_build_types.
+  repeated string allowed_suites = 1;
+
+  // List of allowed suites which should run via trv2.
+  // 'Or' relationship between boards.
+  // 'And' relationship with allowed_suites & allowed_build_types.
+  repeated string allowed_boards = 2;
+
+  // List of allowed build types which should run via trv2.
+  // 'Or' relationship between build types.
+  // 'And' relationship with allowed_boards & allowed_suites.
+  repeated BuildType allowed_build_types = 3;
+
+  // Different build types.
+  enum BuildType {
+    CQ = 0;
+    RELEASE = 1;
+    POSTSUBMIT = 2;
+  }
+}
+
+// IleDeFranceConfig controls whether ile-de-france (the lightweight
+// verifier) is enabled or disabled for any given model.
+message IleDeFranceConfig {
+  // Global flag to control whether the ile-de-france config is allowed to run
+  // at all or not
+  bool enabled = 1;
+
+  // A list of models to allow or deny, as appropriate.
+  message ModelList { repeated string models = 1; }
+
+  // Determine whether ile-de-france runs are permitted or not by specifying an
+  // allowlist or a denylist.
+  oneof ile_de_france_selector {
+    ModelList allow_list = 2;
+    ModelList deny_list = 3;
+  }
+}
+
+// XtsArchiveConfig defines the properties for archiving XTS suite results
+// to be ingested by the XTS pipeline for release qualification and
+// regression monitoring.
+// NEXT TAG: 3
+message XtsArchiveConfig {
+  // The GCS path prefix to upload XTS result file to be ingested by
+  // the XTS pipeline.
+  // This includes the bucket name and any optional file prefix.
+  string results_gcs_prefix = 1;
+
+  // The GCS path prefix to upload XTS result file for APFE approval.
+  // This includes the bucket name and any optional file prefix.
+  string apfe_gcs_prefix = 2;
+}

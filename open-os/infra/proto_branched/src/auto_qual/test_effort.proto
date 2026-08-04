@@ -1,0 +1,116 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/timestamp.proto";
+import "auto_qual/test.proto";
+import "auto_qual/os_build_target.proto";
+import "auto_qual/firmware_target.proto";
+import "auto_qual/build_info.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+// Config for testing of a specific model.
+message ModelTestEffortConfig {
+
+  enum NotificationType {
+    NOTIFICATION_TYPE_UNSPECIFIED = 0;
+    FAILING_VERDICT = 1;
+    FAILING_EFFORT = 2;
+    COMPLETE_EFFORT = 3;
+  }
+
+  message Notification {
+    NotificationType type = 1;
+    repeated string email = 2;
+  }
+
+  message TestPlan {
+    // Grouping of pool name and pool category
+    // e.g. (DEFAULT, "DUT_POOL_QUOTA")
+    message PoolConfig {
+      string pool = 1;
+      Test.PoolType pool_type = 2;
+    }
+
+    // Name of the test plan. Maps to a local path within the auto qual
+    // repo containing the TestPlan text proto.
+    // e.g: avs/firmware which maps to test_plans/avs/firmware.txtpb
+    string test_plan_name = 1;
+
+    // Which pools to use when scheduling tests.
+    // In scenarios where two pool_configs share a
+    // PoolType, pools containing devices that belong
+    // to partners will be prioritized over internal pools.
+    repeated PoolConfig pool_configs = 2;
+
+    // Tests to be excluded from the test effort
+    repeated Test test_overrides = 3;
+  }
+
+  message AdditionalTesting {
+    // Additional test efforts run on completion
+    repeated ModelTestEffortConfig test_effort = 1;
+
+    // Additional test plans run on completion
+    repeated TestPlan test_plan = 2;
+  }
+
+  message EntryPointSource {
+    string method = 1;
+    string bucket = 2;
+    string source = 3;
+  }
+
+  // Test Effort ID
+  string id = 1;
+
+  // Test Effort Name
+  string name = 2;
+
+  // Test Plan
+  repeated TestPlan test_plan = 3;
+
+  // Max Test Retries
+  uint32 max_retries = 4;
+
+  // The OS build to test against.
+  // TODO: Should this be repeated?
+  repeated OSBuildTarget os_build_target = 5;
+
+  // Notification configurations
+  repeated Notification notifications = 6;
+
+  // Additional testing to run on completion
+  repeated AdditionalTesting follow_on_testing = 7;
+
+  // Additional testing already scheduled or completed
+  repeated AdditionalTesting scheduled_testing = 8;
+
+  FirmwareTargetDefinition fw_targets = 9;
+
+  repeated DeviceUnderTest duts = 10;
+
+  // How the test effort was created
+  EntryPointSource entry_point_source = 11;
+
+  string user_request_id = 12;
+
+  // generation_time
+  google.protobuf.Timestamp generation_time = 13;
+
+  OSBuildTarget test_build_target = 14;
+
+  // If true, skip scheduling al/boot or cros/boot as a hard prerequisite.
+  bool skip_boot_prerequisite = 15;
+}
+
+message ModelTestEffortConfigs {
+  // Test Effort configs to be used
+  repeated ModelTestEffortConfig test_efforts = 1;
+}

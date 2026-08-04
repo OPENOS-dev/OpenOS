@@ -1,0 +1,52 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab_platform;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab_platform";
+
+// StableVersions is a structure containing all of the versions for various
+// components: OS anf firmware details.
+// Next Tag: 5
+message StableVersions {
+  repeated StableVersion versions = 4;
+}
+
+// StableVersion describe a single version record to decribe target device
+// and vesrions need to be used for that.
+message StableVersion {
+  // The target description.
+  StableVersionTarget target = 1;
+  // The version of the OS.
+  // e.g. "R80-14444.333.0"
+  string os_version = 2;
+  // The path of the OS image file.
+  // Examples:
+  // 1) "board-release/R80-14444.333.0"
+  // 2) "gs://bucket/board-release/R80-14444.333.0/file_name.tar.xz"
+  string os_image_path = 3;
+  // The version of the firmware RO.
+  // e.g. "Google_Board.14444.333.0"
+  string firmware_ro_version = 4;
+  // The path of the firmware RO image file.
+  // Examples:
+  // 1) "board-firmware/R80-14444.333.0"
+  // 2) "gs://bucket/board-firmware/R80-14444.333.0/file_name.tar.xz"
+  string firmware_ro_image_path = 5;
+}
+
+// StableVersionTarget describes details of target devices.
+message StableVersionTarget {
+  // Device type like cros/android/tablet/labstation.
+  string device_type = 1;
+  // The board of the device.
+  // For CrOS it can be represented as build-target.
+  string board = 2;
+  // The model of the device.
+  string model = 3;
+  // The pool of the device.
+  string pool = 4;
+}

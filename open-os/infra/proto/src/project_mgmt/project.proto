@@ -1,0 +1,69 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package project_mgmt;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/project_mgmt";
+
+// Defines ACLs for a project's builders.
+message BuildbucketAcls {
+  // A list of LUCI Auth Service groups that can view a project's builds.
+  repeated string buildbucket_readers = 1;
+}
+
+// Describes the location of a local manifest file.
+// See
+// https://gerrit.googlesource.com/git-repo/+/master/docs/manifest-format.md#local-manifests.
+message LocalManifest {
+  // URL of the repo with the local manifest. E.g.
+  // https://chrome-internal.googlesource.com/chromeos/project/...
+  string repo_url = 1;
+  // Path to the local manifest.
+  // Relative to the repo.
+  string manifest_path = 2;
+}
+
+// Information about the project's HWID file in the chromeos-hwid repo.
+message HWIDInfo {
+  // A key in the project.yaml metadata file, to look up the branch, path, etc.
+  // For example, to match the entry in the project.yaml file:
+  //
+  // MILKYWAY:
+  //   board: GALAXY
+  //   branch: master
+  //   version: 3
+  //   path: v3/MILKYWAY
+  //
+  // project_key should be 'MILKYWAY'. The matching is case-insensitive.
+  string project_key = 1;
+}
+
+// Defines the metadata for a project, which ultimately controls how this
+// project is managed throughout the infrastructure.
+//
+// NEXT ID: 9
+message Project {
+  // Defines the human-readable name for the project.
+  string name = 1;
+  // Defines the git-repo path for the project.
+  string repo = 2;
+  // Defines the path that stores all of the project configuration.
+  // Relative to the git-repo
+  string config_path = 3;
+  // Defines the path the repo is checked out to in the source tree, i.e. the
+  // "path" attribute in the manifest.
+  string repo_checkout_path = 4;
+  // Defines ACLs for a project's builders.
+  BuildbucketAcls buildbucket_acls = 5;
+  // Define the project's local_manifest.
+  LocalManifest local_manifest = 6;
+  // The Google Storage bucket for artifacts from the project's builds.
+  string gs_bucket = 7;
+
+  HWIDInfo hwid_info = 8;
+}
+
+message ProjectList { repeated Project value = 1; }

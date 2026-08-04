@@ -1,0 +1,47 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+import "chromiumos/bot_scaling.proto";
+
+// Defines the modes of monitoring to execute on swarming.
+enum MonitoringMode {
+  DEFAULT_TRACKING = 0;
+  // Track Task and Bot count.
+  TASK_BOT_COUNT = 1;
+  // Maximum pending time of the tasks.
+  MAX_PEND_TIME = 2;
+  // Success and failure count over a time period.
+  PASS_FAIL_COUNT = 3;
+}
+
+// Defines a tracking policy for a specific "bot group". This can be used
+// to track a DUT, a model, a qs_account or tasks with certain priority.
+message TrackingPolicy {
+  // Bot group being tracked.
+  string name = 1;
+  // Dimensions to query swarming on.
+  // DO NOT use values field here. Only value will be used.
+  repeated chromiumos.SwarmingDimension dimensions = 2;
+  // What monitorings to apply on the bot group.
+  repeated MonitoringMode modes = 3;
+  // Number of hours to lookback for Swarming stats.
+  sint32 lookback_hours = 4;
+  // Dimensions that are only needed to query tasks.
+  repeated chromiumos.SwarmingDimension task_dimensions = 5;
+  // Swarming instance name:  chromeos-swarming.appspot.com
+  string swarming_instance = 6;
+}
+
+// Defines a root message.
+message TrackingPolicyCfg {
+  // All tracking policies.
+  repeated TrackingPolicy policies = 1;
+}

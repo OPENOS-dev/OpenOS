@@ -1,0 +1,81 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+message TestMetadataRequest {
+  chromiumos.Chroot chroot = 1;
+  // Test metadata is generated from a populated build target sysroot.
+  // In particular the sysroot must contain compiled test packages.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+message TestMetadataResponse { AutotestTestMetadata autotest = 1; }
+
+message AutotestTestMetadata {
+  repeated AutotestSuite suites = 1;
+  repeated AutotestTest tests = 2;
+}
+
+message AutotestSuite {
+  // Unique across all suites.
+  string name = 1;
+  // These are appended to the dependencies of each child task.
+  repeated AutotestTaskDependency child_dependencies = 2;
+  int32 child_task_timeout_sec = 3;
+
+  message TestReference { string name = 1; }
+  repeated TestReference tests = 4;
+}
+
+message AutotestTest {
+  // Unique across all tests.
+  string name = 1;
+  // Autotest string labels to control which device the test runs on.
+  repeated AutotestTaskDependency dependencies = 2;
+  bool allow_retries = 3;
+  // Only meaningful if allow_retries is true.
+  // Total number of attempts for a failed test will be (1 + max_retries).
+  int32 max_retries = 4;
+  bool needs_multiple_duts = 5;
+  // Only meaningful if needs_multiple_duts is true.
+  // Values <= 2 are disallowed.
+  int32 dut_count = 6;
+
+  enum ExecutionEnvironment {
+    EXECUTION_ENVIRONMENT_UNSPECIFIED = 0;
+    // Autotest calls tests that run on the Device Under Test "client" tests.
+    EXECUTION_ENVIRONMENT_CLIENT = 1;
+    // Autotest calls tests that run on the autotest drone "server" tests.
+    EXECUTION_ENVIRONMENT_SERVER = 2;
+  }
+  ExecutionEnvironment execution_environment = 7;
+  // List of tests.
+  // 'name' captures a single name representing a shard of tests
+  // whereas 'names' removes the encapsulation on the shard of tests by listing
+  // out their individual names. 'name' will be ignored if 'names' is provided.
+  repeated string names = 8;
+}
+
+message AutotestTaskDependency {
+  // Opaque string label that encodes characteristics of the device to use for
+  // the task.
+  string label = 1;
+}
+
+service TestMetadataService {
+  option (service_options) = {
+    module : "test_metadata",
+    service_chroot_assert : INSIDE,
+  };
+
+  rpc Get(TestMetadataRequest) returns (TestMetadataResponse);
+}

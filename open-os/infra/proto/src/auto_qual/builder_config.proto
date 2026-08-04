@@ -1,0 +1,48 @@
+// Copyright 2026 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+import "auto_qual/test_effort.proto";
+import "auto_qual/firmware_target.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+message LuciBuilder {
+  string name = 1;
+  repeated string buckets = 2;
+}
+
+message AndroidBuilder {
+  string branch = 1;
+  string target = 2;
+}
+
+message BuilderConfig {
+  oneof builder {
+    LuciBuilder luci = 1;
+    AndroidBuilder ab = 2;
+  }
+  repeated FirmwareTarget applicable_targets = 3;
+}
+
+enum TriggerType {
+  TRIGGER_TYPE_UNSPECIFIED = 0;
+  TRIGGER_TYPE_ANY = 1;
+  TRIGGER_TYPE_ALL = 2;
+  TRIGGER_TYPE_ON_NEW_BUILDER = 3;
+}
+
+message TestEffortBuilderConfig {
+  repeated BuilderConfig builders = 1;
+  repeated ModelTestEffortConfig test_effort_templates = 2;
+  TriggerType trigger_type = 3;
+  int32 min_interval_hours = 4;
+}
+
+message TestEffortBuilderConfigs {
+  repeated TestEffortBuilderConfig configs = 1;
+}

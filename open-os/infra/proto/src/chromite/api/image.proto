@@ -1,0 +1,268 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+import "chromiumos/metrics.proto";
+import "chromiumos/signing.proto";
+
+// Image argument - encapsulate data about an image.
+message Image {
+  // Path to the image file.
+  string path = 1;
+  // The image type.
+  chromiumos.ImageType type = 2;
+  // The build target used to create the image.
+  chromiumos.BuildTarget build_target = 3;
+
+  reserved 4; // The sha256 of the image binary.
+}
+
+// The image test arguments.
+message CreateImageRequest {
+  // Required.
+  // The build target whose image is being built.
+  chromiumos.BuildTarget build_target = 1;
+  // The types of images to build, defaults to building base image.
+  // Note: Building either of the VM image types will also force the
+  // corresponding regular image to be built. Only one VM image type may be
+  // built at a time, and will overwrite any previously built VM image if the
+  // same output directory (version) is used.
+  repeated chromiumos.ImageType image_types = 2;
+  // Whether rootfs verification should be disabled (enabled by default).
+  bool disable_rootfs_verification = 3;
+  // The image version.
+  string version = 4;
+  // Disk layout option. See README.disk_layout and legacy_disk_layout.json in
+  // src/scripts/build_library.
+  string disk_layout = 5;
+  // Used to set the LSB builder path key in /etc/lsb-release. See
+  // chromite/scripts/cros_set_lsb_release.py.
+  string builder_path = 6;
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 7;
+  // Whether to use the base image as the recovery image.
+  bool base_is_recovery = 8;
+  // Whether to use Bazel to build the image.
+  bool bazel = 9;
+}
+
+message CreateImageResult {
+  // Whether it completed successfully.
+  bool success = 1;
+  // Images that were built. Will contain no more than one per image type.
+  repeated Image images = 2;
+  // Any packages that failed to build. Empty on success.
+  repeated chromiumos.PackageInfo failed_packages = 3;
+  // The metric events that occurred during the running of CreateImage.
+  // Added in R79.
+  repeated chromiumos.MetricEvent events = 4;
+}
+
+// The image test arguments.
+message CreateNetbootRequest {
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+  // Required.
+  // The build target whose image is being built.
+  chromiumos.BuildTarget build_target = 2;
+  // Optional.
+  // The factory shim path.
+  // When not provided, uses the path where the factory shim would be created by
+  // ImageService/Create, which will not match a standard build_image run.
+  // The factory shim's directory is used as the output path for the netboot
+  // kernel creation script.
+  string factory_shim_path = 3;
+}
+
+message CreateNetbootResponse {}
+
+// The image test arguments.
+message TestImageRequest {
+  // The image to be tested.
+  // Image.path is required.
+  Image image = 1;
+  // The build target whose image is being tested.
+  // BuildTarget.name is required.
+  chromiumos.BuildTarget build_target = 2;
+
+  // Test results options specifications.
+  message Result {
+    // Location where the test results should be written.
+    string directory = 1;
+  }
+  // Required.
+  Result result = 3;
+
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 4;
+}
+
+message TestImageResult {
+  // Whether all tests passed.
+  bool success = 1;
+}
+
+// Request artifacts to be pushed from the archive bucket to the release bucket,
+// using chromite/scripts/pushimage.py.
+message PushImageRequest {
+  // The chroot used to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+
+  // Whether or not this push image request is a dry run.
+  bool dryrun = 2;
+
+  // GS path of source artifacts to push to the release bucket.
+  string gs_image_dir = 3;
+
+  // Sysroot (board) to generate symbols for.
+  chromite.api.Sysroot sysroot = 4;
+
+  // Board profile in use (e.g. "asan").
+  // If set, the pushimage script will look for artifacts with this profile
+  // in their name.
+  chromiumos.Profile profile = 5;
+
+  // If set, only sign specified image types.
+  repeated chromiumos.ImageType sign_types = 6;
+
+  // Destination bucket for push image operations.
+  // If not set, 'gs://chromeos-releases' will be used.
+  string dest_bucket = 7;
+
+  // Whether or not this push image request is for the staging env.
+  // This influences things such as which keys are used for signing.
+  bool is_staging = 8;
+
+  // If set, overrides which channels to sign for.
+  repeated chromiumos.Channel channels = 9;
+}
+
+// Response from pushimage script.
+message PushImageResponse {
+  // Instructions argument - represents an instructions file.
+  message Instructions {
+    // GS path of the instructions file.
+    string instructions_file_path = 1;
+  }
+
+  // The list of images pushed.
+  repeated Instructions instructions = 1;
+}
+
+// Request artifacts to be signed.
+message SignImageRequest {
+  reserved 1;
+
+  // Signing configs.
+  chromiumos.BuildTargetSigningConfigs signing_configs = 2;
+
+  // Directory where input (unsigned) artifacts are placed.
+  string archive_dir = 5;
+
+  // Directory where signed artifacts should be placed.
+  chromiumos.ResultPath result_path = 3;
+
+  // Docker image to use for signing. Should already be pulled down on the host.
+  // This consists of the name of the docker image, followed by the tag, i.e.
+  // "signing:1234".
+  string docker_image = 4;
+
+  // Directory to be mounted to /tmp in the docker container.
+  // Needed to avoid filling up our small boot partition..
+  string tmp_path = 6;
+}
+
+message SignImageResponse {
+  chromiumos.BuildTargetSignedArtifacts signed_artifacts = 1;
+
+  // Directory where signed artifacts have been placed.
+  string output_archive_dir = 2;
+}
+
+// The image service.
+service ImageService {
+  option (service_options) = {
+    module : "image",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Build an image.
+  // Example json:
+  // {
+  //  "build_target": {"name": "reef"},
+  // }
+  rpc Create(CreateImageRequest) returns (CreateImageResult);
+
+  rpc CreateNetboot(CreateNetbootRequest) returns (CreateNetbootResponse);
+
+  // Test an image.
+  // Example json:
+  // {
+  //  "build_target": {"name": "reef"},
+  //  "image": {"path": "/mnt/host/source/src/build/images/reef/latest"},
+  //  "result": {"directory": "/tmp/image_test_results"}
+  // }
+  rpc Test(TestImageRequest) returns (TestImageResult);
+
+  // Execute SignerTest for an image.  Added in R78.
+  // Example json:
+  // {
+  //  "build_target": {"name": "reef"},
+  //  "image": {"path": "/mnt/host/source/src/build/images/reef/latest"},
+  //  "result": {"directory": "/tmp/image_test_results"}
+  // }
+  rpc SignerTest(TestImageRequest) returns (TestImageResult);
+
+  // Execute PushImage for a script.  Added in R89.
+  // Example json:
+  // {
+  //   "dryrun": true,
+  //   "gs_image_dir":
+  //   "gs://chromeos-image-archive/atlas-release/R89-13604.0.0", "sysroot": {
+  //       "build_target": {
+  //           "name": "atlas"
+  //       }
+  //   },
+  //   "sign_types": [1, 6]
+  // }
+  rpc PushImage(PushImageRequest) returns (PushImageResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+
+  // Sign images based on the given config.
+  // Example json:
+  // {
+  //   "signing_configs": {
+  //     "build_target_signing_configs": [
+  //       {
+  //         "build_target": "eve",
+  //         "signing_configs": [
+  //           {
+  //             "keyset": "eve-foo-bar",
+  //             "ensure_no_password": true,
+  //             "firmware_update": true,
+  //           }
+  //         ]
+  //       }
+  //     ],
+  //     "docker_image": "signing:latest"
+  //   }
+  // }
+  rpc SignImage(SignImageRequest) returns (SignImageResponse) {
+    option (method_options) = {
+      method_branched_execution : EXECUTE_TOT,
+      method_chroot_assert : OUTSIDE,
+    };
+  };
+}

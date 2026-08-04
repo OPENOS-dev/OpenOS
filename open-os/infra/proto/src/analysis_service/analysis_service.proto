@@ -1,0 +1,124 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package analysis_service;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/analysis_service";
+
+import "chromite/api/artifacts.proto";
+import "chromite/api/binhost.proto";
+import "chromite/api/depgraph.proto";
+import "chromite/api/firmware.proto";
+import "chromite/api/image.proto";
+import "chromite/api/packages.proto";
+import "chromite/api/sdk.proto";
+import "chromite/api/sysroot.proto";
+import "chromite/api/test.proto";
+import "google/protobuf/timestamp.proto";
+
+// Data about the execution of a step. Fields mirror those of the
+// ExecutionResult object returned by a step.
+message StepExecutionResult {
+  int32 retcode = 1;
+
+  bool had_timeout = 2;
+
+  bool had_exception = 3;
+
+  bool was_cancelled = 4;
+}
+
+// Requests and responses are sent to the Artifacts Analysis Service on a single
+// Pub/Sub topic; thus, the type of the request and response need to be encoded
+// in the Pub/Sub message. This is done with this wrapper proto.
+//
+// This proto should only be used by a recipes module to do the wrapping and a
+// layer on the Analysis Server to do the unwrapping.
+//
+// NEXT ID: 59;
+message AnalysisServiceEvent {
+  reserved 36, 37, 40, 41;
+
+  // The Buildbucket id for the build doing the request and response.
+  int64 build_id = 42;
+
+  // The name of the step doing the request and response. Must be the same
+  // format as Buildbucket Build proto's step name (i.e. parent and child step
+  // names are separated by the "|" character).
+  string step_name = 43;
+
+  // The time the request and response were sent and recieved by the caller.
+  google.protobuf.Timestamp request_time = 3;
+  google.protobuf.Timestamp response_time = 4;
+
+  // The stdout and stderr logs for a stage. Either log string may be truncated
+  // to ensure individual entries and proto request sizes work well for upload
+  // and for later querying.
+  string stdout = 50;
+  string stderr = 51;
+
+  // Data about the execution of the step doing the request and response.
+  StepExecutionResult step_execution_result = 52;
+
+  // The request to upload.
+  oneof request {
+    chromite.api.InstallPackagesRequest install_packages_request = 1;
+    chromite.api.BundleRequest bundle_request = 5;
+    chromite.api.BundleVmFilesRequest bundle_vm_files_request = 7;
+    chromite.api.BinhostGetRequest binhost_get_request = 8;
+    chromite.api.AclArgsRequest acl_args_request = 10;
+    chromite.api.PrepareBinhostUploadsRequest prepare_binhost_uploads_request =
+        12;
+    chromite.api.SetBinhostRequest set_binhost_request = 14;
+    chromite.api.RegenBuildCacheRequest regen_build_cache_request = 16;
+    chromite.api.GetBuildDependencyGraphRequest
+        get_build_dependency_graph_request = 18;
+    chromite.api.CreateImageRequest create_image_request = 20;
+    chromite.api.TestImageRequest test_image_request = 22;
+    chromite.api.CreateRequest create_request = 24;
+    chromite.api.UpdateRequest update_request = 26;
+    chromite.api.SysrootCreateRequest sysroot_create_request = 28;
+    chromite.api.InstallToolchainRequest install_toolchain_request = 30;
+    chromite.api.BuildTargetUnitTestRequest build_target_unit_test_request = 32;
+    chromite.api.ChromiteUnitTestRequest chromite_unit_test_request = 34;
+    chromite.api.VmTestRequest vm_test_request = 38;
+    chromite.api.UprevPackagesRequest uprev_packages_request = 44;
+    chromite.api.GetBestVisibleRequest get_best_visible_request = 46;
+    chromite.api.GetChromeVersionRequest get_chrome_version_request = 48;
+    chromite.api.GetBuilderMetadataRequest get_builder_metadata_request = 53;
+    chromite.api.BuildAllFirmwareRequest build_all_firmware_request = 55;
+    chromite.api.TestAllFirmwareRequest test_all_firmware_request = 57;
+  }
+
+  // The response to upload.
+  oneof response {
+    chromite.api.InstallPackagesResponse install_packages_response = 2;
+    chromite.api.BundleResponse bundle_response = 6;
+    chromite.api.BinhostGetResponse binhost_get_response = 9;
+    chromite.api.AclArgsResponse acl_args_response = 11;
+    chromite.api.PrepareBinhostUploadsResponse
+        prepare_binhost_uploads_response = 13;
+    chromite.api.SetBinhostResponse set_binhost_response = 15;
+    chromite.api.RegenBuildCacheResponse regen_build_cache_response = 17;
+    chromite.api.GetBuildDependencyGraphResponse
+        get_build_dependency_graph_response = 19;
+    chromite.api.CreateImageResult create_image_result = 21;
+    chromite.api.TestImageResult test_image_result = 23;
+    chromite.api.CreateResponse create_response = 25;
+    chromite.api.UpdateResponse update_response = 27;
+    chromite.api.SysrootCreateResponse sysroot_create_response = 29;
+    chromite.api.InstallToolchainResponse install_toolchain_response = 31;
+    chromite.api.BuildTargetUnitTestResponse build_target_unit_test_response =
+        33;
+    chromite.api.ChromiteUnitTestResponse chromite_unit_test_response = 35;
+    chromite.api.VmTestResponse vm_test_response = 39;
+    chromite.api.UprevPackagesResponse uprev_packages_response = 45;
+    chromite.api.GetBestVisibleResponse get_best_visible_response = 47;
+    chromite.api.GetChromeVersionResponse get_chrome_version_response = 49;
+    chromite.api.GetBuilderMetadataResponse get_builder_metadata_response = 54;
+    chromite.api.BuildAllFirmwareResponse build_all_firmware_response = 56;
+    chromite.api.TestAllFirmwareResponse test_all_firmware_response = 58;
+  }
+}

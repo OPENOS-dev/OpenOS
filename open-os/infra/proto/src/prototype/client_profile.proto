@@ -1,0 +1,96 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package prototype;
+
+import "prototype/client_profile_id.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/prototype";
+
+// Profile to coordinate behavioral configs of internal sub services e.g. test
+// platform Next Tag: 4
+message ClientProfile {
+  string name = 1;
+  ClientProfileId id = 2;
+  TestPlatformProfile test_platform_profile = 3;
+}
+
+// TestPlatformProfile configures aspects of the test platform behaviour
+// per-request. Configure the scheduling priorities in the test platform, retry
+// behavior, timeout characteristics and alerting thresholds throughout the test
+// platform stack. Next Tag: 5
+message TestPlatformProfile {
+  SchedulerProfile scheduler = 1;
+  RetryProfile retry = 2;
+  TimeoutProfile timeout = 3;
+  MonitoringProfile monitoring = 4;
+}
+
+// SchedulerProfile controls the test platform scheduling behaviour.
+// Next Tag: 5
+message SchedulerProfile {
+  // The task scheduling pools this device may be used for.
+  //
+  // Historical note: The concept of managed pools (e.g.: DUT_POOL_CQ) was used
+  // for automatic balancing of healthy devices in critical pools. Due to
+  // merging of critical pools into a common scheduler pool, this auto-balancing
+  // service is no longer required.
+  //
+  // Old enum values are now serialized to the JSON encoding of those enums
+  // (e.g. "DUT_POOL_QUOTA").
+  // See lab/device.proto:DeviceUnderTest::DutPool.
+  repeated string pools = 1;
+
+  oneof qos_channel {
+    // Priority corresponding to a swarming task priority.
+    // If specified, it should be in the range [50,255].
+    // It will be used for any swarming tasks created by this run.
+    //
+    // Note that the scheduler behavior with a given priority depends on
+    // other factors, such as pool. In particular, if requests are run in
+    // a quotascheduler-controlled pool, then this priority will be ignored,
+    // as priority will be determined by quota account balances.
+    uint32 priority = 2;
+
+    // Quota account for both managed and unamanged pools.
+    // It should be used if the request is scheduled on a pool
+    // managed by QuotaScheduler. See go/qs-enabled-pools for details.
+    // If set for requests on no QuotaScheduler pools,
+    // it will be ignored and the request will default to running at
+    // the lowest priority.
+    string quota_account = 3;
+  }
+}
+
+// RetryPrfoile defines parameters that affect how failed tests within
+// a request are retried.
+message RetryProfile {
+  // Whether to allow test retries.
+  bool allow = 1;
+
+  // Maximum number of retries of tests within this invocation to allow.
+  // 0 = unlimited.
+  uint32 max = 2;
+}
+
+// TimeoutProfile defines parameters related to timeouts.
+message TimeoutProfile {
+  // Maximum duration for the entire request to be handled.
+  google.protobuf.Duration maximum_duration = 1;
+}
+
+// MonitoringProfile controls the alerting and monitoring of requests
+// associated with the profile throughout the test infrastructure
+// stack.
+message MonitoringProfile {
+  TestPlatformAlertingThresholds test_platform_alerting_thresholds = 1;
+}
+
+// TestPlatformAlertingThresholds capture alerting thresholds for test platform.
+message TestPlatformAlertingThresholds {
+  // TODO: TBD
+}

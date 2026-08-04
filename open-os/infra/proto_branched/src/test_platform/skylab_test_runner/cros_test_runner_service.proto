@@ -1,0 +1,58 @@
+// Copyright 2023 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.skylab_test_runner;
+
+import "test_platform/request.proto";
+import "chromiumos/test/lab/api/dut.proto";
+import "test_platform/skylab_test_runner/cft_request.proto";
+import "test_platform/skylab_test_runner/result.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner";
+
+// CrosTestRunnerServerStartRequest represents the server start request for
+// cros test runner service. Any data that should be used throughout the whole
+// service session should be provided through this proto.
+message CrosTestRunnerServerStartRequest {
+  string host_name = 1;
+  string log_data_gs_root = 2;
+  string docker_key_file_location = 3;
+  chromiumos.test.lab.api.DutTopology dut_topology = 4;
+  bool use_docker_key_directly = 5;
+}
+
+// CrosTestRunnerService represents cros test runner service.
+service CrosTestRunnerService {
+  rpc Execute(ExecuteRequest) returns (ExecuteResponse);
+}
+
+// ExecuteRequest represents the request for cros test runner service.
+message ExecuteRequest {
+  // Only one suite will be supported inside testplans.
+  // Different suites will have to make separate rpc calls.
+  // If test_plan provided, cft_test_request.test_suites will be constructed
+  // from it.
+  test_platform.Request.TestPlan test_plan = 1;
+
+  // cft_test_request is always required. This also includes steps config
+  // which will provide clients maximum freedom to choose which steps to
+  // execute.
+  test_platform.skylab_test_runner.CFTTestRequest cft_test_request = 2;
+
+  // Cros-tool-runner cipd version to use.
+  string ctr_cipd_version = 3;
+
+  // Local path to cros-tool-runner binary to run with; this field is meant to
+  // be an alternative to ctr_cipd_version and will take priority over it
+  string path_to_cipd_bin = 5;
+
+  // Path to where the test artifacts are going to be stored. It's callers
+  // responsibility to make sure this path is valid and unique per execution.
+  string artifacts_path = 4;
+}
+
+// ExecuteResponse represents the response for cros test runner service.
+message ExecuteResponse { test_platform.skylab_test_runner.Result result = 1; }

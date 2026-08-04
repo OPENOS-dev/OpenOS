@@ -1,0 +1,33 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// A message to specify branches.
+message Branch {
+  // The types of branches that can be created.
+  enum BranchType {
+    UNSPECIFIED = 0;
+    RELEASE = 1;
+    FACTORY = 2;
+    FIRMWARE = 3;
+    STABILIZE = 4;
+    CUSTOM = 5;
+  }
+
+  // Type of branch.
+  BranchType type = 1;
+
+  // Name of branch.
+  string name = 2;
+
+  // Branch descriptor (usually a build target or device name).
+  // Optional.
+  string descriptor = 3;
+}

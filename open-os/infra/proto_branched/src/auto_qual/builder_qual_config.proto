@@ -1,0 +1,30 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+import "auto_qual/test_effort.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+// Defines how to generate Test Efforts from LUCI Firmware Builders.
+message BuilderQualConfig {
+  // The name of the firmware builder.
+  // This can be a SQL like pattern.
+  //
+  // Examples:
+  //   * firmware-android-15949.B
+  //   * firmware-android-brya-%
+  string builder_name = 1;
+
+  // The test effort configuration to use as a base/template for this builder.
+  ModelTestEffortConfig test_effort_template = 2;
+}
+
+message BuilderQualConfigs {
+  // Builder Qual Configs.
+  repeated BuilderQualConfig builder_qual_config = 1;
+}

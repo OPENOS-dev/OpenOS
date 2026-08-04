@@ -1,0 +1,75 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+import "testplans/common.proto";
+
+// A list of test groups.
+message TestGroups { repeated string name = 1; }
+
+// A description of how to remove test suites from the default set of test
+// suites in ChromeOS CQ, as a result of source configuration.
+// See http://go/cq-source-config
+message SubtractiveRule {
+  // Whether to disable hardware test suites.
+  bool disable_hw_tests = 1;
+  // Whether to disable virtual machine test suites.
+  bool disable_vm_tests = 2;
+  // Prunes away all default suites except those in the provided test groups.
+  // e.g. setting this to "bluetooth" will have CQ run only those test suites
+  // in the "bluetooth" test group.
+  TestGroups only_keep_all_suites_in_groups = 3;
+  // Prunes away all default suites except one in each provided test group.
+  // e.g. can be used to ensure a test suite is launched on each of the
+  // supported ChromeOS processor architectures.
+  TestGroups only_keep_one_suite_from_each_group = 4;
+}
+
+// A descriptive of how to add extra test suites to a CQ run based on source
+// configuration. An AdditiveRule will trigger so long as any file matches the
+// relevant source pattern. AdditiveRules combine as a union of additional test
+// suites to run. disable_by_default=True test suites are particularly relevant
+// to AdditiveRules, since AdditiveRules are the only thing that will include
+// them.
+message AdditiveRule {
+  // Adds on all test suites in the provided groups, even if they have
+  // disable_by_default=True.
+  // e.g. could be used to trigger wificell testing (which is expensive) based
+  // on the presence of files in wifi-related directories.
+  TestGroups add_all_suites_in_groups = 1;
+  // Adds on one test suite from each of the provided groups, even if that suite
+  // has disable_by_default=True.
+  // e.g. could be used to trigger wificell testing (which is expensive) on one
+  // board in each ChromeOS processor architecture.
+  TestGroups add_one_suite_from_each_group = 2;
+}
+
+// A set of test subtractions and additions to perform for a source tree.
+// See http://go/cq-source-config for documentation.
+message SourceTestRules {
+  // A file pattern, representing a segment of ChromeOS code.
+  FilePattern file_pattern = 1;
+
+  // A subtractive rule to apply to this file pattern. See the relevant message
+  // documentation.
+  SubtractiveRule subtractive_rule = 2;
+
+  // An additive rule to apply to this file pattern. See the relevant message
+  // documentation.
+  AdditiveRule additive_rule = 3;
+}
+
+// Configures test restrictions for all relevant source trees.
+// This is the root message.
+message SourceTreeTestCfg {
+  // Rules for how to test changes to specified source trees in the codebase.
+  repeated SourceTestRules source_test_rules = 2;
+
+  reserved 1;
+}

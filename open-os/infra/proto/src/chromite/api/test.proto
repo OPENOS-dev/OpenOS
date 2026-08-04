@@ -1,0 +1,302 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+import "chromiumos/metrics.proto";
+import "chromiumos/build/api/container_metadata.proto";
+
+// Proto for executing test-related functionality.
+
+message TestServiceContainerBuildResult {
+  message Success {
+    // Metadata about the constructed container image
+    chromiumos.build.api.ContainerImageInfo image_info = 2;
+
+    // Full path to the build artifact in the hosted container registry.
+    string registry_path = 1; // deprecated
+  }
+
+  message Failure {
+    // Debugging details about the error that occurred.
+    string error_message = 1;
+  }
+
+  // Human friendly name of the container built (for debugging/reporting only).
+  string name = 1;
+
+  oneof result {
+    Success success = 2;
+    Failure failure = 3;
+  }
+}
+
+
+
+message BuildTestServiceContainersRequest {
+  // The build target the test service containers are being build for.
+  chromiumos.BuildTarget build_target = 1;
+
+  // The chroot containing the sysroot.
+  chromiumos.Chroot chroot = 2;
+
+  // Build version number, which matches the build artifact version
+  // number that will be tested ultimately.
+  // NOTE: deprecated, remove once we migrate requests to new tag/label
+  // semantics
+  string version = 3;
+
+  // Repository to push to
+  chromiumos.build.api.GcrRepository repository = 4;
+
+  // Tags to apply to built images.  Note that Docker tags are limited in
+  // what they can contain.  They can contain [A-Za-z0-9_.-], but may not
+  // start with . or -, and are a maximum of 128 characters.
+  repeated string tags = 5;
+
+  // Labels to apply to docker image.  Labels are string key=value pairs which
+  // are added to the image itself.  These are useful for things like eg:
+  // adding the full build URL to the container image for the build that
+  // produced them.
+  map<string, string> labels = 6;
+
+  // BuilderType identifies builders running on private/public pool bots.
+  enum BuilderType {
+    // No builder type specified.
+    UNSPECIFIED = 0;
+
+    // Public builders
+    PUBLIC = 1;
+
+    // Private builders
+    PRIVATE = 2;
+  }
+
+  BuilderType builder_type = 7;
+}
+
+message BuildTestServiceContainersResponse {
+  // List of containers that were attempted to be built and the success/failure
+  // results for each.
+  repeated TestServiceContainerBuildResult results = 1;
+}
+
+message BuildTargetUnitTestRequest {
+  message Flags {
+    // Assume the sysroot is empty.
+    bool empty_sysroot = 1;
+    // Whether a toolchain change has occurred.
+    bool toolchain_changed = 2;
+    // Whether to produce code coverage data.
+    bool code_coverage = 3;
+    // Whether to allow no testable packages to be found.
+    bool testable_packages_optional = 4;
+    // Whether to filter out any non-cros_workon packages passed in.
+    // Added in R92.
+    bool filter_only_cros_workon = 5;
+    // Whether to produce rust code coverage data.
+    // Details in go/cros-rust-code-coverage
+    // TODO(b/215596245): Reuse the code_coverage flag and remove this
+    // once rust and clang converge on tooling.
+    bool rust_code_coverage = 6;
+    // Whether to use Bazel to run unit tests.
+    bool bazel = 7;
+  }
+
+  reserved 2, 5;
+  reserved 'result_path';
+
+  // The build target being tested.
+  chromiumos.BuildTarget build_target = 1;
+  // The chroot containing the sysroot.
+  chromiumos.Chroot chroot = 3;
+  // The flags.
+  Flags flags = 4;
+  // Packages to be tested.
+  // Defaults to all testable packages when none are given.
+  repeated chromiumos.PackageInfo packages = 6;
+  // Skipped packages.
+  repeated chromiumos.PackageInfo package_blocklist = 7;
+  // Directory where results (logs, etc.) should be stored.
+  chromiumos.ResultPath results_path = 8;
+}
+
+message BuildTargetUnitTestResponse {
+  reserved 1, 2;
+  reserved 'tarball_path', 'failed_packages';
+  // The metric events that occurred during the running of BuildTargetUnitTest.
+  repeated chromiumos.MetricEvent events = 3;
+  // Additional data about the packages that failed to build.
+  repeated FailedPackageData failed_package_data = 4;
+}
+
+// Chromite UnitTest request.
+message ChromiteUnitTestRequest {
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+}
+
+message ChromiteUnitTestResponse {}
+
+message ChromitePytestRequest {
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+}
+
+message ChromitePytestResponse {}
+
+message BazelTestRequest {
+  // Path to the Bazel's output user directory where Bazel stores cache of Bazel
+  // installation manifests and build outputs. If it is empty, the default path
+  // is used ($HOME/.cache/bazel/_bazel_$USER). Specify this field if the
+  // default location is not desirable (e.g. the disk space is limited).
+  // https://bazel.build/remote/output-directories?hl=en#layout
+  string bazel_output_user_root = 1;
+}
+
+message BazelTestResponse {}
+
+message CrosSigningTestRequest {
+  // Required if not in default location.
+  // The chroot where the tests should be executed.
+  chromiumos.Chroot chroot = 1;
+}
+
+message CrosSigningTestResponse {}
+
+message VmTestRequest {
+  // The build target under test. Required.
+  chromiumos.BuildTarget build_target = 1;
+
+  // The chroot in which to run commands. Required.
+  chromiumos.Chroot chroot = 2;
+
+  // Required. The VM image path.
+  chromiumos.Path vm_path = 3;
+
+  // Options for SSHing into the VM.
+  message SshOptions {
+    // Path to the private key to the VM.
+    chromiumos.Path private_key_path = 1;
+
+    // SSH port to communicate with VM.
+    int32 port = 2;
+  }
+
+  // Options for SSHing into the VM.
+  SshOptions ssh_options = 4;
+
+  // The program that manages and runs the tests in the VM.
+  enum TestHarness {
+    // No test harness specified.
+    UNSPECIFIED = 0;
+
+    // Run tests with Tast.
+    TAST = 1;
+
+    // Run tests with Autotest.
+    AUTOTEST = 2;
+  }
+
+  TestHarness test_harness = 5;
+
+  // A specific VM test to run.
+  message VmTest {
+    // The name pattern for the VM test.
+    // For Autotest, this pattern matches against the test suite name.
+    // For Tast, this pattern matches against the Tast test name.
+    string pattern = 1;
+  }
+
+  // All VM tests that should be run. At least one must be specified.
+  repeated VmTest vm_tests = 6;
+}
+
+message VmTestResponse {}
+
+// rules_cros UnitTest request.
+message RulesCrosUnitTestRequest {
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+}
+
+message RulesCrosUnitTestResponse {}
+
+message SimpleChromeWorkflowTestRequest {
+  // The sysroot for which SimpleChrome flow will be run.
+  // The path and build_target are required.
+  // Chrome will be built for the specified board using the sysroot.
+  Sysroot sysroot = 1;
+
+  // Chrome source directory under which chromium will be built and tested
+  // using cros chrome-sdk.
+  string chrome_root = 2;
+
+  // Options for using goma when building Chrome.
+  chromiumos.GomaConfig goma_config = 3;
+}
+
+message SimpleChromeWorkflowTestResponse {}
+
+// The test service.
+service TestService {
+  option (service_options) = {
+    module : "test",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Build all of the container micro-services used for testing in various lab
+  // environments.
+  // As part of the build, containers will also be automatically updated to the
+  // hosted container registry gcr.io for using the current chromeos version
+  // being build as the container image tag.
+  rpc BuildTestServiceContainers(BuildTestServiceContainersRequest)
+      returns (BuildTestServiceContainersResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+
+  // Run a build target's ebuild unit tests.
+  rpc BuildTargetUnitTest(BuildTargetUnitTestRequest)
+      returns (BuildTargetUnitTestResponse);
+
+  // Run the chromite unit tests.
+  rpc ChromiteUnitTest(ChromiteUnitTestRequest)
+      returns (ChromiteUnitTestResponse);
+
+  // Run Pytest in chromite.
+  rpc ChromitePytest(ChromitePytestRequest) returns (ChromitePytestResponse);
+
+  // Run Bazel tests.
+  rpc BazelTest(BazelTestRequest) returns (BazelTestResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+
+  // Run the cros-signing unit tests.
+  rpc CrosSigningTest(CrosSigningTestRequest) returns (CrosSigningTestResponse);
+
+  // Run VM tests and report failures.
+  rpc VmTest(VmTestRequest) returns (VmTestResponse);
+
+  // Run the rules_cros unit tests.
+  rpc RulesCrosUnitTest(RulesCrosUnitTestRequest)
+      returns (RulesCrosUnitTestResponse);
+
+  // Run the Simple Chrome workflow unit tests.
+  rpc SimpleChromeWorkflowTest(SimpleChromeWorkflowTestRequest)
+      returns (SimpleChromeWorkflowTestResponse) {
+    option (method_options) = {
+      method_chroot_assert : OUTSIDE,
+    };
+  }
+}

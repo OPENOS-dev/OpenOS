@@ -1,0 +1,69 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab_platform;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab_platform";
+
+// ChromeOSProvision defines the provision events. It contains DUT and image
+// information, as well as the details operations done on the DUT.
+// Next Tag: 11
+message ChromeOSProvision {
+
+  // The URL of either AFE job or Swarming task.
+  string task_url = 1;
+
+  // The hostname of the DUT.
+  string hostname = 2;
+  // The image version to be provisioned, e.g. board-release/R12-34567.0.0.
+  string image = 3;
+  // The original image version before provisioning.
+  string original_image = 4;
+
+  google.protobuf.Timestamp started_time = 5;
+  google.protobuf.Timestamp finished_time = 6;
+
+  // file_server describes the hostname:port of devserver/gs_cache server, e.g.
+  // 'chromeos6-devserver4:8888'.
+  string file_server = 7;
+
+  // Status defines the result for each step or the whole provision process to
+  // be reported.
+  enum Status {
+    STATUS_UNKNOWN = 0;
+    STATUS_PASS = 1;
+    STATUS_FAIL = 2;
+    STATUS_ABORT = 3;
+  }
+
+  // Step defines the detail operations in a provision.
+  message Step {
+    enum Name {
+      NAME_UNDEFINED = 0;
+      NAME_PRE_PROVISION = 1; // Operations to prepare DUT before provision.
+      NAME_ON_KERNEL = 2;     // Write to kernel.
+      NAME_ON_ROOT_FS = 3;    // Write to root file system.
+      NAME_ON_STATEFUL = 4;   // Write to stateful partition.
+      // Post-install process, e.g. update firmware, set next kernel, etc.
+      NAME_POST_INST = 5;
+      NAME_POST_PROVISION = 6; // Operations to verify if provision is good.
+    }
+    Name name = 1;
+
+    google.protobuf.Timestamp started_time = 2;
+    google.protobuf.Timestamp finished_time = 3;
+
+    Status status = 4;
+    string reason = 5;
+  }
+
+  repeated Step step = 8;
+
+  Status status = 9;
+  string reason = 10;
+}

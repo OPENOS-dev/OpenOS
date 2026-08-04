@@ -1,0 +1,58 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/tast";
+
+// A proto representation of tast's TestResult golang / JSON object.
+//
+// Currently this proto is only used for storing tast results for analysis (e.g.
+// by Dremel). The golang definition and comments should be used as a source of
+// truth.
+message TestResult {
+  string name = 1;
+
+  string pkg = 2;
+
+  int64 additional_time_ns = 3 [ json_name = "additionalTime" ];
+
+  string desc = 4;
+
+  repeated string contacts = 5;
+
+  repeated string attr = 6;
+
+  repeated string data = 7;
+
+  repeated string vars = 8;
+
+  repeated string software_deps = 9 [ json_name = "softwareDeps" ];
+
+  int64 timeout_ns = 10 [ json_name = "timeout" ];
+
+  repeated TestError errors = 11;
+
+  string start = 12;
+
+  string end = 13;
+
+  string out_dir = 14 [ json_name = "outDir" ];
+
+  string skip_reason = 15 [ json_name = "skipReason" ];
+}
+
+message TestError {
+  string time = 1;
+
+  string reason = 2;
+
+  string file = 3;
+
+  int64 line = 4;
+
+  string stack = 5;
+}

@@ -1,0 +1,33 @@
+// Copyright 2021 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.version_bumper;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos/version_bumper";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// BumpVersionRequest is the input for the Go-based version_bumper.
+message BumpVersionRequest {
+  // Full path to checkout of chromiumos-overlay repo.
+  string chromiumosOverlayRepo = 1;
+
+  enum VersionComponent {
+    COMPONENT_TYPE_UNSPECIFIED = 0;
+    COMPONENT_TYPE_MILESTONE = 1;
+    COMPONENT_TYPE_BUILD = 2;
+    COMPONENT_TYPE_BRANCH = 3;
+    COMPONENT_TYPE_PATCH = 4;
+  }
+  // Component of the ChromeOS version to bump.
+  VersionComponent componentToBump = 2;
+}
+
+// BumpVersionResponse is the output for the Go-based version_bumper.
+message BumpVersionResponse {
+  // A markdown string that should be used in Buildbucket as a summary of the
+  // version_bumper execution.
+  string error_summary_markdown = 1;
+}

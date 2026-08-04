@@ -1,0 +1,88 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Define a schema for debugging events in kron.
+
+syntax = "proto3";
+
+package test_platform.kron;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron";
+
+message Run {
+  // run_uuid represents the unique identifier of the Kron run.
+  string run_uuid = 1;
+
+  // Timestamps used to deduce the runtime of application invocations.
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+enum DecisionType {
+  // UNKNOWN is the null option for the enum. If this decision is reached then
+  // it should be treated as an error and handled accordingly.
+  UNKNOWN = 0;
+  SCHEDULED = 1;
+
+  // BUILD_NOT_FOUND means that the requested image was not fetched from long
+  // term storage.
+  BUILD_NOT_FOUND = 3;
+
+  NO_PASSING_BUILD = 4;
+
+  // STALE_BUILD build means that Kron has determined that the fetched image is
+  // too old for use in testing.
+  STALE_BUILD = 5;
+}
+
+message SchedulingDecision {
+  DecisionType type = 1;
+  // If scheduled this will be false, for all other types this will be false.
+  bool scheduled = 2;
+
+  // failed_reason contains a short snippet of why the decsion was made. E.g.
+  // BUILD_NOT_FOUND -> Build R120-X-X was not found in 'ABC'.
+  string failed_reason = 3;
+}
+
+message Event {
+  // run_uuid is the unique identifier of the Kron run.
+  string run_uuid = 1;
+
+  // event_uuid is the unique identifier of the event being described.
+  string event_uuid = 2;
+
+  // config_name is the name of the SuiteScheduler name, not the name of the
+  // test suite being ran.
+  string config_name = 3;
+
+  // suite_name is the name of the test suite being ran
+  string suite_name = 4;
+
+  // event_time is captured once a choice, to schedule or not, was made.
+  google.protobuf.Timestamp event_time = 5;
+
+  SchedulingDecision decision = 6;
+
+  // Attach the coorsponding BBID for this event.
+  int64 bbid = 7;
+
+  // build_uuid is the unique identifier of the build used to kick off this
+  // event.
+  string build_uuid = 8;
+
+  // board is the name of the board targeted in this event request. This must
+  // always be filled for a successful CTP request.
+  string board = 9;
+
+  // model is the made of the model targeted in this event request. This field
+  // is optional when forming a CTP request.
+  string model = 10;
+
+  // build_target is the form of board(?-)(?<variant>) and is the basis for the
+  // image being fetched from storage.
+  string build_target = 11;
+}

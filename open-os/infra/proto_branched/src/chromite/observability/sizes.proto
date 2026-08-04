@@ -1,0 +1,85 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.observability;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/observability";
+
+import "chromiumos/common.proto";
+import "chromite/observability/shared.proto";
+
+message ImageSizeObservabilityData {
+  observability.BuilderMetadata builder_metadata = 1;
+  observability.BuildVersionData build_version_data = 2;
+  repeated ImageData image_data = 3;
+}
+
+message ImageData {
+  chromiumos.ImageType image_type = 1;
+  repeated ImagePartitionData image_partition_data = 2;
+}
+
+message ImagePartitionData {
+  string partition_name = 1;
+
+  repeated PackageSizeData packages = 3;
+
+  // Apparent size represents how many bytes are contained in a fileset's
+  // contents; in this case, the fileset is all of the files installed by
+  // packages on the partition.
+  uint64 partition_apparent_size = 4;
+
+  // Disk utilization represents how many bytes are reserved by the operating
+  // system for a given fileset; in this case, the fileset is all of the files
+  // installed by packages on the partition.
+  uint64 partition_disk_utilization_size = 5;
+
+  reserved 2;
+  reserved "partition_size";
+}
+
+message PackageSizeData {
+  PackageIdentifier identifier = 1;
+
+  // Apparent size represents how many bytes are contained in a file's
+  // contents. It is the number provided by `ls -l` in the terminal. This field
+  // represents the total sum of the apparent size of all real files installed
+  // by the package in question. It does not include inode blocks or symlinks.
+  uint64 apparent_size = 3;
+
+  // Disk utilization represents how many bytes are reserved by the operating
+  // system for a given file. It is provided in bytes, not blocks. This field
+  // represents the total sum of all bytes reserved for the files installed by
+  // the package in question. It does not include inode blocks or symlinks.
+  uint64 disk_utilization_size = 4;
+
+  reserved 2;
+  reserved "size";
+}
+
+// Provides the category, name, version components, and revision components of a
+// given package. This is used in place of chromiumos.PackageInfo because it is
+// more extensible and minimizes the amount of post-processing required for
+// building out the ISCP data pipeline.
+message PackageIdentifier {
+  PackageName package_name = 1;
+  PackageVersion package_version = 2;
+}
+
+message PackageName {
+  string atom = 1;
+  string category = 2;
+  string package_name = 3;
+}
+
+message PackageVersion {
+  uint32 major = 1;
+  uint32 minor = 2;
+  uint32 patch = 3;
+  uint32 extended = 4;
+  uint32 revision = 5;
+  string full_version = 6;
+}

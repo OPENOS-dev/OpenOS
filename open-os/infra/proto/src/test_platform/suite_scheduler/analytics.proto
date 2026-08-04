@@ -1,0 +1,196 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package test_platform.suite_scheduler;
+
+import "chromite/api/artifacts.proto";
+import "chromiumos/common.proto";
+import "chromiumos/branch.proto";
+import "device/model_id.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler";
+
+// The build information queried from BuildBucket DB.
+message BuildInfo {
+  // The name of the build target (a.k.a. board name), e.g., "gale", "eve".
+  chromiumos.BuildTarget build_target = 1;
+  // The milestone number (e.g. 73).
+  uint32 milestone = 2;
+  // The ChromeOS version (e.g. "12240.0.0" or "").
+  string chrome_os_version = 3;
+  // Build type with the board name as the prefix, e.g.
+  // "RELEASE" or "FIRMWARE".
+  chromiumos.Branch.BranchType type = 4;
+}
+
+// The firmware build information queried from BuildBucket DB.
+message FirmwareBuildInfo {
+  // Board name.
+  chromiumos.BuildTarget build_target = 1;
+  // Build type, "RELEASE" or "FIRMWARE". Each has different form of
+  // artifacts.
+  chromiumos.Branch.BranchType type = 2;
+  // Relative path to the artifact file, e.g.
+  // "firmware-board-12345.67.B-firmwarebranch/RFoo-1.0.0-b1e234567/board"
+  // for firmware type or "board-release/R81-12766.0.0" for release type.
+  chromite.api.Artifact artifact = 3;
+}
+
+// BranchFilter is a combination of channel, operator and
+// lag, e.g. a filter of the form ">=tot-2" is stated as
+// { channel = MASTER; operator = GE; lag = 2; };
+// a filter of "==tot" is translated to
+// { channel = MASTER; operator = EQ; lag = 0; }.
+message BranchFilter {
+  enum Channel {
+    BRANCH_REF_NOT_SET = 0;
+    MASTER = 1;
+    DEV = 2;
+    BETA = 3;
+    STABLE = 4;
+  }
+  Channel channel = 1;
+  enum Operator {
+    UNDEFINED = 0;
+    EQ = 1; // "=="
+    GE = 2; // ">="
+    LE = 3; // "<="
+  }
+  Operator operator = 2;
+  // Number of minor versions behind tip-of-tree on channel.
+  int32 lag = 3;
+}
+
+// BuildFilters defines on which build to run a suite test.
+message BuildFilters {
+  // Use only_successful_build_required instead.
+  bool only_hwtest_sanity_required = 1 [ deprecated = true ];
+  // BranchFilter defines the target branch of the new build.
+  // Note, the final result is "AND" of each single filter.
+  repeated BranchFilter branch_filters = 2;
+  // The firmware build type, e.g., "RELEASE" or "FIRMWARE". Note,
+  // in suite scheduler, "cros" = "RELEASE".
+  chromiumos.Branch.BranchType firmware_ro_build_spec = 3;
+  chromiumos.Branch.BranchType firmware_rw_build_spec = 4;
+  chromiumos.Branch.BranchType firmware_ec_ro_build_spec = 7;
+  chromiumos.Branch.BranchType firmware_ec_rw_build_spec = 8;
+  // If true, use the relaxed_builds table.
+  bool only_successful_build_required = 5;
+  // The name of the firmware branch to use for firmware_ro_build_spec
+  // and firmware_rw_build_spec is normally the derived from the board.
+  // Set firmware_board_name to override this.
+  string firmware_board_name = 6;
+}
+
+// ScheduleJobTrigger defines the trigger to kick off a suite test.
+message ScheduleJobTrigger {
+  // WeeklyTrigger is for the suite test running every week.
+  // "day" is from 0 to 6.
+  message WeeklyTrigger { uint32 day = 1; }
+  // NightlyTrigger is for the suite test running every day.
+  // "hour" is from 0 to 23.
+  message NightlyTrigger { uint32 hour = 1; }
+  // IntervalTrigger is for the suite test running every N times the
+  // scheduler operates.
+  message IntervalTrigger {
+    // pause represents the number of times scheduler skips this job
+    // once the job completed. If pause is zero, we pick this job
+    // whenever scheduler is kicked off.
+    uint32 pause = 1;
+  }
+  oneof trigger {
+    WeeklyTrigger weekly = 1;
+    NightlyTrigger nightly = 2;
+    // TODO: This feature is not implemented to suite scheduler yet. So
+    // if IntervalTrigger is configured, pause should be zero all the time.
+    IntervalTrigger interval = 3;
+  }
+  BuildFilters build_filters = 4;
+}
+
+// ScheduleJob represents the schedule result for a specific board
+// and model.
+message ScheduleJob {
+  // Model.
+  device.ModelId model = 1;
+  // Board.
+  chromiumos.BuildTarget build_target = 2;
+  oneof result {
+    // If this job qualifies to kick off a suite test, suite scheduler
+    // creates a task to the task-queue and assigns an ID for tracking
+    // the execution.
+    string queued_task_id = 3;
+    // If the job failed to schedule a suite test, clarify the reason.
+    string justification = 4;
+  }
+  // Result generated time in UTC.
+  google.protobuf.Timestamp generated_time = 5;
+}
+
+// ScheduleJobSection represents a schedule request configured in
+// suite_scheduler.ini. Varying boards and models, a job section can
+// have multiple suite tests scheduled.
+message ScheduleJobSection {
+  // job_name is the name of a schedule request defined in config,
+  // e.g. “CrosAVAnalysis”.
+  string job_name = 1;
+  // Trigger to run jobs under this section.
+  ScheduleJobTrigger schedule_job_trigger = 2;
+  // Specific models to run this suite.
+  repeated device.ModelId models = 3;
+  // Specific boards to run this suite.
+  repeated chromiumos.BuildTarget build_targets = 4;
+  // The build matched with this job section on BuildTarget and BuildFilters.
+  message MatchedBuild {
+    oneof cros_build {
+      // The release build information.
+      BuildInfo release_build = 1;
+      // relax_builds are the builds failed but met the relaxed success
+      // requirement. Relax builds are for the suite job configured
+      // "only_successful_build_required: True".
+      BuildInfo relax_build = 2;
+      // The firmware build information.
+      FirmwareBuildInfo firmware_ro_build = 3;
+      FirmwareBuildInfo firmware_rw_build = 4;
+      FirmwareBuildInfo firmware_ec_ro_build = 5;
+      FirmwareBuildInfo firmware_ec_rw_build = 6;
+    }
+  }
+  repeated MatchedBuild matched_builds = 5;
+  // Jobs in this section.
+  repeated ScheduleJob schedule_jobs = 6;
+  // The pool to run jobs in this section.
+  string pool = 7;
+  // The suite name this section to execute.
+  string suite = 8;
+}
+
+// The response received from cros_test_platform.
+message ExecutionResponse {
+  // build id used in cros_test_platform.
+  string ctp_build_id = 1;
+}
+
+// The error message received from cros_test_platform.
+message ExecutionError { string error_message = 1; }
+
+// ExecutionTask bridges suite scheduler and cros_test_platform. With it,
+// we could track the execution reuslt for a scheduled test.
+message ExecutionTask {
+  // The ID used in JobResult, to track suite's execution.
+  string queued_task_id = 1;
+  // The scheduling result from cros_test_platform, either a build id
+  // error message.
+  oneof result {
+    ExecutionResponse response = 2;
+    ExecutionError error = 3;
+  }
+  // Request sent time in UTC.
+  google.protobuf.Timestamp request_sent = 4;
+  // The CTP request tag for grouping several ScheduleJobs into
+  // a multiple CTP request.
+  string request_tag = 5;
+}

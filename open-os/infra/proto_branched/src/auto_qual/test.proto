@@ -1,0 +1,100 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package auto_qual;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/auto_qual";
+
+message TestArguments {
+  // The name of the argument
+  string flag = 1;
+  // The value of the argument
+  string value = 2;
+}
+
+// Contains all parameters specific to a CTP request.
+// Also known as ChromeOS Test Platform
+message CustomizableTestPlatformTest {}
+
+// Contains all parameters specific to an Android Test Platform (ATP) run.
+message AndroidTestPlatformTest {
+  // The name of the ATP config file, e.g., "dts_firmware_ap_stable".
+  // The full path will be constructed from this name.
+  string atp_config_name = 1;
+
+  // The file path for the ATP GCL file that defines the atp_config_name.
+  // e.g.,
+  // //google3/configs/wireless/android/testing/atp/prod/al-eng/android-desktop-firmware/config.gcl
+  string atp_gcl_file = 2;
+}
+
+message Test {
+  enum HarnessType {
+    HARNESS_TYPE_UNSPECIFIED = 0;
+    TAUTO = 1;
+    TAST = 2;
+    MANUAL = 3;
+    TRADEFED = 4;
+  }
+
+  HarnessType harness = 1;
+
+  repeated string include_tags = 2;
+  repeated string exclude_tags = 3;
+
+  string suite = 4;
+  repeated string include_names = 5;
+  repeated string exclude_names = 6;
+  bool schedule_for_each_ro = 7;
+
+  enum RetryType {
+    RETRY_TYPE_UNSPECIFIED = 0;
+    // Do not pass the retry=True flag into the suite schedule
+    TEST_RUNNER_DISABLE_RETRY = 1;
+    // Pass the retry=True flag into the suite schedule so tast can
+    // automatically retry failures.
+    TEST_RUNNER_ENABLE_RETRY = 2;
+  };
+
+  RetryType retry = 8;
+
+  repeated TestArguments arguments = 9;
+
+  // How long the test should run before it time outs in seconds.
+  // This is only applicable when running in unmanaged pools
+  // e.g. faft-test as opposed to DUT_POOL_QUOTA.
+  // This will default to 16 hours if left unspecified.
+  // https://chrome-internal.googlesource.com/chromeos/infra/config/+/main/testplatform/test_runner/main.star#157
+  uint32 timeout_seconds = 10;
+
+  string ctp_container_label = 11;
+
+  // The category of pool to schedule tests against.
+  enum PoolType {
+    // Not used. Exists to distinguish between an unset value and DEFAULT.
+    UNKNOWN_POOL_TYPE = 0;
+
+    // Pools used when scheduling tests without any special exceptions
+    DEFAULT = 1;
+
+    // Pools to use when scheduling FAFT PD tests.
+    FAFT_PD = 2;
+
+    // pools to schedule tests with extremely long runtimes (3+ hours)
+    EXTENDED_DURATION = 3;
+  }
+
+  // Determines which pools within the test effort to use when
+  // scheduling this test.
+  PoolType pool_type = 12;
+
+  // The harness_config determines which test system to use and provides
+  // the specific configuration for it.
+  oneof test_system {
+    CustomizableTestPlatformTest ctp_test = 13;
+    AndroidTestPlatformTest atp_test = 14;
+  }
+}

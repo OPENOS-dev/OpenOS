@@ -1,0 +1,32 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.result_flow;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow";
+
+import "test_platform/result_flow/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// CTPRequest defines the input of `result_flow ctp`.
+message CTPRequest {
+  // The source config for fetching a CTP build.
+  Source ctp = 1;
+  // The target to upload the result flow output.
+  Target test_plan_run = 2;
+  // Hard deadline for execution.
+  //
+  // CTP command should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 3;
+}
+
+// CTPResponse defines the output of `result_flow ctp`.
+message CTPResponse {
+  // `result_flow ctp` exits with exit code 0 unless there is an
+  // infrastructure failure. When the exit code is 0, `state` indicates the
+  // best known state of the ctp command execution (see comments on State enum).
+  State state = 1;
+}

@@ -1,0 +1,58 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// Define protos for Release Checkpoints. See go/release-checkpoints-dd for
+// details.
+
+enum RetryStep {
+  // Numbering guide:
+  // Orchestrator steps live [1, 100).
+  // Child builder steps live in [100, 800).
+  // Paygen orchestrator steps live in [800, 1000).
+  // Paygenie steps live in [1000, ...).
+  UNDEFINED = 0;
+
+  // Orchestrator steps.
+  CREATE_BUILDSPEC = 10;
+
+  PUBLIC_BUILD_LKGM = 20;
+
+  RUN_CHILDREN = 30;
+  RUN_FAILED_CHILDREN = 31;
+
+  LAUNCH_TESTS = 40;
+
+  // Child builder steps.
+  STAGE_ARTIFACTS = 150;
+
+  // Push images to the release bucket (and thus initiate signing).
+  PUSH_IMAGES = 160;
+
+  // Upload debug symbols.
+  DEBUG_SYMBOLS = 165;
+
+  // Run ebuild tests.
+  // Currently unsupported.
+  EBUILD_TESTS = 170;
+
+  // Collect the results of signing.
+  // Used if the build fails after it initiates signing requests
+  // (in PUSH_IMAGES) but before it collects and reports signing results.
+  COLLECT_SIGNING = 180;
+
+  // Do payload generation.
+  PAYGEN = 190;
+
+  // Paygenie steps.
+  UPLOAD_PAYLOAD = 1000;
+
+  TEST_PAYLOAD = 1010;
+}

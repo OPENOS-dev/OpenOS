@@ -1,0 +1,44 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package prototype;
+
+import "prototype/builder_config.proto";
+import "prototype/channel.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/prototype";
+
+// Defines planning details around release milestones that drive
+// branching, device project planning, and release CI/testing.
+message Milestone {
+  message Date {
+    // Format: YYYY-MM-DD (ISO 8601)
+    // E.g. 2020-02-10
+    string value = 1;
+  }
+
+  // E.g. 86
+  int32 number = 1;
+
+  // Initially planned branch date for the milestone.
+  Date target_branch_date = 2;
+
+  // Actual branch name when the branch is created.
+  // E.g. release-R86-13421.B
+  string branch_name = 3;
+
+  // Defines a planned release date for a given channel
+  message ChannelPlan {
+    Channel channel = 1;
+    Date target_release_date = 2;
+  }
+
+  // Defines the overall timeline for channel releases of the given milestone.
+  repeated ChannelPlan channel_plan = 4;
+
+  // Defines the builds that run for the given milestone.
+  repeated BuilderConfig builder_configs = 5;
+}

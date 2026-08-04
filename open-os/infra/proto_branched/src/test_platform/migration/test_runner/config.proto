@@ -1,0 +1,40 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.migration.test_runner;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/migration/test_runner";
+
+// Config describes how to split the entire traffic coming into CTP between
+// test_runner and skylab_swarming_worker.
+// The CTP requests directed to test_runner via
+// request.migrations.use_test_runner are not affected by this config.
+message Config { repeated RedirectInstruction redirect_instructions = 1; }
+
+// RedirectInstruction describes the fraction and the type of traffic to
+// send to test_runner.
+message RedirectInstruction {
+  // Redirect a fraction of traffic that satisfies the constraint.
+  TrafficConstraint constraint = 1;
+
+  // The probability of sending a given CTP request to test_runner as a
+  // percentage. Should be in (0, 100].
+  int32 percent_of_requests = 2;
+}
+
+// TrafficConstraint describes a way to filter CTP requests.
+// The constraints are evaluated right before the execute step. Thus, the
+// predecing steps (e.g. traffic splitter) may modify the inputs into the
+// contraints before evaluation.
+message TrafficConstraint {
+  // The DUT pool as it would appear in a Skylab request, e.g
+  // "DUT_POOL_QUOTA", "DUT_POOL_CTS", "wificell".
+  string dut_pool = 1;
+
+  // The quota account as it would appear in a Skylab request, e.g. "pcq".
+  // Ignored if empty.
+  string quota_account = 2;
+}

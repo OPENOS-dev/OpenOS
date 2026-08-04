@@ -1,0 +1,35 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.result_flow;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow";
+
+import "test_platform/result_flow/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// TestRunnerRequest defines the input of `result_flow test_runner`.
+message TestRunnerRequest {
+  // The source config for fetching the test runner builds.
+  Source test_runner = 1;
+  // The target to upload test run results.
+  Target test_run = 2;
+  // The target to upload test case results.
+  Target test_case = 3;
+  // Hard deadline for execution.
+  //
+  // TestRunner command should abort beyond this deadline.
+  google.protobuf.Timestamp deadline = 4;
+}
+
+// TestRunnerResponse defines the output of `result_flow test_runner`.
+message TestRunnerResponse {
+  // `result_flow test_runner` exits with exit code 0 unless there is an
+  // infrastructure failure. When the exit code is 0, `state` indicates the
+  // best known state of the test_runner command execution (see comments on
+  // State enum).
+  State state = 1;
+}

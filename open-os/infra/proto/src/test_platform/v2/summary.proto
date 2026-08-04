@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_platform.v2;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/v2;test_platform";
+
+message Item {
+  string key = 1;
+  string value = 2;
+}
+
+// Summary is the proto schema for how we will send information to the output
+// properties for the CTPv2 sub build.
+message Summary { repeated Item items = 1; }
+
+message Items { repeated Item items = 1; }
+
+message SummaryMap { map<string, Items> summaries = 1; }

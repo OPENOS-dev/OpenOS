@@ -1,0 +1,63 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromiumos/common.proto";
+
+message CreateRecoveryKernelRequest {
+
+  enum RamfsType {
+    UNKNOWN = 0;
+    DESKTOP_RECOVERY_RAMFS = 1;
+    FACTORY_NETBOOT_RAMFS = 2;
+    FACTORY_SHIM_RAMFS = 3;
+    RECOVERY_RAMFS = 4;
+    MINIOS_RAMFS = 5;
+    FLEXOR_RAMFS = 6;
+    PROD_RAMFS = 7;
+    DESKTOP_PROVISION_RAMFS = 8;
+  }
+
+  message Flags {
+    // After building the kernel, attempt to generate a bootable disk image.
+    bool create_bootable_image = 1;
+
+    // The ramfs type to build.
+    RamfsType ramfs_type = 2;
+  }
+
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+
+  // The board that is the build_target for recovery kernel.
+  chromiumos.BuildTarget build_target = 2;
+
+  // Flags for the tooling invocation.
+  Flags flags = 3;
+
+  // Local path to the signed firmware shellball.
+  chromiumos.Path shellball_path = 4;
+}
+
+message CreateRecoveryKernelResponse {
+  // Path where the kernel image is written.
+  chromiumos.Path recovery_kernel = 1;
+}
+
+// The recovery service.
+service RecoveryService {
+  option (service_options) = {
+    module : "recovery",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Create a recovery kernel
+  rpc CreateRecoveryKernel(CreateRecoveryKernelRequest)
+      returns (CreateRecoveryKernelResponse) {};
+}

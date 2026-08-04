@@ -1,0 +1,89 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package testplans;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/testplans";
+
+import "testplans/common.proto";
+import "google/protobuf/wrappers.proto";
+
+// The input proto for invocations of the Pointless Build Checker program.
+// Next: 13
+message PointlessBuildCheckRequest {
+
+  message Path { string path = 1; }
+
+  // A list of paths to be considered as relevant to the current build. Can
+  // be used instead of passing a full DepGraph.
+  repeated Path relevant_paths = 9;
+
+  // A list of source paths affected by the changes in the CQ run.
+  //
+  // If provided, the gerrit_changes and gitiles_commit fields are ignored.
+  repeated Path affected_paths = 11;
+
+  // Serialized buildbucket GerritChanges, or none if this is a postsubmit run
+  // or similar. Explicit proto import is avoided here to prevent a dependency
+  // on the luci-go repo.
+  // See
+  // https://chromium.googlesource.com/infra/luci/luci-go/+/master/buildbucket/proto/common.proto
+  //
+  // Must be used in conjunction with gitiles_commit.
+  // If affected_paths is passed in, this field is ignored.
+  repeated ProtoBytes gerrit_changes = 7;
+
+  // Serialized buildbucket GitilesCommit, representing the manifest or
+  // manifest-internal commit to which the build is synced.
+  //
+  // Must be used in conjunction with gerrit_changes.
+  // If affected_paths is passed in, this field is ignored.
+  ProtoBytes gitiles_commit = 8;
+
+  // DEPRECATED use gitiles_commit instead.
+  //
+  // The manifest-internal snapshot commit hash that's being used for the
+  // current build. Note that manifest_commit will be soon replaced with
+  // gitiles_commit below.
+  string manifest_commit = 6 [ deprecated = true ];
+
+  // In some cases (e.g. when pointless build checker is called for toolchain
+  // update detection) we don't want known non-portage paths to trigger
+  // relevency. A specific case here is that manifest changes force relevancy
+  // but shouldn't force a toolchain update.
+  //
+  // TODO(b/186002205): Improve this such that manifest changes are treated
+  // treated via introspection. We know the paths being changed in the manifest,
+  // and we should be able to surface that.
+  bool ignore_known_non_portage_directories = 10;
+
+  // The name of the builder for which we're evaluating build relevance, to
+  // allow for relevance to be applied differently for different builders. Note
+  // that we pass the builder name not the build target because the initial use
+  // case is for Bazel builds vs. Portage builds, which have the same build
+  // target but different builder names.
+  string builder_name = 12;
+
+  reserved 5;
+}
+
+// The output proto for invocations of the Pointless Build Checker program.
+message PointlessBuildCheckResponse {
+  // Whether the build is pointless and can be terminated without proceeding to
+  // building packages and testing.
+  google.protobuf.BoolValue build_is_pointless = 1;
+
+  enum PointlessBuildReason {
+    POINTLESS_BUILD_REASON_UNSPECIFIED = 0;
+    IRRELEVANT_TO_DEPS_GRAPH = 1;
+    IRRELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES = 2;
+    RELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES = 3;
+  }
+
+  // If build_is_pointless, this is the reason that the Pointless Build Checker
+  // came to that conclusion. Otherwise, this is unspecified.
+  PointlessBuildReason pointless_build_reason = 2;
+}

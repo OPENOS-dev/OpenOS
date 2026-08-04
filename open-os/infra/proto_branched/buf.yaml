@@ -1,0 +1,47 @@
+version: v1beta1
+build:
+  roots:
+    - src/
+    - extern/
+    - .generate/config/proto # used by generate.sh if outside chroot
+lint:
+  use:
+    - DEFAULT
+  except:
+    - ENUM_VALUE_PREFIX      # Don't require enums entries to be prefixed.
+    - ENUM_ZERO_VALUE_SUFFIX # We're not consistent with zero suffix
+    - PACKAGE_VERSION_SUFFIX # Don't require eg: .v1 suffix
+
+  # Opt-outs for backwards compatibility with existing protos
+  ignore_only:
+    RPC_REQUEST_STANDARD_NAME:
+      - chromite
+      - lab
+    RPC_RESPONSE_STANDARD_NAME:
+      - chromite
+      - lab
+      # TODO (b/314774067): Remove after StartServod is removed
+      - satlabrpcserver
+    RPC_REQUEST_RESPONSE_UNIQUE:
+      - chromite
+      - lab
+      # TODO (b/314774067): Remove after StartServod is removed
+      - satlabrpcserver
+    DIRECTORY_SAME_PACKAGE:
+      - chromite
+    PACKAGE_DEFINED:
+      - chromite
+    FIELD_NO_DESCRIPTOR:
+      - chromiumos/branch.proto
+    FIELD_LOWER_SNAKE_CASE:
+      - chromiumos/version_bumper/version_bumper.proto
+
+  # not currently used since we're not consistent
+  # enum_zero_value_suffix: UNDEFINED
+
+breaking:
+  use:
+    - FILE
+  ignore:
+    - extern/
+    - .generate/

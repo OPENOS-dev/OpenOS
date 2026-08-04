@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// Request for GenerateDlcArtifactsList method.
+message GenerateDlcArtifactsListRequest {
+  // The chroot used to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+
+  // Sysroot (board) to generate DLCs for.
+  chromite.api.Sysroot sysroot = 2;
+}
+
+// Response for GenerateArtifactsDlcList method.
+message GenerateDlcArtifactsListResponse {
+  message DlcArtifact {
+    // sha256 hash of the DLC.
+    string image_hash = 1;
+    // Name of the DLC (usually dlc.img).
+    string image_name = 2;
+    // GS uri of the DLCs directory.
+    string gs_uri_path = 3;
+    // The identifier of the DLC.
+    string id = 4;
+  }
+
+  // List of DLC paths.
+  repeated DlcArtifact dlc_artifacts = 1;
+}
+
+// DLC Service definition.
+service DlcService {
+  option (service_options) = {
+    module : "dlc",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Generates the list of DLCs prebuilt for this target.
+  rpc GenerateDlcArtifactsList(GenerateDlcArtifactsListRequest)
+      returns (GenerateDlcArtifactsListResponse);
+}

@@ -1,0 +1,93 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+
+// Compile Build API proto endpoint request.
+message CompileProtoRequest {}
+
+// Compile Build API proto endpoint response.
+message CompileProtoResponse {
+  message ProtoFile {
+    // The proto file's path.
+    string path = 1;
+  }
+
+  // The files that changed.
+  repeated ProtoFile modified_files = 1;
+}
+
+// Request for the method discovery endpoint.
+message MethodGetRequest {}
+
+// Response from the method discovery endpoint.
+message MethodGetResponse {
+  message Method {
+    // The full method name, i.e. package.Service/Method.
+    string method = 1;
+  }
+
+  // All registered methods.
+  repeated Method methods = 1;
+}
+
+// Request for the API (major) version number.
+message VersionGetRequest {}
+
+// Response with the API (major) version number.
+message VersionGetResponse {
+  message Version {
+    // Version number components: "major.minor.bug".
+    int32 major = 1;
+    int32 minor = 2;
+    int32 bug = 3;
+  }
+
+  Version version = 1;
+}
+
+service ApiService {
+  option (service_options) = {
+    module : "api",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // Added in R90.
+  rpc CompileProto(CompileProtoRequest) returns (CompileProtoResponse);
+}
+
+// Service to handle retrieving the registered methods in the API.
+service MethodService {
+  option (service_options) = {
+    module : "api",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // Added in R77.
+  rpc Get(MethodGetRequest) returns (MethodGetResponse) {
+    option (method_options) = {
+      implementation_name : "GetMethods",
+    };
+  }
+}
+
+// Service for the API version information.
+service VersionService {
+  option (service_options) = {
+    module : "api",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // Added in R77.
+  rpc Get(VersionGetRequest) returns (VersionGetResponse) {
+    option (method_options) = {
+      implementation_name : "GetVersion",
+    };
+  }
+}

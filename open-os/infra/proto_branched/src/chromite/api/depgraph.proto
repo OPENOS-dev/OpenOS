@@ -1,0 +1,129 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// Depgraph messages and service.
+
+// Message contains data about the portage dependency graph and the packages'
+// dependency source paths.
+message DepGraph {
+  // TODO(crbug/1081828): drop when no longer used.  Use sysroot instead.
+  // The board whose dependency graph this is.
+  chromiumos.BuildTarget build_target = 1;
+  // List of packages in the dependency graph and their infos, which include
+  // dependency packages and the source paths.
+  repeated PackageDepInfo package_deps = 2;
+
+  // The sysroot whose dependency graph is being created.  If no sysroot is
+  // being used, may be unspecified.  Added in R85.
+  Sysroot sysroot = 3;
+}
+
+// Message describing a package and its dependencies.
+message PackageDepInfo {
+  // The package itself.
+  chromiumos.PackageInfo package_info = 1;
+
+  // List of packages this package depends on.
+  repeated chromiumos.PackageInfo dependency_packages = 2;
+
+  // List of source paths the package depends on.
+  repeated SourcePath dependency_source_paths = 3
+      [ (chromiumos.logging_optional) = true ];
+}
+
+// Message describes a source path.
+message SourcePath { string path = 1; }
+
+// Message for creating dependency graph json map.
+// Example Json:
+// {"build_target":{"name":"board"},"output_file":"/tmp/depgraph.json"}
+message GetBuildDependencyGraphRequest {
+  // The sysroot whose dependency graph is being created.  If no sysroot is
+  // being used, may be unspecified.  Added in R85.
+  Sysroot sysroot = 4;
+  // TODO(crbug/1081828): drop when all supported release branches are no longer
+  // using this.
+  // DEPRECATED: Use sysroot instead.
+  // The board whose dependency graph is being created.  If both sysroot and
+  // build_target are given, sysroot is used.
+  chromiumos.BuildTarget build_target = 1;
+  // The chroot to use to execute the endpoint.  Added in R80.
+  chromiumos.Chroot chroot = 2;
+  // List of packages for which to create the dependency graph. If none are
+  // specified the standard list of packages is used.  Added in R81.
+  repeated chromiumos.PackageInfo packages = 3;
+}
+
+// Response from creating dependency graph json map.
+message GetBuildDependencyGraphResponse {
+  DepGraph dep_graph = 1;
+  // Added in R80.
+  DepGraph sdk_dep_graph = 2;
+}
+
+message GetToolchainPathsRequest {
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 1;
+}
+
+message GetToolchainPathsResponse {
+  // List of paths considered relevant to toolchain packages.
+  repeated SourcePath paths = 1;
+}
+
+// Message for getting a list of a board's package dependencies.
+message ListRequest {
+  // The sysroot for the board whose packages dependencies are being calculated.
+  Sysroot sysroot = 1;
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 2;
+  // List of paths to consider when retrieving the board's package dependencies.
+  // If empty / None returns all package dependencies.
+  repeated SourcePath src_paths = 3;
+  // List of packages for which to get dependencies. If none are specified the
+  // standard list of packages is used.
+  repeated chromiumos.PackageInfo packages = 4;
+  // Whether to also include affected reverse dependencies. False by default.
+  // See chromite.lib.dependency_graph.PackageNode.affected_packages for
+  // details.
+  // Added in R92.
+  bool include_rev_deps = 5;
+  // Whether to include dependencies that are only needed when USE=test is
+  // enabled.
+  bool include_test_deps = 6;
+}
+
+// Response for getting a list of package dependencies.
+message ListResponse { repeated chromiumos.PackageInfo package_deps = 1; }
+
+// Service to create a variety of package dependency graphs.
+service DependencyService {
+  // The module implementing the service.
+  option (service_options) = {
+    module : "dependency",
+    service_chroot_assert : INSIDE,
+  };
+
+  // Get the build dependency graph.
+  rpc GetBuildDependencyGraph(GetBuildDependencyGraphRequest)
+      returns (GetBuildDependencyGraphResponse);
+
+  // Get the list of source paths that are relevant to the toolchain.
+  // Added in R81.
+  rpc GetToolchainPaths(GetToolchainPathsRequest)
+      returns (GetToolchainPathsResponse);
+
+  // Get the list of package dependencies.  Added in R87.
+  rpc List(ListRequest) returns (ListResponse);
+}

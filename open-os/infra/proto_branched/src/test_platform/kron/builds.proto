@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Define a schema for debugging events in kron.
+syntax = "proto3";
+
+package test_platform.kron;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron";
+
+message Build {
+  // build_uid is a unique identifier for the build image.
+  string build_uuid = 1;
+
+  // run_uid represents the unique identifier of the Kron run which
+  // processed this run.
+  string run_uuid = 2;
+
+  // create_time represents the time that the image row was read and inserted
+  // into the DB, NOT when then image was made by it's respective builder.
+  google.protobuf.Timestamp create_time = 3;
+
+  // bbid is the id of the specific build which created the image.
+  int64 bbid = 4;
+
+  // build_image is the name of the build target, I.e, <board>(-variant)-release
+  string build_target = 5;
+
+  // e.g 101
+  int64 milestone = 6;
+
+  // e.g. 15111.0.0
+  string version = 7;
+
+  // image_path points towards the GS location of the image zip. in the form
+  // of: gs://<image-bucket>/<build-target>/R<milestone>-<version>/image.zip
+  string image_path = 8;
+
+  string board = 9;
+
+  string variant = 10;
+
+  // parent orchestrator build bucket id
+  int64 release_orch_bbid = 11;
+}

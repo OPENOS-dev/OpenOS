@@ -1,0 +1,155 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromiumos";
+option java_package = "com.google.chrome.crosinfra.proto";
+
+// ***DO NOT IMPORT ANY FIELDS IN THIS PROTO.***
+// This file is copied from GoldenEye's original proto.
+// google3/java/com/google/chrome/crosbuilds/common/proto/crosbuilds.proto
+// CI has no plans to support these messages and want to keep them separate
+// from rest of the protos. This whole file is only used to decode config
+// from GE.
+
+message Model {
+  // The board name for this model.
+  string board_name = 1;
+
+  // The name of the model.
+  string name = 2;
+
+  // Defines which test suites should actually be run for a given model
+  // when the release builder is setting up the hardware tests.
+  repeated string test_suites = 3;
+
+  // Defines whether presubmit hardware tests should be run against a given
+  // model as part of the commit queue.
+  bool cq_test_enabled = 4;
+
+  // Defines the test pool that will be scheduled against for any HW tests
+  // executed against the given model.
+  string release_builder_test_pool = 5;
+
+  // The GoldenEye ID for the board of this model.
+  // If the board does not exist, the field value will be 0.
+  int64 board_id = 6;
+
+  bool is_active = 7;
+
+  // Hardware match for the model.
+  string hwid_match = 8;
+
+  // The first milestone that this board will be released to stable
+  // on.
+  int32 stable_target_milestone = 9;
+  // Whether a build for this model is considered experimental only.
+  bool is_experimental = 10;
+}
+
+// Enum for various type of builders
+enum BuilderType {
+  UNKNOWN_BUILDER_TYPE = 0;
+  RELEASE = 1;
+}
+
+enum Architecture {
+  UNKNOWN = 0;
+  X86_INTERNAL = 1;
+  ARM_INTERNAL = 2;
+}
+
+enum BuildCadence {
+  UNKNOWN_CADENCE = 0;
+  ONCE_PER_WEEK_CADENCE = 1;
+  THRICE_PER_WEEK_CADENCE = 2;
+  DAILY_CADENCE = 3;
+}
+
+// Configuration required by BuildBot in order to generate a unified release
+// builder with the appropriate model specific hardware test coverage.
+// For context, see: go/cros-unibuild-hw-test
+message ReferenceBoardUnifiedBuildConfig {
+  // The name of the build that will be created by BuildBot.
+  string name = 1;
+
+  // The name of the reference board this unified build is based upon.
+  string reference_board_name = 2;
+
+  // The instruction set architecture of the reference board.
+  Architecture arch = 3;
+
+  // Whether this is a release build or not.
+  BuilderType builder = 4;
+
+  // Whether this build is considered experimental only.
+  bool experimental = 5;
+
+  // The list of models that are based on the given reference board
+  // and supported as part of the unified build.
+  repeated Model models = 6;
+
+  // TODO: remove when LegacyRelease is fully deleted.
+  int32 rubik_target_milestone = 7;
+
+  // The first milestone that this board will be released to stable
+  // on.
+  int32 stable_target_milestone = 8;
+
+  string board_variant = 9;
+
+  // The cadence (days/week) we should build this builder at.
+  BuildCadence build_cadence = 10;
+
+  // Whether the build has dedicated lab resources.
+  bool has_lab_resources = 11;
+
+  // The milestone when a target will enter Extended Support.
+  optional int32 extended_support_target_milestone = 12;
+}
+
+// Message to represent a build config for a given builder
+message Config {
+  BuilderType builder = 1;
+  bool experimental = 2;
+  bool leader_board = 3;
+  string board_group = 4;
+
+  Architecture arch = 5;
+  string board_variant = 6;
+
+  // The cadence (days/week) we should build this builder at.
+  BuildCadence build_cadence = 7;
+
+  // Whether the build has dedicated lab resources.
+  bool has_lab_resources = 8;
+}
+
+// Message to represent a board in build configuration
+message BuildBoard {
+  string name = 1;
+  repeated Config configs = 2;
+
+  // TODO: remove when LegacyRelease is fully deleted.
+  int32 rubik_target_milestone = 3;
+
+  // The first milestone that this board will be released to stable
+  // on.
+  int32 stable_target_milestone = 4;
+
+  // The milestone when a target will enter Extended Support.
+  optional int32 extended_support_target_milestone = 5;
+}
+
+// Message to represent a build configuration.
+// The JSON file from GE is this proto.
+message GEConfig {
+  string metadata_version = 1;
+  repeated BuildBoard boards = 2;
+  bool release_branch = 3;
+  repeated ReferenceBoardUnifiedBuildConfig reference_board_unified_builds = 4;
+}

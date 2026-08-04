@@ -1,0 +1,52 @@
+// Copyright 2025 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+
+// The request to run SatlabMonitor.
+message RunSatlabMonitorRequest {
+  // The Satlab Host To Monitor (e.g., "satlab-0wgatfqi21498005").
+  // If empty, defaults to the config file
+  string host_id = 1;
+
+  // Build ID (e.g. "8706642797562580081"). Build URL is populated by
+  // concatenation with https://cr-buildbucket.appspot.com/build/, e.g.
+  // "https://cr-buildbucket.appspot.com/build/8706642797562580081".
+  string build_id = 2;
+}
+
+// The result of SatlabMonitor being run.
+message RunSatlabMonitorResponse {
+  // If SatlabMonitor failed, why did it?  Note: you should first check the
+  // exit status of the Build API endpoint.  If the exit status is
+  // zero, SatlabMonitor ran successfully and this reason should not be
+  // checked.  If the exit status is non-zero, you can check this
+  // field for the failure reason.
+  enum FailureReason {
+    // Failed for a reason not listed below.
+    FAILURE_UNKNOWN = 0;
+    // Failed to push commits to Gerrit.
+    FAILURE_SCHEDULE_PUSH_ERROR = 1;
+    // Failed due to merge conflict(s).
+    FAILURE_MERGE_CONFLICTS = 2;
+    // Failed due to unknown host.
+    FAILURE_UNKNOWN_HOST = 3;
+  };
+  FailureReason failure_reason = 1;
+}
+
+service SatlabMonitorService {
+  option (service_options) = {
+    module : "satlab_monitor",
+  };
+
+  // Run SatlabMonitor.
+  rpc RunSatlabMonitor(RunSatlabMonitorRequest)
+      returns (RunSatlabMonitorResponse);
+}

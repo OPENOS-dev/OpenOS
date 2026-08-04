@@ -1,0 +1,349 @@
+// Copyright 2019 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromite.api;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/chromite/api";
+
+import "chromite/api/build_api.proto";
+import "chromite/api/sysroot.proto";
+import "chromiumos/common.proto";
+
+// The chroot version information.
+message ChrootVersion {
+  // The version number.
+  uint32 version = 1;
+}
+
+// Create request message.
+message CreateRequest {
+  // Options that affect how the chroot is created.
+  message Flags {
+    // Whether or not to replace the chroot if it already exists.
+    bool no_replace = 1;
+    // Whether to do a full build of the SDK or use prebuilts.
+    bool bootstrap = 2;
+    // Whether the chroot should be mounted on a loopback image or created
+    // directly inside a directory. Set to true to create in a directory.
+    bool no_use_image = 3;
+    // Whether to delete `out` directory when creating chroot.
+    bool no_delete_out_dir = 4;
+  }
+
+  // The chroot-create flag arguments.
+  Flags flags = 1;
+  // The chroot to create.
+  chromiumos.Chroot chroot = 2;
+  // Optional. The specific SDK version to use, passed as
+  // `cros_sdk --sdk-version`.
+  string sdk_version = 3;
+  // Optional. Whether or not to pass --skip-chroot-upgrade to `cros_sdk`.
+  // This option is unofficially supported and is not guaranteed to work.
+  bool skip_chroot_upgrade = 4;
+  // Optional. If provided and true, the chroot will be created with ccache
+  // fully disabled. Otherwise, the user can expect ccache to be enabled.
+  bool ccache_disable = 5;
+  // Optional. Whether or not to pass --update to `cros_sdk`. If provided and
+  // true, will update SDK via download of a new archive, rather than emerging.
+  bool update_replace = 6;
+  // Optional. Whether to keep the `out/` folder with SYSROOTs.
+  bool keep_out_dir = 7;
+}
+
+// Create response message.
+message CreateResponse {
+  // The resulting chroot version.
+  ChrootVersion version = 1;
+}
+
+// Delete request message.
+message DeleteRequest {
+  // The chroot to delete.
+  chromiumos.Chroot chroot = 2;
+}
+
+// Delete request message.
+message DeleteResponse {}
+
+// Deprecated.
+message UnmountRequest {
+  // The chroot to unmount.
+  chromiumos.Chroot chroot = 1;
+}
+
+// Deprecated.
+message UnmountResponse {}
+
+// Chroot update request message.
+// Example json:
+// {"toolchain_targets": [{"name": "eve"}]}
+message UpdateRequest {
+  // Update flag arguments.
+  message Flags {
+    // Whether to build from source or use prebuilt packages.
+    bool build_source = 1;
+    // Whether a toolchain change has occurred.
+    bool toolchain_changed = 2;
+    // If true, the SDK should be updated anyway when pinned SDKs are in use.
+    // build_source and toolchain_changed are also reasons to update.
+    bool force_update = 3;
+  }
+
+  // The flags.
+  Flags flags = 1;
+  // The targets whose toolchains should be updated in the chroot.
+  repeated chromiumos.BuildTarget toolchain_targets = 2;
+  // The chroot to use to execute the endpoint.
+  chromiumos.Chroot chroot = 3;
+  // Directory where results (logs, etc.) should be stored.
+  chromiumos.ResultPath result_path = 4;
+  // Whether to use host binpkgs uploaded by snapshot builders.
+  bool use_snapshot_binhosts = 5;
+}
+
+// Chroot update response message.
+message UpdateResponse {
+  // The chroot version after update is complete.
+  ChrootVersion version = 1;
+  // Additional data about the packages that failed to build.
+  // Added in R118.
+  repeated FailedPackageData failed_package_data = 2;
+  // True when update_chroot was skipped (the typical case for R126 and later).
+  bool skipped = 3;
+}
+
+// Uprev SDK request.
+// Creates code changes to uprev the SDK version file and prebuilt conf files.
+message UprevRequest {
+  reserved 1 to 2;
+
+  // Required. The Google Storage bucket containing binhosts to point to.
+  // Example: "gs://chromeos-prebuilt/"
+  string binhost_gs_bucket = 3;
+
+  // Required. The SDK/prebuilt version to uprev to, formatted as
+  // "%Y.%m.%d.%H%M%S".
+  // Example: "2023.02.12.144623"
+  string version = 4;
+
+  // Required. Template string for locating toolchain tarballs on GS://.
+  // This is the value that will go into the TC_PATH field in
+  // src/third_party/chromiumos-overlay/chromeos/binhost/host/sdk_version.conf.
+  // Example: "2023/04/%(target)s-2023.02.12.144623.tar.xz"
+  string toolchain_tarball_template = 5;
+
+  // Optional. The Google Storage bucket containing the SDK and toolchains.
+  // Example: "gs://chromiumos-sdk".
+  // If not given, a default will be assumed, most likely gs://chromiumos-sdk.
+  string sdk_gs_bucket = 6;
+}
+
+// Uprev SDK response.
+message UprevResponse {
+  // Files modified for this uprev.
+  repeated chromiumos.Path modified_files = 1;
+
+  // Version uprevved to.
+  string version = 2;
+}
+
+// Ask chromite to clean build artifacts.
+// If no optional arguments are provided it will default to 'safe' &&
+// 'sysroots'.
+message CleanRequest {
+  // The chroot to clean.
+  chromiumos.Chroot chroot = 1;
+
+  // Optional. Clean all produced artifacts.
+  bool safe = 2;
+  // Optional. Remove all built images.
+  bool images = 3;
+  // Optional. Remove all of the sysroots.
+  bool sysroots = 4;
+  // Optional. Clean the tmp/ directory.
+  bool tmp = 5;
+  // Optional. Clean the shared cache.
+  bool cache = 6;
+  // Optional. Clean up various logs.
+  bool logs = 7;
+  // Optional. Clean out various package build work directories.
+  bool workdirs = 8;
+  // Optional. Clean out the incremental artifacts.
+  bool incrementals = 9;
+}
+
+message CleanResponse {}
+
+// An opaque key to a chroot snapshot state.
+message SnapshotToken { string value = 1; }
+
+message CreateSnapshotRequest { chromiumos.Chroot chroot = 1; }
+
+message CreateSnapshotResponse { SnapshotToken snapshot_token = 1; }
+
+message RestoreSnapshotRequest {
+  chromiumos.Chroot chroot = 1;
+  SnapshotToken snapshot_token = 2;
+}
+
+message RestoreSnapshotResponse {}
+
+message UnmountPathRequest {
+  // Path to unmount.
+  chromiumos.Path path = 1;
+}
+
+message UnmountPathResponse {}
+
+// Build prebuilt packages for the SDK.
+message BuildPrebuiltsRequest {
+  // The chroot to use to execute the endpoint
+  chromiumos.Chroot chroot = 1;
+
+  // The host build target to build packages for.
+  chromiumos.BuildTarget build_target = 2;
+}
+
+message BuildPrebuiltsResponse {
+  // Directory containing generated host prebuilts for the SDK board.
+  chromiumos.Path host_prebuilts_path = 1;
+
+  // Directory containing generated target prebuilts for the SDK board.
+  chromiumos.Path target_prebuilts_path = 2;
+}
+
+// Create a tarball from a previously built SDK.
+message BuildSdkTarballRequest {
+  // The chroot which contains the built SDK.
+  chromiumos.Chroot chroot = 1;
+
+  // The SDK version to stamp in /etc/os-release.
+  string sdk_version = 2;
+}
+
+message BuildSdkTarballResponse {
+  // Path where the SDK tarball has been stored.
+  chromiumos.Path sdk_tarball_path = 1;
+}
+
+// Create a manifest file showing the ebuilds in an SDK.
+message CreateManifestFromSdkRequest {
+  chromiumos.Chroot chroot = 1;
+  chromiumos.Path sdk_path = 2;
+  chromiumos.Path dest_dir = 3;
+}
+
+message CreateManifestFromSdkResponse { chromiumos.Path manifest_path = 1; }
+
+// Create CLs to point the binhost at a given SDK version.
+message CreateBinhostCLsRequest {
+  string prepend_version = 1;
+  string version = 2;
+  string upload_location = 3;
+  // Template string for locating the SDK tarball, as used in
+  // src/third_party/chromiumos-overlay/chromeos/binhost/host/sdk_version.conf
+  string sdk_tarball_template = 4;
+}
+
+message CreateBinhostCLsResponse {
+  // Identifiers for the created CLs (e.g. ["chromium:4149846"]).
+  repeated string cls = 1;
+}
+
+// Upload ChromeOS SDK prebuilt packages.
+message UploadPrebuiltPackagesRequest {
+  // chroot in which the packages have been built.
+  chromiumos.Chroot chroot = 1;
+  string prepend_version = 2;
+  string version = 3;
+  string upload_location = 4;
+}
+
+message UploadPrebuiltPackagesResponse {}
+
+// Request info for building toolchain packages for the SDK.
+message BuildSdkToolchainRequest {
+  chromiumos.Chroot chroot = 1;
+
+  // USE flags to pass into cros_setup_toolchain.
+  repeated chromiumos.UseFlag use_flags = 2;
+
+  // Path into which generated files will be extracted.
+  chromiumos.ResultPath result_path = 3;
+}
+
+// Response from building toolchain packages for the SDK.
+message BuildSdkToolchainResponse {
+  repeated chromiumos.Path generated_files = 1;
+}
+
+// SDK operations.
+service SdkService {
+  // The service options (see build_api.proto).
+  option (service_options) = {
+    module : "sdk",
+    service_chroot_assert : OUTSIDE,
+  };
+
+  // Create method, supports replacing an existing chroot.
+  rpc Create(CreateRequest) returns (CreateResponse);
+
+  // Delete a chroot. Added in R79.
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+
+  // Clean up unneeded files from the chroot. Added in R81.
+  rpc Clean(CleanRequest) returns (CleanResponse);
+
+  // Unmount a chroot. Added in R81.
+  // Deprecated.
+  rpc Unmount(UnmountRequest) returns (UnmountResponse);
+
+  // Update the chroot.
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  }
+
+  // Uprev the SDK.
+  // Creates code changes to uprev the SDK version file and prebuilt conf files.
+  rpc Uprev(UprevRequest) returns (UprevResponse);
+
+  // Create a chroot snapshot. Added in R83.
+  rpc CreateSnapshot(CreateSnapshotRequest) returns (CreateSnapshotResponse);
+
+  // Restore a chroot to a snapshot. Added in R83.
+  rpc RestoreSnapshot(RestoreSnapshotRequest) returns (RestoreSnapshotResponse);
+
+  // Unmount a filesystem path and any submounts under it.  Added in R86.
+  rpc UnmountPath(UnmountPathRequest) returns (UnmountPathResponse);
+
+  // Builds the binary packages that comprise the SDK.
+  rpc BuildPrebuilts(BuildPrebuiltsRequest) returns (BuildPrebuiltsResponse);
+
+  // Creates a tarball from a previously built SDK.
+  rpc BuildSdkTarball(BuildSdkTarballRequest) returns (BuildSdkTarballResponse);
+
+  // Create a manifest file showing the ebuilds in an SDK.
+  rpc CreateManifestFromSdk(CreateManifestFromSdkRequest)
+      returns (CreateManifestFromSdkResponse);
+
+  // Creates CLs to point the binhost at uploaded prebuilts.
+  rpc CreateBinhostCLs(CreateBinhostCLsRequest)
+      returns (CreateBinhostCLsResponse);
+
+  // Uploads prebuilt packages (such as built by BuildPrebuilts).
+  rpc UploadPrebuiltPackages(UploadPrebuiltPackagesRequest)
+      returns (UploadPrebuiltPackagesResponse);
+
+  // Build toolchain cross-compilers for the SDK.
+  rpc BuildSdkToolchain(BuildSdkToolchainRequest)
+      returns (BuildSdkToolchainResponse) {
+    option (method_options) = {
+      method_chroot_assert : INSIDE,
+    };
+  };
+}
